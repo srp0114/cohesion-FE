@@ -1,0 +1,30 @@
+.navigation {
+    display:flex;
+    justify-content: space-between;
+}
+
+ul,li{
+    display: flex;
+    list-style: none;
+    margin:10px;
+}
+
+li + li {
+    margin-left:50px;
+}
+
+.myPageIcon {
+    margin-top:20px;
+    margin-right:50px;
+}
+
+.banner {
+    height:300px;
+    width:100%;
+    background-color: gainsboro;
+    margin: auto;
+}
+
+.board {
+    margin:5%;
+}
