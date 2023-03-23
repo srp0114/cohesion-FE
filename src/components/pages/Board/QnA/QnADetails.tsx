@@ -4,14 +4,17 @@ import axios from "axios";
 import Header from '../../../layout/Header';
 import Time from "../../../layout/Time";
 import { languageImage } from '../../../data/Image';
+import Reply from "../../../layout/Reply";
 import { 
   Typography,
   Container, 
   Box,
+  TextField
 } from '@mui/material';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
 import Money from '@mui/icons-material/MonetizationOn';
+import Visibility from '@mui/icons-material/VisibilityOutlined';
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -23,6 +26,7 @@ interface DetailItems {
     modifiedDate?: string;
     language?: string;
     bookmark: number;
+    views: number; //조회수
     reply: number;
     point: number;
 }
@@ -37,9 +41,9 @@ const QnADetails: React.FC = () => {
 
     useEffect(()=>{
         axios
-            .get(`/api/qnaBoards/${id}`)
-            .then((response)=>setPostItem(response.data))
-            .catch((err)=>console.log(err))
+        .get(`/api/qnaBoards/${id}`)
+        .then((response)=>setPostItem(response.data))
+        .catch((err)=>console.log(err))
     },[])
 
     //입력된 언어 맞게 이미지 출력
@@ -58,33 +62,46 @@ const QnADetails: React.FC = () => {
     <>
     <Box sx={{
         display: 'flex',  
-        marginTop: 8,
-        marginBottom: 1
+        mt: 8,
+        mb: 3
     }}>
-        <Box sx={{fontSize:38, marginRight: 3}}>{postItem.title} </Box>
+        <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
         <Box sx={{marginTop:2}}>{language}</Box>
     </Box>
 
     <Box sx={{
         display:'flex',
         justifyContent: 'space-between',
-        marginBottom:8
     }}>
         <Box sx={{display:'flex'}}>
-        <ProfileIcon sx={{fontSize:30, marginRight:0.5}}/>
-        <Box sx={{fontSize:20}}>{postItem.writer} ∙ <Time date={postItem.createdDate}/></Box>
+            <ProfileIcon sx={{mr:0.5, fontSize:45}}/>
+            <Box>
+                <Typography sx={{fontSize:20}}>작성자</Typography>
+                <Box color="gray"> 
+                <Time date={postItem.createdDate}/>
+                </Box>
+            </Box>
         </Box>
         <Box sx={{display: 'flex'}}>
-            <BookmarkIcon sx={{fontSize: 28}}/>
-            <Box sx={{fontSize:20}}>{postItem.bookmark}</Box>
+            <BookmarkIcon/>
+            <Typography>{postItem.bookmark}</Typography>
+            {/* 조회수 UI 추가 */}
+            <Visibility sx={{ml:1}}/>
+            <Typography>{postItem.views}</Typography>
         </Box>
     </Box>
-
+    
     <Box sx={{
         fontSize: 20,
-        marginBottom: 12
+        mt:12,
+        mb:18,
+        ml:6,
+        mr:6
     }}>
-        <div dangerouslySetInnerHTML={{ __html : (postItem.content) }}/>
+        {/*코드블럭 배경 css 추가*/}
+        <div className='ql-snow'> 
+            <div className='ql-editor' dangerouslySetInnerHTML={{ __html: (postItem.content) }}/> 
+        </div>
     </Box>
     
     <Box sx={{ display:'flex', marginBottom:3}}>
@@ -94,12 +111,16 @@ const QnADetails: React.FC = () => {
 
     <Box>
         <Typography variant='h5'>{postItem.reply}개의 댓글이 있습니다</Typography>
-        <Box sx={{
-            height:100,
-            marginTop: 2,
-            border: "1.5px solid grey",
-            borderRadius: '16px',
-        }}/>
+        {/*댓글 입력창 텍스트필드로 변경*/}
+        <TextField 
+            fullWidth 
+            placeholder="댓글을 입력하세요."
+            variant="outlined" 
+            multiline
+            sx={{
+            mt: 2,
+            mb:2  }}/>
+        <Reply/>
     </Box>
     </>
     ) :     

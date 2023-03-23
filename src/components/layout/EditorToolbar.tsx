@@ -1,8 +1,10 @@
 import { useRef, useState, useMemo } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.core.css";
 import hljs from 'highlight.js'
 import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 import axios from 'axios';
 
 type Props = {
@@ -35,7 +37,7 @@ Font.whitelist = [
 Quill.register(Font, true);
 
 hljs.configure({
-    languages: ['javascript', 'ruby', 'python', 'rust'],
+    languages: ['javascript', 'ruby', 'python', 'rust', 'java'],
 })
 
 const EditorToolbar: React.FC<Props> = ({getContent}) => {
@@ -83,7 +85,6 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
                     );
                 }
 
-
             } catch (err) {
                 console.log("이미지 핸들러 선택 에러");
             }
@@ -95,9 +96,10 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
                 highlight: (text: string) => hljs.highlightAuto(text).value,
             },
             toolbar: {
+                syntax: true,
                 container: [
                     ["bold", "italic", "underline", "strike", "blockquote"],
-                    [{ size: ["small", false, "large", "huge"] }, { color: [] }],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     [
                         { list: "ordered" },
                         { list: "bullet" },
@@ -106,6 +108,8 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
                         { align: [] },
                     ],
                     ["image", "video"],
+                    ['code-block'],
+                    
                 ],
                 handlers: {
                     undo: undoChange,
@@ -143,26 +147,27 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
         "code-block"
     ];
 
-
     return (
-        <>
-
-            <ReactQuill
-                ref={(element) => {
-                    if (element !== null) {
-                        QuillRef.current = element;
-                    }
-                }}
-                value={content}
-                onChange={(content) => {
-                    setContent(content);
-                    getContent(content);
-                }}
-                formats={formats}
-                modules={modules}
-                theme="snow"
-                placeholder="내용을 입력해주세요."
-            />
+        <>  
+            <div style={{height:"260px"}}>
+                <ReactQuill
+                    ref={(element) => {
+                        if (element !== null) {
+                            QuillRef.current = element;
+                        }
+                    }}
+                    value={content}
+                    onChange={(content) => {
+                        setContent(content);
+                        getContent(content);
+                    }}
+                    formats={formats}
+                    modules={modules}
+                    theme="snow"
+                    placeholder="내용을 입력해주세요."
+                    style={{ height: "200px" }} 
+                />
+            </div>
         </>
     )
 }
