@@ -30,7 +30,7 @@ const Board2: React.FC = () => {
     useEffect(()=>{
         axios
             .get("/api/qnaBoards")
-            .then((res) => setQnaBoardItems(res.data))
+            .then((res) => setQnaBoardItems(res.data.data))
             .catch((err)=>console.log(err));
     },[])
 
@@ -38,7 +38,7 @@ const Board2: React.FC = () => {
         <>
         <div className="board">
         <Typography variant="h5" className="boardTitle">Q&A 게시판</Typography>
-            {qnaBoardItems.map((posting) => {
+            {qnaBoardItems && qnaBoardItems.map((posting) => {
                 return (
                     <>
                     <Box sx={{ 
