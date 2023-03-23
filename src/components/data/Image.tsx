@@ -1,7 +1,7 @@
-import c from "../data/c_logo.png";
-import js from "../data/js_logo.svg";
-import java from "../data/java_logo.png";
-import react from "../data/react_logo.png";
+import c from "../asset/image/c.png";
+import javascript from "../asset/image/javascript.svg";
+import java from "../asset/image/java.png";
+import react from "../asset/image/react.png";
 
 //언어 - 이미지 처리 데이터
 export const languageImage = [
@@ -11,7 +11,7 @@ export const languageImage = [
     }, 
     {
         name:"JavaScript",
-        url: js
+        url: javascript
     },
     {
         name:"Java",

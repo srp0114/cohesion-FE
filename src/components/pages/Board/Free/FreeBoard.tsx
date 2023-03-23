@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../layout/Header";
+import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
@@ -11,9 +12,9 @@ import {
 } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { Board } from "../../../../model/board";
-import { Posting } from "../../../../model/posting";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import { Board } from "../../../model/board";
+import { Posting } from "../../../model/posting";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
@@ -28,9 +29,9 @@ interface FreeBoardItems {
   profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
   createdDate: string;
   modifiedDate?: string;
-  report: number;
   bookmark: number;
   reply: number;
+  views: number; //조회수
   //stuId: number; //사용자 학번
   //imgUrl?: Array<string>; //이미지
 }
@@ -114,7 +115,9 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         <Typography variant="h6" onClick={() => goToPost(props.id)}>
           {props.title}
         </Typography>
-        <Typography variant="caption">{props.createdDate}</Typography>
+        <Typography variant="caption">
+          <Time date={props.createdDate} />
+        </Typography>
       </Box>
       <Box sx={{ marginBottom: 1 }}>
         <Typography variant="body1" onClick={() => goToPost(props.id)}>
@@ -136,7 +139,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         </Stack>
         <Stack direction="row">
           <IconButton size="small">
-            <WarningAmberIcon /> {props.report}
+            <Person2OutlinedIcon /> {props.views}
           </IconButton>
           <IconButton size="small">
             <BookmarkIcon /> {props.bookmark}

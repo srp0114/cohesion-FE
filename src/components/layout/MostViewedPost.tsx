@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MostViewedItems } from "../pages/Board/QnABoard";
+import { MostViewedItems } from "../pages/Board/QnA/QnABoard";
 import { languageImage } from '../data/Image';
 import {
   Box, Typography,

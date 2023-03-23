@@ -35,7 +35,7 @@ const Board: React.FC = () => {
         <>
             <div className="board">
                 <Typography variant="h5" className="boardTitle">자유게시판</Typography>
-                {boardItems && boardItems.map((posting, index) => {
+                {boardItems.map((posting, index) => {
                     return (
                         <div key={index}>
                         <Box sx={{

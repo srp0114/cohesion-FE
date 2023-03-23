@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import Header from '../../layout/Header';
-import MostViewedPost from '../../layout/MostViewedPost';
-import Time from "../../layout/Time";
-import { languageImage } from '../../data/Image';
+import Header from '../../../layout/Header';
+import MostViewedPost from '../../../layout/MostViewedPost';
+import Time from "../../../layout/Time";
+import { languageImage } from '../../../data/Image';
 import { 
   Typography,
   Container, 

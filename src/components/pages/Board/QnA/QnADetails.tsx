@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
-import Header from '../../layout/Header';
-import Time from "../../layout/Time";
-import { languageImage } from '../../data/Image';
+import Header from '../../../layout/Header';
+import Time from "../../../layout/Time";
+import { languageImage } from '../../../data/Image';
 import { 
   Typography,
   Container, 

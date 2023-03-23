@@ -13,6 +13,7 @@ export interface Posting {
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
+  views: number; //조회수
   replies: Array<Reply>; 
 	reply: number;
   report: number;

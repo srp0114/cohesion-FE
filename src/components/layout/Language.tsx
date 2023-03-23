@@ -10,11 +10,11 @@ import {
     Box, 
     Avatar
 } from "@mui/material";
-import java from "../data/java_logo.png";
-import c from "../data/c_logo.png";
-import javascript from "../data/js_logo.svg";
+import java from "../asset/image/java.png";
+import c from "../asset/image/c.png";
+import javascript from "../asset/image/javascript.svg";
 
-interface LanguageType {
+interface LanguageType {  
     key: number;
     name: string;
     logo?: string;
