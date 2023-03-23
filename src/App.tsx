@@ -10,6 +10,7 @@ import RecruitBoard from "./components/pages/Board/Recruit/RecruitBoard";
 import RecruitDetails from "./components/pages/Board/Recruit/RecruitDetails";
 import MyPage from "./components/pages/MyPage";
 import Notice from "./components/pages/Notice";
+import OAuth2 from "./components/pages/OAuth2";
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <Route path="/recruit/:id" element={<RecruitDetails />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notice" element={<Notice />} />
+          <Route path="/redirect" element={<OAuth2 />} />
+          <Route path="/authorized" element={<OAuth2 />} />
         </Routes>
       </Router>
     </>

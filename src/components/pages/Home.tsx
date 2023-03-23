@@ -9,6 +9,7 @@ import Board2 from "../layout/Board2";
 import { Fab, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import {generateCodeChallenge, generateCodeVerifier} from "../pkce/pkce";
 
 const WritingButton = () => {
   const navigate = useNavigate();
@@ -26,8 +27,18 @@ const WritingButton = () => {
 }
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const handleLogin = () => {
+    const verifier = generateCodeVerifier();
+    sessionStorage.setItem('codeVerifier', verifier);
+    const codeChallenge = generateCodeChallenge();
+    sessionStorage.setItem('codeChallenge', codeChallenge);
+
+    navigate(`/redirect`)
+  };
     return (
       <>
+        <button onClick={handleLogin}>로그인</button>
         <Header/>
         <Grid container spacing={2} style={{margin:0}}>   
           <Grid xs>
