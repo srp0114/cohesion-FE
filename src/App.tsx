@@ -11,6 +11,7 @@ import RecruitDetails from "./components/pages/Board/Recruit/RecruitDetails";
 import MyPage from "./components/pages/MyPage";
 import Notice from "./components/pages/Notice";
 import OAuth2 from "./components/pages/OAuth2";
+import NotFound from "./components/pages/NotFound";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/notice" element={<Notice />} />
           <Route path="/redirect" element={<OAuth2 />} />
           <Route path="/authorized" element={<OAuth2 />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </>
