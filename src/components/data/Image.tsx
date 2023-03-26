@@ -21,4 +21,12 @@ export const languageImage = [
         name:"React",
         url: react
     },
+    {
+        name: "Flutter",
+        url: react
+    },
+    {
+        name: "C++",
+        url: c
+    },
 ]
