@@ -12,6 +12,7 @@ import MyPage from "./components/pages/MyPage";
 import Notice from "./components/pages/Notice";
 import OAuth2 from "./components/pages/OAuth2";
 import Welcome from "./components/pages/Welcome";
+import NotFound from "./components/pages/NotFound";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/redirect" element={<OAuth2 />} />
           <Route path="/authorized" element={<OAuth2 />} />
           <Route path="/welcome" element={<Welcome/>}/>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </>
