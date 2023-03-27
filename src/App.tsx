@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Container } from "@mui/material";
 import Home from "./components/pages/Home";
 import PostForm from "./components/pages/PostForm";
 import FreeBoard from "./components/pages/Board/Free/FreeBoard";
@@ -13,11 +14,13 @@ import Notice from "./components/pages/Notice";
 import OAuth2 from "./components/pages/OAuth2";
 import Welcome from "./components/pages/Welcome";
 import NotFound from "./components/pages/NotFound";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 
 function App() {
   return (
-    <>
-      <Router>
+    <Container>
+      <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="post" element={<PostForm />} />
@@ -31,11 +34,11 @@ function App() {
           <Route path="/notice" element={<Notice />} />
           <Route path="/redirect" element={<OAuth2 />} />
           <Route path="/authorized" element={<OAuth2 />} />
-          <Route path="/welcome" element={<Welcome/>}/>
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Router>
-    </>
+      <Footer />
+    </Container>
   );
 }
 
