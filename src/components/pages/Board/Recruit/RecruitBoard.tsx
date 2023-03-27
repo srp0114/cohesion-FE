@@ -1,12 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../../layout/Header";
 import FilterPosting from "../../../layout/FilterPosting";
 import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
-  Container,
   Card,
   CardHeader,
   CardContent,
@@ -58,34 +56,27 @@ const RecruitBoard: React.FC = () => {
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-
-          }}
+      <Box sx={{}}>
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
-          <Typography
-            variant="h5"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
+          모집게시판
+        </Typography>
+        <FilterPosting />
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            rowSpacing={1}
+            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
-            모집게시판
-          </Typography>
-          <FilterPosting />
-          <Box sx={{ flexGrow: 1 }}>
-            <Grid
-              container
-              rowSpacing={1}
-              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            >
-              {displayPosting}
-            </Grid>
-          </Box>
-        </Box>{" "}
-        {/*추후에 이 부분 컴포넌트 분리하기*/}
-        <p></p>
-        {/*space for paginationControl*/}
-      </Container>
+            {displayPosting}
+          </Grid>
+        </Box>
+      </Box>{" "}
+      {/*추후에 이 부분 컴포넌트 분리하기*/}
+      <p></p>
+      {/*space for paginationControl*/}
     </>
   );
 };
