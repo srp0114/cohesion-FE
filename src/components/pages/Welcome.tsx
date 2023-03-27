@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Typography,
@@ -15,24 +15,23 @@ import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
+import IdTokenVerifier from "idtoken-verifier";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
-  studentId: number; //학번
+  sub: number; //학번
   name: string; //이름
-  password: string; //비밀번호
   track1: string; //1트랙
   track2: string; //2트랙
-  profileImg: string; //프로팔
+  picture: string; //프로팔
 }
 
 const TestUserAccount: UserAccountItems = {
-  studentId: 2071274,
+  sub: 2071274,
   name: "김서영",
-  password: "qwe123",
   track1: "웹공학 트랙",
   track2: "모바일소프트웨어 트랙",
-  profileImg: profileImg, //기존에 있던 파일 이용 - 상단에 임포트
+  picture: profileImg, //기존에 있던 파일 이용 - 상단에 임포트
 };
 
 // 추가정보로 입력할 데이터
@@ -63,6 +62,36 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
 }));
 
 const Welcome: React.FC = () => {
+  const [profileImg, setProfileImg] = useState("");
+  const [userAccount, setUserAccount] = useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
+
+  useEffect(() => {
+    idTokenVerifier();
+  }, [])
+
+  const idTokenVerifier = () => {
+    const verifier = new IdTokenVerifier({
+      issuer: 'http://localhost:8081', // issuer 가 같은지
+      audience: 'client', // audience 가 같은지
+      jwksURI: 'http://localhost:8081/oauth2/jwks' // get public key
+    });
+
+    const id_token = sessionStorage.getItem("id_token")
+
+    if (id_token) {
+      verifier.verify(id_token, (error, payload:any) => {
+        if (error) {
+          alert("토큰이 만료되었습니다.");
+          return;
+        }
+        setUserAccount(payload);
+        if (payload) setProfileImg(payload.picture);
+      });
+    } else {
+      alert("로그인이 필요합니다.");
+    }
+  }
+
   //닉네임, 관심기술, 자기소개
   const [nickname, setNickname] = useState<string>();
   const [skill, setSkill] = useState<typeof languageImage>([]);
@@ -106,7 +135,7 @@ const Welcome: React.FC = () => {
                   <ListItemAvatar>
                     <Avatar
                       alt="Travis Howard"
-                      src={TestUserAccount.profileImg}
+                      src={profileImg}
                     />
                   </ListItemAvatar>
                   <Typography
@@ -115,7 +144,7 @@ const Welcome: React.FC = () => {
                       p: 4,
                     }}
                   >
-                    {TestUserAccount.name}
+                    {userAccount.name}
                   </Typography>
                 </ImageButton>
               </Box>
@@ -139,7 +168,7 @@ const Welcome: React.FC = () => {
             <TextField
               disabled
               variant="outlined"
-              value={TestUserAccount.name}
+              value={userAccount.name}
               fullWidth
               InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
               sx={{ mt: 2 }}
@@ -151,7 +180,7 @@ const Welcome: React.FC = () => {
               disabled
               fullWidth
               variant="outlined"
-              value={TestUserAccount.studentId}
+              value={userAccount.sub}
               InputProps={{ sx: { bgcolor: "#e0e0e0" } }}
               sx={{ mt: 2 }}
             />
@@ -168,7 +197,7 @@ const Welcome: React.FC = () => {
                 disabled
                 fullWidth
                 variant="outlined"
-                value={TestUserAccount.track1}
+                value={userAccount.track1}
                 InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
                 sx={{ mt: 2 }}
               />
@@ -179,7 +208,7 @@ const Welcome: React.FC = () => {
                 disabled
                 fullWidth
                 variant="outlined"
-                value={TestUserAccount.track2}
+                value={userAccount.track2}
                 InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
                 sx={{ mt: 2 }}
               />
