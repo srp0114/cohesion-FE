@@ -1,72 +1,48 @@
 import React, { useState } from 'react';
 import {
-    SelectChangeEvent,
-    Select,
-    Container,
     Grid,
     FormControl,
-    MenuItem,
-    Chip, 
-    Box, 
-    Avatar
 } from "@mui/material";
-import java from "../asset/image/java.png";
-import c from "../asset/image/c.png";
-import javascript from "../asset/image/javascript.svg";
+import {
+  Option, 
+  Select, 
+  ListItemDecorator,
+  Avatar
+} from "@mui/joy";
+import { skillData } from "../data/SkillData";
 
-interface LanguageType {  
-    key: number;
-    name: string;
-    logo?: string;
-  }
-
-interface LanguageProps {
-  getLanguage: any;
+interface SkillProps {
+  getSkill: any;
 }
   
-const Language: React.FC<LanguageProps>= ({getLanguage}) => {
+const Language: React.FC<SkillProps>= ({getSkill}) => {
 
-  const languageData = [
-      { key: 0, name: 'C', logo: c  },
-      { key: 1, name: 'Java', logo: java },
-      { key: 2, name: 'JavaScript', logo: javascript },
-      { key: 3, name: 'TypeScript' },
-      { key: 4, name: 'Flutter' },
-      { key: 5, name: 'Python' },
-  ]
-
-  const [SelectLang, setSelectLang] = React.useState<string>();
-
-  const onSelectLanguage = (event: SelectChangeEvent) => {
-    setSelectLang(event.target.value)
-    getLanguage(event.target.value)
-  }
+  const [skill, setSkill] = useState<string | null>("");
 
   return (
     <Grid item>
-      <FormControl sx={{ width: 120 }}>
+      <FormControl sx={{ width: 200 }}>
         <Select
-          labelId="chooseLanguage"
-          id="choose-Language"
-          value={SelectLang || ""} 
-          defaultValue={SelectLang}
-          onChange={onSelectLanguage}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected}
-            </Box>
-          )}
-          size="small"
+          onChange={(e, v) => {
+              const selectSkill = v as string
+              setSkill(selectSkill);
+              getSkill(selectSkill);
+            }
+          }
+          sx={{
+            '--ListItemDecorator-size': '44px',
+            minWidth: 240,
+          }}
+          placeholder='질문 기술을 선택해주세요'
         >
-          {languageData.map((value) => (
-            <MenuItem
-              key={value.key}
-              value={value.name}
-            >
-              <Avatar sx={{ width: 25, height: 25 }}
-                     alt="icon" src={value.logo}/>
-               {value.name}
-            </MenuItem>
+          {skillData.map((value) => (
+            <Option 
+            value={value.name}>
+              <ListItemDecorator>
+                <Avatar size="sm" alt="logo" src={value.logo}/>
+              </ListItemDecorator>
+              {value.name}
+            </Option>
           ))}
         </Select>
       </FormControl>

@@ -18,7 +18,7 @@ import EditorToolbar from "../layout/EditorToolbar";
 /*
  * 기본 게시글 작성 UI폼
  */
-const BoardWrite = () => {
+const PostForm = () => {
   const [boardType, setBoardType] = React.useState("free");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -30,12 +30,13 @@ const BoardWrite = () => {
     setContent(value);
   };
 
-  const getPoint = (point:number): void => {
-    setPoint(point*10);
+  const getPoint = (point: number): void => {
+    setPoint(point * 10);
   };
 
-  const getLanguage = (value: string) => {
+  const getSkill = (value: string) => {
     setSkill(value);
+    console.log(value);
   }
   
   const fileList : File[] = [];
@@ -50,7 +51,6 @@ const BoardWrite = () => {
   };
 
   const submitHandler = async () => {
-
     const request_data = {
       title: title,
       content: content
@@ -115,8 +115,8 @@ const BoardWrite = () => {
     }
   };
 
-  const SelectLanguage = (boardType==="question") ? (
-      <Skill getLanguage={getLanguage}/>
+  const SelectSkill = (boardType==="question") ? (
+      <Skill getSkill={getSkill}/>
   ) : (null);
 
   const SelectPoint = (boardType==="question") ? (
@@ -144,7 +144,7 @@ const BoardWrite = () => {
                 </Select>
               </FormControl>
             </Grid>
-            {SelectLanguage}
+            {SelectSkill}
             <Grid item>
               <TextField
                   className="board title"
@@ -202,4 +202,4 @@ const Condition = () => {
   );
 };
 
-export default BoardWrite;
+export default PostForm;
