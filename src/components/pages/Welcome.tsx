@@ -16,6 +16,7 @@ import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
+import axios, { Axios } from "axios";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -65,8 +66,10 @@ const Welcome: React.FC = () => {
   const [profileImg, setProfileImg] = useState("");
   const [userAccount, setUserAccount] = useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
 
+
   useEffect(() => {
     idTokenVerifier();
+
   }, [])
 
   const idTokenVerifier = () => {
@@ -92,6 +95,7 @@ const Welcome: React.FC = () => {
     }
   }
 
+
   //닉네임, 관심기술, 자기소개
   const [nickname, setNickname] = useState<string>();
   const [skill, setSkill] = useState<typeof languageImage>([]);
@@ -108,6 +112,28 @@ const Welcome: React.FC = () => {
     console.log(introduce);
     console.log(skill);
   };
+
+  const request_data = {
+    studentId : userAccount.sub,
+    name : userAccount.name,
+    nickname : nickname,
+    introduce : introduce,
+    track1 : userAccount.track1,
+    track2 : userAccount.track2
+  };
+
+
+
+  const confirm = () =>{  
+        let response = axios({
+        method: "post",
+        url: "/api/join", // 테스트를 위해 id 고정
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(request_data)
+      });
+      window.location.href = "/";
+    
+  }
 
   return (
     <>
@@ -260,7 +286,7 @@ const Welcome: React.FC = () => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Button sx={{ mr: 1 }}>뒤로</Button>
-            <Button variant="contained">완료</Button>
+            <Button variant="contained" onClick={confirm}>완료</Button>
           </Box>
         </Stack>
       </Box>
