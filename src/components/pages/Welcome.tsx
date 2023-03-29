@@ -4,13 +4,15 @@ import {
   Typography,
   TextField,
   Button,
-  Autocomplete,
   Stack,
   ButtonBase,
   ListItemAvatar,
   Avatar,
 } from "@mui/material";
-import { languageImage } from "../data/Image";
+import {
+  Autocomplete
+} from "@mui/joy";
+import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
@@ -66,7 +68,6 @@ const Welcome: React.FC = () => {
   const [profileImg, setProfileImg] = useState("");
   const [userAccount, setUserAccount] = useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
 
-
   useEffect(() => {
     idTokenVerifier();
 
@@ -98,7 +99,7 @@ const Welcome: React.FC = () => {
 
   //닉네임, 관심기술, 자기소개
   const [nickname, setNickname] = useState<string>();
-  const [skill, setSkill] = useState<typeof languageImage>([]);
+  const [skill, setSkill] = useState<typeof skillData>([]);
   const [introduce, setIntroduce] = useState<string>();
 
   //닉네임, 자기소개 핸들러
@@ -132,7 +133,6 @@ const Welcome: React.FC = () => {
         data: JSON.stringify(request_data)
       });
       window.location.href = "/";
-    
   }
 
   return (
@@ -251,26 +251,21 @@ const Welcome: React.FC = () => {
             />
           </Box>
           <Box>
-            <Typography>관심기술</Typography>
-            <Autocomplete
-              multiple
-              options={languageImage}
-              isOptionEqualToValue={(option, value) => option === value}
-              getOptionLabel={(option) => option.name || ""}
-              filterSelectedOptions
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="관심 기술을 선택해주세요."
-                />
-              )}
-              onChange={(event, value) => {
-                const addSkill = value;
-                setSkill(addSkill);
-                console.log(skill);
-              }}
-              sx={{ mt: 2 }}
-            />
+              <Typography>관심기술</Typography>
+              <Autocomplete
+                  multiple
+                  options={skillData}
+                  isOptionEqualToValue={(option, value) => option === value}
+                  getOptionLabel={(option) => option.name || ""}
+                  filterSelectedOptions
+                  placeholder="관심기술을 선택해주세요"
+                  onChange={(event, value) => {
+                      const addSkill = value 
+                      setSkill(addSkill);
+                      console.log(skill);
+                  }}
+                  sx={{mt:2, p:1.5, borderRadius:20}}
+              />
           </Box>
           <Box>
             <Typography>자기소개</Typography>

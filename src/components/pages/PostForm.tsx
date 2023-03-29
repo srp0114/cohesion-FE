@@ -1,26 +1,28 @@
 import React, { useState } from "react";
 import {
-  SelectChangeEvent,
-  Select,
+  Container,
   TextField,
   Button,
   Grid,
   FormControl,
-  MenuItem,
 } from "@mui/material";
+import {
+  Select,
+  Option
+} from "@mui/joy";
 import axios from "axios";
 import Point from "../layout/Point";
-import Language from "../layout/Language";
+import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 /*
  * 기본 게시글 작성 UI폼
  */
-const BoardWrite = () => {
+const PostForm = () => {
   const [boardType, setBoardType] = React.useState("free");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [point, setPoint] = useState<number>(0);
-  const [language, setLanguage] = useState<string>("");
+  const [skill, setSkill] = useState<string>("");
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -31,17 +33,14 @@ const BoardWrite = () => {
     setPoint(point * 10);
   };
 
-  const getLanguage = (value: string) => {
-    setLanguage(value);
-  };
+  const getSkill = (value: string) => {
+    setSkill(value);
+    console.log(value);
+  }
+  
+  const fileList : File[] = [];
 
-  const fileList: File[] = [];
-
-  const handleChange = (event: SelectChangeEvent<unknown>) => {
-    setBoardType(event.target.value as string);
-  };
-
-  const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) =>{
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
 
@@ -50,7 +49,7 @@ const BoardWrite = () => {
     });
   };
 
-  const handleInputClick = async () => {
+  const submitHandler = async () => {
     const request_data = {
       title: title,
       content: content,
@@ -59,15 +58,17 @@ const BoardWrite = () => {
     const request_qna = {
       title: title,
       content: content,
-      point: point,
-      language: language,
+      point : point,
+      skill : skill
     };
 
     const qna_formData = new FormData();
-    fileList.forEach((file) => {
-      qna_formData.append("multipartFiles", file);
+
+    fileList.forEach((file)=>{
+      qna_formData.append('multipartFiles',file);
     });
-    qna_formData.append("stringQna", JSON.stringify(request_qna));
+
+    qna_formData.append('stringQna',JSON.stringify(request_qna));
 
     if (boardType === "free") {
       // 자유 게시판인 경우
@@ -84,9 +85,8 @@ const BoardWrite = () => {
       } catch (err) {
         console.log("CreateBoard/handleInput/err: ", err);
       }
-    } else if (boardType === "question") {
-      // 자유 게시판인 경우
-
+    }  
+    else if (boardType === "question") { // Q&A 게시판인 경우
       try {
         if (fileList.length > 0) {
           let response = await axios({
@@ -114,60 +114,67 @@ const BoardWrite = () => {
     }
   };
 
-  const SelectLanguage =
-    boardType === "question" ? <Language getLanguage={getLanguage} /> : null;
+  const SelectSkill = (boardType==="question") ? (
+      <Skill getSkill={getSkill}/>
+  ) : (null);
 
   const SelectPoint =
     boardType === "question" ? <Point getPoint={getPoint} /> : null;
 
   return (
-    <>
-      <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <FormControl style={{ minWidth: "120px" }}>
-            <Select value={boardType} onChange={handleChange} size="small">
-              <MenuItem value={"free"} defaultChecked>
-                자유게시판
-              </MenuItem>
-              <MenuItem value={"question"}>Q&A게시판</MenuItem>
-              <MenuItem value={"recruit"}>구인게시판</MenuItem>
-              <MenuItem value={"notice"}>공지사항</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        {SelectLanguage}
-        <Grid item>
-          <TextField
-            className="board title"
-            id="board_title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxRows={1}
-            placeholder={"제목"}
-            fullWidth
-          ></TextField>
-        </Grid>
-        <Grid item>
-          <EditorToolbar getContent={getContent} />
-          {/* value: {content} */}
-          <div>
-            <input type="file" multiple onChange={onSaveFiles} />
-          </div>
-        </Grid>
+      <>
+        <Container>
+          <Grid container direction="column" spacing={2}>
+            <Grid item>
+              <FormControl style={{ minWidth: "120px" }}>
+                <Select 
+                  defaultValue={"free"}
+                  onChange={(e, v) => {
+                    setBoardType(v as string);
+                    }
+                  }
+                >
+                  <Option value={"free"}>자유게시판</Option>
+                  <Option value={"question"}>Q&A게시판</Option>
+                  <Option value={"recruit"}>구인게시판</Option>
+                  <Option value={"notice"}>공지사항</Option>
+                </Select>
+              </FormControl>
+            </Grid>
+            {SelectSkill}
+            <Grid item>
+              <TextField
+                  className="board title"
+                  id="board_title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxRows={1}
+                  placeholder={"제목"}
+                  fullWidth
+              ></TextField>
+            </Grid>
+            <Grid item>
+              <EditorToolbar getContent={getContent}/>
+              {/* value: {content} */}
+              <div>
+                <input type="file" multiple onChange={onSaveFiles}/>
+              </div>
+            </Grid>
 
-        {SelectPoint}
-        <Grid item>
-          <Button
-            className="board button"
-            variant="outlined"
-            disableElevation
-            onClick={handleInputClick}
-          >
-            게시
-          </Button>
-        </Grid>
-      </Grid>
-    </>
+            {SelectPoint}
+            <Grid item>
+              <Button
+                  className="board button"
+                  variant="outlined"
+                  disableElevation
+                  onClick={submitHandler}
+              >
+                게시
+              </Button>
+            </Grid>
+          </Grid>
+        </Container>
+      </>
   );
 };
 
@@ -197,4 +204,4 @@ const Condition = () => {
   );
 };
 
-export default BoardWrite;
+export default PostForm;
