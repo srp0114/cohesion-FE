@@ -5,12 +5,14 @@ import {
     Typography,
     TextField, 
     Button,
-    Autocomplete,
     Stack, 
     ButtonBase,
     ListItemAvatar,
     Avatar
 } from '@mui/material';
+import {   
+    Autocomplete
+} from '@mui/joy';
 import { languageImage } from "../data/Image";
 import ProfileIcon from '@mui/icons-material/AccountCircle';
 import "../style/Board.css"
@@ -177,7 +179,7 @@ const Welcome: React.FC = () => {
                 <TextField 
                     fullWidth
                     variant="outlined"
-                    placeholder="닉네임을 입력해주세요!"
+                    placeholder=" 닉네임을 입력해주세요!"
                     onChange={onNicknameChange}
                     sx={{mt:2}}
                 />
@@ -190,18 +192,13 @@ const Welcome: React.FC = () => {
                     isOptionEqualToValue={(option, value) => option === value}
                     getOptionLabel={(option) => option.name || ""}
                     filterSelectedOptions
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            placeholder="관심 기술을 선택해주세요."
-                        />
-                    )}
+                    placeholder="관심기술을 선택해주세요"
                     onChange={(event, value) => {
                         const addSkill = value 
                         setSkill(addSkill);
                         console.log(skill);
                     }}
-                    sx={{mt:2}}
+                    sx={{mt:2, p:1.5, borderRadius:20}}
                 />
             </Box>
             <Box>
@@ -210,7 +207,7 @@ const Welcome: React.FC = () => {
                     multiline
                     fullWidth
                     variant="outlined"
-                    placeholder="본인소개를 해주세요."
+                    placeholder=" 본인소개를 해주세요."
                     rows={3}
                     onChange={onIntroduceChange}
                     sx={{mt:2}}

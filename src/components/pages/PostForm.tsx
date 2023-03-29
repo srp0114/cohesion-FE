@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import Header from "../layout/Header";
 import {
-  SelectChangeEvent,
-  Select,
   Container,
   TextField,
   Button,
   Grid,
   FormControl,
-  MenuItem,
 } from "@mui/material";
+import {
+  Select,
+  Option
+} from "@mui/joy";
 import axios from "axios";
 import Point from "../layout/Point";
 import Language from "../layout/Language";
@@ -39,11 +40,6 @@ const BoardWrite = () => {
   
   const fileList : File[] = [];
 
-  const handleChange = (event: SelectChangeEvent<unknown>) => {
-    setBoardType(event.target.value as string);
-  };
-
-
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) =>{
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
@@ -53,8 +49,7 @@ const BoardWrite = () => {
     });
   };
 
-  const handleInputClick = async () => {
-
+  const submitHandler = async () => {
 
     const request_data = {
       title: title,
@@ -69,9 +64,11 @@ const BoardWrite = () => {
     };
 
     const qna_formData = new FormData();
+
     fileList.forEach((file)=>{
       qna_formData.append('multipartFiles',file);
     });
+
     qna_formData.append('stringQna',JSON.stringify(request_qna));
 
     if (boardType === "free") { // 자유 게시판인 경우
@@ -88,8 +85,8 @@ const BoardWrite = () => {
       } catch (err) {
         console.log("CreateBoard/handleInput/err: ", err);
       }
-    }  else if (boardType === "question") { // 자유 게시판인 경우
-
+    }  
+    else if (boardType === "question") { // Q&A 게시판인 경우
       try {
         if(fileList.length>0){
           let response = await axios({
@@ -133,13 +130,17 @@ const BoardWrite = () => {
           <Grid container direction="column" spacing={2}>
             <Grid item>
               <FormControl style={{ minWidth: "120px" }}>
-                <Select value={boardType} onChange={handleChange} size="small">
-                  <MenuItem value={"free"} defaultChecked>
-                    자유게시판
-                  </MenuItem>
-                  <MenuItem value={"question"}>Q&A게시판</MenuItem>
-                  <MenuItem value={"recruit"}>구인게시판</MenuItem>
-                  <MenuItem value={"notice"}>공지사항</MenuItem>
+                <Select 
+                  defaultValue={"free"}
+                  onChange={(e, v) => {
+                    setBoardType(v as string);
+                    }
+                  }
+                >
+                  <Option value={"free"}>자유게시판</Option>
+                  <Option value={"question"}>Q&A게시판</Option>
+                  <Option value={"recruit"}>구인게시판</Option>
+                  <Option value={"notice"}>공지사항</Option>
                 </Select>
               </FormControl>
             </Grid>
@@ -169,7 +170,7 @@ const BoardWrite = () => {
                   className="board button"
                   variant="outlined"
                   disableElevation
-                  onClick={handleInputClick}
+                  onClick={submitHandler}
               >
                 게시
               </Button>

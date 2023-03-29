@@ -1,7 +1,7 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import {Menu, Button, Box} from '@mui/material'
-import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from "react-router-dom";
+import { Button, Box } from '@mui/material'
+import { Menu, MenuItem } from '@mui/joy';
 import { RxAvatar } from "react-icons/rx";
 import "../style/Home.css";
 
@@ -12,18 +12,23 @@ const Navbar: React.FC = () => {
     const moveToHome = () => {
         movePage('/');
     }
+    
     const moveToFree = () => {
         movePage('/free');
     }
+
     const moveToQna = () => {
         movePage('/questions');
     }
+
     const moveToRecruit = () => {
         movePage('/recruit');
     }
+
     const moveToNotice = () => {
         movePage('/notice');
     }
+    
     const moveToMyPage = () => {
         movePage('/mypage');
     }
