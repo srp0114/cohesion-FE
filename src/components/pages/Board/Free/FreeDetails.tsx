@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../../../layout/Header";
 import Time from "../../../layout/Time";
-import {
-  Avatar,
-  Box,
-  Container,
-  Stack,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { Reply } from "../../../model/reply";
@@ -106,18 +98,15 @@ const FreeDetails: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-            borderLeft: "1px solid black",
-            borderRight: "1px solid black",
-            padding: 10,
-          }}
-        >
-          {detailPosting}
-        </Box>
-      </Container>
+      <Box
+        sx={{
+          borderLeft: "1px solid black",
+          borderRight: "1px solid black",
+          padding: 10,
+        }}
+      >
+        {detailPosting}
+      </Box>
     </>
   );
 };
