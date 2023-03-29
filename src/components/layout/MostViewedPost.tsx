@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MostViewedItems } from "../pages/Board/QnA/QnABoard";
-import { languageImage } from '../data/Image';
+import { skillData } from '../data/SkillData';
 import {
   Box, Typography,
 } from '@mui/material';
@@ -30,11 +30,11 @@ const MostViewedPost: React.FC<MostViewedPostProps> = (props) => {
         {props.data.map((value, index) => {
 
              // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-             const language = value.language ? (
-                languageImage.map((data, index) => {
+             const Skill = value.language ? (
+                skillData.map((data) => {
                     if (value.language === data.name) {
                         return (
-                            <img src={data.url} width="25" height="25"/>
+                            <img src={data.logo} width="25" height="25"/>
                         )
                     } 
                 })
@@ -56,7 +56,7 @@ const MostViewedPost: React.FC<MostViewedPostProps> = (props) => {
                 }}
                 onClick={()=>goToPost(value.id)}
                 >
-                    {language}
+                    {Skill}
                     <Box sx={{
                     bottom:0,
                     position: "absolute", 

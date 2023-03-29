@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import MostViewedPost from "../../../layout/MostViewedPost";
+import { 
+  Typography,
+  Container, 
+  Box,
+} from '@mui/material';
+import MostViewedPost from '../../../layout/MostViewedPost';
 import Time from "../../../layout/Time";
-import { languageImage } from "../../../data/Image";
-import { Typography, Container, Box } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
+import { skillData } from '../../../data/SkillData';
+import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
+import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
+import ProfileIcon from '@mui/icons-material/AccountCircle';
 
 // BoardItems 인터페이스
 interface BoardItems {
@@ -68,13 +72,15 @@ const QnABaord: React.FC = () => {
       <Box>
         {boardItems?.map((value) => {
           // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-          const language = value.language
-            ? languageImage.map((data, index) => {
+          const Skill = value.language ? (
+            skillData.map((data) => {
                 if (value.language === data.name) {
-                  return <img src={data.url} width="25" height="25" />;
-                }
-              })
-            : null;
+                    return (
+                        <img src={data.logo} width="25" height="25"/>
+                    )
+                } 
+            })
+        ) : (null);
 
           return (
             <>
@@ -107,7 +113,7 @@ const QnABaord: React.FC = () => {
                     <Typography sx={{ marginRight: 1 }}>
                       <Time date={value.createdDate} />
                     </Typography>
-                    {language}
+                    {Skill}
                   </Box>
                 </Box>
                 <Box sx={{ marginTop: 1, marginBottom: 1 }}>

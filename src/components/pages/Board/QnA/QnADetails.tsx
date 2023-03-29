@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { 
+  Typography,
+  Container, 
+  Box,
+  TextField
+} from '@mui/material';
 import Time from "../../../layout/Time";
-import { languageImage } from "../../../data/Image";
 import Reply from "../../../layout/Reply";
-import { Typography, Container, Box, TextField } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
-import Money from "@mui/icons-material/MonetizationOn";
-import Visibility from "@mui/icons-material/VisibilityOutlined";
+import { skillData } from '../../../data/SkillData';
+import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
+import ProfileIcon from '@mui/icons-material/AccountCircle';
+import Money from '@mui/icons-material/MonetizationOn';
+import Visibility from '@mui/icons-material/VisibilityOutlined';
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -40,28 +45,28 @@ const QnADetails: React.FC = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  //입력된 언어 맞게 이미지 출력
-  const language = postItem?.language
-    ? languageImage.map((value) => {
-        if (postItem.language === value.name) {
-          return <img src={value.url} width="30" height="30" />;
-        }
-      })
-    : null;
+    //입력된 언어 맞게 이미지 출력
+    const Skill = (postItem?.language) ? (
+        skillData.map((value) => {
+            if (postItem.language === value.name) {
+                return (
+                    <img src={value.logo} width="30" height="30" />
+                )
+            }
+        })
+    ) : (null);
 
   const PostDetails = postItem ? (
     //postItems 데이터 있는 경우 출력될 UI
     <>
-      <Box
-        sx={{
-          display: "flex",
-          mt: 8,
-          mb: 3,
-        }}
-      >
-        <Box sx={{ fontSize: 38, mr: 3 }}>{postItem.title} </Box>
-        <Box sx={{ marginTop: 2 }}>{language}</Box>
-      </Box>
+    <Box sx={{
+        display: 'flex',  
+        mt: 8,
+        mb: 3
+    }}>
+        <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
+        <Box sx={{marginTop:2}}>{Skill}</Box>
+    </Box>
 
       <Box
         sx={{
