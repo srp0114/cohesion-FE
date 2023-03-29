@@ -1,12 +1,16 @@
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Buffer } from "buffer";
+import axios, { Axios } from "axios";
 
 const OAuth2 = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    
+
     useEffect(() => {
+
         if(searchParams?.get('code')){
             const code = searchParams?.get('code');
             const client = 'client';
@@ -27,11 +31,21 @@ const OAuth2 = () => {
                 headers
             }).then(async (response) => {
                 const token = await response.json();
+                
                 if(token?.id_token && token?.access_token) {
                     sessionStorage.setItem('id_token', token.id_token);
                     sessionStorage.setItem('access_token', token.access_token);
                     // 리소스 서버에게 회원가입 여부 확인 후
-                    navigate('/welcome');
+                    axios
+                        .get("/api/check")
+                        .then((response) => {
+                            const check = response.data;
+                            if(check === true){
+                                navigate('/');    
+                            }else if(check===false){
+                                navigate('/welcome');
+                            }
+                        })
                 }
             }).catch((err) => {
                 console.log(err);
@@ -47,6 +61,7 @@ const OAuth2 = () => {
             window.location.href = link;
         }
     }, []);
+
 
     return <p>Redirecting ...</p>
 }
