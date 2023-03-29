@@ -13,12 +13,12 @@ import {
 import {   
     Autocomplete
 } from '@mui/joy';
-import { languageImage } from "../data/Image";
-import ProfileIcon from '@mui/icons-material/AccountCircle';
+import { styled } from '@mui/material/styles';
+import { skill } from "../data/Skill";
 import "../style/Board.css"
 import profileImg from "../asset/image/react.png";
-import { styled } from '@mui/material/styles';
-  
+import ProfileIcon from '@mui/icons-material/AccountCircle';
+
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
     studentId: number; //학번
@@ -68,7 +68,7 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
 const Welcome: React.FC = () => {
     //닉네임, 관심기술, 자기소개
     const [nickname, setNickname] = useState<string>();
-    const [skill, setSkill] = useState<typeof languageImage>([]);
+    const [userSkill, setUserSkill] = useState<typeof skill>([]);
     const [introduce, setIntroduce] = useState<string>();
 
     //닉네임, 자기소개 핸들러
@@ -188,15 +188,15 @@ const Welcome: React.FC = () => {
                 <Typography>관심기술</Typography>
                 <Autocomplete
                     multiple
-                    options={languageImage}
+                    options={skill}
                     isOptionEqualToValue={(option, value) => option === value}
                     getOptionLabel={(option) => option.name || ""}
                     filterSelectedOptions
                     placeholder="관심기술을 선택해주세요"
                     onChange={(event, value) => {
                         const addSkill = value 
-                        setSkill(addSkill);
-                        console.log(skill);
+                        setUserSkill(addSkill);
+                        console.log(userSkill);
                     }}
                     sx={{mt:2, p:1.5, borderRadius:20}}
                 />

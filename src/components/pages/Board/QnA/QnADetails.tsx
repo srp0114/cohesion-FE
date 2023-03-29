@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
-import Header from '../../../layout/Header';
-import Time from "../../../layout/Time";
-import { languageImage } from '../../../data/Image';
-import Reply from "../../../layout/Reply";
 import { 
   Typography,
   Container, 
   Box,
   TextField
 } from '@mui/material';
+import Header from '../../../layout/Header';
+import Time from "../../../layout/Time";
+import Reply from "../../../layout/Reply";
+import { skill } from '../../../data/Skill';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
 import Money from '@mui/icons-material/MonetizationOn';
@@ -47,11 +47,11 @@ const QnADetails: React.FC = () => {
     },[])
 
     //입력된 언어 맞게 이미지 출력
-    const language = (postItem?.language) ? (
-        languageImage.map((value) => {
+    const selectSkill = (postItem?.language) ? (
+        skill.map((value) => {
             if (postItem.language === value.name) {
                 return (
-                    <img src={value.url} width="30" height="30" />
+                    <img src={value.logo} width="30" height="30" />
                 )
             }
         })
@@ -66,7 +66,7 @@ const QnADetails: React.FC = () => {
         mb: 3
     }}>
         <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
-        <Box sx={{marginTop:2}}>{language}</Box>
+        <Box sx={{marginTop:2}}>{selectSkill}</Box>
     </Box>
 
     <Box sx={{

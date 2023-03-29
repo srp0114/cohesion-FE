@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import Header from '../../../layout/Header';
-import MostViewedPost from '../../../layout/MostViewedPost';
-import Time from "../../../layout/Time";
-import { languageImage } from '../../../data/Image';
 import { 
   Typography,
   Container, 
   Box,
 } from '@mui/material';
+import Header from '../../../layout/Header';
+import MostViewedPost from '../../../layout/MostViewedPost';
+import Time from "../../../layout/Time";
+import { skill } from '../../../data/Skill';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
@@ -74,11 +74,11 @@ const QnABaord: React.FC = () => {
             {boardItems?.map((value) => {
 
             // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-            const language = value.language ? (
-                languageImage.map((data, index) => {
+            const selectSkill = value.language ? (
+                skill.map((data) => {
                     if (value.language === data.name) {
                         return (
-                            <img src={data.url} width="25" height="25"/>
+                            <img src={data.logo} width="25" height="25"/>
                         )
                     } 
                 })
@@ -107,7 +107,7 @@ const QnABaord: React.FC = () => {
                     </Typography>
                     <Box sx={{display: 'flex'}}>
                         <Typography sx={{marginRight: 1}}><Time date={value.createdDate}/></Typography>
-                        {language}
+                        {selectSkill}
                     </Box>
                 </Box>
                 <Box sx={{marginTop: 1, marginBottom: 1}}>
