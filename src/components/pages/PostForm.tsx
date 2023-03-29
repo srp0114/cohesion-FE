@@ -13,7 +13,7 @@ import {
 } from "@mui/joy";
 import axios from "axios";
 import Point from "../layout/Point";
-import Language from "../layout/Language";
+import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 /*
  * 기본 게시글 작성 UI폼
@@ -23,7 +23,7 @@ const BoardWrite = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [point, setPoint] = useState<number>(0);
-  const [language, setLanguage] = useState<string>("");
+  const [skill, setSkill] = useState<string>("");
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -35,7 +35,7 @@ const BoardWrite = () => {
   };
 
   const getLanguage = (value: string) => {
-    setLanguage(value);
+    setSkill(value);
   }
   
   const fileList : File[] = [];
@@ -60,7 +60,7 @@ const BoardWrite = () => {
       title: title,
       content: content,
       point : point,
-      language : language
+      skill : skill
     };
 
     const qna_formData = new FormData();
@@ -116,7 +116,7 @@ const BoardWrite = () => {
   };
 
   const SelectLanguage = (boardType==="question") ? (
-      <Language getLanguage={getLanguage}/>
+      <Skill getLanguage={getLanguage}/>
   ) : (null);
 
   const SelectPoint = (boardType==="question") ? (

@@ -10,11 +10,12 @@ import {
 import Header from '../../../layout/Header';
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply";
-import { skill } from '../../../data/Skill';
+import { skillData } from '../../../data/SkillData';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
 import Money from '@mui/icons-material/MonetizationOn';
 import Visibility from '@mui/icons-material/VisibilityOutlined';
+import { skipPartiallyEmittedExpressions } from 'typescript';
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -47,8 +48,8 @@ const QnADetails: React.FC = () => {
     },[])
 
     //입력된 언어 맞게 이미지 출력
-    const selectSkill = (postItem?.language) ? (
-        skill.map((value) => {
+    const Skill = (postItem?.language) ? (
+        skillData.map((value) => {
             if (postItem.language === value.name) {
                 return (
                     <img src={value.logo} width="30" height="30" />
@@ -66,7 +67,7 @@ const QnADetails: React.FC = () => {
         mb: 3
     }}>
         <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
-        <Box sx={{marginTop:2}}>{selectSkill}</Box>
+        <Box sx={{marginTop:2}}>{Skill}</Box>
     </Box>
 
     <Box sx={{

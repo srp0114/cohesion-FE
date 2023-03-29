@@ -8,7 +8,7 @@ interface skillItems {
     logo: string
 }
 //언어 - 이미지 처리 데이터
-export const skill : skillItems[] = [
+export const skillData : skillItems[] = [
     {
         name:"C",
         logo: c
