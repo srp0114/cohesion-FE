@@ -114,24 +114,31 @@ const Welcome: React.FC = () => {
     console.log(skill);
   };
 
+
+  
+  
   const request_data = {
     studentId : userAccount.sub,
     name : userAccount.name,
     nickname : nickname,
     introduce : introduce,
     track1 : userAccount.track1,
-    track2 : userAccount.track2
+     track2 : userAccount.track2
   };
 
 
-
   const confirm = () =>{  
+
+      try{
         let response = axios({
         method: "post",
         url: "/api/join", // 테스트를 위해 id 고정
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_data)
       });
+    }catch(err){
+        console.log(err);
+    }
       window.location.href = "/";
   }
 
