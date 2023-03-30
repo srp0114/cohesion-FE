@@ -59,7 +59,7 @@ const PostForm = () => {
       title: title,
       content: content,
       point : point,
-      skill : skill
+      language : skill
     };
 
     const qna_formData = new FormData();
