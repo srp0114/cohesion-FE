@@ -1,7 +1,7 @@
-import { useEffect,useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import {useSearchParams, useNavigate} from "react-router-dom";
 import { Buffer } from "buffer";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 const OAuth2 = () => {
     const [searchParams] = useSearchParams();
@@ -40,12 +40,18 @@ const OAuth2 = () => {
                         .get("/api/check")
                         .then((response) => {
                             const check = response.data;
-                            if(check === true){
-                                navigate('/');    
-                            }else if(check===false){
+                            if (check === true) {
+                                navigate('/');
+                            } else if (check === false) {
                                 navigate('/welcome');
                             }
                         })
+                        .catch((error) => {
+                                if (error.response.status === 401) {
+                                    navigate('/welcome');
+                                }
+                            }
+                        );
                 }
             }).catch((err) => {
                 console.log(err);

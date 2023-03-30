@@ -18,7 +18,7 @@ import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
