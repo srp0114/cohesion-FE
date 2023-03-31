@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Banner from "../layout/Banner";
 import LeftSidebar from "../layout/LeftSidebar";
@@ -31,7 +31,21 @@ const WritingButton = () => {
 };
 
 const Home: React.FC = () => {
+
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+
+  //sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
+  //토큰있으면 - 게시판 보이도록
+  //토큰없으면 - 게시판 블러 처리
+  useEffect (() => {
+    let token = sessionStorage.getItem("id_token");
+    // token여부에 따라 로그인 여부 정하기
+    token ? (setIsLogin(true)) : (setIsLogin(false));
+    console.log(token);
+  }, [])
+
   const navigate = useNavigate();
+
   const handleLogin = () => {
     const verifier = generateCodeVerifier();
     sessionStorage.setItem("codeVerifier", verifier);
@@ -40,16 +54,22 @@ const Home: React.FC = () => {
 
     navigate(`/redirect`);
   };
+  
   return (
     <>
       <button onClick={handleLogin}>로그인</button>
-      <Grid container spacing={2} style={{ margin: 0 }}>
+      <Grid container spacing={2}>
         <Grid xs>
           <LeftSidebar />
         </Grid>
-        <Grid xs={7}>
+        <Grid xs={9}>
           <Banner />
-          <Grid container spacing={2} style={{ margin: 0 }}>
+          <Grid container spacing={2} 
+            sx={{
+              //로그인 여부에 따라 블러 처리              
+              filter: isLogin? null : "blur(2px)"
+            }}
+          >
             <Grid xs>
               <Board />
               <Board2 />
