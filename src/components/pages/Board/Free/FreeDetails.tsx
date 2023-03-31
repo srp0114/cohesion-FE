@@ -15,7 +15,7 @@ interface FreeDetailItems {
   //imgUrl?: Array<string>;
   writer: string;
   profileImg: string;
-  //stuId: number; 사용자 학번
+  stuId: number;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
@@ -59,7 +59,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
               sx={{ width: "30px", height: "30px", marginRight: "5px" }}
             />
             <Typography variant="body2">
-              {`${postItem.writer} (사용자 학번)`}
+              {`${postItem.writer} (${postItem.stuId})`}
             </Typography>
           </Stack>
         </Box>
