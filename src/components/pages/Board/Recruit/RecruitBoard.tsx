@@ -1,12 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../../layout/Header";
 import FilterPosting from "../../../layout/FilterPosting";
 import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
-  Container,
   Card,
   CardHeader,
   CardContent,
@@ -17,6 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import {
+  ThemeProvider,
+  createTheme,
+  useTheme,
+  Theme,
+} from "@mui/material/styles";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
@@ -51,41 +55,35 @@ const RecruitBoard: React.FC = () => {
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
   const displayPosting = test.map((element, idx) => (
-    <Grid xs={4}>
+    <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
     </Grid>
   ));
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-
-          }}
+      <Box>
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
-          <Typography
-            variant="h5"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
+          모집게시판
+        </Typography>
+        <FilterPosting />
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            rowSpacing={4}
+            columnSpacing={{ xs: 1, sm: 2, md: 4 }}
+            alignItems="stretch"
           >
-            모집게시판
-          </Typography>
-          <FilterPosting />
-          <Box sx={{ flexGrow: 1 }}>
-            <Grid
-              container
-              rowSpacing={1}
-              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            >
-              {displayPosting}
-            </Grid>
-          </Box>
-        </Box>{" "}
-        {/*추후에 이 부분 컴포넌트 분리하기*/}
-        <p></p>
-        {/*space for paginationControl*/}
-      </Container>
+            {displayPosting}
+          </Grid>
+        </Box>
+      </Box>{" "}
+      {/*추후에 이 부분 컴포넌트 분리하기*/}
+      <p></p>
+      {/*space for paginationControl*/}
     </>
   );
 };
@@ -99,55 +97,137 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
     navigate(`/recruit/${postId}`);
   };
 
+  const [remain, setRemain] = useState<number>(props.party - props.gathered); //모집 인원 계산
+
+  useEffect(() => {
+    if (remain === 0) {
+      //모집인원이 0이 되어 모집이 마감되었을 때,
+      console.log(`${props.id}의 모집 마감`);
+    }
+  }, [remain]);
+
+  const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
+  const _recruitTheme = createTheme(_theme, {
+    components: {
+      MuiCard: {
+        defaultProps: {
+          //기본 props 설정
+          raised: false, //양각 스타일 사용안함
+        },
+        styleOverrides: {
+          //css 설정, rule네임에 따라
+          root: {
+            backgroundColor: _theme.palette.background,
+            boxShadow: "none",
+            border: `1px solid ${_theme.palette.info.main}`,
+            borderRadius: "20px",
+            padding: "0 10px 10px",
+            height: "100%",
+          },
+        },
+      },
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            margin: 0,
+            paddingBottom: 0,
+          },
+          title: {
+            fontSize: "1.25rem",
+            fontWeight: 500,
+            color: _theme.palette.primary.main,
+          },
+          subheader: {
+            color: _theme.palette.secondary.main,
+          },
+        },
+      },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            fontSize: "1rem",
+            color: _theme.palette.info.main,
+            paddingTop: 0,
+          },
+        },
+      },
+      MuiCardActions: {
+        defaultProps: {
+          disableSpacing: true,
+        },
+        styleOverrides: {
+          root: {
+            color: _theme.palette.info.main,
+          },
+          spacing: {
+            disableSpacing: true,
+          },
+        },
+      },
+      MuiCardActionArea: {
+        //CardActionArea는 ButtonBase의 props도 사용가능하기때문에
+        defaultProps: {
+          disableRipple: true, //버튼 누를 때의 효과 잔물결 효과 사라짐.
+        },
+      },
+    },
+  });
+
   return (
-    <Card>
-      <CardActionArea onClick={() => goToPost(props.id)}>
+    <ThemeProvider theme={_recruitTheme}>
+      <Card>
         <CardHeader
-          title={props.title}
-          subheader={<Time date={props.createdDate} />}
+          subheader={
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Time date={props.createdDate} />
+            </div>
+          }
         />
+        <CardActionArea onClick={() => goToPost(props.id)}>
+          <CardHeader
+            title={props.title}
+            subheader={
+              <Stack direction="row">
+                <Avatar
+                  srcSet={props.profileImg as string}
+                  sx={{ width: "25px", height: "25px", marginRight: "5px" }}
+                />
+                <Typography variant="overline">
+                  {`${props.writer} (사용자 학번)`}
+                </Typography>
+              </Stack>
+            }
+          />
+          <CardHeader subheader="필수 조건" />
+          <CardContent>{props.require}</CardContent>
+          {props.optional && <CardHeader subheader="우대 조건" />}
+          <CardContent>{props.optional}</CardContent>
+        </CardActionArea>
 
-        <CardContent>
+        <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack direction="row">
-            <Avatar
-              srcSet={props.profileImg as string}
-              sx={{ width: "20px", height: "20px", marginRight: "5px" }}
-            />
-            <Typography variant="overline">
-              {`${props.writer} (사용자 학번)`}
-            </Typography>
+            <IconButton
+              size="small"
+              disableFocusRipple={true}
+              disableRipple={true}
+            >
+              <Person2OutlinedIcon /> {props.views}
+            </IconButton>
+            <IconButton size="small">
+              <BookmarkIcon /> {props.bookmark}
+            </IconButton>
+            <IconButton size="small">
+              <ChatIcon /> {props.reply}
+            </IconButton>
           </Stack>
-
-          <Box sx={{ marginBottom: 1 }}>
-            <Typography>Requirement</Typography>
-            <Typography variant="body1">{props.require}</Typography>
-            <Typography>Optional</Typography>
-            <Typography variant="body1">{props.optional}</Typography>
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+          <Box>
+            <Typography variant="h5">
+              {remain === 0 ? "모집 마감" : `${remain}명 모집 중`}
+            </Typography>
           </Box>
-        </CardContent>
-
-        <CardContent>
-          <Typography>
-            {props.gathered} / {props.party}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-
-      <CardActions>
-        <Stack direction="row">
-          <IconButton size="small">
-            <Person2OutlinedIcon /> {props.views}
-          </IconButton>
-          <IconButton size="small">
-            <BookmarkIcon /> {props.bookmark}
-          </IconButton>
-          <IconButton size="small">
-            <ChatIcon /> {props.reply}
-          </IconButton>
-        </Stack>
-      </CardActions>
-    </Card>
+        </CardActions>
+      </Card>
+    </ThemeProvider>
   );
 };
 

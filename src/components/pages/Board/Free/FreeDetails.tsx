@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../../../layout/Header";
 import Time from "../../../layout/Time";
-import {
-  Avatar,
-  Box,
-  Container,
-  Stack,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { Reply } from "../../../model/reply";
@@ -23,7 +15,7 @@ interface FreeDetailItems {
   //imgUrl?: Array<string>;
   writer: string;
   profileImg: string;
-  //stuId: number; 사용자 학번
+  stuId: number;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
@@ -67,7 +59,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
               sx={{ width: "30px", height: "30px", marginRight: "5px" }}
             />
             <Typography variant="body2">
-              {`${postItem.writer} (사용자 학번)`}
+              {`${postItem.writer} (${postItem.stuId})`}
             </Typography>
           </Stack>
         </Box>
@@ -106,18 +98,15 @@ const FreeDetails: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-            borderLeft: "1px solid black",
-            borderRight: "1px solid black",
-            padding: 10,
-          }}
-        >
-          {detailPosting}
-        </Box>
-      </Container>
+      <Box
+        sx={{
+          borderLeft: "1px solid black",
+          borderRight: "1px solid black",
+          padding: 10,
+        }}
+      >
+        {detailPosting}
+      </Box>
     </>
   );
 };

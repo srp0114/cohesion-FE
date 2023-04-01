@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../../layout/Header";
 import Time from "../../../layout/Time";
-import {
-  Avatar,
-  Box,
-  Container,
-  Typography,
-  IconButton,
-  Stack,
-} from "@mui/material";
+import { Avatar, Box, Typography, IconButton, Stack } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
-import { Board } from "../../../model/board";
-import { Posting } from "../../../model/posting";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
@@ -26,6 +16,7 @@ interface FreeBoardItems {
   title: string;
   content: string;
   writer: string;
+  stuId: string;
   profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
   createdDate: string;
   modifiedDate?: string;
@@ -54,34 +45,31 @@ const FreeBoard = () => {
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-            borderLeft: "1px solid black",
-            borderRight: "1px solid black",
-            padding: 10,
-          }}
+      <Box
+        sx={{
+          borderLeft: "1px solid black",
+          borderRight: "1px solid black",
+          padding: 10,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
-          <Typography
-            variant="h5"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-          >
-            자유게시판
-          </Typography>
-          <FilterPosting />
-          {displayPosting}
-        </Box>
-        <p></p>
-        <PaginationControl
-          page={page}
-          between={1}
-          total={100}
-          limit={20}
-          changePage={(page: React.SetStateAction<number>) => setPage(page)}
-          ellipsis={1}
-        />
-      </Container>
+          자유게시판
+        </Typography>
+        <FilterPosting />
+        {displayPosting}
+      </Box>
+      <p></p>
+      <PaginationControl
+        page={page}
+        between={1}
+        total={100}
+        limit={20}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
     </>
   );
 };
@@ -134,7 +122,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
             sx={{ width: "20px", height: "20px", marginRight: "5px" }}
           />
           <Typography variant="overline">
-            {`${props.writer} (사용자 학번)`}
+            {`${props.writer} (${props.stuId})`}
           </Typography>
         </Stack>
         <Stack direction="row">
