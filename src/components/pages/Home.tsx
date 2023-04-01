@@ -71,7 +71,7 @@ const Home: React.FC = () => {
             <Box sx={loginModalstyle}>
               <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
               <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <StartButton onClick={() => {navigate('/redirect')}}>
+              <StartButton onClick={handleLogin}>
                 <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
               </StartButton>
             </Box>
