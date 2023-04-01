@@ -8,10 +8,8 @@ import {
   ButtonBase,
   ListItemAvatar,
   Avatar,
-} from "@mui/material";
-import {
   Autocomplete
-} from "@mui/joy";
+} from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
@@ -260,18 +258,22 @@ const Welcome: React.FC = () => {
           <Box>
               <Typography>관심기술</Typography>
               <Autocomplete
-                  multiple
-                  options={skillData}
-                  isOptionEqualToValue={(option, value) => option === value}
-                  getOptionLabel={(option) => option.name || ""}
-                  filterSelectedOptions
-                  placeholder="관심기술을 선택해주세요"
-                  onChange={(event, value) => {
-                      const addSkill = value 
-                      setSkill(addSkill);
-                      console.log(skill);
-                  }}
-                  sx={{mt:2, p:1.5, borderRadius:20}}
+                multiple
+                options={skillData}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => (
+                  <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    {option.name}
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    inputProps={{
+                      ...params.inputProps,
+                    }}
+                  />
+                )}  
               />
           </Box>
           <Box>

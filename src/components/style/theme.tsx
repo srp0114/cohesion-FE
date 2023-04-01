@@ -25,4 +25,15 @@ export const theme = createTheme({
         main: "#2a46e4",
       },
     },
+
+    //MUI TextField 커스텀
+    components: {    
+      MuiTextField: {      
+        defaultProps: {        
+          variant: "outlined",        
+          fullWidth: true,      
+          sx: { mt: 2 },
+        },
+      }
+    }
   });
