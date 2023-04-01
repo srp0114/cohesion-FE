@@ -1,8 +1,7 @@
 import React, { useEffect, useState  } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Button, Box, IconButton } from '@mui/material'
-import { Menu, MenuItem } from '@mui/joy';
+import { Button, Box, IconButton, Menu, MenuItem } from '@mui/material'
 import { RxAvatar } from "react-icons/rx";
 
 const Navbar: React.FC = () => {
@@ -84,7 +83,6 @@ const Navbar: React.FC = () => {
                         게시판
                     </Button>
                     <Menu
-                        id="basic-menu"
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
