@@ -91,7 +91,7 @@ const PostForm = () => {
         if (fileList.length > 0) {
           let response = await axios({
             method: "post",
-            url: "/api/qnaBoards/100", // 테스트를 위해 id 고정
+            url: "/api/qnaBoards",
             headers: { "Content-Type": "multipart/form-data" },
             data: qna_formData,
           });
@@ -100,7 +100,7 @@ const PostForm = () => {
         } else {
           let response = await axios({
             method: "post",
-            url: "/api/qnaBoardsNoFile/100", // 테스트를 위해 id 고정
+            url: "/api/qnaBoardsNoFile",
             headers: { "Content-Type": "application/json" },
             data: JSON.stringify(request_qna),
           });

@@ -77,7 +77,7 @@ const QnADetails: React.FC = () => {
         <Box sx={{ display: "flex" }}>
           <ProfileIcon sx={{ mr: 0.5, fontSize: 45 }} />
           <Box>
-            <Typography sx={{ fontSize: 20 }}>작성자</Typography>
+            <Typography sx={{ fontSize: 20 }}>{postItem.writer}</Typography>
             <Box color="gray">
               <Time date={postItem.createdDate} />
             </Box>
