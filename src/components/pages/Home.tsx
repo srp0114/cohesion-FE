@@ -3,8 +3,8 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Banner from "../layout/Banner";
 import LeftSidebar from "../layout/LeftSidebar";
 import RightSidebar from "../layout/RightSidebar";
-import Board from "../layout/Board";
-import Board2 from "../layout/Board2";
+import HomeFreeBoard from "../layout/HomeFreeBoard";
+import HomeQnABoard from "../layout/HomeQnABoard";
 import { Fab, Box, Modal, Typography, ButtonBase, Chip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ const style = {
   borderRadius: 5,
   p: 4,
   bgcolor: 'background.paper',
+  boxShadow: 20,
 };
 
 //선택 버튼
@@ -28,6 +29,7 @@ const StartButton = styled(ButtonBase)(({ theme }) => ({
     transform: 'translateY(-7%)',
   },
   borderRadius: 20,
+  border: '2px solid #777777'
 }));
 
 const WritingButton = () => {
@@ -36,6 +38,7 @@ const WritingButton = () => {
   const goToWriting = () => {
     navigate("/post");
   };
+  
   return (
     <Box sx={{ "& > :not(style)": { ml: 120 } }}>
       <Fab
@@ -79,9 +82,8 @@ const Home: React.FC = () => {
   };
   
   const openModal = () => {
-    if(!isLogin) { 
+    if(!isLogin) 
       setOpen(!open);
-    }
   };
 
   return (
@@ -110,18 +112,19 @@ const Home: React.FC = () => {
               > 
                 <Box sx={style}>
                   <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-                  <Typography variant="subtitle1" sx={{mt:4, mb:3}} >한성대학교 로그인 페이지로 이동합니다</Typography>
+                  <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}} >한성대학교 로그인 페이지로 이동합니다</Typography>
                   <StartButton onClick={() => {navigate('/redirect')}}>
                   <img src={hansung} width="30" style={{marginRight:10}}/>
                   한성대학교로 시작하기</StartButton>
                 </Box>
               </Modal>
-              <Board />
-              <Board2 />
+
+              <HomeFreeBoard />
+              <HomeFreeBoard />
             </Grid>
             <Grid xs>
-              <Board2 />
-              <Board />
+              <HomeQnABoard />
+              <HomeQnABoard />
             </Grid>
           </Grid>
           <WritingButton />

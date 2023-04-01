@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import Time from "../layout/Time";
+import Time from "./Time";
 import {
     Typography,
     Box
