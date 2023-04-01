@@ -19,18 +19,18 @@ const Navbar: React.FC = () => {
 
     const [isLogin, setIsLogin] = useState<boolean>(false);
 
-    //sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
-    //토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
-    //로그아웃 기능 추가 필요
+    // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
+    // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
+    // 로그아웃 기능 추가 필요!!
     useEffect (() => {
         let token = sessionStorage.getItem("id_token");
-        // token여부에 따라 로그인 여부 정하기
+        // token 여부에 따라 로그인 여부 정하기
         token ? (setIsLogin(true)) : (setIsLogin(false));
         console.log(token);
     }, [])
 
-    //백에서 Home페이지에 추가해둔 로그인 핸들러 그대로 가져왔습니다
-    //else 부분 (isLogin(true)인 상태) -> 로그아웃 처리 필요해요!
+    // 백에서 Home페이지에 추가해둔 로그인 핸들러 그대로 가져왔습니다
+    // else 부분 (isLogin(true)인 상태) -> 로그아웃 처리 필요
     const handleLogin = () => {
         if(!isLogin) {
             const verifier = generateCodeVerifier();
