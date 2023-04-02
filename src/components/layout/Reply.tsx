@@ -23,36 +23,6 @@ interface ReplyProps{
   postingID?: string;
 }
   
-// 댓글 필드 및 버튼 컴포넌트 
-// 댓글 작성 버튼 추가
-const ReplyField = () => {
-
-  // 댓글 게시 버튼 클릭 시 적용될 핸들러
-  const onSubmit = () => {
-    // 작성 버튼 클릭한 경우
-    // 데이터 보낼 axios 여기에 구현해주시면 됩니다!
-    
-
-  }
-
-  return (
-    <>
-      <Box>
-      <TextField
-        fullWidth
-        placeholder="댓글을 입력하세요."
-        variant="outlined"
-        multiline
-        sx={{ mt: 2, mb: 2}}
-      />
-      <Box display="flex" justifyContent="flex-end">
-      <Button onClick={onSubmit} size="large">작성하기</Button>
-      </Box>
-    </Box>
-    </>
-  )
-}
-
 // 상위 컴포넌트로 부터 게시글 id 값 받아오기 
 // 기존 id 변수명 postingID로 변경
 const Reply: React.FC<ReplyProps> = ({postingID}) => {
@@ -64,6 +34,34 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
       .get("/api/qnaBoards/"+postingID+"/replies")
       .then((res)=>setReplyData(res.data));
   },[])
+
+  // 댓글 필드 및 버튼 컴포넌트 
+  const ReplyField = () => {
+
+    // 댓글 게시 버튼 클릭 시 적용될 핸들러
+    const onSubmit = () => {
+      // 작성 버튼 클릭한 경우
+      // 데이터 보낼 axios 여기에 구현해주시면 됩니다!
+      
+    }
+
+    return (
+      <>
+        <Box>
+        <TextField
+          fullWidth
+          placeholder="댓글을 입력하세요."
+          variant="outlined"
+          multiline
+          sx={{ mt: 2, mb: 2}}
+        />
+        <Box display="flex" justifyContent="flex-end">
+        <Button onClick={onSubmit} size="large">작성하기</Button>
+        </Box>
+      </Box>
+      </>
+    )
+  }
 
   // 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
   const replyContainer = (replies: ReplyItems[], parentId?: number) => {
@@ -108,7 +106,6 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
             <Typography sx={{ml: 5, mt: 1, mb: 5}}>{value.article}</Typography>
           </Box>
           {replyContainer(replyData,value.id)}
-
         </div>
       )
     })
