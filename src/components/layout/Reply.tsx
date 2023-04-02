@@ -28,11 +28,11 @@ interface ReplyProps{
 const ReplyField = () => {
 
   // 댓글 게시 버튼 클릭 시 적용될 핸들러
-  const SubmitHandler = () => {
-    useEffect(() => {
-      // axios - post 여기에 작업해주시면 됩니다!
-      
-    })
+  const onSubmit = () => {
+    // 작성 버튼 클릭한 경우
+    // 데이터 보낼 axios 여기에 구현해주시면 됩니다!
+    
+
   }
 
   return (
@@ -46,7 +46,7 @@ const ReplyField = () => {
         sx={{ mt: 2, mb: 2}}
       />
       <Box display="flex" justifyContent="flex-end">
-      <Button onClick={SubmitHandler} size="large">작성하기</Button>
+      <Button onClick={onSubmit} size="large">작성하기</Button>
       </Box>
     </Box>
     </>
@@ -65,30 +65,30 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
       .then((res)=>setReplyData(res.data));
   },[])
 
-// 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
-const replyContainer = (replies: ReplyItems[], parentId?: number) => {
-  const filteredReplies = parentId ? replies.filter((reply) => reply.parentId === parentId) : replies;
+  // 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
+  const replyContainer = (replies: ReplyItems[], parentId?: number) => {
+    const filteredReplies = parentId ? replies.filter((reply) => reply.parentId === parentId) : replies;
 
-  return filteredReplies.length > 0 && (
-    <Box sx={{ ml: 6 }}>
-      {filteredReplies.map((reply) => (
-        <div key={reply.id}>
-          <Box sx={{ display: 'flex', mt: 5 }}>
-            <Profile fontSize="large" />
-            <Box sx={{ mt: 0.3 }}>
-              <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
-              <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+    return filteredReplies.length > 0 && (
+      <Box sx={{ ml: 6 }}>
+        {filteredReplies.map((reply) => (
+          <div key={reply.id}>
+            <Box sx={{ display: 'flex', mt: 5 }}>
+              <Profile fontSize="large" />
+              <Box sx={{ mt: 0.3 }}>
+                <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
+                <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box>
-            <Typography sx={{ ml: 5, mt: 1, mb: 5 }}>{reply.article}</Typography>
-          </Box>
-          {replyContainer(replies, reply.id)}
-        </div>
-      ))}
-    </Box>
-  );
-};
+            <Box>
+              <Typography sx={{ ml: 5, mt: 1, mb: 5 }}>{reply.article}</Typography>
+            </Box>
+            {replyContainer(replies, reply.id)}
+          </div>
+        ))}
+      </Box>
+    );
+  };
 
   const reply = replyData.length ? (
     replyData.map((value) => {
