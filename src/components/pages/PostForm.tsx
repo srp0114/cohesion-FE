@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import {
-  Container,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-} from "@mui/material";
-import {
-  Select,
-  Option
-} from "@mui/joy";
+import { Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, MenuItem, Menu } from "@mui/material";
 import axios from "axios";
 import Point from "../layout/Point";
 import Skill from "../layout/Skill";
@@ -37,7 +27,11 @@ const PostForm = () => {
     setSkill(value);
     console.log(value);
   }
-  
+
+  const boardHandler = (event: SelectChangeEvent<unknown>) => {
+    setBoardType(event.target.value as string);
+  };
+
   const fileList : File[] = [];
 
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) =>{
@@ -127,17 +121,14 @@ const PostForm = () => {
           <Grid container direction="column" spacing={2}>
             <Grid item>
               <FormControl style={{ minWidth: "120px" }}>
-                <Select 
-                  defaultValue={"free"}
-                  onChange={(e, v) => {
-                    setBoardType(v as string);
-                    }
-                  }
-                >
-                  <Option value={"free"}>자유게시판</Option>
-                  <Option value={"question"}>Q&A게시판</Option>
-                  <Option value={"recruit"}>구인게시판</Option>
-                  <Option value={"notice"}>공지사항</Option>
+                
+                <Select value={boardType} onChange={boardHandler} size="small">
+                   <MenuItem value={"free"} defaultChecked>
+                     자유게시판
+                   </MenuItem>
+                   <MenuItem value={"question"}>Q&A게시판</MenuItem>
+                   <MenuItem value={"recruit"}>구인게시판</MenuItem>
+                   <MenuItem value={"notice"}>공지사항</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
