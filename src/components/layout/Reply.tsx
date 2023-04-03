@@ -28,7 +28,6 @@ interface ReplyProps{
 const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
-  const[article,setArticle] = useState("");
 
   useEffect(()=>{
       axios
@@ -36,10 +35,10 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
       .then((res)=>setReplyData(res.data));
   },[])
 
-  
-
   // 댓글 필드 및 버튼 컴포넌트 
   const ReplyField = () => {
+
+    const[article,setArticle] = useState<string>("");
 
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
