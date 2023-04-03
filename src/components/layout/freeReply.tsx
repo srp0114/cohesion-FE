@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Typography, Box } from "@mui/material";
 import ReplyField from "./ReplyField";
+import NestedReplyField from "./NestedReplyField";
 import Profile from "@mui/icons-material/AccountCircle";
 
 interface User {
@@ -51,7 +52,7 @@ const replyContainer = (replies: ReplyItems[], parentId?: number) => {
             </Box>
           </Box>
           <Box>
-            <Typography sx={{ ml: 5, mt: 1, mb: 5 }}>{reply.article}</Typography>
+            <Typography sx={{ ml: 5, mt: 1 }}>{reply.article}</Typography>
           </Box>
           {replyContainer(replies, reply.id)}
         </div>
@@ -75,8 +76,9 @@ const reply = replyData.filter((reply) => !reply.parentId).length ?  (
           </Box>
         </Box>
         <Box>
-          <Typography sx={{ml: 5, mt: 1, mb: 5}}>{value.article}</Typography>
+          <Typography sx={{ml: 5, mt: 1 }}>{value.article}</Typography>
         </Box>
+        <NestedReplyField postingID={postingID} parentID={value.id}/>
         {replyContainer(replyData,value.id)}
       </div>
     )
