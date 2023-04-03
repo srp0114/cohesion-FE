@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -8,7 +8,7 @@ import {
   ButtonBase,
   ListItemAvatar,
   Avatar,
-  Autocomplete
+  Autocomplete,
 } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
@@ -17,6 +17,7 @@ import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -64,24 +65,25 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
 
 const Welcome: React.FC = () => {
   const [profileImg, setProfileImg] = useState("");
-  const [userAccount, setUserAccount] = useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
+  const [userAccount, setUserAccount] =
+    useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
+  const navigate = useNavigate();
 
   useEffect(() => {
     idTokenVerifier();
-
-  }, [])
+  }, []);
 
   const idTokenVerifier = () => {
     const verifier = new IdTokenVerifier({
-      issuer: 'http://localhost:8081', // issuer 가 같은지
-      audience: 'client', // audience 가 같은지
-      jwksURI: 'http://localhost:8081/oauth2/jwks' // get public key
+      issuer: "http://localhost:8081", // issuer 가 같은지
+      audience: "client", // audience 가 같은지
+      jwksURI: "http://localhost:8081/oauth2/jwks", // get public key
     });
 
-    const id_token = sessionStorage.getItem("id_token")
+    const id_token = sessionStorage.getItem("id_token");
 
     if (id_token) {
-      verifier.verify(id_token, (error, payload:any) => {
+      verifier.verify(id_token, (error, payload: any) => {
         if (error) {
           alert("토큰이 만료되었습니다.");
           return;
@@ -92,8 +94,7 @@ const Welcome: React.FC = () => {
     } else {
       alert("로그인이 필요합니다.");
     }
-  }
-
+  };
 
   //닉네임, 관심기술, 자기소개
   const [nickname, setNickname] = useState<string>();
@@ -112,33 +113,31 @@ const Welcome: React.FC = () => {
     console.log(skill);
   };
 
-
-  
-  
   const request_data = {
-    studentId : userAccount.sub,
-    name : userAccount.name,
-    nickname : nickname,
-    introduce : introduce,
-    track1 : userAccount.track1,
-     track2 : userAccount.track2
+    studentId: userAccount.sub,
+    name: userAccount.name,
+    nickname: nickname,
+    introduce: introduce,
+    track1: userAccount.track1,
+    track2: userAccount.track2,
   };
 
-
-  const confirm = () =>{  
-
-      try{
-        let response = axios({
-        method: "post",
-        url: "/api/join", // 테스트를 위해 id 고정
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(request_data)
+  const confirm = () => {
+    axios({
+      method: "post",
+      url: "/api/join",
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(request_data),
+    })
+      .then((response) => {
+        if (response.status === 200) { // 부가 정보 입력 정상 완료 시
+          navigate("/"); // 메인 페이지로 이동
+        } // 에러 핸들링 ...
+      })
+      .catch((error) => {
+        console.error(error);
       });
-    }catch(err){
-        console.log(err);
-    }
-      window.location.href = "/";
-  }
+  };
 
   return (
     <>
@@ -164,10 +163,7 @@ const Welcome: React.FC = () => {
               <Box>
                 <ImageButton>
                   <ListItemAvatar>
-                    <Avatar
-                      alt="Travis Howard"
-                      src={profileImg}
-                    />
+                    <Avatar alt="Travis Howard" src={profileImg} />
                   </ListItemAvatar>
                   <Typography
                     variant="subtitle1"
@@ -256,25 +252,29 @@ const Welcome: React.FC = () => {
             />
           </Box>
           <Box>
-              <Typography>관심기술</Typography>
-              <Autocomplete
-                multiple
-                options={skillData}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                    {option.name}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                    }}
-                  />
-                )}  
-              />
+            <Typography>관심기술</Typography>
+            <Autocomplete
+              multiple
+              options={skillData}
+              getOptionLabel={(option) => option.name}
+              renderOption={(props, option) => (
+                <Box
+                  component="li"
+                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                  {...props}
+                >
+                  {option.name}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                  }}
+                />
+              )}
+            />
           </Box>
           <Box>
             <Typography>자기소개</Typography>
@@ -290,7 +290,9 @@ const Welcome: React.FC = () => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Button sx={{ mr: 1 }}>뒤로</Button>
-            <Button variant="contained" onClick={confirm}>완료</Button>
+            <Button variant="contained" onClick={confirm}>
+              완료
+            </Button>
           </Box>
         </Stack>
       </Box>

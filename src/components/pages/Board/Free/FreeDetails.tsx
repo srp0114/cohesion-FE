@@ -5,7 +5,7 @@ import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import axios from "axios";
-import Reply from "../../../layout/Reply";
+import Reply from "../../../layout/freeReply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {

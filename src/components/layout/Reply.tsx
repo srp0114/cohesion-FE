@@ -38,10 +38,24 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
   // 댓글 필드 및 버튼 컴포넌트 
   const ReplyField = () => {
 
+    const[article,setArticle] = useState<string>("");
+
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
       // 작성 버튼 클릭한 경우
       // 데이터 보낼 axios 구현
+      const data ={
+        article : article
+      }
+
+      let response = axios({
+        method: "post",
+        url: "/api/qnaBoards/"+postingID+"/replies", // 테스트를 위해 id 고정
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(data),
+      });
+
+      window.location.href="/questions/"+postingID;
       
     }
 
@@ -54,6 +68,8 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
           variant="outlined"
           multiline
           sx={{ mt: 2, mb: 2}}
+          value={article}
+          onChange={(e) => { setArticle(e.target.value) }}
         />
         <Box display="flex" justifyContent="flex-end">
         <Button onClick={onSubmit} size="large">작성하기</Button>
@@ -88,8 +104,8 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
     );
   };
 
-  const reply = replyData.length ? (
-    replyData.map((value) => {
+  const reply = replyData.filter((reply) => !reply.parentId).length ?   (
+    replyData.filter((reply) => !reply.parentId).map((value) => {
       return (
         <div key={value.id}>
           <Box sx={{
