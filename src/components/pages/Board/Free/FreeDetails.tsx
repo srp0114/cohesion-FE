@@ -4,8 +4,8 @@ import Time from "../../../layout/Time";
 import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
-import { Reply } from "../../../model/reply";
 import axios from "axios";
+import Reply from "../../../layout/Reply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -20,7 +20,6 @@ interface FreeDetailItems {
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  replies?: Array<Reply> | undefined;
   views: number; //조회수
 }
 
@@ -86,9 +85,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
           >
             {`${postItem.reply}개의 댓글이 있습니다.`}
           </Typography>
-          <Box sx={{ border: "1px solid #787878", height: "50%" }}>
-            {/*은서: 추후 이곳에 댓글 목록, 댓글 작성란 등 컴포넌트 추가하기*/}
-          </Box>
+          <Reply postingID={id}/>
         </Box>
       </Box>
     </>

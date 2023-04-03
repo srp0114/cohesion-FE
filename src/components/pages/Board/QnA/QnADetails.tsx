@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { 
-  Typography,
-  Container, 
-  Box,
-  TextField
-} from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply";
 import { skillData } from '../../../data/SkillData';
@@ -45,16 +40,16 @@ const QnADetails: React.FC = () => {
       .catch((err) => console.log(err));
   }, []);
 
-    //입력된 언어 맞게 이미지 출력
-    const Skill = (postItem?.language) ? (
-        skillData.map((value) => {
-            if (postItem.language === value.name) {
-                return (
-                    <img src={value.logo} width="30" height="30" />
-                )
-            }
-        })
-    ) : (null);
+  //입력된 언어 맞게 이미지 출력
+  const Skill = (postItem?.language) ? (
+      skillData.map((value) => {
+          if (postItem.language === value.name) {
+              return (
+                  <img src={value.logo} width="30" height="30" />
+              )
+          }
+      })
+  ) : (null);
 
   const PostDetails = postItem ? (
     //postItems 데이터 있는 경우 출력될 UI
@@ -121,19 +116,9 @@ const QnADetails: React.FC = () => {
         <Typography variant="h5">
           {postItem.reply}개의 댓글이 있습니다
         </Typography>
-        {/*댓글 입력창 텍스트필드로 변경*/}
-        <TextField
-          fullWidth
-          placeholder="댓글을 입력하세요."
-          variant="outlined"
-          multiline
-          sx={{
-            mt: 2,
-            mb: 2,
-          }}
-        />
-        
-        <Reply id={id ? String(id) : undefined} />
+          {/*댓글 입력창 텍스트필드로 변경*/}
+
+        <Reply postingID={id}/>
       </Box>
     </>
   ) : (
