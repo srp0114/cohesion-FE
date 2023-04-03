@@ -3,6 +3,7 @@ import axios from "axios";
 import { Typography, Box } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
+import Time from "./Time";
 import Profile from "@mui/icons-material/AccountCircle";
 
 interface User {
@@ -48,7 +49,9 @@ const replyContainer = (replies: ReplyItems[], parentId?: number) => {
             <Profile fontSize="large" />
             <Box sx={{ mt: 0.3 }}>
               <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
-              <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+              <Typography variant="subtitle2" sx={{ ml: 1 }}> 
+                <Time date={reply.createdAt}/>
+              </Typography>
             </Box>
           </Box>
           <Box>
@@ -72,7 +75,9 @@ const reply = replyData.filter((reply) => !reply.parentId).length ?  (
           <Profile fontSize="large"/>
           <Box sx={{mt:0.3}}>
             <Typography variant="h6" sx={{ml: 1}}>{value.user.nickname}</Typography>            
-            <Typography variant="subtitle2" sx={{ml: 1}}> {value.createdAt}</Typography>
+            <Typography variant="subtitle2" sx={{ml: 1}}>  
+              <Time date={value.createdAt}/> 
+            </Typography>
           </Box>
         </Box>
         <Box>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {  Typography, Box, TextField, Button } from "@mui/material";
+import Time from "./Time";
 import Profile from '@mui/icons-material/AccountCircle';
 
 interface User {
@@ -91,7 +92,9 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
               <Profile fontSize="large" />
               <Box sx={{ mt: 0.3 }}>
                 <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+                <Typography variant="subtitle2" sx={{ ml: 1 }}>               
+                  <Time date={reply.createdAt}/> 
+                </Typography>
               </Box>
             </Box>
             <Box>
