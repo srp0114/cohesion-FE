@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {  Typography, Box, TextField, Button } from "@mui/material";
 import Profile from '@mui/icons-material/AccountCircle';
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id : number;
@@ -28,11 +29,17 @@ interface ReplyProps{
 const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
+  const navigate = useNavigate();
 
   useEffect(()=>{
-      axios
-      .get("/api/qnaBoards/"+postingID+"/replies")
-      .then((res)=>setReplyData(res.data));
+      axios({
+          method : "get",
+          url : "/api/qnaBoards/"+postingID+"/replies"
+      }).then((res)=>{
+          setReplyData(res.data);
+      }).catch((err)=>{
+          console.log(err);
+      })
   },[])
 
   // 댓글 필드 및 버튼 컴포넌트 
@@ -42,22 +49,30 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
+      
       // 작성 버튼 클릭한 경우
       // 데이터 보낼 axios 구현
       const data ={
         article : article
       }
-
-      let response = axios({
-        method: "post",
-        url: "/api/qnaBoards/"+postingID+"/replies", // 테스트를 위해 id 고정
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(data),
-      });
-
-      window.location.href="/questions/"+postingID;
+        axios({
+            method : "post",
+            url : "/api/qnaBoards/"+postingID+"/replies",
+            headers : {"Content-Type" : "application/json"},
+            data : JSON.stringify(data)
+        }).then((res)=>{
+            if(res.status === 200){
+                window.location.reload();
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
       
     }
+
+
+
+    
 
     return (
       <>

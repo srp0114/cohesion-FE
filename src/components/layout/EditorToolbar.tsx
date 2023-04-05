@@ -66,28 +66,26 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
             fileList.forEach((file) => {
                 formData.append('multipartFiles', file);
             })
-            try {
-                let response = await axios({
+                axios({
                     method: "post",
                     url: "/api/return/imageUrl",
                     headers: {"Content-Type": "multipart/form-data"},
                     data: formData,
-                });
-                console.log("###", response);
-                const url = "http://localhost:8080"+response.data;
-                const range = QuillRef.current?.getEditor().getSelection()?.index;
-                if (range !== null && range !== undefined) {
-                    let quill = QuillRef.current?.getEditor();
-                    quill?.setSelection(range, 1);
-                    quill?.clipboard.dangerouslyPasteHTML(
-                        range,
-                        `<img src=${url} alt="이미지 태그 삽입" />`
-                    );
-                }
-
-            } catch (err) {
-                console.log("이미지 핸들러 선택 에러");
-            }
+                }).then((response)=>{
+                    console.log("###", response);
+                    const url = "http://localhost:8080"+response.data;
+                    const range = QuillRef.current?.getEditor().getSelection()?.index;
+                    if (range !== null && range !== undefined) {
+                        let quill = QuillRef.current?.getEditor();
+                        quill?.setSelection(range, 1);
+                        quill?.clipboard.dangerouslyPasteHTML(
+                            range,
+                            `<img src=${url} alt="이미지 태그 삽입" />`
+                        );
+                    }
+                }).catch((err)=>{
+                    console.log(err);
+                })
         }
     }
 
