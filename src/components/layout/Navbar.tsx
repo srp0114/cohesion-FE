@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
 import { Button, Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { RxAvatar } from "react-icons/rx";
+import axios from "axios";
+
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +41,22 @@ const Navbar: React.FC = () => {
       sessionStorage.setItem("codeChallenge", codeChallenge);
       navigate(`/redirect`);
     } else {
-      //로그아웃 처리
+
+      //인가서버 로그아웃 처리(세션 쿠키 삭제)
+      axios.get('http://localhost:8081/logout', { withCredentials: true })
+      .then(response => {
+        // 리디렉션 처리
+        if (response.status === 302) {
+          window.location.href = "/";
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+      sessionStorage.clear();
+      window.location.href="/";
+     
+
     }
   };
 
