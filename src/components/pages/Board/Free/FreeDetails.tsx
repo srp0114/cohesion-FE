@@ -5,7 +5,7 @@ import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import axios from "axios";
-import FreeReply from "../../../layout/Reply/FreeReply";
+import Reply from "../../../layout/Reply/Reply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -85,7 +85,7 @@ const FreeDetails = (): JSX.Element => {
           >
             {`${postItem.reply}개의 댓글이 있습니다.`}
           </Typography>
-          <FreeReply postingID={id} />
+          <Reply postingID={id} />
         </Box>
       </Box>
     </>

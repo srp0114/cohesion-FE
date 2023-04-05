@@ -1,33 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router";
 import axios from "axios";
 import {  Box, TextField, Button } from "@mui/material";
 
 interface ReplyProps{
-  postingID?: string;
+    url: string;
 }
   
-// 댓글 필드 및 버튼 컴포넌트 
-const ReplyField = ({postingID} : ReplyProps) => {
+// 댓글 입력창 컴포넌트 
+const ReplyField = ({url} : ReplyProps) => {
 
     const[article, setArticle] = useState<string>("");
 
-    // 댓글 작성 버튼 클릭 시 적용될 핸들러
+    const location = useLocation();
+
     const onSubmit = () => {
-        // 작성 버튼 클릭한 경우
-        // 데이터 보낼 axios 구현
+        
         const data ={
             article : article
         }
 
         let response = axios({
             method: "post",
-            url: "/api/freeBoards/"+postingID+"/replies", // 테스트를 위해 id 고정
+            url: url,
             headers: { "Content-Type": "application/json" },
             data: JSON.stringify(data),
         });
         
         // 텍스트필드 값 지우기
         setArticle("");    
+        
+        // 수정 필요
+        window.location.href=location.pathname;  
     }
 
     return (

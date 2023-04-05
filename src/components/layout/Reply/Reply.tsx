@@ -23,21 +23,21 @@ interface ReplyItems{
 }
 
 interface ReplyProps {
-  postingID: string;
+  postingID?: string;
 }
   
-// 상위 컴포넌트로 부터 게시글 id 값 받아오기 
 const FreeReply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
 
+  const url = `/api/freeBoards/${postingID}/replies`
+
   useEffect(()=>{
       axios
-      .get("/api/freeBoards/"+postingID+"/replies")
+      .get(url)
       .then((res)=>setReplyData(res.data));
   },[]);
   
-// 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
 const replyContainer = (replies: ReplyItems[], parentId?: number) => {
   const filteredReplies = parentId ? replies.filter((reply) => reply.parentId === parentId) : replies;
 
@@ -57,6 +57,7 @@ const replyContainer = (replies: ReplyItems[], parentId?: number) => {
           <Box>
             <Typography sx={{ ml: 5, mt: 1 }}>{reply.article}</Typography>
           </Box>
+          <NestedReplyField parentID={reply.id} url={url}/>
           {replyContainer(replies, reply.id)}
         </div>
       ))}
@@ -83,7 +84,7 @@ const reply = replyData.filter((reply) => !reply.parentId).length ?  (
         <Box>
           <Typography sx={{ml: 5, mt: 1 }}>{value.article}</Typography>
         </Box>
-        <NestedReplyField postingID={postingID} parentID={value.id}/>
+        <NestedReplyField parentID={value.id} url={url}/>
         {replyContainer(replyData,value.id)}
       </div>
     )
@@ -93,7 +94,7 @@ const reply = replyData.filter((reply) => !reply.parentId).length ?  (
 
   return (
     <>
-      <ReplyField postingID={postingID} />
+      <ReplyField url={url}/>
       {reply}
     </>
   );

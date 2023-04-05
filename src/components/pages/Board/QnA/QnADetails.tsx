@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box } from '@mui/material';
 import Time from "../../../layout/Time";
-import QnAReply from "../../../layout/Reply/QnAReply";
+import Reply from "../../../layout/Reply/QnAReply";
 import { skillData } from '../../../data/SkillData';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
@@ -118,7 +118,7 @@ const QnADetails = () => {
         </Typography>
           {/*댓글 입력창 텍스트필드로 변경*/}
 
-        <QnAReply postingID={id}/>
+        <Reply postingID={id}/>
       </Box>
     </>
   ) : (
