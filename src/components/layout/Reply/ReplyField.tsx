@@ -7,7 +7,7 @@ interface ReplyProps{
 }
   
 // 댓글 필드 및 버튼 컴포넌트 
-const ReplyField:React.FC<ReplyProps>= ({postingID}) => {
+const ReplyField = ({postingID} : ReplyProps) => {
 
     const[article, setArticle] = useState<string>("");
 

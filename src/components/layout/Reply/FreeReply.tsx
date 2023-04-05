@@ -3,7 +3,7 @@ import axios from "axios";
 import { Typography, Box } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
-import Time from "./Time";
+import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 
 interface User {
@@ -22,12 +22,12 @@ interface ReplyItems{
   reports?: number;
 }
 
-interface ReplyProps{
-  postingID?: string;
+interface ReplyProps {
+  postingID: string;
 }
   
 // 상위 컴포넌트로 부터 게시글 id 값 받아오기 
-const FreeReply: React.FC<ReplyProps> = ({postingID}) => {
+const FreeReply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
 
@@ -35,7 +35,7 @@ const FreeReply: React.FC<ReplyProps> = ({postingID}) => {
       axios
       .get("/api/freeBoards/"+postingID+"/replies")
       .then((res)=>setReplyData(res.data));
-  },[replyData]);
+  },[]);
   
 // 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
 const replyContainer = (replies: ReplyItems[], parentId?: number) => {

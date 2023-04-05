@@ -9,7 +9,7 @@ interface NestedReplyProps {
 }
 
 // 답글 달기 텍스트 필드 추가
-const FreeNestedReply: React.FC<NestedReplyProps> = ({parentID, postingID}) => {
+const FreeNestedReply = ({parentID, postingID}: NestedReplyProps) => {
 
     const [replyArticle, setReplyArticle] = useState<string>("");
     const [openReplyField, setOpenReplyField] = useState<boolean>(false);

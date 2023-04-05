@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {  Typography, Box, TextField, Button } from "@mui/material";
-import Time from "./Time";
+import Time from "../Time";
 import Profile from '@mui/icons-material/AccountCircle';
 
 interface User {
@@ -26,7 +26,7 @@ interface ReplyProps{
   
 // 상위 컴포넌트로 부터 게시글 id 값 받아오기 
 // 기존 id 변수명 postingID로 변경
-const Reply: React.FC<ReplyProps> = ({postingID}) => {
+const Reply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
 

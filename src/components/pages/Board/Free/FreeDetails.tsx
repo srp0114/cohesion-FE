@@ -5,7 +5,7 @@ import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import axios from "axios";
-import FreeReply from "../../../layout/FreeReply";
+import FreeReply from "../../../layout/Reply/FreeReply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -23,9 +23,9 @@ interface FreeDetailItems {
   views: number; //조회수
 }
 
-const FreeDetails: React.FC = (): JSX.Element => {
+const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
-  const { id } = useParams();
+  const { id } = useParams() as { id : string };
 
   useEffect(() => {
     axios
@@ -85,7 +85,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
           >
             {`${postItem.reply}개의 댓글이 있습니다.`}
           </Typography>
-          <FreeReply postingID={id}/>
+          <FreeReply postingID={id} />
         </Box>
       </Box>
     </>
