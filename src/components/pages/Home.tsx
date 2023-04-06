@@ -21,12 +21,30 @@ const Home: React.FC = () => {
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰있으면 - 게시판 보이도록
   // 토큰없으면 - 게시판 블러 처리
-  useEffect (() => {
-    let token = sessionStorage.getItem("id_token");
-    // token여부에 따라 로그인 여부 정하기
-    token ? (setIsLogin(true)) : (setIsLogin(false));
-    console.log(token);
-  }, [])
+  useEffect(() => {
+    const token = sessionStorage.getItem("id_token");
+    if (token) { //
+      axios
+          .get("/api/check")
+          .then((response) => {
+            const check = response.data;
+            if (check === true) { // 여기서 true이면 로그인 된 상태
+              setIsLogin(true);
+            } else {
+              // 부가정보를 입력하지 않은 유저
+              console.log("잘못된 접근입니다.");
+              // 1. 부가 정보 요청(부가 정보 페이지로 리다이렉트)
+            }
+          })
+          .catch((error) => {
+            if (error) {
+              console.log(
+                  `잘못된 접근입니다. 에러코드 : ${error.response.status}`
+              );
+            }
+          });
+    } else setIsLogin(false);
+  }, []);
 
 
 
@@ -63,8 +81,6 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <button onClick={handleLogin}>로그인</button>
-
       <Grid container spacing={2}>
         <Grid xs>
           <LeftSidebar />
