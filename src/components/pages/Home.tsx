@@ -11,6 +11,7 @@ import HomeFreeBoard from "../layout/HomeFreeBoard";
 import HomeQnABoard from "../layout/HomeQnABoard";
 import AddIcon from "@mui/icons-material/Add";
 import hansung from  "../asset/image/hansung.png";
+import axios from "axios";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -20,12 +21,47 @@ const Home: React.FC = () => {
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰있으면 - 게시판 보이도록
   // 토큰없으면 - 게시판 블러 처리
-  useEffect (() => {
-    let token = sessionStorage.getItem("id_token");
-    // token여부에 따라 로그인 여부 정하기
-    token ? (setIsLogin(true)) : (setIsLogin(false));
-    console.log(token);
-  }, [])
+  useEffect(() => {
+    const token = sessionStorage.getItem("id_token");
+    if (token) { //
+      axios
+          .get("/api/check")
+          .then((response) => {
+            const check = response.data;
+            if (check === true) { // 여기서 true이면 로그인 된 상태
+              setIsLogin(true);
+            } else {
+              // 부가정보를 입력하지 않은 유저
+              console.log("잘못된 접근입니다.");
+              // 1. 부가 정보 요청(부가 정보 페이지로 리다이렉트)
+            }
+          })
+          .catch((error) => {
+            if (error) {
+              console.log(
+                  `잘못된 접근입니다. 에러코드 : ${error.response.status}`
+              );
+            }
+          });
+    } else setIsLogin(false);
+  }, []);
+
+
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/user-info"
+    }).then((res)=>{
+      console.log(res.data);
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+  },[])
 
   const navigate = useNavigate();
 
@@ -45,8 +81,6 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <button onClick={handleLogin}>로그인</button>
-
       <Grid container spacing={2}>
         <Grid xs>
           <LeftSidebar />

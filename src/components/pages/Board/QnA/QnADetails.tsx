@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box } from '@mui/material';
 import Time from "../../../layout/Time";
-import Reply from "../../../layout/Reply";
+import Reply from "../../../layout/Reply/QnAReply";
 import { skillData } from '../../../data/SkillData';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
@@ -26,19 +26,30 @@ interface DetailItems {
 }
 
 //Q&A 상세보기
-const QnADetails: React.FC = () => {
+const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
 
   //axios get 할 때 받아올 게시글 번호
   let { id } = useParams();
 
-  useEffect(() => {
-    axios
-      .get(`/api/qnaBoards/${id}`)
-      .then((response) => setPostItem(response.data))
-      .catch((err) => console.log(err));
-  }, []);
+    useEffect(()=>{
+        axios({
+            method : "get",
+            url : "/api/qnaBoards/"+id,
+        }).then((res)=>{
+            if(res.status ===200){
+                setPostItem(res.data);
+            }
+        }).catch((err)=>{
+            if(err.response.status===401){
+                console.log("로그인 x");
+            }else if(err.response.status===403){
+                console.log("권한 x");
+            }
+        });
+    },[])
+
 
   //입력된 언어 맞게 이미지 출력
   const Skill = (postItem?.language) ? (
