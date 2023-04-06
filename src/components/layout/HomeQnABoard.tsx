@@ -19,6 +19,7 @@ interface QnaBoardItems {
     bookmark: number;
     reply: number;
     point: number;
+    
 }
 
 const HomeQnABoard: React.FC = () => {
@@ -44,19 +45,21 @@ const HomeQnABoard: React.FC = () => {
      };
 
     useEffect(()=>{
-        axios
-            .get("/api/qnaBoards")
-            .then((res) => setQnaBoardItems(res.data.data))
-            .catch((error) => { 
-                console.log(error)
-                if(error.response.status === 401) {
-                    console.log("401 - " + error);
-                }
-                else if(error.response.status === 403) {
-                    console.log("403 - " + error);
-                    setAddInfoError(true);
-                }
-            });
+        axios({
+            method : "get",
+            url : "/api/qnaBoards"
+        }).then((res)=>{
+            setQnaBoardItems(res.data.data);
+        }).catch((err)=>{
+            console.log(err)
+            if(err.response.status === 401) {
+                console.log("401 - " + err);
+            }
+            else if(err.response.status === 403) {
+                console.log("403 - " + err);
+                setAddInfoError(true);
+            }
+        })
     },[])
 
     return (

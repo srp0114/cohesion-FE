@@ -66,44 +66,54 @@ const PostForm = () => {
 
     if (boardType === "free") {
       // 자유 게시판인 경우
-      try {
-        let response = await axios({
-          method: "post",
-          url: "/api/freeBoards", // 테스트를 위해 id 고정
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_data),
-        });
-        console.log("writeBoard/response: ", response);
-        console.log("writeBoard/response.status: ", response.status);
-        window.location.href = "/";
-      } catch (err) {
-        console.log("CreateBoard/handleInput/err: ", err);
-      }
+      axios({
+        method: "post",
+        url: "/api/freeBoards",
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(request_data),
+      }).then((res) => {
+            if (res.status === 200) { // 성공 시 작업
+                window.location.href = "/";
+            } // 응답(401, 403 등) 핸들링 ...
+      }).catch((err) => console.log(err));
     }  
     else if (boardType === "question") { // Q&A 게시판인 경우
-      try {
-        if (fileList.length > 0) {
-          let response = await axios({
-            method: "post",
-            url: "/api/qnaBoards",
-            headers: { "Content-Type": "multipart/form-data" },
-            data: qna_formData,
-          });
-          console.log("writeBoard/response: ", response);
-          console.log("writeBoard/response.status: ", response.status);
-        } else {
-          let response = await axios({
-            method: "post",
-            url: "/api/qnaBoardsNoFile",
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(request_qna),
-          });
-          console.log("writeBoard/response: ", response);
-          console.log("writeBoard/response.status: ", response.status);
-        }
-        window.location.href = "/";
-      } catch (err) {
-        console.log("CreateBoard/handleInput/err: ", err);
+
+      if (fileList.length > 0) {
+        axios({
+          method: "post",
+          url: "/api/qnaBoards",
+          headers: {"Content-Type": "multipart/form-data"},
+          data: JSON.stringify(qna_formData),
+        }).then((res) => {
+          if (res.status === 200) { // 성공 시 작업
+            window.location.href = "/";
+          } // 응답(401, 403 등) 핸들링 ...
+        }).catch((err) => {
+          if (err.response.status === 401) {
+            console.log("로그인 x");
+          } else if (err.response.status === 403) {
+            console.log("권한 x");
+          }
+        });
+
+      } else {
+        axios({
+          method: "post",
+          url: "/api/qnaBoardsNoFile",
+          headers: {"Content-Type": "application/json"},
+          data: JSON.stringify(request_qna),
+        }).then((res) => {
+          if (res.status === 200) { // 성공 시 작업
+            window.location.href = "/";
+          }
+        }).catch((err) => {
+          if (err.response.status === 401) {
+            console.log("로그인 x");
+          } else if (err.response.status === 403) {
+            console.log("권한 x");
+          }
+        });
       }
     }
   };

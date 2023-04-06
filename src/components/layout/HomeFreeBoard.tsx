@@ -42,20 +42,22 @@ const HomeFreeBoard: React.FC = () => {
     };
 
     useEffect(() => {
-        axios
-            .get("/api/freeBoards")
-            .then((response) => setBoardItems(response.data.data))
-            .catch((error) => { 
-                console.log(error)
-                if(error.response.status === 401) {
-                    console.log("401 - " + error);
-                }
-                else if(error.response.status === 403) {
-                    console.log("403 - " + error);
-                    setAddInfoError(true);
-                }
-            });
-            
+        axios({
+            method : "get",
+            url : "/api/freeBoards"
+        }).then((res)=>{
+            setBoardItems(res.data.data);
+        }).catch((err)=>{
+            console.log(err)
+            if(err.response.status === 401) {
+                console.log("401 - " + err);
+            }
+            else if(err.response.status === 403) {
+                console.log("403 - " + err);
+                setAddInfoError(true);
+            }
+        })
+
     }, []);
 
     return (

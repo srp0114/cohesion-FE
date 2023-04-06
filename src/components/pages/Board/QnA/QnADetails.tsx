@@ -33,12 +33,23 @@ const QnADetails: React.FC = () => {
   //axios get 할 때 받아올 게시글 번호
   let { id } = useParams();
 
-  useEffect(() => {
-    axios
-      .get(`/api/qnaBoards/${id}`)
-      .then((response) => setPostItem(response.data))
-      .catch((err) => console.log(err));
-  }, []);
+    useEffect(()=>{
+        axios({
+            method : "get",
+            url : "/api/qnaBoards/"+id,
+        }).then((res)=>{
+            if(res.status ===200){
+                setPostItem(res.data);
+            }
+        }).catch((err)=>{
+            if(err.response.status===401){
+                console.log("로그인 x");
+            }else if(err.response.status===403){
+                console.log("권한 x");
+            }
+        });
+    },[])
+
 
   //입력된 언어 맞게 이미지 출력
   const Skill = (postItem?.language) ? (
