@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box } from '@mui/material';
 import Time from "../../../layout/Time";
-import Reply from "../../../layout/Reply";
+import Reply from "../../../layout/Reply/QnAReply";
 import { skillData } from '../../../data/SkillData';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ProfileIcon from '@mui/icons-material/AccountCircle';
@@ -26,7 +26,7 @@ interface DetailItems {
 }
 
 //Q&A 상세보기
-const QnADetails: React.FC = () => {
+const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
 

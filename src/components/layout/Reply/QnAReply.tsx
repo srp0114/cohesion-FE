@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {  Typography, Box, TextField, Button } from "@mui/material";
+import Time from "../Time";
 import Profile from '@mui/icons-material/AccountCircle';
+import ReplyField from "./ReplyField";
+import NestedReplyField from "./NestedReplyField";
 import { useNavigate } from "react-router-dom";
 
 interface User {
@@ -23,14 +26,14 @@ interface ReplyItems{
 interface ReplyProps{
   postingID?: string;
 }
-  
-// 상위 컴포넌트로 부터 게시글 id 값 받아오기 
-// 기존 id 변수명 postingID로 변경
-const Reply: React.FC<ReplyProps> = ({postingID}) => {
+
+const Reply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
   const navigate = useNavigate();
 
+  const url = `/api/qnaBoards/${postingID}/replies`;
+  
   useEffect(()=>{
       axios({
           method : "get",
@@ -106,12 +109,15 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
               <Profile fontSize="large" />
               <Box sx={{ mt: 0.3 }}>
                 <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+                <Typography variant="subtitle2" sx={{ ml: 1 }}>               
+                  <Time date={reply.createdAt}/> 
+                </Typography>
               </Box>
             </Box>
             <Box>
               <Typography sx={{ ml: 5, mt: 1, mb: 5 }}>{reply.article}</Typography>
             </Box>
+            <NestedReplyField parentID={reply.id} url={url}/>
             {replyContainer(replies, reply.id)}
           </div>
         ))}
@@ -130,12 +136,15 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
             <Profile fontSize="large"/>
             <Box sx={{mt:0.3}}>
               <Typography variant="h6" sx={{ml: 1}}>{value.user.nickname}</Typography>            
-              <Typography variant="subtitle2" sx={{ml: 1}}> {value.createdAt}</Typography>
+              <Typography variant="subtitle2" sx={{ml: 1}}>  
+                <Time date={value.createdAt}/> 
+              </Typography>
             </Box>
           </Box>
           <Box>
-            <Typography sx={{ml: 5, mt: 1, mb: 5}}>{value.article}</Typography>
+            <Typography sx={{ml: 5, mt: 1 }}>{value.article}</Typography>
           </Box>
+          <NestedReplyField parentID={value.id} url={url}/>
           {replyContainer(replyData,value.id)}
         </div>
       )
@@ -145,7 +154,6 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
   return (
     <>
-      <ReplyField/>
       {reply}
     </>
   );
