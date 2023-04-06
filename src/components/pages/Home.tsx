@@ -11,6 +11,7 @@ import HomeFreeBoard from "../layout/HomeFreeBoard";
 import HomeQnABoard from "../layout/HomeQnABoard";
 import AddIcon from "@mui/icons-material/Add";
 import hansung from  "../asset/image/hansung.png";
+import axios from "axios";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -26,6 +27,23 @@ const Home: React.FC = () => {
     token ? (setIsLogin(true)) : (setIsLogin(false));
     console.log(token);
   }, [])
+
+
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/user-info"
+    }).then((res)=>{
+      console.log(res.data);
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+  },[])
 
   const navigate = useNavigate();
 

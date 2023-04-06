@@ -27,12 +27,21 @@ const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id : string };
 
-  useEffect(() => {
-    axios
-      .get(`/api/freeBoards/${id}`)
-      .then((res) => setPostItem(res.data.data))
-      .catch((err) => console.log(err));
-  }, []);
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/freeBoards/"+id
+    }).then((res)=>{
+      setPostItem(res.data.data)
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+  },[])
 
   const detailPosting = postItem ? (
     <>

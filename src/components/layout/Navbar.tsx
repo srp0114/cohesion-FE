@@ -43,20 +43,16 @@ const Navbar: React.FC = () => {
     } else {
 
       //인가서버 로그아웃 처리(세션 쿠키 삭제)
-      axios.get('http://localhost:8081/logout', { withCredentials: true })
-      .then(response => {
-        // 리디렉션 처리
-        if (response.status === 302) {
-          window.location.href = "/";
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-      sessionStorage.clear();
-      window.location.href="/";
-     
-
+      axios({
+        method : "get",
+        url : "http://localhost:8081/logout",
+        withCredentials : true
+      }).then((res)=>{
+          sessionStorage.clear();
+          window.location.href="/";
+      }).catch((err)=>{
+        console.log(err);
+    })
     }
   };
 

@@ -5,6 +5,7 @@ import Time from "../Time";
 import Profile from '@mui/icons-material/AccountCircle';
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id : number;
@@ -29,15 +30,74 @@ interface ReplyProps{
 const Reply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
+  const navigate = useNavigate();
 
   const url = `/api/qnaBoards/${postingID}/replies`;
   
   useEffect(()=>{
-      axios
-      .get(url)
-      .then((res)=>setReplyData(res.data));
+      axios({
+          method : "get",
+          url : "/api/qnaBoards/"+postingID+"/replies"
+      }).then((res)=>{
+          setReplyData(res.data);
+      }).catch((err)=>{
+          console.log(err);
+      })
   },[])
 
+  // 댓글 필드 및 버튼 컴포넌트 
+  const ReplyField = () => {
+
+    const[article,setArticle] = useState<string>("");
+
+    // 댓글 게시 버튼 클릭 시 적용될 핸들러
+    const onSubmit = () => {
+      
+      // 작성 버튼 클릭한 경우
+      // 데이터 보낼 axios 구현
+      const data ={
+        article : article
+      }
+        axios({
+            method : "post",
+            url : "/api/qnaBoards/"+postingID+"/replies",
+            headers : {"Content-Type" : "application/json"},
+            data : JSON.stringify(data)
+        }).then((res)=>{
+            if(res.status === 200){
+                window.location.reload();
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
+      
+    }
+
+
+
+    
+
+    return (
+      <>
+        <Box>
+        <TextField
+          fullWidth
+          placeholder="댓글을 입력하세요."
+          variant="outlined"
+          multiline
+          sx={{ mt: 2, mb: 2}}
+          value={article}
+          onChange={(e) => { setArticle(e.target.value) }}
+        />
+        <Box display="flex" justifyContent="flex-end">
+        <Button onClick={onSubmit} size="large">작성하기</Button>
+        </Box>
+      </Box>
+      </>
+    )
+  }
+
+  // 대댓글이 들어갈 컨테이너 (테스트용으로 임시로 해놨습니다. 바꿔주시면 됩니다!)
   const replyContainer = (replies: ReplyItems[], parentId?: number) => {
     const filteredReplies = parentId ? replies.filter((reply) => reply.parentId === parentId) : replies;
 
@@ -94,7 +154,6 @@ const Reply = ({postingID} : ReplyProps) => {
 
   return (
     <>
-      <ReplyField url={url}/>
       {reply}
     </>
   );
