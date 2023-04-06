@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {  Typography, Box, TextField, Button } from "@mui/material";
+import Time from "../Time";
 import Profile from '@mui/icons-material/AccountCircle';
+import ReplyField from "./ReplyField";
+import NestedReplyField from "./NestedReplyField";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id : number;
@@ -22,17 +26,23 @@ interface ReplyItems{
 interface ReplyProps{
   postingID?: string;
 }
-  
-// 상위 컴포넌트로 부터 게시글 id 값 받아오기 
-// 기존 id 변수명 postingID로 변경
-const Reply: React.FC<ReplyProps> = ({postingID}) => {
+
+const Reply = ({postingID} : ReplyProps) => {
 
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
+  const navigate = useNavigate();
 
+  const url = `/api/qnaBoards/${postingID}/replies`;
+  
   useEffect(()=>{
-      axios
-      .get("/api/qnaBoards/"+postingID+"/replies")
-      .then((res)=>setReplyData(res.data));
+      axios({
+          method : "get",
+          url : url,
+      }).then((res)=>{
+          setReplyData(res.data);
+      }).catch((err)=>{
+          console.log(err);
+      })
   },[])
 
   // 댓글 필드 및 버튼 컴포넌트 
@@ -42,22 +52,30 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
+      
       // 작성 버튼 클릭한 경우
       // 데이터 보낼 axios 구현
       const data ={
         article : article
       }
-
-      let response = axios({
-        method: "post",
-        url: "/api/qnaBoards/"+postingID+"/replies", // 테스트를 위해 id 고정
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(data),
-      });
-
-      window.location.href="/questions/"+postingID;
+        axios({
+            method : "post",
+            url : "/api/qnaBoards/"+postingID+"/replies",
+            headers : {"Content-Type" : "application/json"},
+            data : JSON.stringify(data)
+        }).then((res)=>{
+            if(res.status === 200){
+                window.location.reload();
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
       
     }
+
+
+
+    
 
     return (
       <>
@@ -91,12 +109,15 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
               <Profile fontSize="large" />
               <Box sx={{ mt: 0.3 }}>
                 <Typography variant="h6" sx={{ ml: 1 }}>{reply.user.nickname}</Typography>
-                <Typography variant="subtitle2" sx={{ ml: 1 }}> {reply.createdAt}</Typography>
+                <Typography variant="subtitle2" sx={{ ml: 1 }}>               
+                  <Time date={reply.createdAt}/> 
+                </Typography>
               </Box>
             </Box>
             <Box>
               <Typography sx={{ ml: 5, mt: 1, mb: 5 }}>{reply.article}</Typography>
             </Box>
+            <NestedReplyField parentID={reply.id} url={url}/>
             {replyContainer(replies, reply.id)}
           </div>
         ))}
@@ -115,12 +136,15 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
             <Profile fontSize="large"/>
             <Box sx={{mt:0.3}}>
               <Typography variant="h6" sx={{ml: 1}}>{value.user.nickname}</Typography>            
-              <Typography variant="subtitle2" sx={{ml: 1}}> {value.createdAt}</Typography>
+              <Typography variant="subtitle2" sx={{ml: 1}}>  
+                <Time date={value.createdAt}/> 
+              </Typography>
             </Box>
           </Box>
           <Box>
-            <Typography sx={{ml: 5, mt: 1, mb: 5}}>{value.article}</Typography>
+            <Typography sx={{ml: 5, mt: 1 }}>{value.article}</Typography>
           </Box>
+          <NestedReplyField parentID={value.id} url={url}/>
           {replyContainer(replyData,value.id)}
         </div>
       )
@@ -130,7 +154,6 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
   return (
     <>
-      <ReplyField/>
       {reply}
     </>
   );

@@ -30,9 +30,14 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
 
   useEffect(()=>{
-      axios
-      .get("/api/freeBoards/"+postingID+"/replies")
-      .then((res)=>setReplyData(res.data));
+      axios({
+          method : "get",
+          url : "/api/freeBoards/"+postingID+"/replies"
+      }).then((res)=>{
+          setReplyData(res.data);
+      }).catch((err)=>{
+          console.log(err);
+      })
   },[])
 
   // 댓글 필드 및 버튼 컴포넌트 
@@ -42,20 +47,25 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
+      
       // 작성 버튼 클릭한 경우
       // 데이터 보낼 axios 구현
       const data ={
         article : article
       }
+      axios({
+          method : "post",
+          url : "/api/freeBoards/"+postingID+"/replies",
+          headers : {"Content-Type" : "application/json"},
+          data : JSON.stringify(data)
+      }).then((res)=>{
+          if(res.status === 200){
+              window.location.reload();
+          }
+      }).catch((err)=>{
+          console.log(err);
+      })
 
-      let response = axios({
-        method: "post",
-        url: "/api/freeBoards/"+postingID+"/replies", // 테스트를 위해 id 고정
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(data),
-      });
-
-      window.location.href="/free/"+postingID;
       
     }
 

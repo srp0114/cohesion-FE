@@ -5,7 +5,7 @@ import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import axios from "axios";
-import Reply from "../../../layout/freeReply";
+import Reply from "../../../layout/Reply/Reply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -23,16 +23,25 @@ interface FreeDetailItems {
   views: number; //조회수
 }
 
-const FreeDetails: React.FC = (): JSX.Element => {
+const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
-  const { id } = useParams();
+  const { id } = useParams() as { id : string };
 
-  useEffect(() => {
-    axios
-      .get(`/api/freeBoards/${id}`)
-      .then((res) => setPostItem(res.data.data))
-      .catch((err) => console.log(err));
-  }, []);
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/freeBoards/"+id
+    }).then((res)=>{
+      setPostItem(res.data.data)
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+  },[])
 
   const detailPosting = postItem ? (
     <>
@@ -85,7 +94,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
           >
             {`${postItem.reply}개의 댓글이 있습니다.`}
           </Typography>
-          <Reply postingID={id}/>
+          <Reply postingID={id} />
         </Box>
       </Box>
     </>

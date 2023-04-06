@@ -35,23 +35,25 @@ const OAuth2 = () => {
                 if(token?.id_token && token?.access_token) {
                     sessionStorage.setItem('id_token', token.id_token);
                     sessionStorage.setItem('access_token', token.access_token);
-                    // 리소스 서버에게 회원가입 여부 확인 후
-                    axios
-                        .get("/api/check")
-                        .then((response) => {
-                            const check = response.data;
-                            if (check === true) {
-                                navigate('/');
-                            } else if (check === false) {
-                                navigate('/welcome');
-                            }
-                        })
-                        .catch((error) => {
-                                if (error.response.status === 401) {
-                                    navigate('/welcome');
-                                }
-                            }
-                        );
+
+                    axios({
+                        method : "get",
+                        url : "/api/check"
+                    }).then((res)=>{
+                        const check = res.data;
+                        if (check === true) {
+                            navigate('/');
+                        } else if (check === false) {
+                            navigate('/welcome');
+                        }
+                    }).catch((err)=>{
+                        if(err.response.status===401){
+                            navigate('/welcome');
+                        }else if(err.response.status===403){
+                            console.log("권한 x");
+                        }
+                    })
+
                 }
             }).catch((err) => {
                 console.log(err);
