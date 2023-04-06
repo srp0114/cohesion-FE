@@ -26,12 +26,19 @@ const FreeNestedReply = ({parentID, url}: NestedReplyProps) => {
         parentId : parentID
       }
 
-      let response = axios({
-        method: "post",
-        url: url, 
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(data),
-      });
+      axios({
+          method : "post",
+          url : url,
+          headers : {"Content-Type" : "application/json"},
+          data : JSON.stringify(data)
+      }).then((res)=>{
+          if(res.status === 200){
+              window.location.reload();
+          }
+      }).catch((err)=>{
+          console.log(err);
+      })
+
       
       // 답글 창 닫기
       setOpenReplyField(false);

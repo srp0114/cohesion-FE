@@ -37,7 +37,7 @@ const Reply = ({postingID} : ReplyProps) => {
   useEffect(()=>{
       axios({
           method : "get",
-          url : "/api/qnaBoards/"+postingID+"/replies"
+          url : url,
       }).then((res)=>{
           setReplyData(res.data);
       }).catch((err)=>{

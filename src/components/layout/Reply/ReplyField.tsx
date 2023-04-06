@@ -20,12 +20,19 @@ const ReplyField = ({url} : ReplyProps) => {
             article : article
         }
 
-        let response = axios({
-            method: "post",
-            url: url,
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(data),
-        });
+        axios({
+          method : "post",
+          url : url,
+          headers : {"Content-Type" : "application/json"},
+          data : JSON.stringify(data)
+        }).then((res)=>{
+            if(res.status === 200){
+                window.location.reload();
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
+
         
         // 텍스트필드 값 지우기
         setArticle("");    

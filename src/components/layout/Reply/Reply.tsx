@@ -5,6 +5,7 @@ import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
+import { urlToHttpOptions } from "url";
 
 interface User {
   id : number;
@@ -33,10 +34,15 @@ const FreeReply = ({postingID} : ReplyProps) => {
   const url = `/api/freeBoards/${postingID}/replies`
 
   useEffect(()=>{
-      axios
-      .get(url)
-      .then((res)=>setReplyData(res.data));
-  },[]);
+      axios({
+          method : "get",
+          url : url,
+      }).then((res)=>{
+          setReplyData(res.data);
+      }).catch((err)=>{
+          console.log(err);
+      })
+  },[])
   
 const replyContainer = (replies: ReplyItems[], parentId?: number) => {
   const filteredReplies = parentId ? replies.filter((reply) => reply.parentId === parentId) : replies;
