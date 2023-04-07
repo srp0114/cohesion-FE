@@ -97,10 +97,12 @@ const HomeQnABoard = () => {
                         '&:hover': {
                             backgroundColor: 'gainsboro',
                             opacity: [1.0, 0.8, 0.7],
-                            borderRadius:2
                         },
-                        m:2, p:1
-                    }}>
+                        m:2, 
+                        p:2, 
+                        border:'1.2px solid gainsboro',
+                        borderRadius:5
+                        }}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>
