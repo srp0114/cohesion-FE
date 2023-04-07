@@ -32,7 +32,10 @@ const HomeQnABoard = () => {
      const handleClose = () => setOpen(false);
    
      const navigate = useNavigate();
- 
+     
+    const goToPost = (postId: number) => {
+        navigate(`/questions/${postId}`);
+    };
      // error(true)인 경우 클릭 시, 모달 출력
      const openInfoModal = () => {
          if(addInfoError) { 
@@ -102,7 +105,8 @@ const HomeQnABoard = () => {
                         p:2, 
                         border:'1.2px solid gainsboro',
                         borderRadius:5
-                        }}>
+                        }}
+                        onClick={() => goToPost(posting.id)}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>

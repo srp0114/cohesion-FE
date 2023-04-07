@@ -29,6 +29,10 @@ const HomeFreeBoard = () => {
   
     const navigate = useNavigate();
 
+    const goToPost = (postId: number) => {
+        navigate(`/free/${postId}`);
+    };
+
     // error(true)인 경우 클릭 시, 모달 출력
     const openInfoModal = () => {
         if(addInfoError) { 
@@ -84,13 +88,13 @@ const HomeFreeBoard = () => {
                         '&:hover': {
                             backgroundColor: 'gainsboro',
                             opacity: [1.0, 0.8, 0.7],
-                            borderRadius:2
                         },
                         m:2, 
                         p:2, 
                         border:'1.2px solid gainsboro',
                         borderRadius:5
-                        }}>
+                        }} 
+                        onClick={() => goToPost(posting.id)}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>
