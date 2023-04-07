@@ -81,49 +81,57 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid xs>
-          <LeftSidebar />
-        </Grid>
-        <Grid xs={9}>
-          <Banner />
-          <Grid container spacing={2}>
-          <Grid xs
-            sx={{
-              // 로그인 여부에 따라 블러 처리              
-              filter: isLogin? null : "blur(1.5px)"
-            }}
-            // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
-            onClick={openModal}
-          > 
-
-            <Modal
-              open={open}
-              onClose={handleClose}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-            > 
-            <Box sx={loginModalstyle}>
-              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <StartButton onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-              </StartButton>
-            </Box>
-            </Modal>
-
-            <HomeFreeBoard />
-            <HomeFreeBoard />
-          </Grid>
+      <Grid container spacing={3}>
           <Grid xs>
-            <HomeQnABoard />
-            <HomeQnABoard />
+            <LeftSidebar />
           </Grid>
+
+          <Grid xs={8}>
+            <Banner/>
+
+            <Grid container spacing={5}>
+
+              <Grid xs
+                sx={{
+                  // 로그인 여부에 따라 블러 처리              
+                  filter: isLogin? null : "blur(1.5px)"
+                }}
+                // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
+                onClick={openModal}
+              > 
+                <Modal
+                  open={open}
+                  onClose={handleClose}
+                  sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                > 
+                <Box sx={loginModalstyle}>
+                  <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+                  <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+                  <StartButton onClick={handleLogin}>
+                    <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+                  </StartButton>
+                </Box>
+                </Modal>
+
+                <HomeFreeBoard />
+              </Grid>
+
+
+              <Grid xs
+                sx={{
+                  // 로그인 여부에 따라 블러 처리              
+                  filter: isLogin? null : "blur(1.5px)"
+                }}>
+                <HomeQnABoard />
+              </Grid>
+
+          </Grid>
+
         </Grid>
-        <WritingButton />
-      </Grid>
-      <Grid xs>
-        <RightSidebar />
-      </Grid>
+
+        <Grid xs>
+          <RightSidebar />
+        </Grid>
       </Grid>
     </>
   );
