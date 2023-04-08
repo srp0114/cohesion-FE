@@ -127,7 +127,7 @@ const Navbar: React.FC = () => {
               <IconButton onClick={moveToMyPage}>
               <UserIcon fontSize="large" /> 
               </IconButton>
-              {/* 로그인시 띄울 닉네임 여기에 */}
+              {/* 서버로부터 받아올 이름 - 여기에 작업해주시면 됩니다! */}
               <Typography sx={{pt:2.5}}variant="subtitle1">김서영</Typography>
             <Button sx={{ m: 2 }} onClick={handleLogin}>
               {isLogin ? "로그아웃" : "로그인"}

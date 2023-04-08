@@ -124,7 +124,7 @@ const Home: React.FC = () => {
                 }}>
                 <HomeQnABoard />
               </Grid>
-
+              <WritingButton/>
           </Grid>
 
         </Grid>
