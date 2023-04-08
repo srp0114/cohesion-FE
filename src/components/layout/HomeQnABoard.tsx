@@ -2,10 +2,11 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import Time from "./Time";
-import { Typography, Box, Modal } from "@mui/material";
-import { RxAvatar } from "react-icons/rx";
-import { BsBookmarkStar } from "react-icons/bs";
-import { TfiCommentAlt } from "react-icons/tfi";
+import { Typography, Box, Modal, Divider } from "@mui/material";
+import { skillData } from "../data/SkillData";
+import UserIcon from '@mui/icons-material/AccountCircleOutlined';
+import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
+import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
 import "../style/Board.css";
 
 // QnaBoardItems 인터페이스
@@ -22,7 +23,7 @@ interface QnaBoardItems {
     
 }
 
-const HomeQnABoard: React.FC = () => {
+const HomeQnABoard = () => {
     const [qnaBoardItems, setQnaBoardItems] = useState<QnaBoardItems[]>([]);
 
      //403 에러 여부 확인
@@ -31,7 +32,10 @@ const HomeQnABoard: React.FC = () => {
      const handleClose = () => setOpen(false);
    
      const navigate = useNavigate();
- 
+     
+    const goToPost = (postId: number) => {
+        navigate(`/questions/${postId}`);
+    };
      // error(true)인 경우 클릭 시, 모달 출력
      const openInfoModal = () => {
          if(addInfoError) { 
@@ -64,7 +68,7 @@ const HomeQnABoard: React.FC = () => {
 
     return (
         <>
-        <div className="board" onClick={openInfoModal}>
+        <Box onClick={openInfoModal} sx={{m:3}}>
             {/* 403에러 true인 경우 모달창 출력*/}
             <Modal
                 open={open}
@@ -79,29 +83,53 @@ const HomeQnABoard: React.FC = () => {
                 
         <Typography variant="h5" className="boardTitle">Q&A 게시판</Typography>
             {qnaBoardItems && qnaBoardItems.map((posting) => {
+                const Skill = posting.language ? (
+                    skillData.map((data) => {
+                        if (posting.language === data.name) {
+                            return (
+                                <img src={data.logo} width="25" height="25"/>
+                            )
+                        } 
+
+                    })
+                ) : (null);
                 return (
                     <>
                     <Box sx={{ 
-                        width: 400, 
-                        height: 130, 
+                        height:130,
                         '&:hover': {
                             backgroundColor: 'gainsboro',
                             opacity: [1.0, 0.8, 0.7],
                         },
-                    }} className="box">
-                    <p><RxAvatar size={30} className="icon"/></p> 
-                    <p className="name">
-                        {posting.writer} · <Time date={posting.createdDate}/> 
-                        <img className="language" src={posting.language} />
-                    </p>
-                    <p className="title">{posting.title}</p>
-                    <p className="comment"><TfiCommentAlt size={20}/> {posting.reply}</p>
-                    <p className="bookmark"><BsBookmarkStar size={20}/>{posting.bookmark}</p>
+                        m:2, 
+                        p:2, 
+                        border:'1.2px solid gainsboro',
+                        borderRadius:5
+                        }}
+                        onClick={() => goToPost(posting.id)}>
+                        <Box sx={{display:'flex', justifyContent:'space-between'}}>
+                            <Box sx={{display:'flex'}}>
+                            <UserIcon fontSize="large"/>
+                            <Typography sx={{pt:0.8, pl:0.5}}>{posting.writer}</Typography>
+                            </Box>
+                            <Box sx={{display:'flex'}}>
+                            <Time date={posting.createdDate}/> 
+                            {Skill}
+                            </Box>
+                        </Box>
+                        <Box sx={{justifyContent:'flex-start', ml:5, mt:1}}>
+                            <Typography variant="subtitle1">{posting.title}</Typography>
+                        </Box>
+                        <Box sx={{display:'flex', justifyContent:'flex-end', m:0.8}}>
+                            <ChatIcon/><Typography sx={{pl:0.7, pr:1}}>{posting.reply}</Typography>
+                            <BookmarkIcon/><Typography sx={{pl:0.7}}>{posting.bookmark}</Typography>
+                        </Box>
                     </Box>
+                    <Divider/>
                     </>
                 );
             })}
-        </div>
+        </Box>
         </>
     );
   }
