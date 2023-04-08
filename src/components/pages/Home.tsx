@@ -12,56 +12,36 @@ import HomeQnABoard from "../layout/HomeQnABoard";
 import AddIcon from "@mui/icons-material/Add";
 import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
+import {checkLogin} from "../checkLogin";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
+  const [nickname, setNickname] = useState(undefined);
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰있으면 - 게시판 보이도록
   // 토큰없으면 - 게시판 블러 처리
   useEffect(() => {
-    const token = sessionStorage.getItem("id_token");
-    if (token) { //
-      axios
-          .get("/api/check")
-          .then((response) => {
-            const check = response.data;
-            if (check === true) { // 여기서 true이면 로그인 된 상태
-              setIsLogin(true);
-            } else {
-              // 부가정보를 입력하지 않은 유저
-              console.log("잘못된 접근입니다.");
-              // 1. 부가 정보 요청(부가 정보 페이지로 리다이렉트)
-            }
-          })
-          .catch((error) => {
-            if (error) {
-              console.log(
-                  `잘못된 접근입니다. 에러코드 : ${error.response.status}`
-              );
-            }
-          });
-    } else setIsLogin(false);
-  }, []);
-
-
-
-  useEffect(()=>{
-    axios({
-      method : "get",
-      url : "/api/user-info"
-    }).then((res)=>{
-      console.log(res.data);
-    }).catch((err)=>{
-      if(err.response.status===401){
-        console.log("로그인 x");
-      }else if(err.response.status===403){
-        console.log("권한 x");
+    checkLogin().then((res) => {
+      if (res) {
+        setIsLogin(true);
+        axios({
+          method: "get",
+          url: "/api/user-info",
+        })
+            .then((res) => {
+              setNickname(res.data.nickname);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      } else {
+        setIsLogin(false);
       }
-    })
-  },[])
+    });
+  }, []);
 
   const navigate = useNavigate();
 
@@ -83,13 +63,15 @@ const Home: React.FC = () => {
     <>
       <Grid container spacing={3}>
           <Grid xs>
-            <LeftSidebar />
+            <LeftSidebar nickname={nickname} />
           </Grid>
 
           <Grid xs={8}>
             <Banner/>
 
-            <Grid container spacing={5}>
+            <Grid container spacing={5}
+                  onClick={openModal}
+            >
 
               <Grid xs
                 sx={{
@@ -97,8 +79,7 @@ const Home: React.FC = () => {
                   filter: isLogin? null : "blur(1.5px)"
                 }}
                 // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
-                onClick={openModal}
-              > 
+              >
                 <Modal
                   open={open}
                   onClose={handleClose}

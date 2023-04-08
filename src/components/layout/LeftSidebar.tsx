@@ -2,7 +2,11 @@ import React from "react";
 import { Box, Typography } from "@mui/material"
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 
-const LeftSidebar = () => {
+interface Proptypes {
+    nickname?: string
+}
+
+const LeftSidebar = ({nickname}: Proptypes) => {
     return (
         <>
         <Box
@@ -13,8 +17,12 @@ const LeftSidebar = () => {
         >
             <UserIcon fontSize="large" sx={{p:0, m:0}}/>
             {/* 서버로부터 받아올 이름 - 여기에 작업해주시면 됩니다! */}
-            <Typography variant="subtitle1" sx={{p:0.5}}>김서영</Typography>
-        </Box>      
+            <Typography variant="subtitle1" sx={{p:0.5}}>
+                {
+                    nickname ? `${nickname} 님` : null
+                }
+            </Typography>
+        </Box>
         <Box>
         <Box sx={{
             p:0.5,
