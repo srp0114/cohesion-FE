@@ -21,6 +21,20 @@ axios.interceptors.request.use(
   }
 );
 
+axios.interceptors.response.use(
+response => response,
+error => {
+    if (error.response.status === 401) { // 인가 서버에서 로그인을 하지 않은 경우
+        // TODO 모달 출력 등 특정 작업 수행(논의), 현재는 바로 메인 페이지로 이동
+        window.location.replace("/"); // 뒤로 가기 실행 시 API 요청을 실패한 페이지로의 이동을 막기 위해 replace 사용
+    } else if (error.response.status === 403) { // 인가 서버에서 로그인을 했으나, 부가 정보를 입력하지 않은 경우
+        // TODO 모달 출력 등 특정 작업 수행(논의), 현재는 바로 부가 정보 입력 페이지로 이동
+        window.location.replace("/welcome");
+    }
+
+    return Promise.reject(error);
+});
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
