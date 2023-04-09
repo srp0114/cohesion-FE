@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  ButtonBase,
-  ListItemAvatar,
-  Avatar,
-  Autocomplete,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
@@ -99,13 +89,13 @@ const Welcome: React.FC = () => {
     }
   };
 
-  //닉네임, 관심기술, 자기소개
+  // 서버로부터 받아온 이름, 닉네임, 관심기술, 자기소개
   const [defaultNickname, setDefaultNickname] = useState<string>(userAccount.name);
   const [nickname, setNickname] = useState<string>("");
   const [skill, setSkill] = useState<typeof skillData>([]);
   const [introduce, setIntroduce] = useState<string>("");
 
-  //닉네임, 자기소개 핸들러
+  // 닉네임, 자기소개 핸들러
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDefaultNickname(event.target.value);
     setNickname(event.target.value);
@@ -166,9 +156,10 @@ const Welcome: React.FC = () => {
               }}
             >
               <Box>
-                <ImageButton>
+                {/* 프로필 선택하는 경우, setProfileImg 이용해서 값 변경하기 */}
+                <ImageButton onClick={()=>{console.log(profileImg)}}>
                   <ListItemAvatar>
-                    <Avatar alt="Travis Howard" src={profileImg} />
+                    <Avatar alt="avatar" src={profileImg} />
                   </ListItemAvatar>
                   <Typography
                     variant="subtitle1"
