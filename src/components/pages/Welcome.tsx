@@ -54,10 +54,12 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   "&:hover, &.Mui-focusVisible": {
     zIndex: 1,
     border: "2px solid #0d47a1",
-    borderRaduis: 20,
     "& .MuiImageBackdrop-root": {
       opacity: 0,
     },
+  },
+  "&:focus, &.Mui-focus": {
+    border: "2.5px solid #0d47a1",
   },
   border: "1px solid #e0e0e0",
   borderRadius: 20,
@@ -98,12 +100,14 @@ const Welcome: React.FC = () => {
   };
 
   //닉네임, 관심기술, 자기소개
-  const [nickname, setNickname] = useState<string>();
+  const [defaultNickname, setDefaultNickname] = useState<string>(userAccount.name);
+  const [nickname, setNickname] = useState<string>("");
   const [skill, setSkill] = useState<typeof skillData>([]);
-  const [introduce, setIntroduce] = useState<string>();
+  const [introduce, setIntroduce] = useState<string>("");
 
   //닉네임, 자기소개 핸들러
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDefaultNickname(event.target.value);
     setNickname(event.target.value);
     console.log(nickname);
   };
@@ -172,7 +176,7 @@ const Welcome: React.FC = () => {
                       p: 4,
                     }}
                   >
-                    {userAccount.name}
+                    {defaultNickname}
                   </Typography>
                 </ImageButton>
               </Box>
