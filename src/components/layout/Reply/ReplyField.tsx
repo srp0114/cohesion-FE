@@ -15,11 +15,9 @@ const ReplyField = ({url} : ReplyProps) => {
     const location = useLocation();
 
     const onSubmit = () => {
-        
         const data ={
             article : article
         }
-
         axios({
           method : "post",
           url : url,
@@ -32,13 +30,6 @@ const ReplyField = ({url} : ReplyProps) => {
         }).catch((err)=>{
             console.log(err);
         })
-
-        
-        // 텍스트필드 값 지우기
-        setArticle("");    
-        
-        // 수정 필요
-        window.location.href=location.pathname;  
     }
 
     return (

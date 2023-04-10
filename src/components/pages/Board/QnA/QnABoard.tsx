@@ -42,6 +42,11 @@ const QnABaord: React.FC = () => {
 
   const navigate = useNavigate();
 
+
+
+
+
+
   useEffect(()=>{
     //목록 조회 부분
     axios({
@@ -55,6 +60,17 @@ const QnABaord: React.FC = () => {
       }else if(err.response.status===403){
         console.log("권한 x");
       }
+    })
+
+    axios({
+      method : "get",
+      url : "/api/qnaBoards/most"
+    }).then((res)=>{
+      if(res.status === 200){
+        setMostViewedItems(res.data);
+      }
+    }).catch((err)=>{
+      console.log(err);
     })
   },[])
 

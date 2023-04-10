@@ -1,10 +1,13 @@
 import React from "react";
-import "../style/Home.css"
-
+import { Box } from "@mui/material"
 const Banner: React.FC = () => {
     return (
       <>
-        <div className="banner"/>
+        <Box sx={{
+          height:300,
+          backgroundColor: '#c9c9c9',
+          }}
+        />
       </>
     );
   }

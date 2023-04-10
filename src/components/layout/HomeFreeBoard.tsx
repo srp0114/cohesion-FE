@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
-import { Typography, Box, Modal } from "@mui/material";
+import { Typography, Box, Modal, Divider } from "@mui/material";
 import Time from "./Time";
-import { RxAvatar } from "react-icons/rx";
-import { BsBookmarkStar } from "react-icons/bs";
-import { TfiCommentAlt } from "react-icons/tfi";
+import UserIcon from '@mui/icons-material/AccountCircleOutlined';
+import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
+import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
 import "../style/Board.css";
 
 // FreeBoardItems 인터페이스
@@ -19,7 +19,7 @@ interface FreeBoardItems {
     reply: number;
 }
   
-const HomeFreeBoard: React.FC = () => {
+const HomeFreeBoard = () => {
     const [boardItems, setBoardItems] = useState<FreeBoardItems[]>([]);
 
     //403 에러 여부 확인
@@ -28,6 +28,10 @@ const HomeFreeBoard: React.FC = () => {
     const handleClose = () => setOpen(false);
   
     const navigate = useNavigate();
+
+    const goToPost = (postId: number) => {
+        navigate(`/free/${postId}`);
+    };
 
     // error(true)인 경우 클릭 시, 모달 출력
     const openInfoModal = () => {
@@ -62,7 +66,7 @@ const HomeFreeBoard: React.FC = () => {
 
     return (
         <>
-            <div className="board" onClick={openInfoModal}>
+            <Box onClick={openInfoModal} sx={{m:3}}>
                 {/* 403에러 true인 경우 모달창 출력*/}
                 <Modal
                     open={open}
@@ -75,30 +79,44 @@ const HomeFreeBoard: React.FC = () => {
                     </Box>
                 </Modal>
                 
-                <Typography variant="h5" className="boardTitle">자유게시판</Typography>
+                <Typography variant="h5">자유게시판</Typography>
                 {boardItems && boardItems.map((posting) => {
                     return (
-                        <div>
-                        <Box sx={{
-                            width: 400, 
-                            height: 130, 
-                            '&:hover': {
-                                backgroundColor: 'gainsboro',
-                                opacity: [1.0, 0.8, 0.7],
-                            },
-                        }} className="box">
-                        <p><RxAvatar size={30} className="icon"/></p>
-                        <p className="name">
-                            {posting.writer} · <Time date={posting.createdDate}/> 
-                        </p>
-                        <p className="title">{posting.title}</p>
-                        <p className="comment"><TfiCommentAlt size={20}/> {posting.reply}</p>
-                        <p className="bookmark"><BsBookmarkStar size={20}/>{posting.bookmark}</p>
+                        <>
+                       <Box sx={{ 
+                        height:130,
+                        '&:hover': {
+                            backgroundColor: 'gainsboro',
+                            opacity: [1.0, 0.8, 0.7],
+                        },
+                        m:2, 
+                        p:2, 
+                        border:'1.2px solid gainsboro',
+                        borderRadius:5
+                        }} 
+                        onClick={() => goToPost(posting.id)}>
+                        <Box sx={{display:'flex', justifyContent:'space-between'}}>
+                            <Box sx={{display:'flex'}}>
+                            <UserIcon fontSize="large"/>
+                            <Typography sx={{pt:0.8, pl:0.5}}>{posting.writer}</Typography>
+                            </Box>
+                            <Box sx={{display:'flex', justifyContent:'flex-end'}}>
+                                <Time date={posting.createdDate}/> 
+                            </Box>
                         </Box>
-                        </div>
+                        <Box sx={{justifyContent:'flex-start', ml:5, mt:1}}>
+                            <Typography variant="subtitle1">{posting.title}</Typography>
+                        </Box>
+                        <Box sx={{display:'flex', justifyContent:'flex-end', m:0.8}}>
+                            <ChatIcon/><Typography sx={{pl:0.7, pr:1}}>{posting.reply}</Typography>
+                            <BookmarkIcon/><Typography sx={{pl:0.7}}>{posting.bookmark}</Typography>
+                        </Box>
+                    </Box>
+                    <Divider/>
+                    </>
                     );
                 })}
-            </div>
+            </Box>
         </>
     );
 };

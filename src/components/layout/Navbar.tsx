@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Button, Box, IconButton, Menu, MenuItem } from "@mui/material";
-import { RxAvatar } from "react-icons/rx";
+import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import axios from "axios";
+import {checkLogin} from "../checkLogin";
 
 
 const Navbar: React.FC = () => {
@@ -20,15 +21,28 @@ const Navbar: React.FC = () => {
   };
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [nickname, setNickname] = useState(null);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
   // 로그아웃 기능 추가 필요!!
   useEffect(() => {
-    let token = sessionStorage.getItem("id_token");
-    // token 여부에 따라 로그인 여부 정하기
-    token ? setIsLogin(true) : setIsLogin(false);
-    console.log(token);
+    checkLogin()
+        .then((res) => {
+          if (res) {
+            setIsLogin(true);
+            axios({
+              method: "get",
+              url: "/api/user-info"
+            }).then((res) => {
+              setNickname(res.data.nickname);
+            }).catch((err) => {
+              console.log(err);
+            });
+          } else {
+            setIsLogin(false);
+          }
+        })
   }, []);
 
   // 백에서 Home페이지에 추가해둔 로그인 핸들러 그대로 가져왔습니다
@@ -123,15 +137,19 @@ const Navbar: React.FC = () => {
           </Button>
         </Box>
 
-        <Box>
-          {/* 상단 로그인 - 로그아웃 버튼 추가 */}
-          <Button sx={{ m: 2 }} onClick={handleLogin}>
-            {isLogin ? "로그아웃" : "로그인"}
-          </Button>
-          {/* 아이콘 버튼 처리 */}
-          <IconButton onClick={moveToMyPage}>
-            <RxAvatar size={30} />
-          </IconButton>
+          <Box sx={{display:'flex'}}>
+              <IconButton onClick={moveToMyPage}>
+              <UserIcon fontSize="large" /> 
+              </IconButton>
+              {/* 서버로부터 받아올 이름 - 여기에 작업해주시면 됩니다! */}
+              <Typography sx={{pt:2.5}}variant="subtitle1">
+                {
+                  nickname ? `${nickname} 님`: null
+                }
+              </Typography>
+            <Button sx={{ m: 2 }} onClick={handleLogin}>
+              {isLogin ? "로그아웃" : "로그인"}
+            </Button>
         </Box>
       </Box>
     </div>
