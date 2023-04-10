@@ -90,7 +90,11 @@ const Welcome = () => {
           return;
         }
         setUserAccount(payload);
-        if (payload) setProfileImg(payload.picture);
+        if (payload) {
+          setProfileImg(payload.picture);
+          // 서버에 저장된 이름 출력하기 위해 추가
+          setDefaultNickname(payload.name);
+        }
       });
     } else {
       alert("로그인이 필요합니다.");
@@ -99,7 +103,7 @@ const Welcome = () => {
   };
 
   // 서버로부터 받아온 이름, 닉네임, 관심기술, 자기소개
-  const [defaultNickname, setDefaultNickname] = useState<string>(userAccount.name);
+  const [defaultNickname, setDefaultNickname] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [skill, setSkill] = useState<typeof skillData>([]);
   const [introduce, setIntroduce] = useState<string>("");
