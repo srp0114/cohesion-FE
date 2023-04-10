@@ -34,19 +34,11 @@ const FreeNestedReply = ({parentID, url}: NestedReplyProps) => {
       }).then((res)=>{
           if(res.status === 200){
               window.location.reload();
+              setOpenReplyField(false);
           }
       }).catch((err)=>{
           console.log(err);
       })
-
-      
-      // 답글 창 닫기
-      setOpenReplyField(false);
-      // 답글 필드 비우기
-      setReplyArticle("");
-      
-      // 수정필요
-      window.location.href=location.pathname;
     }
     
     return (
