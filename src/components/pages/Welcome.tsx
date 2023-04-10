@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  ButtonBase,
-  ListItemAvatar,
-  Avatar,
-  Autocomplete,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
@@ -53,17 +43,28 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   },
   "&:hover, &.Mui-focusVisible": {
     zIndex: 1,
-    border: "2px solid #0d47a1",
-    borderRaduis: 20,
-    "& .MuiImageBackdrop-root": {
-      opacity: 0,
-    },
+    border: "2px solid #5b81bd",
   },
-  border: "1px solid #e0e0e0",
+  "&:focus": {
+    border: "2.5px solid #5b81bd",
+  },
+  "&:active": {
+    border: "2.5px solid #5b81bd",
+  },
   borderRadius: 20,
+  border : 'var(--border)',
 }));
 
-const Welcome: React.FC = () => {
+// 기본 border, 클릭하는 경우 border css 지정
+const defaultBorder = {
+  '--border': "1px solid #e0e0e0",
+} as React.CSSProperties;
+
+const clickBorder = {
+  '--border': "2.5px solid #5b81bd",
+} as React.CSSProperties;
+
+const Welcome = () => {
   const [profileImg, setProfileImg] = useState("");
   const [userAccount, setUserAccount] =
     useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
@@ -89,7 +90,11 @@ const Welcome: React.FC = () => {
           return;
         }
         setUserAccount(payload);
-        if (payload) setProfileImg(payload.picture);
+        if (payload) {
+          setProfileImg(payload.picture);
+          // 서버에 저장된 이름 출력하기 위해 추가
+          setDefaultNickname(payload.name);
+        }
       });
     } else {
       alert("로그인이 필요합니다.");
@@ -97,13 +102,19 @@ const Welcome: React.FC = () => {
     }
   };
 
-  //닉네임, 관심기술, 자기소개
-  const [nickname, setNickname] = useState<string>();
+  // 서버로부터 받아온 이름, 닉네임, 관심기술, 자기소개
+  const [defaultNickname, setDefaultNickname] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
   const [skill, setSkill] = useState<typeof skillData>([]);
-  const [introduce, setIntroduce] = useState<string>();
+  const [introduce, setIntroduce] = useState<string>("");
 
-  //닉네임, 자기소개 핸들러
+  // 프로필 선택 여부 확인을 위한 useState 
+  // 기본 -1로 지정
+  const [flag, setFlag] = useState<number>(-1);
+
+  // 닉네임, 자기소개 핸들러
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDefaultNickname(event.target.value);
     setNickname(event.target.value);
     console.log(nickname);
   };
@@ -161,10 +172,13 @@ const Welcome: React.FC = () => {
                 mt: 2,
               }}
             >
-              <Box>
-                <ImageButton>
+                {/* 프로필 선택하는 경우, setProfileImg 이용해서 값 변경하기 */}
+                <ImageButton 
+                  style={flag === 1 ? clickBorder : defaultBorder} 
+                  onClick={()=>setFlag(1)}
+                >
                   <ListItemAvatar>
-                    <Avatar alt="Travis Howard" src={profileImg} />
+                    <Avatar alt="avatar" src={profileImg} />
                   </ListItemAvatar>
                   <Typography
                     variant="subtitle1"
@@ -172,12 +186,13 @@ const Welcome: React.FC = () => {
                       p: 4,
                     }}
                   >
-                    {userAccount.name}
+                    {defaultNickname}
                   </Typography>
                 </ImageButton>
-              </Box>
-              <Box>
-                <ImageButton>
+                <ImageButton 
+                  style={flag === 2 ? clickBorder : defaultBorder} 
+                  onClick={()=>setFlag(2)}
+                >
                   <ProfileIcon sx={{ fontSize: 50 }} />
                   <Typography
                     variant="subtitle1"
@@ -188,7 +203,6 @@ const Welcome: React.FC = () => {
                     {nickname}
                   </Typography>
                 </ImageButton>
-              </Box>
             </Box>
           </Box>
           <Box>
