@@ -26,7 +26,8 @@ interface FreeDetailItems {
 const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id : string };
-
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [bookmarkCheck, setBookmarkCheck] = useState(false);
 
   useEffect(()=>{
     axios({
@@ -41,7 +42,53 @@ const FreeDetails = (): JSX.Element => {
         console.log("권한 x");
       }
     })
+    //해당 게시글의 북마크 수
+    axios({
+      method : "get",
+      url : "/api/free-boards/"+id+"/bookmark-count"
+    }).then((res)=>{
+      setBookmarkCount(res.data);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
+    axios({
+      method : "get",
+      url : "/api/free-boards/"+id+"/bookmark-check"
+    }).then((res)=>{
+      setBookmarkCheck(res.data);
+    }).catch((err)=>{
+      console.log(err);
+    })
+
   },[])
+
+  //북마크 등록
+  const onClickBookmark = ()=>{
+    if(bookmarkCheck === false){
+      axios({
+       method : "post",
+       url : "/api/free-boards/"+id+"/bookmark"
+      }).then((res)=>{
+        if(res.status===200){
+          alert("해당 게시글을 북마크로 등록하였습니다.");
+         window.location.reload();
+       }
+      }).catch((err)=>{
+       console.log(err);
+      })
+    }else{
+      axios({
+        method : "delete",
+        url : "/api/free-boards/"+id+"/bookmark"
+      }).then((res)=>{
+        alert("북마크를 취소하였습니다.");
+        window.location.reload();
+      }).catch((err)=>{
+        console.log(err);
+      })
+    }
+  }
 
   const detailPosting = postItem ? (
     <>
@@ -81,8 +128,8 @@ const FreeDetails = (): JSX.Element => {
             <IconButton size="small">
               <Person2OutlinedIcon /> {postItem.views}
             </IconButton>
-            <IconButton size="small">
-              <BookmarkIcon /> {postItem.bookmark}
+            <IconButton size="small" onClick={onClickBookmark}>
+              <BookmarkIcon /> {bookmarkCount}
             </IconButton>
           </Stack>
         </Box>
