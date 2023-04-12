@@ -34,6 +34,14 @@ export const theme = createTheme({
           fullWidth: true,      
           sx: { mt: 2 },
         },
+      },
+      MuiTypography: { 
+        styleOverrides: { 
+          root: {
+            wordWrap: "break-word"
+          }
+        }
       }
+      
     }
   });
