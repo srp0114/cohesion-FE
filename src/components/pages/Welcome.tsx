@@ -1,15 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  ButtonBase,
-  ListItemAvatar,
-  Avatar,
-  Autocomplete
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
@@ -17,6 +7,7 @@ import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -52,56 +43,78 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   },
   "&:hover, &.Mui-focusVisible": {
     zIndex: 1,
-    border: "2px solid #0d47a1",
-    borderRaduis: 20,
-    "& .MuiImageBackdrop-root": {
-      opacity: 0,
-    },
+    border: "2px solid #5b81bd",
   },
-  border: "1px solid #e0e0e0",
+  "&:focus": {
+    border: "2.5px solid #5b81bd",
+  },
+  "&:active": {
+    border: "2.5px solid #5b81bd",
+  },
   borderRadius: 20,
+  border : 'var(--border)',
 }));
 
-const Welcome: React.FC = () => {
+// 기본 border, 클릭하는 경우 border css 지정
+const defaultBorder = {
+  '--border': "1px solid #e0e0e0",
+} as React.CSSProperties;
+
+const clickBorder = {
+  '--border': "2.5px solid #5b81bd",
+} as React.CSSProperties;
+
+const Welcome = () => {
   const [profileImg, setProfileImg] = useState("");
-  const [userAccount, setUserAccount] = useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
+  const [userAccount, setUserAccount] =
+    useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
+  const navigate = useNavigate();
 
   useEffect(() => {
     idTokenVerifier();
-
-  }, [])
+  }, []);
 
   const idTokenVerifier = () => {
     const verifier = new IdTokenVerifier({
-      issuer: 'http://localhost:8081', // issuer 가 같은지
-      audience: 'client', // audience 가 같은지
-      jwksURI: 'http://localhost:8081/oauth2/jwks' // get public key
+      issuer: "http://localhost:8081", // issuer 가 같은지
+      audience: "client", // audience 가 같은지
+      jwksURI: "http://localhost:8081/oauth2/jwks", // get public key
     });
 
-    const id_token = sessionStorage.getItem("id_token")
+    const id_token = sessionStorage.getItem("id_token");
 
     if (id_token) {
-      verifier.verify(id_token, (error, payload:any) => {
+      verifier.verify(id_token, (error, payload: any) => {
         if (error) {
           alert("토큰이 만료되었습니다.");
           return;
         }
         setUserAccount(payload);
-        if (payload) setProfileImg(payload.picture);
+        if (payload) {
+          setProfileImg(payload.picture);
+          // 서버에 저장된 이름 출력하기 위해 추가
+          setDefaultNickname(payload.name);
+        }
       });
     } else {
       alert("로그인이 필요합니다.");
+      window.location.href = "/";
     }
-  }
+  };
 
-
-  //닉네임, 관심기술, 자기소개
-  const [nickname, setNickname] = useState<string>();
+  // 서버로부터 받아온 이름, 닉네임, 관심기술, 자기소개
+  const [defaultNickname, setDefaultNickname] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
   const [skill, setSkill] = useState<typeof skillData>([]);
-  const [introduce, setIntroduce] = useState<string>();
+  const [introduce, setIntroduce] = useState<string>("");
 
-  //닉네임, 자기소개 핸들러
+  // 프로필 선택 여부 확인을 위한 useState 
+  // 기본 -1로 지정
+  const [flag, setFlag] = useState<number>(-1);
+
+  // 닉네임, 자기소개 핸들러
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDefaultNickname(event.target.value);
     setNickname(event.target.value);
     console.log(nickname);
   };
@@ -112,33 +125,31 @@ const Welcome: React.FC = () => {
     console.log(skill);
   };
 
-
-  
-  
   const request_data = {
-    studentId : userAccount.sub,
-    name : userAccount.name,
-    nickname : nickname,
-    introduce : introduce,
-    track1 : userAccount.track1,
-     track2 : userAccount.track2
+    studentId: userAccount.sub,
+    name: userAccount.name,
+    nickname: nickname,
+    introduce: introduce,
+    track1: userAccount.track1,
+    track2: userAccount.track2,
   };
 
-
-  const confirm = () =>{  
-
-      try{
-        let response = axios({
-        method: "post",
-        url: "/api/join", // 테스트를 위해 id 고정
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(request_data)
+  const confirm = () => {
+    axios({
+      method: "post",
+      url: "/api/join",
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(request_data),
+    })
+      .then((response) => {
+        if (response.status === 200) { // 부가 정보 입력 정상 완료 시
+          navigate("/"); // 메인 페이지로 이동
+        } // 에러 핸들링 ...
+      })
+      .catch((error) => {
+        console.error(error);
       });
-    }catch(err){
-        console.log(err);
-    }
-      window.location.href = "/";
-  }
+  };
 
   return (
     <>
@@ -161,13 +172,13 @@ const Welcome: React.FC = () => {
                 mt: 2,
               }}
             >
-              <Box>
-                <ImageButton>
+                {/* 프로필 선택하는 경우, setProfileImg 이용해서 값 변경하기 */}
+                <ImageButton 
+                  style={flag === 1 ? clickBorder : defaultBorder} 
+                  onClick={()=>setFlag(1)}
+                >
                   <ListItemAvatar>
-                    <Avatar
-                      alt="Travis Howard"
-                      src={profileImg}
-                    />
+                    <Avatar alt="avatar" src={profileImg} />
                   </ListItemAvatar>
                   <Typography
                     variant="subtitle1"
@@ -175,12 +186,13 @@ const Welcome: React.FC = () => {
                       p: 4,
                     }}
                   >
-                    {userAccount.name}
+                    {defaultNickname}
                   </Typography>
                 </ImageButton>
-              </Box>
-              <Box>
-                <ImageButton>
+                <ImageButton 
+                  style={flag === 2 ? clickBorder : defaultBorder} 
+                  onClick={()=>setFlag(2)}
+                >
                   <ProfileIcon sx={{ fontSize: 50 }} />
                   <Typography
                     variant="subtitle1"
@@ -191,7 +203,6 @@ const Welcome: React.FC = () => {
                     {nickname}
                   </Typography>
                 </ImageButton>
-              </Box>
             </Box>
           </Box>
           <Box>
@@ -256,25 +267,29 @@ const Welcome: React.FC = () => {
             />
           </Box>
           <Box>
-              <Typography>관심기술</Typography>
-              <Autocomplete
-                multiple
-                options={skillData}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                    {option.name}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                    }}
-                  />
-                )}  
-              />
+            <Typography>관심기술</Typography>
+            <Autocomplete
+              multiple
+              options={skillData}
+              getOptionLabel={(option) => option.name}
+              renderOption={(props, option) => (
+                <Box
+                  component="li"
+                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                  {...props}
+                >
+                  {option.name}
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                  }}
+                />
+              )}
+            />
           </Box>
           <Box>
             <Typography>자기소개</Typography>
@@ -290,7 +305,9 @@ const Welcome: React.FC = () => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Button sx={{ mr: 1 }}>뒤로</Button>
-            <Button variant="contained" onClick={confirm}>완료</Button>
+            <Button variant="contained" onClick={confirm}>
+              완료
+            </Button>
           </Box>
         </Stack>
       </Box>

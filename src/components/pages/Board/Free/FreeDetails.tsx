@@ -4,8 +4,8 @@ import Time from "../../../layout/Time";
 import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
-import { Reply } from "../../../model/reply";
 import axios from "axios";
+import Reply from "../../../layout/Reply/Reply";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -20,20 +20,75 @@ interface FreeDetailItems {
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  replies?: Array<Reply> | undefined;
   views: number; //조회수
 }
 
-const FreeDetails: React.FC = (): JSX.Element => {
+const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
-  const { id } = useParams();
+  const { id } = useParams() as { id : string };
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [bookmarkCheck, setBookmarkCheck] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get(`/api/freeBoards/${id}`)
-      .then((res) => setPostItem(res.data.data))
-      .catch((err) => console.log(err));
-  }, []);
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/freeBoards/"+id
+    }).then((res)=>{
+      setPostItem(res.data.data)
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+    //해당 게시글의 북마크 수
+    axios({
+      method : "get",
+      url : "/api/free-boards/"+id+"/bookmark-count"
+    }).then((res)=>{
+      setBookmarkCount(res.data);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
+    axios({
+      method : "get",
+      url : "/api/free-boards/"+id+"/bookmark-check"
+    }).then((res)=>{
+      setBookmarkCheck(res.data);
+    }).catch((err)=>{
+      console.log(err);
+    })
+
+  },[])
+
+  //북마크 등록
+  const onClickBookmark = ()=>{
+    if(bookmarkCheck === false){
+      axios({
+       method : "post",
+       url : "/api/free-boards/"+id+"/bookmark"
+      }).then((res)=>{
+        if(res.status===200){
+          alert("해당 게시글을 북마크로 등록하였습니다.");
+         window.location.reload();
+       }
+      }).catch((err)=>{
+       console.log(err);
+      })
+    }else{
+      axios({
+        method : "delete",
+        url : "/api/free-boards/"+id+"/bookmark"
+      }).then((res)=>{
+        alert("북마크를 취소하였습니다.");
+        window.location.reload();
+      }).catch((err)=>{
+        console.log(err);
+      })
+    }
+  }
 
   const detailPosting = postItem ? (
     <>
@@ -73,8 +128,8 @@ const FreeDetails: React.FC = (): JSX.Element => {
             <IconButton size="small">
               <Person2OutlinedIcon /> {postItem.views}
             </IconButton>
-            <IconButton size="small">
-              <BookmarkIcon /> {postItem.bookmark}
+            <IconButton size="small" onClick={onClickBookmark}>
+              <BookmarkIcon /> {bookmarkCount}
             </IconButton>
           </Stack>
         </Box>
@@ -86,9 +141,7 @@ const FreeDetails: React.FC = (): JSX.Element => {
           >
             {`${postItem.reply}개의 댓글이 있습니다.`}
           </Typography>
-          <Box sx={{ border: "1px solid #787878", height: "50%" }}>
-            {/*은서: 추후 이곳에 댓글 목록, 댓글 작성란 등 컴포넌트 추가하기*/}
-          </Box>
+          <Reply postingID={id} />
         </Box>
       </Box>
     </>

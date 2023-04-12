@@ -11,21 +11,37 @@ import HomeFreeBoard from "../layout/HomeFreeBoard";
 import HomeQnABoard from "../layout/HomeQnABoard";
 import AddIcon from "@mui/icons-material/Add";
 import hansung from  "../asset/image/hansung.png";
+import axios from "axios";
+import {checkLogin} from "../checkLogin";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
+  const [nickname, setNickname] = useState(undefined);
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰있으면 - 게시판 보이도록
   // 토큰없으면 - 게시판 블러 처리
-  useEffect (() => {
-    let token = sessionStorage.getItem("id_token");
-    // token여부에 따라 로그인 여부 정하기
-    token ? (setIsLogin(true)) : (setIsLogin(false));
-    console.log(token);
-  }, [])
+  useEffect(() => {
+    checkLogin().then((res) => {
+      if (res) {
+        setIsLogin(true);
+        axios({
+          method: "get",
+          url: "/api/user-info",
+        })
+            .then((res) => {
+              setNickname(res.data.nickname);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      } else {
+        setIsLogin(false);
+      }
+    });
+  }, []);
 
   const navigate = useNavigate();
 
@@ -45,51 +61,58 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <button onClick={handleLogin}>로그인</button>
-
-      <Grid container spacing={2}>
-        <Grid xs>
-          <LeftSidebar />
-        </Grid>
-        <Grid xs={9}>
-          <Banner />
-          <Grid container spacing={2}>
-          <Grid xs
-            sx={{
-              // 로그인 여부에 따라 블러 처리              
-              filter: isLogin? null : "blur(1.5px)"
-            }}
-            // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
-            onClick={openModal}
-          > 
-
-            <Modal
-              open={open}
-              onClose={handleClose}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-            > 
-            <Box sx={loginModalstyle}>
-              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <StartButton onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-              </StartButton>
-            </Box>
-            </Modal>
-
-            <HomeFreeBoard />
-            <HomeFreeBoard />
-          </Grid>
+      <Grid container spacing={3}>
           <Grid xs>
-            <HomeQnABoard />
-            <HomeQnABoard />
+            <LeftSidebar nickname={nickname} />
           </Grid>
+
+          <Grid xs={8}>
+            <Banner/>
+
+            <Grid container spacing={5}
+                  onClick={openModal}
+            >
+
+              <Grid xs
+                sx={{
+                  // 로그인 여부에 따라 블러 처리              
+                  filter: isLogin? null : "blur(1.5px)"
+                }}
+                // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
+              >
+                <Modal
+                  open={open}
+                  onClose={handleClose}
+                  sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                > 
+                <Box sx={loginModalstyle}>
+                  <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+                  <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+                  <StartButton onClick={handleLogin}>
+                    <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+                  </StartButton>
+                </Box>
+                </Modal>
+
+                <HomeFreeBoard />
+              </Grid>
+
+
+              <Grid xs
+                sx={{
+                  // 로그인 여부에 따라 블러 처리              
+                  filter: isLogin? null : "blur(1.5px)"
+                }}>
+                <HomeQnABoard />
+              </Grid>
+              <WritingButton/>
+          </Grid>
+
         </Grid>
-        <WritingButton />
-      </Grid>
-      <Grid xs>
-        <RightSidebar />
-      </Grid>
+
+        <Grid xs>
+          <RightSidebar />
+        </Grid>
       </Grid>
     </>
   );

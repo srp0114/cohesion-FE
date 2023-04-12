@@ -42,18 +42,38 @@ const QnABaord: React.FC = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 목록 조회 부분
-    axios
-      .get(`/api/qnaBoardsPage?page=0`)
-      .then((response) => setBoardItems(response.data))
-      .catch((err) => console.log(err));
-    // 조회수가 높은 게시글 조회 부분
-    axios
-      .get(`/api/qnaBoards/most`)
-      .then((response) => setMostViewedItems(response.data))
-      .catch((err) => console.log(err));
-  }, []);
+
+
+
+
+
+  useEffect(()=>{
+    //목록 조회 부분
+    axios({
+      method : "get",
+      url : "/api/qnaBoardsPage?page=0"
+    }).then((res)=>{
+      setBoardItems(res.data);
+    }).catch((err)=>{
+      if(err.response.status===401){
+        console.log("로그인 x");
+      }else if(err.response.status===403){
+        console.log("권한 x");
+      }
+    })
+
+    axios({
+      method : "get",
+      url : "/api/qnaBoards/most"
+    }).then((res)=>{
+      if(res.status === 200){
+        setMostViewedItems(res.data);
+      }
+    }).catch((err)=>{
+      console.log(err);
+    })
+  },[])
+
 
   //게시글 선택시 해당 게시물 상세보기로 페이지 이동
   const goToPost = (postId: number) => {
