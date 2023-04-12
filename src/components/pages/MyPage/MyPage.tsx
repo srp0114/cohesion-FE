@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid, IconButton, Typography, Stack, Paper } from "@mui/material";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import { Track } from "../../model/user";
@@ -28,11 +28,8 @@ export interface MyPageItems {
 
 const MyPage = () => {
   //추가정보페이지 입력 전까지는 들어오지 못하게 해야함.
-  const test = myPageData_sopho; //myPageData_fresh도 가능. 시험용 데이터입니다.연동 후에 지우면 됩니다. test으로 되어있는 것도 변경되어야함.
+  const test = myPageData_fresh; //myPageData_fresh도 가능. 시험용 데이터입니다.연동 후에 지우면 됩니다. test으로 되어있는 것도 변경되어야함.
 
-  const [hasDailySummary, setHasDailySummary] = useState<boolean>( 
-    !!test.dailySummary //연동 후, test => postItem으로 바꿔야함.
-  );
   return (
     <>
       
@@ -60,7 +57,7 @@ const MyPage = () => {
 
           <Grid container item rowSpacing={{ xs: "1.125rem" }}>
             <Grid item xs={12}>
-              {hasDailySummary ? (
+              {!(test.dailySummary===undefined) ? (
                 <MySummary dailySummary={test.dailySummary} />
               ) : (
                 <Paper
