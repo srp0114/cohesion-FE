@@ -9,7 +9,7 @@ import QnABoard from "./components/pages/Board/QnA/QnABoard";
 import QnADetail from "./components/pages/Board/QnA/QnADetails";
 import RecruitBoard from "./components/pages/Board/Recruit/RecruitBoard";
 import RecruitDetails from "./components/pages/Board/Recruit/RecruitDetails";
-import MyPage from "./components/pages/MyPage";
+import MyPage from "./components/pages/MyPage/MyPage";
 import Notice from "./components/pages/Notice";
 import OAuth2 from "./components/pages/OAuth2";
 import Welcome from "./components/pages/Welcome";

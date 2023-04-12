@@ -36,16 +36,22 @@ export interface MostViewedItems {
   point: number;
 }
 
+export const shortenContent = (str: string, length = 200) => {
+  let content : string = "";
+  if (str.length > length) {
+    content = str.substring(0, length - 2)
+    content = content + "...";
+  } else {
+    content = str;
+  }
+  return content;
+};
+
 const QnABaord: React.FC = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
 
   const navigate = useNavigate();
-
-
-
-
-
 
   useEffect(()=>{
     //목록 조회 부분
@@ -101,7 +107,9 @@ const QnABaord: React.FC = () => {
                 } 
             })
         ) : (null);
-
+        const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
+        const noPreTagContent = value.content.replace(regex, "");
+  
           return (
             <>
               <Box
@@ -137,7 +145,7 @@ const QnABaord: React.FC = () => {
                   </Box>
                 </Box>
                 <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-                  <div dangerouslySetInnerHTML={{ __html: value.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: shortenContent(noPreTagContent) }} />
                 </Box>
                 <Box
                   sx={{
