@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box } from '@mui/material';
+import { Typography, Box } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/QnAReply";
-import { skillData } from '../../../data/SkillData';
-import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
-import ProfileIcon from '@mui/icons-material/AccountCircle';
-import Money from '@mui/icons-material/MonetizationOn';
-import Visibility from '@mui/icons-material/VisibilityOutlined';
+import { skillData } from "../../../data/SkillData";
+import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
+import ProfileIcon from "@mui/icons-material/AccountCircle";
+import Money from "@mui/icons-material/MonetizationOn";
+import Visibility from "@mui/icons-material/VisibilityOutlined";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -33,46 +33,47 @@ const QnADetails = () => {
   //axios get 할 때 받아올 게시글 번호
   let { id } = useParams();
 
-    useEffect(()=>{
-        axios({
-            method : "get",
-            url : "/api/qnaBoards/"+id,
-        }).then((res)=>{
-            if(res.status ===200){
-                setPostItem(res.data);
-            }
-        }).catch((err)=>{
-            if(err.response.status===401){
-                console.log("로그인 x");
-            }else if(err.response.status===403){
-                console.log("권한 x");
-            }
-        });
-    },[])
-
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/qnaBoards/" + id,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setPostItem(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
+  }, []);
 
   //입력된 언어 맞게 이미지 출력
-  const Skill = (postItem?.language) ? (
-      skillData.map((value) => {
-          if (postItem.language === value.name) {
-              return (
-                  <img src={value.logo} width="30" height="30" />
-              )
-          }
+  const Skill = postItem?.language
+    ? skillData.map((value) => {
+        if (postItem.language === value.name) {
+          return <img src={value.logo} width="30" height="30" />;
+        }
       })
-  ) : (null);
+    : null;
 
   const PostDetails = postItem ? (
     //postItems 데이터 있는 경우 출력될 UI
     <>
-    <Box sx={{
-        display: 'flex',  
-        mt: 8,
-        mb: 3
-    }}>
-        <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
-        <Box sx={{marginTop:2}}>{Skill}</Box>
-    </Box>
+      <Box
+        sx={{
+          display: "flex",
+          mt: 8,
+          mb: 3,
+        }}
+      >
+        <Box sx={{ fontSize: 38, mr: 3 }}>{postItem.title} </Box>
+        <Box sx={{ marginTop: 2 }}>{Skill}</Box>
+      </Box>
 
       <Box
         sx={{
@@ -127,9 +128,9 @@ const QnADetails = () => {
         <Typography variant="h5">
           {postItem.reply}개의 댓글이 있습니다
         </Typography>
-          {/*댓글 입력창 텍스트필드로 변경*/}
+        {/*댓글 입력창 텍스트필드로 변경*/}
 
-        <Reply postingID={id}/>
+        <Reply postingID={id} />
       </Box>
     </>
   ) : (

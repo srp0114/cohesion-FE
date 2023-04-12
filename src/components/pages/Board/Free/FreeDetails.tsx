@@ -25,70 +25,79 @@ interface FreeDetailItems {
 
 const FreeDetails = (): JSX.Element => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
-  const { id } = useParams() as { id : string };
+  const { id } = useParams() as { id: string };
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [bookmarkCheck, setBookmarkCheck] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     axios({
-      method : "get",
-      url : "/api/freeBoards/"+id
-    }).then((res)=>{
-      setPostItem(res.data.data)
-    }).catch((err)=>{
-      if(err.response.status===401){
-        console.log("로그인 x");
-      }else if(err.response.status===403){
-        console.log("권한 x");
-      }
+      method: "get",
+      url: "/api/freeBoards/" + id,
     })
+      .then((res) => {
+        setPostItem(res.data.data);
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
     //해당 게시글의 북마크 수
     axios({
-      method : "get",
-      url : "/api/free-boards/"+id+"/bookmark-count"
-    }).then((res)=>{
-      setBookmarkCount(res.data);
-    }).catch((err)=>{
-      console.log(err);
+      method: "get",
+      url: "/api/free-boards/" + id + "/bookmark-count",
     })
+      .then((res) => {
+        setBookmarkCount(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
     axios({
-      method : "get",
-      url : "/api/free-boards/"+id+"/bookmark-check"
-    }).then((res)=>{
-      setBookmarkCheck(res.data);
-    }).catch((err)=>{
-      console.log(err);
+      method: "get",
+      url: "/api/free-boards/" + id + "/bookmark-check",
     })
-
-  },[])
+      .then((res) => {
+        setBookmarkCheck(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   //북마크 등록
-  const onClickBookmark = ()=>{
-    if(bookmarkCheck === false){
+  const onClickBookmark = () => {
+    if (bookmarkCheck === false) {
       axios({
-       method : "post",
-       url : "/api/free-boards/"+id+"/bookmark"
-      }).then((res)=>{
-        if(res.status===200){
-          alert("해당 게시글을 북마크로 등록하였습니다.");
-         window.location.reload();
-       }
-      }).catch((err)=>{
-       console.log(err);
+        method: "post",
+        url: "/api/free-boards/" + id + "/bookmark",
       })
-    }else{
+        .then((res) => {
+          if (res.status === 200) {
+            alert("해당 게시글을 북마크로 등록하였습니다.");
+            window.location.reload();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
       axios({
-        method : "delete",
-        url : "/api/free-boards/"+id+"/bookmark"
-      }).then((res)=>{
-        alert("북마크를 취소하였습니다.");
-        window.location.reload();
-      }).catch((err)=>{
-        console.log(err);
+        method: "delete",
+        url: "/api/free-boards/" + id + "/bookmark",
       })
+        .then((res) => {
+          alert("북마크를 취소하였습니다.");
+          window.location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }
+  };
 
   const detailPosting = postItem ? (
     <>
