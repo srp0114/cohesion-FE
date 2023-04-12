@@ -143,7 +143,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
                 <Box>{WriterButton}</Box>
               </Box>
               <Box>
-                <Typography sx={{ ml: 5, mt: 1 }}>{reply.article}</Typography>
+                <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{reply.article}</Typography>
               </Box>
               <NestedReplyField
                 onAddNested={handleAddNested}
@@ -188,7 +188,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
               <Box>{WriterButton}</Box>
             </Box>
             <Box>
-              <Typography sx={{ ml: 5, mt: 1 }}>{value.article}</Typography>
+              <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{value.article}</Typography>
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}
