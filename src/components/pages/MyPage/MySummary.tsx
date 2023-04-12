@@ -12,7 +12,17 @@ import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
  * 유저가 오늘 공부한 것들을 기록하는 컴포넌트
  * 날짜, id, string,
  */
-export const MySummary: React.FC = () => {
+export interface MySummaryItems { //유저가 작성한 공부기록들 중 가장 최신 글을 가지고와야한다.
+  summaryId: string; //공부내용 요약 고유 id
+  date: string; //가장 최신 공부기록의 날짜
+  content: string; //공부기록내용
+}
+
+export const MySummary = (props: { dailySummary?: MySummaryItems}) => {
+
+  const { dailySummary } = props;
+  if(!dailySummary) return null;
+
   return (
     <Paper
       sx={{
@@ -25,7 +35,7 @@ export const MySummary: React.FC = () => {
         direction="row"
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <Typography>오늘의 공부 기록 요약(가제)</Typography>
+        <Typography>공부한 내용 요약 기록</Typography>
 
         <IconButton>
           <CreateOutlinedIcon />
@@ -33,9 +43,7 @@ export const MySummary: React.FC = () => {
       </Stack>
 
       <Typography>
-        Decorators are an upcoming ECMAScript feature that allow us to customize
-        classes and their members in a reusable way. 오늘 공부 기록에 대한
-        문장입니다.
+        {dailySummary.content}
       </Typography>
 
       <Stack
@@ -46,7 +54,7 @@ export const MySummary: React.FC = () => {
           marginTop: "1.125rem",
         }}
       >
-        <Typography>작성날짜. 수정날짜는 별도로 표시X?</Typography>
+        <Typography>{dailySummary.date}</Typography>
 
         <IconButton>
           <MoreHorizOutlinedIcon />

@@ -15,7 +15,14 @@ import Money from "@mui/icons-material/MonetizationOn";
  * 유저가 남긴 댓글,게시글, 북마크 및 누적 포인트
  *
  */
-export const MyHistory: React.FC = () => {
+interface MyHistoryProps {
+  reply: number;
+  board: number;
+  bookmark: number;
+  point: number;
+}
+
+export const MyHistory = (props: MyHistoryProps) => {
   return (
     <>
       <Stack
@@ -26,7 +33,7 @@ export const MyHistory: React.FC = () => {
           <Box>
             <Typography>작성한 댓글</Typography>
             <IconButton size="large">
-              <Badge color="success" badgeContent={6} max={99} showZero>
+              <Badge color="success" badgeContent={props.reply} max={99} showZero>
                 <ChatIcon />
               </Badge>
             </IconButton>
@@ -34,7 +41,7 @@ export const MyHistory: React.FC = () => {
           <Box>
             <Typography>작성한 게시글</Typography>
             <IconButton size="large">
-              <Badge color="success" badgeContent={0} max={99} showZero>
+              <Badge color="success" badgeContent={props.board} max={99} showZero>
                 <DescriptionOutlinedIcon />
               </Badge>
             </IconButton>
@@ -42,7 +49,7 @@ export const MyHistory: React.FC = () => {
           <Box>
             <Typography>북마크</Typography>
             <IconButton size="large">
-              <Badge color="success" badgeContent={123} max={99} showZero>
+              <Badge color="success" badgeContent={props.bookmark} max={99} showZero>
                 <BookmarkIcon />
               </Badge>
             </IconButton>
@@ -52,7 +59,7 @@ export const MyHistory: React.FC = () => {
         <Stack direction="row">
           <Typography>누적포인트</Typography>
           <IconButton disabled color="primary" size="large">
-            <Money /> <Typography sx={{ fontSize: "2rem" }}>1080</Typography>
+            <Money /> <Typography sx={{ fontSize: "2rem" }}>{props.point}</Typography>
           </IconButton>
         </Stack>
       </Stack>

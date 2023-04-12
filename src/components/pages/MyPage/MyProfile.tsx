@@ -1,10 +1,18 @@
 import React from "react";
 import { Box, Grid, Typography, Paper } from "@mui/material";
+import { Track } from "../../model/user";
 
 /**
  * 유저의 기본정보를 나타내는 컴포넌트
  */
-export const MyProfile: React.FC = () => {
+interface MyProfileProps {
+  nickname: string;
+  track1: Track;
+  track2: Track;
+  profileImg: string;
+}
+
+export const MyProfile = (props: MyProfileProps) => {
   return (
     <>
       <Paper
@@ -26,7 +34,7 @@ export const MyProfile: React.FC = () => {
           </Grid>
           <Grid item>
             <img
-              src="https://pbs.twimg.com/profile_images/1212031261297930241/p6kIo01N_400x400.jpg"
+              srcSet={props.profileImg}
               width="250px"
               height="250px"
               style={{ border: "1px solid black" }} />
@@ -34,14 +42,14 @@ export const MyProfile: React.FC = () => {
           <Grid item>
             <Box>
               <Typography variant="body1">닉네임</Typography>
-              <Typography variant="h6">종강시켜주세요</Typography>
+              <Typography variant="h6">{props.nickname}</Typography>
             </Box>
           </Grid>
           <Grid item>
             <Box>
               <Typography variant="body2">소속트랙</Typography>
-              <Typography variant="h6">디지털콘텐츠 가상현실</Typography>
-              <Typography variant="h6">웹공학</Typography>
+              <Typography variant="h6">{props.track1}</Typography>
+              <Typography variant="h6">{props.track2}</Typography>
             </Box>
           </Grid>
           <Grid item>
