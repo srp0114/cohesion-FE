@@ -101,6 +101,8 @@ const QnABaord: React.FC = () => {
                 } 
             })
         ) : (null);
+        const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
+        const noPreTagContent = value.content.replace(regex, "");
 
           return (
             <>
@@ -137,7 +139,7 @@ const QnABaord: React.FC = () => {
                   </Box>
                 </Box>
                 <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-                  <div dangerouslySetInnerHTML={{ __html: value.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: noPreTagContent }} />
                 </Box>
                 <Box
                   sx={{
