@@ -18,8 +18,12 @@ interface FreeBoardItems {
     bookmark: number;
     reply: number;
 }
+
+interface Props {
+    loginState: boolean
+}
   
-const HomeFreeBoard = () => {
+const HomeFreeBoard = ({ loginState }: Props) => {
     const [boardItems, setBoardItems] = useState<FreeBoardItems[]>([]);
 
     //403 에러 여부 확인
@@ -94,7 +98,7 @@ const HomeFreeBoard = () => {
                         border:'1.2px solid gainsboro',
                         borderRadius:5
                         }} 
-                        onClick={() => goToPost(posting.id)}>
+                        onClick={() => loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>

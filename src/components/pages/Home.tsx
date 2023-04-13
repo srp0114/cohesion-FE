@@ -94,7 +94,7 @@ const Home: React.FC = () => {
                 </Box>
                 </Modal>
 
-                <HomeFreeBoard />
+                <HomeFreeBoard loginState={isLogin} />
               </Grid>
 
 
@@ -103,9 +103,9 @@ const Home: React.FC = () => {
                   // 로그인 여부에 따라 블러 처리              
                   filter: isLogin? null : "blur(1.5px)"
                 }}>
-                <HomeQnABoard />
+                <HomeQnABoard loginState={isLogin} />
               </Grid>
-              <WritingButton/>
+              {isLogin ? <WritingButton/> : null}
           </Grid>
 
         </Grid>

@@ -23,7 +23,11 @@ interface QnaBoardItems {
     
 }
 
-const HomeQnABoard = () => {
+interface Props {
+    loginState: boolean
+}
+
+const HomeQnABoard = ({ loginState }: Props) => {
     const [qnaBoardItems, setQnaBoardItems] = useState<QnaBoardItems[]>([]);
 
      //403 에러 여부 확인
@@ -106,7 +110,7 @@ const HomeQnABoard = () => {
                         border:'1.2px solid gainsboro',
                         borderRadius:5
                         }}
-                        onClick={() => goToPost(posting.id)}>
+                         onClick={() => loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>
