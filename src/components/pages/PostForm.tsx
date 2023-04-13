@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Container,
   TextField,
@@ -19,6 +19,8 @@ import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
+import { checkLogin } from "../checkLogin";
+import { useNavigate } from "react-router";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -31,6 +33,15 @@ const PostForm = () => {
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
+  const nav = useNavigate();
+
+  useEffect(() => {
+    checkLogin().then((res) => {
+      if (!res) {
+        nav("/"); // 비로그인인 경우, 메인 페이지로 이동
+      }
+    });
+  }, []);
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
