@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Grid,
+  Stack,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import Visibility from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 
@@ -23,7 +30,7 @@ interface FreeDetailItems {
   views: number; //조회수
 }
 
-const FreeDetails = (): JSX.Element => {
+const FreeDetails = () => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id: string };
   const [bookmarkCount, setBookmarkCount] = useState(0);
@@ -101,76 +108,79 @@ const FreeDetails = (): JSX.Element => {
 
   const detailPosting = postItem ? (
     <>
-      <Box sx={{ paddingLeft: 3, paddingRight: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography variant="h5" sx={{ marginBottom: 1, fontWeight: 600 }}>
-            {postItem.title}
-          </Typography>
-          <Typography variant="caption">
-            <Time date={postItem.createdDate} />
-          </Typography>
-        </Box>
-
-        <Box sx={{ marginBottom: 5 }}>
-          <Stack direction="row">
-            <Avatar
-              srcSet={postItem.profileImg as string}
-              sx={{ width: "30px", height: "30px", marginRight: "5px" }}
-            />
-            <Typography variant="body2">
-              {`${postItem.writer} (${postItem.stuId})`}
+      <Grid container direction="column" rowSpacing={"8rem"}>
+        <Grid item container xs={12} direction="column">
+          <Grid item xs={12}>
+            <Typography variant="h4" gutterBottom>
+              {postItem.title}
             </Typography>
-          </Stack>
-        </Box>
+          </Grid>
 
-        <Box sx={{ marginBottom: 1 }}>
-          <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-        </Box>
-        <Box sx={{ marginTop: 3, marginBottom: 3 }}>
-          <Stack direction="row" sx={{ disply: "flex", justifyContent: "end" }}>
-            <IconButton size="small">
-              <Person2OutlinedIcon /> {postItem.views}
-            </IconButton>
-            <IconButton size="small" onClick={onClickBookmark}>
-              <BookmarkIcon /> {bookmarkCount}
-            </IconButton>
-          </Stack>
-        </Box>
+          <Grid item container xs={12} justifyContent={"space-between"}>
+            <Grid item xs={4}>
+              <Stack
+                direction="row"
+                sx={{ display: "flex", justifyContent: "start" }}
+              >
+                <Avatar
+                  srcSet={postItem.profileImg}
+                  sx={{
+                    width: "2.5rem",
+                    height: "2.5rem",
+                    marginRight: "0.75rem",
+                  }}
+                />
+                <Typography variant="h6">
+                  {`${postItem.writer} (${postItem.stuId})`}
+                </Typography>
+              </Stack>
+            </Grid>
 
-        <Box>
-          <Typography
-            variant="body1"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-          >
-            {`${postItem.reply}개의 댓글이 있습니다.`}
+            <Grid item justifyContent={"flex-end"}>
+              <Time date={postItem.createdDate} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
+          <Typography variant="h5">
+            <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
+            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
           </Typography>
-          <Reply postingID={id} />
-        </Box>
-      </Box>
+        </Grid>
+
+        <Grid item container xs={12} justifyContent={"space-between"}>
+          <Grid item xs={3}>
+            <Typography variant="h5">{`${postItem.reply}개의 댓글이 있습니다.`}</Typography>
+          </Grid>
+
+          <Grid item justifyContent={"flex-end"}>
+            <Stack direction="row" spacing={"0.75rem"}>
+              <Box>
+                <IconButton size="small" disabled>
+                  <Visibility fontSize="large" />
+                  <Typography variant="h6">{postItem.views}</Typography>
+                </IconButton>
+              </Box>
+
+              <Box>
+                <IconButton size="small" onClick={onClickBookmark}>
+                  <BookmarkIcon fontSize="large" />
+                  <Typography variant="h6">{bookmarkCount}</Typography>
+                </IconButton>
+              </Box>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Reply postingID={id} />
     </>
   ) : (
     <Typography>no data</Typography>
   );
 
-  return (
-    <>
-      <Box
-        sx={{
-          borderLeft: "1px solid black",
-          borderRight: "1px solid black",
-          padding: 10,
-        }}
-      >
-        {detailPosting}
-      </Box>
-    </>
-  );
+  return <Box sx={{margin:'2.25rem'}}>{detailPosting}</Box>;
 };
 
 export default FreeDetails;
