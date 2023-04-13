@@ -26,6 +26,28 @@ export const theme = createTheme({
       },
     },
 
+    //Typography 글자크기 커스텀.
+    typography: {
+      h1: {
+        fontSize: "4.5rem" //72px
+      },
+      h2: {
+        fontSize: "3.75rem" //60px
+      },
+      h3: {
+        fontSize: "3rem" //48px
+      },
+      h4: {
+        fontSize: "2.25rem" //36px
+      },
+      h5: {
+        fontSize: "1.5rem" //24px
+      },
+      h6: {
+        fontSize: "1.125rem" //18px
+      },
+    },
+
     //MUI TextField 커스텀
     components: {    
       MuiTextField: {      
