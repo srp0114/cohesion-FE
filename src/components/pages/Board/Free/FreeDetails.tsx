@@ -131,7 +131,7 @@ const FreeDetails = () => {
                   }}
                 />
                 <Typography variant="h6">
-                  {`${postItem.writer} (${postItem.stuId})`}
+                  {`${postItem.writer} (${postItem.stuId.toString().slice(0,2)}학번)`}
                 </Typography>
               </Stack>
             </Grid>
@@ -180,7 +180,7 @@ const FreeDetails = () => {
     <Typography>no data</Typography>
   );
 
-  return <Box sx={{margin:'2.25rem'}}>{detailPosting}</Box>;
+  return <Box sx={{margin:'2.25rem 3.75rem'}}>{detailPosting}</Box>;
 };
 
 export default FreeDetails;
