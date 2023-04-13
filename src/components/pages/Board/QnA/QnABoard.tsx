@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
-  Typography,
-  Container, 
-  Box,
-} from '@mui/material';
-import MostViewedPost from '../../../layout/MostViewedPost';
+import { Typography, Container, Box } from "@mui/material";
+import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
-import { skillData } from '../../../data/SkillData';
-import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
-import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
-import ProfileIcon from '@mui/icons-material/AccountCircle';
+import { skillData } from "../../../data/SkillData";
+import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
+import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
+import ProfileIcon from "@mui/icons-material/AccountCircle";
 
 // BoardItems 인터페이스
 interface BoardItems {
@@ -37,9 +33,9 @@ export interface MostViewedItems {
 }
 
 export const shortenContent = (str: string, length = 200) => {
-  let content : string = "";
+  let content: string = "";
   if (str.length > length) {
-    content = str.substring(0, length - 2)
+    content = str.substring(0, length - 2);
     content = content + "...";
   } else {
     content = str;
@@ -53,33 +49,36 @@ const QnABaord: React.FC = () => {
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     //목록 조회 부분
     axios({
-      method : "get",
-      url : "/api/qnaBoardsPage?page=0"
-    }).then((res)=>{
-      setBoardItems(res.data);
-    }).catch((err)=>{
-      if(err.response.status===401){
-        console.log("로그인 x");
-      }else if(err.response.status===403){
-        console.log("권한 x");
-      }
+      method: "get",
+      url: "/api/qnaBoardsPage?page=0",
     })
+      .then((res) => {
+        setBoardItems(res.data);
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
 
     axios({
-      method : "get",
-      url : "/api/qnaBoards/most"
-    }).then((res)=>{
-      if(res.status === 200){
-        setMostViewedItems(res.data);
-      }
-    }).catch((err)=>{
-      console.log(err);
+      method: "get",
+      url: "/api/qnaBoards/most",
     })
-  },[])
-
+      .then((res) => {
+        if (res.status === 200) {
+          setMostViewedItems(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   //게시글 선택시 해당 게시물 상세보기로 페이지 이동
   const goToPost = (postId: number) => {
@@ -98,18 +97,16 @@ const QnABaord: React.FC = () => {
       <Box>
         {boardItems?.map((value) => {
           // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-          const Skill = value.language ? (
-            skillData.map((data) => {
+          const Skill = value.language
+            ? skillData.map((data) => {
                 if (value.language === data.name) {
-                    return (
-                        <img src={data.logo} width="25" height="25"/>
-                    )
-                } 
-            })
-        ) : (null);
-        const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
-        const noPreTagContent = value.content.replace(regex, "");
-  
+                  return <img src={data.logo} width="25" height="25" />;
+                }
+              })
+            : null;
+          const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
+          const noPreTagContent = value.content.replace(regex, "");
+
           return (
             <>
               <Box
@@ -145,7 +142,11 @@ const QnABaord: React.FC = () => {
                   </Box>
                 </Box>
                 <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-                  <div dangerouslySetInnerHTML={{ __html: shortenContent(noPreTagContent) }} />
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: shortenContent(noPreTagContent),
+                    }}
+                  />
                 </Box>
                 <Box
                   sx={{

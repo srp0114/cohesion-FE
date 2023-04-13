@@ -31,24 +31,25 @@ const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [page, setPage] = useState(1);
 
-
-    useEffect(()=>{
-        const curPage = page - 1;
-        axios({
-            method : "get",
-            url : "/api/freeBoardsPage?page=" + curPage + "&size=4"
-        }).then((res)=>{
-            if(res.status === 200){
-                setFreeData(res.data);
-            }
-        }).catch((err)=>{
-            if(err.response.status===401){
-                console.log("로그인 x");
-            }else if(err.response.status===403){
-                console.log("권한 x");
-            }
-        })
-    },[])
+  useEffect(() => {
+    const curPage = page - 1;
+    axios({
+      method: "get",
+      url: "/api/freeBoardsPage?page=" + curPage + "&size=4",
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setFreeData(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
+  }, []);
 
   const displayPosting = freeData.map((element, idx) => (
     <PreviewPosting {...element} key={idx} />
