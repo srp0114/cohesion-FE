@@ -5,6 +5,7 @@ import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/materi
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
+import {logoutHandler} from "../logoutHandler";
 
 
 const Navbar: React.FC = () => {
@@ -55,18 +56,8 @@ const Navbar: React.FC = () => {
       sessionStorage.setItem("codeChallenge", codeChallenge);
       navigate(`/redirect`);
     } else {
-
       //인가서버 로그아웃 처리(세션 쿠키 삭제)
-      axios({
-        method : "get",
-        url : "http://localhost:8081/logout",
-        withCredentials : true
-      }).then((res)=>{
-          sessionStorage.clear();
-          window.location.href="/";
-      }).catch((err)=>{
-        console.log(err);
-    })
+      logoutHandler();
     }
   };
 
