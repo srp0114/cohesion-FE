@@ -8,6 +8,7 @@ import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import {logoutHandler} from "../logoutHandler";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -132,6 +133,7 @@ const Welcome = () => {
     introduce: introduce,
     track1: userAccount.track1,
     track2: userAccount.track2,
+    
   };
 
   const confirm = () => {
@@ -150,6 +152,10 @@ const Welcome = () => {
         console.error(error);
       });
   };
+
+  const back= ()=>{
+    logoutHandler();
+  }
 
   return (
     <>
@@ -304,7 +310,7 @@ const Welcome = () => {
             />
           </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button sx={{ mr: 1 }}>뒤로</Button>
+            <Button sx={{ mr: 1 }} onClick={back}>뒤로</Button>
             <Button variant="contained" onClick={confirm}>
               완료
             </Button>
