@@ -209,7 +209,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
                   sx={{ width: "25px", height: "25px", marginRight: "5px" }}
                 />
                 <Typography variant="overline">
-                  {`${props.writer} (사용자 학번)`}
+                  {`${props.writer} (${props.stuId.toString().slice(0,2)}학번)`}
                 </Typography>
               </Stack>
             }
