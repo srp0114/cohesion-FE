@@ -28,6 +28,7 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { data } from "../../../data/RecruitData";
+import axios from "axios";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -54,7 +55,22 @@ const RecruitBoard: React.FC = () => {
   /**
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
-  const displayPosting = test.map((element, idx) => (
+  const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/recruit/list?page=0",
+    })
+      .then((res) => {
+        setBoardItems(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [])
+
+  const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
     </Grid>
