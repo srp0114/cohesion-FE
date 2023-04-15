@@ -53,7 +53,7 @@ const QnABaord: React.FC = () => {
     //목록 조회 부분
     axios({
       method: "get",
-      url: "/api/qnaBoardsPage?page=0",
+      url: "/api/qna/list?page=0",
     })
       .then((res) => {
         setBoardItems(res.data);
@@ -68,7 +68,7 @@ const QnABaord: React.FC = () => {
 
     axios({
       method: "get",
-      url: "/api/qnaBoards/most",
+      url: "/api/qna/most",
     })
       .then((res) => {
         if (res.status === 200) {

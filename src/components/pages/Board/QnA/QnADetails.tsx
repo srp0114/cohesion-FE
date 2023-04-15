@@ -36,7 +36,7 @@ const QnADetails = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: "/api/qnaBoards/" + id,
+      url: "/api/qna/detail/" + id,
     })
       .then((res) => {
         if (res.status === 200) {
