@@ -33,6 +33,8 @@ const PostForm = () => {
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
+  const [party, setParty] = useState<number>(0);
+  const [gathered, setGathered] = useState<number>(0);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -65,6 +67,14 @@ const PostForm = () => {
     setOptional(value);
   };
 
+  const getParty = (value: number) => {
+    setParty(value);
+  };
+
+  const getGathered = (value: number) => {
+    setGathered(value);
+  };
+
   const boardHandler = (event: SelectChangeEvent<unknown>) => {
     setBoardType(event.target.value as string);
   };
@@ -92,6 +102,15 @@ const PostForm = () => {
       point: point,
       language: skill,
     };
+
+    const request_recruit = {
+      title,
+      content,
+      required,
+      optional,
+      party,
+      gathered
+    }
 
     const qna_formData = new FormData();
 
@@ -162,6 +181,19 @@ const PostForm = () => {
       }
     } else if (boardType === "recruit") {
       // 구인 게시판인 경우
+      axios({
+        method: "post",
+        url: "/api/recruit",
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(request_recruit),
+      })
+          .then((res) => {
+            if (res.status === 200) {
+              // 성공 시 작업
+              window.location.href = "/";
+            } // 응답(401, 403 등) 핸들링 ...
+          })
+          .catch((err) => console.log(err));
     }
   };
 
@@ -179,7 +211,7 @@ const PostForm = () => {
     boardType === "recruit" ? (
       <ConditionOptional getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === "recruit" ? <People /> : null;
+  const DesignatePeople = boardType === "recruit" ? <People getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
