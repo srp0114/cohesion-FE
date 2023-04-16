@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box } from "@mui/material";
 import Time from "../../../layout/Time";
-import Reply from "../../../layout/Reply/QnAReply";
+import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
@@ -31,7 +31,7 @@ const QnADetails = () => {
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
 
   //axios get 할 때 받아올 게시글 번호
-  let { id } = useParams();
+  const { id } = useParams() as { id: string };
 
   useEffect(() => {
     axios({
@@ -130,7 +130,7 @@ const QnADetails = () => {
         </Typography>
         {/*댓글 입력창 텍스트필드로 변경*/}
 
-        <Reply postingID={id} />
+        <Reply board={"qna"} postingId={id}/>
       </Box>
     </>
   ) : (

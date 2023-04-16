@@ -8,10 +8,9 @@ import "highlight.js/styles/atom-one-dark.css";
 import axios from 'axios';
 
 type Props = {
-    getContent: any;
+    getContent: (content:string) => void;
 }
 
-// Undo and redo functions for Custom Toolbar
 function undoChange() {
 
 }
@@ -40,7 +39,7 @@ hljs.configure({
     languages: ['javascript', 'ruby', 'python', 'rust', 'java'],
 })
 
-const EditorToolbar: React.FC<Props> = ({getContent}) => {
+const EditorToolbar = (props: Props) => {
     const QuillRef = useRef<ReactQuill>();
     const [content, setContent] = useState("");
 
@@ -107,6 +106,7 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
                     ],
                     ["image", "video"],
                     ['code-block'],
+                    ['undo', 'redo']
                     
                 ],
                 handlers: {
@@ -157,7 +157,7 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
                     value={content}
                     onChange={(content) => {
                         setContent(content);
-                        getContent(content);
+                        props.getContent(content);
                     }}
                     formats={formats}
                     modules={modules}

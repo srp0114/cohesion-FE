@@ -3,6 +3,7 @@ import axios from "axios";
 import { Typography, Box, Button } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
+import Checkbox from "./ReplyCheckbox";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 
@@ -23,20 +24,22 @@ interface ReplyItems {
 }
 
 interface ReplyProps {
-  postingID?: string;
+  board: string;
+  postingId: string;
 }
 
-const FreeReply = ({ postingID }: ReplyProps) => {
+const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
-  const [isWriter, setIsWriter] = useState<boolean>(true);
   const [userId,setUserId] = useState<Number>(0);
+  const [replyCheck, setReplyCheck] = useState<boolean>(false);
 
-  const url = `/api/free/${postingID}/replies`;
+  let id = props.postingId;
+  let board = props.board;
 
   useEffect(() => {
     axios({
       method: "get",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
     })
       .then((res) => {
         setReplyData(res.data);
@@ -67,7 +70,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
     };
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -82,6 +85,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
       });
   };
 
+  // 답글 추가 핸들러
   const handleAddNested = (article: string, parentId: number) => {
     const data = {
       article: article,
@@ -90,7 +94,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -124,7 +128,11 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
   };
 
+  const handleCheckReply = (isChosen: boolean) => {
+    setReplyCheck(isChosen);
+  }
 
+  const ReplyCheckbox = board === "qna" ? (<Checkbox onReplyCheck={handleCheckReply}/>) : (null);
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
@@ -213,8 +221,9 @@ const FreeReply = ({ postingID }: ReplyProps) => {
                     <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
             </> : null}</Box>
             </Box>
-            <Box>
+            <Box sx={{display:"flex", justifyContent:"space-between"}}>
               <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{value.article}</Typography>
+              {ReplyCheckbox}
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}
@@ -238,4 +247,4 @@ const FreeReply = ({ postingID }: ReplyProps) => {
   );
 };
 
-export default FreeReply;
+export default Reply;
