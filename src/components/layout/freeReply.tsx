@@ -47,15 +47,16 @@ const Reply: React.FC<ReplyProps> = ({postingID}) => {
 
     // 댓글 게시 버튼 클릭 시 적용될 핸들러
     const onSubmit = () => {
-      
+      console.log("submit");
       // 작성 버튼 클릭한 경우
       // 데이터 보낼 axios 구현
       const data ={
         article : article
       }
+
       axios({
           method : "post",
-          url : "/api/freeBoards/"+postingID+"/replies",
+          url : "/api/free/"+postingID+"/replies",
           headers : {"Content-Type" : "application/json"},
           data : JSON.stringify(data)
       }).then((res)=>{

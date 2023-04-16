@@ -5,11 +5,13 @@ import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { data } from "../../../data/RecruitData";
+import axios from "axios";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
   id: number;
   title: string;
+  content: string;
   writer: string;
   profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
   createdDate: string;
@@ -27,9 +29,23 @@ export interface RecruitDetailItems {
 
 const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
-  const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>(
-    data[3] as RecruitDetailItems
-  );
+  const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/recruit/detail/" + id,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setPostItem(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const detailPosting = postItem ? (
     <>
       <Box sx={{ paddingLeft: 3, paddingRight: 3 }}>
@@ -54,7 +70,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
               sx={{ width: "30px", height: "30px", marginRight: "5px" }}
             />
             <Typography variant="body2">
-              {`${postItem.writer} (사용자 학번)`}
+              {`${postItem.writer} (${postItem.stuId.toString().slice(0,2)}학번)`}
             </Typography>
           </Stack>
         </Box>

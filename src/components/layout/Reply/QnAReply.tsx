@@ -32,7 +32,7 @@ const Reply = ({postingID} : ReplyProps) => {
   const[replyData ,setReplyData] = useState<ReplyItems[]>([]);
   const navigate = useNavigate();
 
-  const url = `/api/qnaBoards/${postingID}/replies`;
+  const url = `/api/qna/${postingID}/replies`;
   
   useEffect(()=>{
       axios({

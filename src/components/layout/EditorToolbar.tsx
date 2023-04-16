@@ -68,7 +68,7 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
             })
                 axios({
                     method: "post",
-                    url: "/api/return/imageUrl",
+                    url: "/api/qna/image",
                     headers: {"Content-Type": "multipart/form-data"},
                     data: formData,
                 }).then((response)=>{

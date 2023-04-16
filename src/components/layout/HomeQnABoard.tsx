@@ -55,7 +55,7 @@ const HomeQnABoard = ({ loginState }: Props) => {
     useEffect(()=>{
         axios({
             method : "get",
-            url : "/api/qnaBoards"
+            url : "/api/qna/main"
         }).then((res)=>{
             setQnaBoardItems(res.data.data);
         }).catch((err)=>{

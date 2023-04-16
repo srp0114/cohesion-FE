@@ -52,7 +52,7 @@ const HomeFreeBoard = ({ loginState }: Props) => {
     useEffect(() => {
         axios({
             method : "get",
-            url : "/api/freeBoards"
+            url : "/api/free/main"
         }).then((res)=>{
             setBoardItems(res.data.data);
         }).catch((err)=>{
