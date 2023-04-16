@@ -38,10 +38,9 @@ const FreeDetails = () => {
 
   useEffect(() => {
     axios({
-      method: "get",
-      url: "/api/freeBoards/" + id,
-    })
-      .then((res) => {
+      method : "get",
+      url : "/api/free/detail/"+id
+    }).then((res) => {
         setPostItem(res.data.data);
       })
       .catch((err) => {
@@ -54,7 +53,7 @@ const FreeDetails = () => {
     //해당 게시글의 북마크 수
     axios({
       method: "get",
-      url: "/api/free-boards/" + id + "/bookmark-count",
+      url: "/api/free/" + id + "/bookmark-count",
     })
       .then((res) => {
         setBookmarkCount(res.data);
@@ -65,7 +64,7 @@ const FreeDetails = () => {
     //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
     axios({
       method: "get",
-      url: "/api/free-boards/" + id + "/bookmark-check",
+      url: "/api/free/" + id + "/bookmark-check",
     })
       .then((res) => {
         setBookmarkCheck(res.data);
@@ -80,7 +79,7 @@ const FreeDetails = () => {
     if (bookmarkCheck === false) {
       axios({
         method: "post",
-        url: "/api/free-boards/" + id + "/bookmark",
+        url: "/api/free/" + id + "/bookmark",
       })
         .then((res) => {
           if (res.status === 200) {
@@ -94,7 +93,7 @@ const FreeDetails = () => {
     } else {
       axios({
         method: "delete",
-        url: "/api/free-boards/" + id + "/bookmark",
+        url: "/api/free/" + id + "/bookmark",
       })
         .then((res) => {
           alert("북마크를 취소하였습니다.");
