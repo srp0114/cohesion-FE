@@ -35,7 +35,7 @@ const FreeBoard = () => {
     const curPage = page - 1;
     axios({
       method: "get",
-      url: "/api/freeBoardsPage?page=" + curPage + "&size=4",
+      url: "/api/free/list?page=" + curPage + "&size=4",
     })
       .then((res) => {
         if (res.status === 200) {

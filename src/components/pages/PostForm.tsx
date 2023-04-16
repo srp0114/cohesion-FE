@@ -124,7 +124,7 @@ const PostForm = () => {
       // 자유 게시판인 경우
       axios({
         method: "post",
-        url: "/api/freeBoards",
+        url: "/api/free",
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_data),
       })
