@@ -29,8 +29,9 @@ interface ReplyProps {
 const FreeReply = ({ postingID }: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [isWriter, setIsWriter] = useState<boolean>(true);
+  const [userId,setUserId] = useState<Number>(0);
 
-  const url = `/api/freeBoards/${postingID}/replies`;
+  const url = `/api/free/${postingID}/replies`;
 
   useEffect(() => {
     axios({
@@ -44,6 +45,19 @@ const FreeReply = ({ postingID }: ReplyProps) => {
       .catch((err) => {
         console.log(err);
       });
+
+    axios({
+        method : "get",
+        url : "/api/user-id"
+    }).then((res)=>{
+        if(res.status===200) {
+            setUserId(res.data);
+        }
+    }).catch((err)=>{
+        console.log(err);
+    })
+
+
   }, []);
 
   // 댓글 추가 핸들러
@@ -93,31 +107,37 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
   const editReply = () => {
     // 변경 api 추가
+      //수정 창 생기고 진행
   };
 
-  const deleteReply = () => {
+  const deleteReply = (replyId : Number) => {
     // 삭제 api 추가
+      axios({
+          method : "delete",
+          url : "/api/free/delete/"+replyId+"/replies"
+      }).then((res)=>{
+          console.log(res.data);
+          setReplyData(replyData.filter((reply) => reply.id !== replyId));
+      }).catch((err)=>{
+          console.log(err);
+      })
+
   };
 
-  // 작성자인 경우 해당 버튼 출력
-  // 현재 모든 댓글에 출력
-  // TODO 작성자 확인
-  const WriterButton = isWriter ? (
-    <>
-      <Button onClick={editReply}>수정</Button>
-      <Button onClick={deleteReply}>삭제</Button>
-    </>
-  ) : null;
+
+
+  //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
   const replyContainer = (replies: ReplyItems[], parentId?: number) => {
     const filteredReplies = parentId
       ? replies.filter((reply) => reply.parentId === parentId)
       : replies;
+
     return (
       filteredReplies.length > 0 && (
         <Box sx={{ ml: 6 }}>
           {filteredReplies.map((reply) => (
-            <div key={reply.id}>
+              <div key={reply.id}>
               <Box
                 sx={{
                   display: "flex",
@@ -140,7 +160,10 @@ const FreeReply = ({ postingID }: ReplyProps) => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box>{WriterButton}</Box>
+                <Box>{reply.user.id === userId ?  <>
+                    <Button onClick={editReply}>수정</Button>
+                    <Button onClick={()=>deleteReply(reply.id)}>삭제</Button>
+                </> : null}</Box>
               </Box>
               <Box>
                 <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{reply.article}</Typography>
@@ -185,7 +208,10 @@ const FreeReply = ({ postingID }: ReplyProps) => {
                   </Typography>
                 </Box>
               </Box>
-              <Box>{WriterButton}</Box>
+                <Box>{value.user.id === userId ?  <>
+                    <Button onClick={editReply}>수정</Button>
+                    <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
+            </> : null}</Box>
             </Box>
             <Box>
               <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{value.article}</Typography>
