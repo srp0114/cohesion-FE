@@ -33,6 +33,12 @@ const Reply = (props: ReplyProps) => {
   const [userId,setUserId] = useState<Number>(0);
   const [replyCheck, setReplyCheck] = useState<boolean>(false);
 
+  // 기존 FreeReply, QnAReply를 삭제하고 Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
+  // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
+  // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
+  // QnA 게시판도 댓글 작성, 답글 작성 확인가능한 상태
+  // 댓글 수정, QnA게시판인 경우 채택 api 작업 필요
+
   let id = props.postingId;
   let board = props.board;
 
@@ -109,9 +115,9 @@ const Reply = (props: ReplyProps) => {
       });
   };
 
-  const editReply = () => {
+  const editReply = (parentId: number) => {
     // 변경 api 추가
-      //수정 창 생기고 진행
+    //수정 창 생기고 진행
   };
 
   const deleteReply = (replyId : Number) => {
@@ -128,10 +134,15 @@ const Reply = (props: ReplyProps) => {
 
   };
 
+  // 체크박스 변경되는 경우 값 넘어올 핸들러
+  // 댓글 추가 핸들러 axios에 해당 데이터 추가 시도 -> 그럼 댓글이 계속 생성(get)
+  // 우선 data 보내는 경우 isChosen: replyCheck 으로 값 지정
   const handleCheckReply = (isChosen: boolean) => {
     setReplyCheck(isChosen);
+    console.log(isChosen);
   }
 
+  //qna 게시판인 경우 체크박스 출력
   const ReplyCheckbox = board === "qna" ? (<Checkbox onReplyCheck={handleCheckReply}/>) : (null);
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
@@ -169,7 +180,7 @@ const Reply = (props: ReplyProps) => {
                   </Box>
                 </Box>
                 <Box>{reply.user.id === userId ?  <>
-                    <Button onClick={editReply}>수정</Button>
+                    <Button onClick={()=>editReply(reply.id)}>수정</Button>
                     <Button onClick={()=>deleteReply(reply.id)}>삭제</Button>
                 </> : null}</Box>
               </Box>
@@ -178,7 +189,7 @@ const Reply = (props: ReplyProps) => {
               </Box>
               <NestedReplyField
                 onAddNested={handleAddNested}
-                parentID={reply.id}
+                parentId={reply.id}
               />
               {replyContainer(replies, reply.id)}
             </div>
@@ -217,7 +228,7 @@ const Reply = (props: ReplyProps) => {
                 </Box>
               </Box>
                 <Box>{value.user.id === userId ?  <>
-                    <Button onClick={editReply}>수정</Button>
+                    <Button onClick={()=>editReply(value.id)}>수정</Button>
                     <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
             </> : null}</Box>
             </Box>
@@ -227,7 +238,7 @@ const Reply = (props: ReplyProps) => {
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}
-              parentID={value.id}
+              parentId={value.id}
             />
             {replyContainer(replyData, value.id)}
           </div>
