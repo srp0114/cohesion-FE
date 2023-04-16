@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Grid, IconButton, Typography, Stack, Paper } from "@mui/material";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import { Track } from "../../model/user";
@@ -8,14 +8,15 @@ import { MySummary } from "./MySummary";
 import { MyIntroduction } from "./MyIntroduction";
 import { MySummaryItems } from "./MySummary";
 
-import { myPageData_fresh, myPageData_sopho } from "../../data/MyPageData"; //시험용 데이터
+import { myPageData_fresh, myPageData_sopho } from "../../data/MyPageData";
+import axios from "axios"; //시험용 데이터
 
 export interface MyPageItems {
   studentId: string; //사용자 고유식별번호, 학번, 사용자의 아이디
   profileImg: string; //추가정보에서 선택한 프로필사진
   nickname: string; //추가정보페이지의 닉네임
-  track1: Track; //1트랙 1학년인 경우 1,2트랙 모두 none으로 나옴.
-  track2: Track; //2트랙
+  track1: string; //1트랙 1학년인 경우 1,2트랙 모두 none으로 나옴.
+  track2: string; //2트랙
   reply: number; //자신이 작성한 댓글 수, 기본값 0
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
@@ -29,6 +30,19 @@ export interface MyPageItems {
 const MyPage = () => {
   //추가정보페이지 입력 전까지는 들어오지 못하게 해야함.
   const test = myPageData_fresh; //myPageData_fresh도 가능. 시험용 데이터입니다.연동 후에 지우면 됩니다. test으로 되어있는 것도 변경되어야함.
+  const [data,setData] = useState<MyPageItems | undefined>();
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : "/api/user-info"
+    }).then((res)=>{
+      setData(res.data);
+    }).catch((err)=>{
+      console.log(err);
+    })
+
+  },[])
 
   return (
     <>
@@ -40,7 +54,7 @@ const MyPage = () => {
         direction="row"
       >
         <Grid item xs={12} md={4}>
-          <MyProfile nickname={test.nickname} track1 = {test.track1} track2 = {test.track2} profileImg={test.profileImg}/>
+          <MyProfile nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
         </Grid>
 
         <Grid
@@ -52,7 +66,7 @@ const MyPage = () => {
           direction="column"
         >
           <Grid item>
-            <MyHistory reply={test.reply} board={test.board} bookmark={test.bookmark} point={test.point}/>
+            <MyHistory reply={data?.reply ?? 0} board={data?.board ?? 0} bookmark={data?.bookmark ?? 0} point={data?.point?? 0}/>
           </Grid>
 
           <Grid container item rowSpacing={{ xs: "1.125rem" }}>
@@ -84,7 +98,7 @@ const MyPage = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <MyIntroduction nickname={test.nickname} selfIntroduction = {test.selfIntroduction} language={test.language} skill={test.skill}/>
+              <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
             </Grid>
           </Grid>
         </Grid>

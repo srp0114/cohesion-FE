@@ -7,8 +7,8 @@ import { Track } from "../../model/user";
  */
 interface MyProfileProps {
   nickname: string;
-  track1: Track;
-  track2: Track;
+  track1: string;
+  track2: string;
   profileImg: string;
 }
 
