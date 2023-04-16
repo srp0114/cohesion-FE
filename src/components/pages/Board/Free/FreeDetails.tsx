@@ -173,7 +173,8 @@ const FreeDetails = () => {
         </Grid>
       </Grid>
 
-      <Reply board={"free"} postingId={id} />    </>
+      <Reply board={"free"} postingId={id} writerId={postItem.id} />    
+      </>
   ) : (
     <Typography>no data</Typography>
   );
