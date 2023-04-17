@@ -8,6 +8,7 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
+import { WritingButton } from "../../../layout/WritingButton";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 //자유게시판 페이지 인터페이스
@@ -73,7 +74,7 @@ const FreeBoard = () => {
         <FilterPosting />
         {displayPosting}
       </Box>
-      <p></p>
+      
       <PaginationControl
         page={page}
         between={1}
@@ -82,6 +83,7 @@ const FreeBoard = () => {
         changePage={(page: React.SetStateAction<number>) => setPage(page)}
         ellipsis={1}
       />
+      <WritingButton/>
     </>
   );
 };

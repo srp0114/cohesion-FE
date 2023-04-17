@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Fab, Box, Modal, Typography, ButtonBase } from "@mui/material";
+import { Box, Modal, Typography, ButtonBase } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Unstable_Grid2";
 import Banner from "../layout/Banner";
@@ -9,10 +9,10 @@ import LeftSidebar from "../layout/LeftSidebar";
 import RightSidebar from "../layout/RightSidebar";
 import HomeFreeBoard from "../layout/HomeFreeBoard";
 import HomeQnABoard from "../layout/HomeQnABoard";
-import AddIcon from "@mui/icons-material/Add";
 import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
+import { WritingButton } from "../layout/WritingButton";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -105,8 +105,6 @@ const Home: React.FC = () => {
                 }}>
                 <HomeQnABoard loginState={isLogin} />
               </Grid>
-              <WritingButton/>
-              {/*isLogin ? <WritingButton/> : null*/}
           </Grid>
 
         </Grid>
@@ -115,6 +113,7 @@ const Home: React.FC = () => {
           <RightSidebar />
         </Grid>
       </Grid>
+      {isLogin ? <WritingButton/> : null}
     </>
   );
 };
@@ -139,27 +138,5 @@ const StartButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: 20,
   border: '2px solid #777777'
 }));
-
-// 작성하기 버튼
-const WritingButton = () => {
-  const navigate = useNavigate();
-
-  const goToWriting = () => {
-    navigate("/post");
-  };
-  
-  return (
-    <Box sx={{ "& > :not(style)": { ml: 120 },position:"fixed", bottom:"2rem"}}>
-      <Fab
-        size="medium"
-        color="primary"
-        aria-label="edit"
-        onClick={goToWriting}
-      >
-        <AddIcon />
-      </Fab>
-    </Box>
-  );
-};
 
 export default Home;
