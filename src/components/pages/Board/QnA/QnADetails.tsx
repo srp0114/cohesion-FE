@@ -163,7 +163,7 @@ const QnADetails = () => {
 
   return (
     <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{PostDetails}</Box>;
+      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{PostDetails}</Box>
     </>
   );
 };

@@ -61,6 +61,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         <Grid item xs={12}>
           <PostingCrumbs title={postItem.title} board="recruit" />
         </Grid>
+        {/*게시글 제목 */}
         <Grid item xs={12}>
           <Typography variant="h4" gutterBottom>
             {postItem.title}
