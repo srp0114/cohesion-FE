@@ -61,7 +61,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{position:"relative"}}>
           <Grid xs>
             <LeftSidebar nickname={nickname} />
           </Grid>
@@ -105,7 +105,8 @@ const Home: React.FC = () => {
                 }}>
                 <HomeQnABoard loginState={isLogin} />
               </Grid>
-              {isLogin ? <WritingButton/> : null}
+              <WritingButton/>
+              {/*isLogin ? <WritingButton/> : null*/}
           </Grid>
 
         </Grid>
@@ -148,7 +149,7 @@ const WritingButton = () => {
   };
   
   return (
-    <Box sx={{ "& > :not(style)": { ml: 120 } }}>
+    <Box sx={{ "& > :not(style)": { ml: 120 },position:"fixed", bottom:"2rem"}}>
       <Fab
         size="medium"
         color="primary"
