@@ -3,7 +3,7 @@ import { Breadcrumbs, Typography, Link } from "@mui/material";
 
 export enum PageName {
   free= "자유게시판",
-  questions= "질문게시판",
+  questions= "Q&A게시판",
   recruit= "모집게시판",
   notice= "공지사항",
   mypage= "마이페이지",
