@@ -29,6 +29,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
+import { WritingButton } from "../../../layout/WritingButton";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -98,8 +99,9 @@ const RecruitBoard: React.FC = () => {
         </Box>
       </Box>{" "}
       {/*추후에 이 부분 컴포넌트 분리하기*/}
-      <p></p>
+      
       {/*space for paginationControl*/}
+      <WritingButton />
     </>
   );
 };
