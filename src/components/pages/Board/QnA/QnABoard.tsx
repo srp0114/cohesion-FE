@@ -8,6 +8,7 @@ import { skillData } from "../../../data/SkillData";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
+import { WritingButton } from "../../../layout/WritingButton";
 
 // BoardItems 인터페이스
 interface BoardItems {
@@ -94,6 +95,7 @@ const QnABaord: React.FC = () => {
       <Typography variant="h5" sx={{ marginTop: 8, marginBottom: 5 }}>
         Q&A 게시판
       </Typography>
+      
       <Box>
         {boardItems?.map((value) => {
           // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
@@ -173,6 +175,7 @@ const QnABaord: React.FC = () => {
           );
         })}
       </Box>
+      <WritingButton />
     </>
   );
 };

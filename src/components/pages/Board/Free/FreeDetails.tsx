@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
 import {
-  Avatar,
   Box,
   Grid,
-  Stack,
   Typography,
-  IconButton,
 } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Visibility from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
+import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
+import { replyCount } from "../../../layout/postingDetail/replyCount";
+import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
+import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { PageName } from "../../../layout/postingDetail/postingCrumbs";
+import Loading from "../../../layout/Loading";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -38,9 +39,10 @@ const FreeDetails = () => {
 
   useEffect(() => {
     axios({
-      method : "get",
-      url : "/api/free/detail/"+id
-    }).then((res) => {
+      method: "get",
+      url: "/api/free/detail/" + id,
+    })
+      .then((res) => {
         setPostItem(res.data.data);
       })
       .catch((err) => {
@@ -107,40 +109,30 @@ const FreeDetails = () => {
 
   const detailPosting = postItem ? (
     <>
-      <Grid container direction="column" rowSpacing={"8rem"}>
-        <Grid item container xs={12} direction="column">
-          <Grid item xs={12}>
-            <Typography variant="h4" gutterBottom>
-              {postItem.title}
-            </Typography>
+      <Grid container direction="column" rowSpacing={"3rem"}>
+        {/*게시판 이름, BreadCrumbs */}
+        <Grid item xs={12}>
+          <PostingCrumbs title={postItem.title} board="free" />
+        </Grid>
+        {/*게시글 제목 */}
+        <Grid item xs={12}>
+          <Typography variant="h4" gutterBottom>
+            {postItem.title}
+          </Typography>
+        </Grid>
+        {/*작성자 정보 , 작성 시각 */}
+        <Grid item container xs={12} justifyContent={"space-between"}>
+          <Grid item xs={4}>
+            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
           </Grid>
 
-          <Grid item container xs={12} justifyContent={"space-between"}>
-            <Grid item xs={4}>
-              <Stack
-                direction="row"
-                sx={{ display: "flex", justifyContent: "start" }}
-              >
-                <Avatar
-                  srcSet={postItem.profileImg}
-                  sx={{
-                    width: "2.5rem",
-                    height: "2.5rem",
-                    marginRight: "0.75rem",
-                  }}
-                />
-                <Typography variant="h6">
-                  {`${postItem.writer} (${postItem.stuId.toString().slice(0,2)}학번)`}
-                </Typography>
-              </Stack>
-            </Grid>
-
-            <Grid item justifyContent={"flex-end"}>
-              <Time date={postItem.createdDate} />
-            </Grid>
+          <Grid item justifyContent={"flex-end"}>
+            <Time date={postItem.createdDate} />{" "}
+            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
           </Grid>
         </Grid>
 
+        {/*게시글 내용 */}
         <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
           <Typography variant="h5">
             <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
@@ -148,38 +140,24 @@ const FreeDetails = () => {
           </Typography>
         </Grid>
 
-        <Grid item container xs={12} justifyContent={"space-between"}>
-          <Grid item xs={3}>
-            <Typography variant="h5">{`${postItem.reply}개의 댓글이 있습니다.`}</Typography>
-          </Grid>
-
-          <Grid item justifyContent={"flex-end"}>
-            <Stack direction="row" spacing={"0.75rem"}>
-              <Box>
-                <IconButton size="small" disabled>
-                  <Visibility fontSize="large" />
-                  <Typography variant="h6">{postItem.views}</Typography>
-                </IconButton>
-              </Box>
-
-              <Box>
-                <IconButton size="small" onClick={onClickBookmark}>
-                  <BookmarkIcon fontSize="large" />
-                  <Typography variant="h6">{bookmarkCount}</Typography>
-                </IconButton>
-              </Box>
-            </Stack>
-          </Grid>
+        {/*북마크, 조회수 이 컴포넌트 따로 빼둘것  */}
+        <Grid item xs={12} sm={6}>
+          {bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount)}
         </Grid>
+
+        {/*댓글 */}
+        {replyCount(postItem.reply)}
       </Grid>
 
       <Reply board={"free"} postingId={id} writerId={postItem.id} />    
       </>
   ) : (
-    <Typography>no data</Typography>
+    <Loading />
   );
-
-  return <Box sx={{margin:'2.25rem 3.75rem'}}>{detailPosting}</Box>;
+  {
+    /*은서: 상세보기에도 rightbar, leftbar 들어갈 경우, 좌우 15rem X */
+  }
+  return <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>;
 };
 
 export default FreeDetails;

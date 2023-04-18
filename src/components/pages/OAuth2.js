@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Buffer } from "buffer";
 import axios from "axios";
+import Loading from "../layout/Loading";
 
 const OAuth2 = () => {
   const [searchParams] = useSearchParams();
@@ -80,7 +81,7 @@ const OAuth2 = () => {
     }
   }, []);
 
-  return <p>Redirecting ...</p>;
+  return <Loading />;
 };
 
 export default OAuth2;

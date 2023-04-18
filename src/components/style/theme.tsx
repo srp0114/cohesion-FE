@@ -38,7 +38,7 @@ export const theme = createTheme({
         fontSize: "3rem" //48px
       },
       h4: {
-        fontSize: "2.25rem" //36px
+        fontSize: "2rem" //32px
       },
       h5: {
         fontSize: "1.5rem" //24px
