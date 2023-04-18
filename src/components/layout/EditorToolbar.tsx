@@ -6,6 +6,7 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
 import axios from 'axios';
+import "../style/Board.css";
 
 interface QuillProps  {
     onAddQuill: (content:string) => void
@@ -148,25 +149,22 @@ const EditorToolbar = (props : QuillProps) => {
 
     return (
         <>  
-            <div style={{height:"200px"}}>
-                <ReactQuill
-                    ref={(element) => {
-                        if (element !== null) {
-                            QuillRef.current = element;
-                        }
-                    }}
-                    value={content}
-                    onChange={(content) => {
-                        setContent(content);
-                        props.onAddQuill(content);
-                    }}
-                    formats={formats}
-                    modules={modules}
-                    theme="snow"
-                    placeholder="내용을 입력해주세요."
-                    style={{ height: "100px", borderRadius:"10rem"}} 
-                />
-            </div>
+            <ReactQuill
+                ref={(element) => {
+                    if (element !== null) {
+                        QuillRef.current = element;
+                    }
+                }}
+                value={content}
+                onChange={(content) => {
+                    setContent(content);
+                    props.onAddQuill(content);
+                }}
+                formats={formats}
+                modules={modules}
+                theme="snow"
+                placeholder="내용을 입력해주세요."
+            />
         </>
     )
 }

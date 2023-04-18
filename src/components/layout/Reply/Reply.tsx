@@ -135,7 +135,7 @@ const Reply = (props: ReplyProps) => {
 
   };
 
-  // 체크박스 변경되는 경우 값 넘어올 핸들러
+  // 채택하기 변경되는 경우 값 넘어올 핸들러
   // 댓글 추가 핸들러 axios에 해당 데이터 추가 시도 -> 그럼 댓글이 계속 생성(get)
   // 우선 data 보내는 경우 isChosen: replyCheck 으로 값 지정
   const handleChooseReply = (isChosen: boolean) => {

@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 import axios from "axios";
 import {  Box, TextField, Button } from "@mui/material";
 import EditorToolbar from "../EditorToolbar";
+import "../../style/Board.css";
 
 interface ReplyProps{
     onAddReply: (article:string) => void;
@@ -29,7 +30,11 @@ const ReplyField = (props : ReplyProps) => {
     };
     
     const ReplyForm = props.board === "qna" ? 
-    <EditorToolbar onAddQuill={getArticle}/>
+    <>
+    <div className="replyQuill">
+        <EditorToolbar onAddQuill={getArticle}/>
+    </div>
+    </>
     : <TextField
                 fullWidth
                 placeholder="댓글을 입력하세요."
