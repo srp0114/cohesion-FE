@@ -32,13 +32,13 @@ interface ReplyProps {
 const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [userId,setUserId] = useState<number>(0);
-  const [replyCheck, setReplyCheck] = useState<boolean>(false);
+  const [replyCheck, setReplyChoose] = useState<boolean>(false);
 
   // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
   // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
   // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
-  // Q&A 게시판도 댓글 작성, 답글 작성 확인가능한 상태
-  // 댓글 수정, QnA게시판 -  채택 api 작업 필요
+  // Q&A 게시판, 구인 게시판도 댓글 작성, 답글 작성 확인가능한 상태
+  // 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
 
   let id = props.postingId;
   let board = props.board;
@@ -138,26 +138,27 @@ const Reply = (props: ReplyProps) => {
   // 체크박스 변경되는 경우 값 넘어올 핸들러
   // 댓글 추가 핸들러 axios에 해당 데이터 추가 시도 -> 그럼 댓글이 계속 생성(get)
   // 우선 data 보내는 경우 isChosen: replyCheck 으로 값 지정
-  const handleCheckReply = (isChosen: boolean) => {
-    setReplyCheck(isChosen);
+  const handleChooseReply = (isChosen: boolean) => {
+    setReplyChoose(isChosen);
     console.log(isChosen);
   }
 
-  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 필요
+  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
   // 게시글 작성 시에도 현재 사용자의 id 필요 
   // 현재는 모든 사용자 체크박스 확인 가능
-  // && userId === props.writerId 인 경우에도 버튼 출력하도록 추가
-
+  // && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가 필요
   const ChooseReply = (article: string) => { 
     return board === "qna" ? (
       <>
       <Grid container spacing={2}>
-        <Grid xs={11}>
+          <Grid item xs={11}>
           <div dangerouslySetInnerHTML={{ __html: article }} />
           </Grid>
-          <Grid>
-          <PinReply onReplyCheck={handleCheckReply}/>
+
+          <Grid item>
+          <PinReply onReplyCheck={handleChooseReply}/>
           </Grid>
+
       </Grid>
       </>
     ) : ( <Typography>{article}</Typography>);
