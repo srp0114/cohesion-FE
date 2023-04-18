@@ -24,12 +24,10 @@ interface ReplyItems {
 }
 
 interface ReplyProps {
-  board: string;
-  postingId: string;
-  writerId: number;
+  postingID?: string;
 }
 
-const Reply = (props: ReplyProps) => {
+const FreeReply = ({ postingID }: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [userId,setUserId] = useState<number>(0);
   const [isChosen, setIsChosen] = useState<boolean>(false);
@@ -47,7 +45,7 @@ const Reply = (props: ReplyProps) => {
   useEffect(() => {
     axios({
       method: "get",
-      url: `/api/${board}/${id}/replies`,
+      url: url,
     })
       .then((res) => {
         setReplyData(res.data);
@@ -78,7 +76,7 @@ const Reply = (props: ReplyProps) => {
     };
     axios({
       method: "post",
-      url: `/api/${board}/${id}/replies`,
+      url: url,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -93,7 +91,6 @@ const Reply = (props: ReplyProps) => {
       });
   };
 
-  // 답글 추가 핸들러
   const handleAddNested = (article: string, parentId: number) => {
     const data = {
       article: article,
@@ -102,7 +99,7 @@ const Reply = (props: ReplyProps) => {
 
     axios({
       method: "post",
-      url: `/api/${board}/${id}/replies`,
+      url: url,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -119,7 +116,7 @@ const Reply = (props: ReplyProps) => {
 
   const editReply = () => {
     // 변경 api 추가
-    //수정 창 생기고 진행
+      //수정 창 생기고 진행
   };
 
   const deleteReply = (replyId : number) => {
@@ -197,14 +194,10 @@ const Reply = (props: ReplyProps) => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box>
-                  {
-                  reply.user.id === userId ?  
-                  <>
+                <Box>{reply.user.id === userId ?  <>
                     <Button onClick={editReply}>수정</Button>
                     <Button onClick={()=>deleteReply(reply.id)}>삭제</Button>
-                  </> : null}
-                </Box>
+                </> : null}</Box>
               </Box>
               <Box>
                 <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{reply.article}</Typography>
@@ -279,4 +272,4 @@ const Reply = (props: ReplyProps) => {
   );
 };
 
-export default Reply;
+export default FreeReply;
