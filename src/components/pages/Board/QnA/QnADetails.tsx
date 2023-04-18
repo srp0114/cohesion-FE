@@ -149,12 +149,12 @@ const QnADetails = () => {
           </Stack>
           {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
         </Grid>
-
+      
         {/*댓글 총 몇 개 인지*/}
         {replyCount(postItem.reply)}
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
-
+      <Box>
         <Reply board={"qna"} postingId={id} writerId={postItem.id}/>
       </Box>
     </>
