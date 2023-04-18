@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, TextField, Button } from "@mui/material";
 
 interface NestedReplyProps {
-  parentID: number;
+  parentId: number;
   onAddNested: (article:string, parentId: number) => void;
 }
 
@@ -14,7 +14,7 @@ const FreeNestedReply = (props: NestedReplyProps) => {
   // 답글 게시 버튼 클릭 시 적용될 핸들러
   const onReplySumbit = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    props.onAddNested(replyArticle, props.parentID);
+    props.onAddNested(replyArticle, props.parentId);
     setReplyArticle('');
     setOpenReplyField(false);
   }
