@@ -10,13 +10,14 @@
 
 .replyQuill .ql-snow .ql-toolbar {
     display: block;
-    background: #f7fff5;
+    background: #dfe6ba;
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
 }
 
 .replyQuill .ql-editor {
     min-height: 4rem;
+    white-space: pre-wrap;
 }
 
 
@@ -28,11 +29,13 @@
 
 .ql-snow.ql-toolbar {
     display: block;
-    background: #f7fff5;
+    background: #dfe6ba;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
 }
 
 .postQuill .ql-editor {
     min-height: 20rem;
+    white-space: pre-wrap;
 }
+

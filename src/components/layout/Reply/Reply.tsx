@@ -38,7 +38,8 @@ const Reply = (props: ReplyProps) => {
   // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
   // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
   // Q&A 게시판, 구인 게시판도 댓글 작성, 답글 작성 확인가능한 상태
-  // 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
+  // TODO : 모집게시판
+  // TODO : 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
 
   let id = props.postingId;
   let board = props.board;
@@ -121,7 +122,7 @@ const Reply = (props: ReplyProps) => {
     //수정 창 생기고 진행
   };
 
-  const deleteReply = (replyId : Number) => {
+  const deleteReply = (replyId : number) => {
     // 삭제 api 추가
       axios({
           method : "delete",
@@ -136,8 +137,8 @@ const Reply = (props: ReplyProps) => {
   };
 
   // 채택하기 변경되는 경우 값 넘어올 핸들러
-  // 댓글 추가 핸들러 axios에 해당 데이터 추가 시도 -> 그럼 댓글이 계속 생성(get)
-  // 우선 data 보내는 경우 isChosen: replyCheck 으로 값 지정
+  // data 보내는 경우 isChosen: replyCheck 으로 값 지정
+  // TODO : 변경된 값 어떻게 전달할지 논의 및 전달
   const handleChooseReply = (isChosen: boolean) => {
     setIsChosen(isChosen);
     console.log(isChosen);
@@ -146,7 +147,7 @@ const Reply = (props: ReplyProps) => {
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
   // 게시글 작성 시에도 현재 사용자의 id 필요 
   // 현재는 모든 사용자 체크박스 확인 가능
-  // && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가 필요
+  // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가
   const ChooseReply = (article: string) => { 
     return board === "qna" ? (
       <>
