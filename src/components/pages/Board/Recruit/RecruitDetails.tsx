@@ -140,7 +140,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-      <Reply board={"recruit"} postingId={id} writerId={postItem.id}/>
+      <Reply board={"recruit"} postingId={id} />
     </>
   ) : (
     <Loading />

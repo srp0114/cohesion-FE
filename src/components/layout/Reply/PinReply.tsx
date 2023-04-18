@@ -29,7 +29,7 @@ const ReplyCheckbox = (props: ReplyCheckboxProps) => {
       채택하기
     </Button>
     <Snackbar
-        autoHideDuration={3000}
+        autoHideDuration={1500}
         open={open}
         message={message}
         onClose={handleClose}

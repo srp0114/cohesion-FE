@@ -110,7 +110,6 @@ const QnADetails = () => {
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
-          <Typography variant="h5">
             {/*코드블럭 배경 css 추가*/}
             <div className="ql-snow">
               <div
@@ -119,7 +118,6 @@ const QnADetails = () => {
               />
             </div>
             {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-          </Typography>
         </Grid>
 
         <Grid item xs={12} sm={6} direction="row">
@@ -154,7 +152,7 @@ const QnADetails = () => {
         {replyCount(postItem.reply)}
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
-      <Reply board={"qna"} postingId={id} writerId={postItem.id}/>
+      <Reply board={"qna"} postingId={id} />
     </>
   ) : (
     //postItems 데이터 없는 경우

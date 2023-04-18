@@ -24,10 +24,11 @@ interface ReplyItems {
 }
 
 interface ReplyProps {
-  postingID?: string;
+  postingId: string;
+  board: string;
 }
 
-const FreeReply = ({ postingID }: ReplyProps) => {
+const Reply = ( props : ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [userId,setUserId] = useState<number>(0);
   const [isChosen, setIsChosen] = useState<boolean>(false);
@@ -35,7 +36,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
   // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
   // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
   // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
-  // Q&A 게시판, 구인 게시판도 댓글 작성, 답글 작성 확인가능한 상태
+  // Q&A 게시판 댓글 작성, 답글 작성 확인가능
   // TODO : 모집게시판
   // TODO : 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
 
@@ -45,7 +46,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
   useEffect(() => {
     axios({
       method: "get",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
     })
       .then((res) => {
         setReplyData(res.data);
@@ -76,7 +77,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
     };
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -99,7 +100,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -150,10 +151,12 @@ const FreeReply = ({ postingID }: ReplyProps) => {
       <>
       <Grid container spacing={2}>
           <Grid item xs={11}>
-          <div dangerouslySetInnerHTML={{ __html: article }} />
+            <div className="ql-snow">                
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: article }} />
+            </div>
           </Grid>
           <Grid item>
-          <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen}/>
+            <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen}/>
           </Grid>
       </Grid>
       </>
@@ -272,4 +275,4 @@ const FreeReply = ({ postingID }: ReplyProps) => {
   );
 };
 
-export default FreeReply;
+export default Reply;
