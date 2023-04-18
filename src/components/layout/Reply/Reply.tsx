@@ -32,7 +32,7 @@ interface ReplyProps {
 const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [userId,setUserId] = useState<number>(0);
-  const [replyCheck, setReplyChoose] = useState<boolean>(false);
+  const [isChosen, setIsChosen] = useState<boolean>(false);
 
   // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
   // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
@@ -139,7 +139,7 @@ const Reply = (props: ReplyProps) => {
   // 댓글 추가 핸들러 axios에 해당 데이터 추가 시도 -> 그럼 댓글이 계속 생성(get)
   // 우선 data 보내는 경우 isChosen: replyCheck 으로 값 지정
   const handleChooseReply = (isChosen: boolean) => {
-    setReplyChoose(isChosen);
+    setIsChosen(isChosen);
     console.log(isChosen);
   }
 
@@ -154,11 +154,9 @@ const Reply = (props: ReplyProps) => {
           <Grid item xs={11}>
           <div dangerouslySetInnerHTML={{ __html: article }} />
           </Grid>
-
           <Grid item>
-          <PinReply onReplyCheck={handleChooseReply}/>
+          <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen}/>
           </Grid>
-
       </Grid>
       </>
     ) : ( <Typography>{article}</Typography>);
