@@ -154,9 +154,7 @@ const QnADetails = () => {
         {replyCount(postItem.reply)}
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
-      <Box>
-        <Reply board={"qna"} postingId={id} writerId={postItem.id}/>
-      </Box>
+      <Reply board={"qna"} postingId={id} writerId={postItem.id}/>
     </>
   ) : (
     //postItems 데이터 없는 경우

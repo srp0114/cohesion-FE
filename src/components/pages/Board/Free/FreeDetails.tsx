@@ -148,8 +148,7 @@ const FreeDetails = () => {
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-
-      <Reply board={"free"} postingId={id} writerId={postItem.id} />    
+      <Reply board={"free"} postingId={id} writerId={postItem.id} /> 
       </>
   ) : (
     <Loading />

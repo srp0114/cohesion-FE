@@ -36,7 +36,7 @@ export interface RecruitDetailItems {
 }
 
 const RecruitDetails: React.FC = (): JSX.Element => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
 
   useEffect(() => {
@@ -140,7 +140,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-
+      <Reply board={"recruit"} postingId={id} writerId={postItem.id}/>
     </>
   ) : (
     <Loading />
