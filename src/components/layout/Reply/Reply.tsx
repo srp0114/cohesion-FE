@@ -3,7 +3,7 @@ import axios from "axios";
 import { Typography, Box, Button } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
-import Checkbox from "./ReplyCheckbox";
+import AdoptReply from "./PinReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 import EditorToolbar from "../EditorToolbar";
@@ -147,16 +147,16 @@ const Reply = (props: ReplyProps) => {
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 필요
   // 게시글 작성 시에도 현재 사용자의 id 필요 
   // 현재는 모든 사용자 체크박스 확인 가능
-  // && userId === props.writerId 추후 추가
+  // && userId === props.writerId 인 경우에도 버튼 출력하도록 추가
   const ReplyCheckbox = 
     board === "qna" ? (
-      <Checkbox onReplyCheck={handleCheckReply}/>
+      <AdoptReply onReplyCheck={handleCheckReply}/>
     ) : (null);
 
   // Q&A 게시판인 경우 Quill 에디터로 설정
   // 그외의 게시판은 텍스트필드 에디터로 설정
   const ReplyForm = board === "qna" ? 
-    <EditorToolbar getContent={}/>
+    null
     : <ReplyField onAddReply={handleAddReply} /> 
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.

@@ -141,7 +141,6 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {replyCount(postItem.reply)}
       </Grid>
 
-      <Reply postingID={id} />
     </>
   ) : (
     <Loading />
