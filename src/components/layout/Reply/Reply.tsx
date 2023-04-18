@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button, Grid } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
-import AdoptReply from "./PinReply";
+import PinReply from "./PinReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
-import EditorToolbar from "../EditorToolbar";
 
 interface User {
   id: number;
@@ -32,14 +31,14 @@ interface ReplyProps {
 
 const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
-  const [userId,setUserId] = useState<Number>(0);
+  const [userId,setUserId] = useState<number>(0);
   const [replyCheck, setReplyCheck] = useState<boolean>(false);
 
   // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
   // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
   // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
   // Q&A 게시판도 댓글 작성, 답글 작성 확인가능한 상태
-  // 댓글 수정, QnA게시판인 경우 채택 api 작업 필요
+  // 댓글 수정, QnA게시판 -  채택 api 작업 필요
 
   let id = props.postingId;
   let board = props.board;
@@ -148,16 +147,21 @@ const Reply = (props: ReplyProps) => {
   // 게시글 작성 시에도 현재 사용자의 id 필요 
   // 현재는 모든 사용자 체크박스 확인 가능
   // && userId === props.writerId 인 경우에도 버튼 출력하도록 추가
-  const ReplyCheckbox = 
-    board === "qna" ? (
-      <AdoptReply onReplyCheck={handleCheckReply}/>
-    ) : (null);
 
-  // Q&A 게시판인 경우 Quill 에디터로 설정
-  // 그외의 게시판은 텍스트필드 에디터로 설정
-  const ReplyForm = board === "qna" ? 
-    null
-    : <ReplyField onAddReply={handleAddReply} /> 
+  const ChooseReply = (article: string) => { 
+    return board === "qna" ? (
+      <>
+      <Grid container spacing={2}>
+        <Grid xs={11}>
+          <div dangerouslySetInnerHTML={{ __html: article }} />
+          </Grid>
+          <Grid>
+          <PinReply onReplyCheck={handleCheckReply}/>
+          </Grid>
+      </Grid>
+      </>
+    ) : ( <Typography>{article}</Typography>);
+  }
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
@@ -250,9 +254,8 @@ const Reply = (props: ReplyProps) => {
                     <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
             </> : null}</Box>
             </Box>
-            <Box sx={{display:"flex", justifyContent:"space-between"}}>
-              <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{value.article}</Typography>
-              {ReplyCheckbox}
+            <Box sx={{display:"flex", justifyContent:"space-between", ml:3, mt:2, mr: 3, whiteSpace: "pre-wrap" }}>
+              {ChooseReply(value.article)}
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}
@@ -270,7 +273,7 @@ const Reply = (props: ReplyProps) => {
 
   return (
     <>
-      {ReplyForm}
+      <ReplyField onAddReply={handleAddReply} board={props.board}/> 
       {reply}
     </>
   );

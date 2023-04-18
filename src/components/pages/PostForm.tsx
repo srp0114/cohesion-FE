@@ -243,7 +243,7 @@ const PostForm = () => {
               ></TextField>
             </Grid>
             <Grid item>
-              <EditorToolbar getContent={getContent} />
+              <EditorToolbar onAddQuill={getContent} />
               {/* value: {content} */}
               <div>
                 <input type="file" multiple onChange={onSaveFiles} />

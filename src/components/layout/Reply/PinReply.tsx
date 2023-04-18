@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Snackbar, Slide, SlideProps } from '@mui/material';
+import { Button, Snackbar } from '@mui/material';
 
 interface ReplyCheckboxProps {
   onReplyCheck: (isChosen:boolean) => void;
