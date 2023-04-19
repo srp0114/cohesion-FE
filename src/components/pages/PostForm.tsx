@@ -21,6 +21,7 @@ import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
+import "../style/Board.css";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -243,7 +244,9 @@ const PostForm = () => {
               ></TextField>
             </Grid>
             <Grid item>
-              <EditorToolbar getContent={getContent} />
+              <div className="postQuill">
+                <EditorToolbar onAddQuill={getContent} />
+              </div>
               {/* value: {content} */}
               <div>
                 <input type="file" multiple onChange={onSaveFiles} />

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import axios from "axios";
 import {  Box, TextField, Button } from "@mui/material";
+import EditorToolbar from "../EditorToolbar";
+import "../../style/Board.css";
 
 interface ReplyProps{
     onAddReply: (article:string) => void;
+    board: string;
 }
   
 // 댓글 입력창 컴포넌트 
@@ -21,11 +24,18 @@ const ReplyField = (props : ReplyProps) => {
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setArticle(e.target.value);
     };
-
-    return (
-        <>
-        <Box>
-            <TextField
+        
+    const getArticle = (value: string) => {
+        setArticle(value);
+    };
+    
+    const ReplyForm = props.board === "qna" ? 
+    <>
+    <div className="replyQuill">
+        <EditorToolbar onAddQuill={getArticle}/>
+    </div>
+    </>
+    : <TextField
                 fullWidth
                 placeholder="댓글을 입력하세요."
                 variant="outlined"
@@ -34,6 +44,11 @@ const ReplyField = (props : ReplyProps) => {
                 value={article}
                 onChange={handleChange}
             />
+
+    return (
+        <>
+        <Box>
+            {ReplyForm}
             <Box display="flex" justifyContent="flex-end">
                 <Button onClick={onSubmit} size="large">작성하기</Button>
             </Box>

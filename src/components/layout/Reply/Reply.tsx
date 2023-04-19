@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button, Grid } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
+import PinReply from "./PinReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 
@@ -23,20 +24,29 @@ interface ReplyItems {
 }
 
 interface ReplyProps {
-  postingID?: string;
+  postingId: string;
+  board: string;
 }
 
-const FreeReply = ({ postingID }: ReplyProps) => {
+const Reply = ( props : ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
-  const [isWriter, setIsWriter] = useState<boolean>(true);
-  const [userId,setUserId] = useState<Number>(0);
+  const [userId,setUserId] = useState<number>(0);
+  const [isChosen, setIsChosen] = useState<boolean>(false);
 
-  const url = `/api/free/${postingID}/replies`;
+  // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
+  // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
+  // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
+  // Q&A 게시판 댓글 작성, 답글 작성 확인가능
+  // TODO : 모집게시판
+  // TODO : 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
+
+  let id = props.postingId;
+  let board = props.board;
 
   useEffect(() => {
     axios({
       method: "get",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
     })
       .then((res) => {
         setReplyData(res.data);
@@ -67,7 +77,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
     };
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -90,7 +100,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
     axios({
       method: "post",
-      url: url,
+      url: `/api/${board}/${id}/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
@@ -110,7 +120,7 @@ const FreeReply = ({ postingID }: ReplyProps) => {
       //수정 창 생기고 진행
   };
 
-  const deleteReply = (replyId : Number) => {
+  const deleteReply = (replyId : number) => {
     // 삭제 api 추가
       axios({
           method : "delete",
@@ -124,7 +134,34 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
   };
 
+  // 채택하기 변경되는 경우 값 넘어올 핸들러
+  // data 보내는 경우 isChosen: replyCheck 으로 값 지정
+  // TODO : 변경된 값 어떻게 전달할지 논의 및 전달
+  const handleChooseReply = (isChosen: boolean) => {
+    setIsChosen(isChosen);
+    console.log(isChosen);
+  }
 
+  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
+  // 게시글 작성 시에도 현재 사용자의 id 필요 
+  // 현재는 모든 사용자 체크박스 확인 가능
+  // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가
+  const ChooseReply = (article: string) => { 
+    return board === "qna" ? (
+      <>
+      <Grid container spacing={2}>
+          <Grid item xs={11}>
+            <div className="ql-snow">                
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: article }} />
+            </div>
+          </Grid>
+          <Grid item>
+            <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen}/>
+          </Grid>
+      </Grid>
+      </>
+    ) : ( <Typography>{article}</Typography>);
+  }
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
@@ -213,8 +250,8 @@ const FreeReply = ({ postingID }: ReplyProps) => {
                     <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
             </> : null}</Box>
             </Box>
-            <Box>
-              <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>{value.article}</Typography>
+            <Box sx={{display:"flex", justifyContent:"space-between", ml:3, mt:2, mr: 3, whiteSpace: "pre-wrap" }}>
+              {ChooseReply(value.article)}
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}
@@ -232,10 +269,10 @@ const FreeReply = ({ postingID }: ReplyProps) => {
 
   return (
     <>
-      <ReplyField onAddReply={handleAddReply} />
+      <ReplyField onAddReply={handleAddReply} board={props.board}/> 
       {reply}
     </>
   );
 };
 
-export default FreeReply;
+export default Reply;
