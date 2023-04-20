@@ -159,6 +159,12 @@ const Reply = ( props : ReplyProps) => {
 
   };
 
+  // 수정 버튼 클릭 시, 적용될 핸들러
+  const editHandler = (id: number) => {
+    setReplyId(id);
+    setIsEditing(true);
+  }
+
   // 채택하기 변경되는 경우 값 넘어올 핸들러
   // data 보내는 경우 isChosen: replyCheck 으로 값 지정
   // TODO : 변경된 값 어떻게 전달할지 논의 및 전달
@@ -294,9 +300,7 @@ const Reply = ( props : ReplyProps) => {
                 </Box>
               </Box>
                 <Box>{value.user.id === userId ?  <>
-                    <Button onClick={() => { 
-                      setReplyId(value.id); 
-                      setIsEditing(true)}}>수정</Button>
+                    <Button onClick={()=>editHandler(value.id)}>수정</Button>
                     <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
               </> : null}
               </Box>

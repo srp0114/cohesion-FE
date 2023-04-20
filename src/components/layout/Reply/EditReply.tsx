@@ -9,7 +9,7 @@ interface EditReplyProps {
   onChangeReply: (id:number, article:string, parentId?: number) => void;
 }
 
-// 답글 달기 입력창 컴포넌트
+// 댓글 수정 컴포넌트
 const EditReply = (props: EditReplyProps) => {
   const [editArticle, setEditArticle] = useState(props.article);
 

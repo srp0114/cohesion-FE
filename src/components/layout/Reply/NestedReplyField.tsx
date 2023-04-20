@@ -29,11 +29,11 @@ const FreeNestedReply = (props: NestedReplyProps) => {
       {openReplyField && 
         <>
         <TextField 
-        variant="standard" 
-        placeholder="답글달기.."
-        multiline
-        value={replyArticle}
-        onChange={handleChange}
+          variant="standard" 
+          placeholder="답글달기.."
+          multiline
+          value={replyArticle}
+          onChange={handleChange}
         />
         <Box display="flex" justifyContent="flex-end">
         <Button size="large" onClick={onReplySumbit}>답글 달기</Button>
