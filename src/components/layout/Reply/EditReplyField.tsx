@@ -10,7 +10,7 @@ interface EditReplyProps {
 }
 
 // 댓글 수정 컴포넌트
-const EditReply = (props: EditReplyProps) => {
+const EditReplyField = (props: EditReplyProps) => {
   const [editArticle, setEditArticle] = useState(props.article);
 
   const handleEditArticleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,4 +43,4 @@ const EditReply = (props: EditReplyProps) => {
   );
 };
 
-export default EditReply;
+export default EditReplyField;

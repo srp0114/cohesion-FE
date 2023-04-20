@@ -6,7 +6,7 @@ import NestedReplyField from "./NestedReplyField";
 import PinReply from "./PinReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
-import EditReply from "./EditReply";
+import EditReplyField from "./EditReplyField";
 interface User {
   id: number;
   nickname: string;
@@ -28,9 +28,9 @@ interface ReplyProps {
   board: string;
 }
 
-const Reply = ( props : ReplyProps) => {
+const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
-  const [userId,setUserId] = useState<number>(0);
+  const [userId, setUserId] = useState<number>(0);
   const [isChosen, setIsChosen] = useState<boolean>(false);
 
   // 댓글 수정 id, 여부를 위한 상태변수 추가
@@ -121,7 +121,7 @@ const Reply = ( props : ReplyProps) => {
 
   // 수정 버튼 클릭한 경우 - 기존 댓글 내용이 수정창으로 변경
   // 댓글 번호, 내용, 부모댓글 번호 (답글인 경우) 매개변수로 받아옴
-  // TODO : url 변경 api 작업
+  // TODO : 수정 api (url)
   const editReply = (id: number, article: string, parentId?: number) => {
     setIsEditing(false);
 
@@ -130,19 +130,19 @@ const Reply = ( props : ReplyProps) => {
       parentId: parentId,
     };
 
-    // 변경 api 
+    // 변경 api
     axios({
       method: "put",
       url: ``,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
-    }).then((res) => {
-      // 변경된 경우
     })
-    .catch((err) => {
-      console.log(err);
-    });
-
+      .then((res) => {
+        // 수정된 경우
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const deleteReply = (replyId : number) => {
@@ -163,7 +163,7 @@ const Reply = ( props : ReplyProps) => {
   const editHandler = (id: number) => {
     setReplyId(id);
     setIsEditing(true);
-  }
+  };
 
   // 채택하기 변경되는 경우 값 넘어올 핸들러
   // data 보내는 경우 isChosen: replyCheck 으로 값 지정
@@ -171,45 +171,53 @@ const Reply = ( props : ReplyProps) => {
   const handleChooseReply = (isChosen: boolean) => {
     setIsChosen(isChosen);
     console.log(isChosen);
-  }
+  };
 
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
-  // 게시글 작성 시에도 현재 사용자의 id 필요 
+  // 게시글 작성 시에도 현재 사용자의 id 필요
   // 현재는 모든 사용자 체크박스 확인 가능
   // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가
-  const Article = (article: string) => { 
-    return ( 
-      <> { board === "qna" ? 
-        // Q&A 게시판인 경우
-        <Grid container spacing={2}>
+  const Article = (article: string) => {
+    return (
+      <>
+        {board === "qna" ? (
+          // Q&A 게시판인 경우
+          <Grid container spacing={2}>
             <Grid item xs={11}>
-              <div className="ql-snow">                
-                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: article }} />
+              <div className="ql-snow">
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: article }}
+                />
               </div>
             </Grid>
             <Grid item>
-              <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen}/>
+              <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen} />
             </Grid>
-        </Grid>
-         :  
-        // 그 외 나머지 게시판이 경우
-        <Typography>{article}</Typography>
-      }
+          </Grid>
+        ) : (
+          // 그 외 나머지 게시판이 경우
+          <Typography>{article}</Typography>
+        )}
       </>
-    )
-  }
+    );
+  };
 
   // 수정 버튼 클릭에 따른 컴포넌트 전환
-  const Edit = (article:string, id: number, parentId?:number) => {
+  const Edit = (article: string, id: number, parentId?: number) => {
     // 수정버튼 클릭한 댓글 번호, 수정중인 경우 - 수정 컴포넌트로 전환
-    return editReplyId === id && isEditing? (
-      <EditReply id={id} article={article} parentId={parentId} isEditing={isEditing} onChangeReply={editReply} />
+    return editReplyId === id && isEditing ? (
+      <EditReplyField
+        id={id}
+        article={article}
+        parentId={parentId}
+        isEditing={isEditing}
+        onChangeReply={editReply}
+      />
     ) : (
-      <>
-        {Article(article)}
-      </>
-    )
-  }
+      <>{Article(article)}</>
+    );
+  };
 
   //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
@@ -222,7 +230,7 @@ const Reply = ( props : ReplyProps) => {
       filteredReplies.length > 0 && (
         <Box sx={{ ml: 6 }}>
           {filteredReplies.map((reply) => (
-              <div key={reply.id}>
+            <div key={reply.id}>
               <Box
                 sx={{
                   display: "flex",
@@ -245,24 +253,29 @@ const Reply = ( props : ReplyProps) => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box>{reply.user.id === userId ?  <>
-                    <Button onClick={() => { 
-                      setReplyId(reply.id); 
-                      setIsEditing(true)}}>수정</Button>
-                    <Button onClick={()=>deleteReply(reply.id)}>삭제</Button>
-                </> : null}
+                <Box>
+                  {reply.user.id === userId ? (
+                    <>
+                      <Button onClick={() => editHandler(reply.id)}>
+                        수정
+                      </Button>
+                      <Button onClick={() => deleteReply(reply.id)}>
+                        삭제
+                      </Button>
+                    </>
+                  ) : null}
                 </Box>
               </Box>
               <Box>
-                <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap"}}>
+                <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap" }}>
                   {Edit(reply.article, reply.id, reply.parentId)}
                 </Typography>
               </Box>
               <NestedReplyField
-              onAddNested={handleAddNested}
-              parentId={reply.id}
+                onAddNested={handleAddNested}
+                parentId={reply.id}
               />
-              
+
               {replyContainer(replies, reply.id)}
             </div>
           ))}
@@ -299,13 +312,25 @@ const Reply = ( props : ReplyProps) => {
                   </Typography>
                 </Box>
               </Box>
-                <Box>{value.user.id === userId ?  <>
-                    <Button onClick={()=>editHandler(value.id)}>수정</Button>
-                    <Button onClick={()=>deleteReply(value.id)}>삭제</Button>
-              </> : null}
+              <Box>
+                {value.user.id === userId ? (
+                  <>
+                    <Button onClick={() => editHandler(value.id)}>수정</Button>
+                    <Button onClick={() => deleteReply(value.id)}>삭제</Button>
+                  </>
+                ) : null}
               </Box>
             </Box>
-            <Box sx={{display:"flex", justifyContent:"space-between", ml:3, mt:2, mr: 3, whiteSpace: "pre-wrap" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                ml: 3,
+                mt: 2,
+                mr: 3,
+                whiteSpace: "pre-wrap",
+              }}
+            >
               {Edit(value.article, value.id)}
             </Box>
             <NestedReplyField
@@ -324,7 +349,7 @@ const Reply = ( props : ReplyProps) => {
 
   return (
     <>
-      <ReplyField onAddReply={handleAddReply} board={props.board}/> 
+      <ReplyField onAddReply={handleAddReply} board={props.board} />
       {reply}
     </>
   );
