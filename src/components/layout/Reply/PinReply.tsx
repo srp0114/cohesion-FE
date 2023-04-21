@@ -6,7 +6,7 @@ interface ReplyCheckboxProps {
   isChosen: boolean;
 }
 
-const ReplyCheckbox = (props: ReplyCheckboxProps) => {
+const PinReply = (props: ReplyCheckboxProps) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState<string>("");
@@ -38,4 +38,4 @@ const ReplyCheckbox = (props: ReplyCheckboxProps) => {
   );
 }
 
-export default ReplyCheckbox;
+export default PinReply;
