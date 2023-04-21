@@ -17,7 +17,7 @@ export function userInfo(writer: string, imgUrl: string, stuId: number) {
         marginRight: "0.75rem", //12px
       }} />
     <Typography variant="h6" textAlign={"center"}>
-      {`${writer} (${Math.floor(stuId/100000)}학번)`}
+      {`${writer} (${Math.floor(Number(stuId)/10000)}학번)`}
     </Typography>
   </Stack>;
 }
