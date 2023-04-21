@@ -74,7 +74,7 @@ const FreeBoard = () => {
         <FilterPosting />
         {displayPosting}
       </Box>
-      
+
       <PaginationControl
         page={page}
         between={1}
@@ -83,7 +83,7 @@ const FreeBoard = () => {
         changePage={(page: React.SetStateAction<number>) => setPage(page)}
         ellipsis={1}
       />
-      <WritingButton/>
+      <WritingButton />
     </>
   );
 };
