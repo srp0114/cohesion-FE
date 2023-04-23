@@ -1,33 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Typography, IconButton, Stack } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/WritingButton";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
+import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { shortenContent } from "../QnA/QnABoard";
+
 
 //자유게시판 페이지 인터페이스
-interface FreeBoardItems {
+export interface FreeBoardItems {
   id: number;
   title: string;
   content: string;
   writer: string;
-  stuId: string;
+  stuId: number; //타입 string에서 number로 알맞게 변경.
   profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
   reply: number;
   views: number; //조회수
-  //stuId: number; //사용자 학번
   //imgUrl?: Array<string>; //이미지
 }
-//은서: FreeBoardListDTO 보면서 만들긴했는데 작성자 닉네임, 프로필이미지, 달린 댓글 수가 없어서 추가부탁드려요!
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [page, setPage] = useState(1);
@@ -52,29 +51,24 @@ const FreeBoard = () => {
       });
   }, []);
 
-  const displayPosting = freeData.map((element, idx) => (
-    <PreviewPosting {...element} key={idx} />
-  ));
+  const displayPosting = freeData.map((element, idx) => {
+    return (
+      <>
+        <PreviewPosting {...element} key={idx} />
+      </>
+    );
+  }
+
+  );
 
   return (
-    <>
-      <Box
-        sx={{
-          borderLeft: "1px solid black",
-          borderRight: "1px solid black",
-          padding: 10,
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-        >
-          자유게시판
-        </Typography>
-        <FilterPosting />
-        {displayPosting}
-      </Box>
-
+    <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      <Typography
+        variant="h5" >
+        자유게시판
+      </Typography>
+      <FilterPosting />
+      {displayPosting}
       <PaginationControl
         page={page}
         between={1}
@@ -84,7 +78,7 @@ const FreeBoard = () => {
         ellipsis={1}
       />
       <WritingButton />
-    </>
+    </Box>
   );
 };
 
@@ -98,61 +92,58 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
   };
 
   return (
-    <Box
-      sx={{
-        minWidth: 275,
-        marginBottom: "3%",
-        border: "2px solid #787878",
-        borderRadius: 10,
-        padding: 3,
-      }}
-    >
-      <Box
-        sx={{
-          marginBottom: 1,
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography variant="h6" onClick={() => goToPost(props.id)}>
+
+    <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
+      bgcolor: "background.paper",
+      borderRadius: "50px",
+      border: "0.5px solid black",
+      "&:hover": {
+        boxShadow: 5,
+        pointer:"cursor"
+      },
+      margin: "2.25rem 0",
+      padding: "0.75rem 2rem 1.25rem",
+      height:"16rem", //게시글 박스 높이
+      justifyContent:"space-between",
+      alignItems:"stretch"
+    }}
+      onClick={() => goToPost(props.id)}>
+      <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Typography variant="h5" >
           {props.title}
         </Typography>
-        <Typography variant="caption">
-          <Time date={props.createdDate} />
+        <Time date={props.createdDate} variant="h6"/>
+      </Grid>
+
+      <Grid item sx={{
+      whiteSpace: "pre-line",
+      wordWrap: "break-word",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      alignItems: "stretch",
+      }}>
+        <Typography variant="body1">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: shortenContent(props.content,50),
+            }}
+          />
         </Typography>
-      </Box>
-      <Box sx={{ marginBottom: 1 }}>
-        <Typography variant="body1" onClick={() => goToPost(props.id)}>
-          {props.content}
-        </Typography>
+
         {/*최대 n자까지만 나타나도록 수정요함. */}
         {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-      </Box>
+      </Grid>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Stack direction="row">
-          <Avatar
-            srcSet={props.profileImg as string}
-            sx={{ width: "20px", height: "20px", marginRight: "5px" }}
-          />
-          <Typography variant="overline">
-            {`${props.writer} (${props.stuId})`}
-          </Typography>
-        </Stack>
-        <Stack direction="row">
-          <IconButton size="small">
-            <Person2OutlinedIcon /> {props.views}
-          </IconButton>
-          <IconButton size="small">
-            <BookmarkIcon /> {props.bookmark}
-          </IconButton>
-          <IconButton size="small">
-            <ChatIcon /> {props.reply}
-          </IconButton>
-        </Stack>
-      </Box>
-    </Box>
+      <Grid item>
+        <Box sx={{ display: "flex", justifyContent: "space-between"}}>
+          {userInfo(props.writer, props.profileImg, props.stuId)}
+          {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
+        </Box>
+      </Grid>
+    </Grid>
   );
 };
 
 export default FreeBoard;
+
+
