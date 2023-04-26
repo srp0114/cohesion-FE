@@ -126,6 +126,7 @@ const Reply = (props: ReplyProps) => {
     setIsEditing(false);
 
     const data = {
+      id : id,
       article: article,
       parentId: parentId,
     };
@@ -133,12 +134,25 @@ const Reply = (props: ReplyProps) => {
     // 변경 api
     axios({
       method: "put",
-      url: ``,
+      url: `/api/qna/update/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
       .then((res) => {
         // 수정된 경우
+          if(res.status===200){
+              //TODO: 바로 랜더링되게 해놨는데 마우스 포인터가 그대로 있는 이슈만 해결해주시면 될 것 같습니다.
+              //TODO: Qna 댓글에서는 수정 연동 되었는데, 현재 구조가 Reply.tsx 를 자유게시판이랑 Qna 게시판 에서 공통으로 사용하도록 바꿔 놓으신 것 같습니다! 그래서 자유게시판이랑
+              //TODO :       Qna게시판을 구분하여서 자유게시판인 경우 url을 `/api/free/update/replies` 로 되도록 해주시면 될 것 같습니다.
+            const editedReply = res.data;
+            const newReplyData = replyData.map((reply)=>{
+                if(reply.id === editedReply.id){
+                    return {...reply, ...editedReply, showEditForm:false};
+                }
+                return reply;
+            });
+              setReplyData(newReplyData);
+          }
       })
       .catch((err) => {
         console.log(err);
