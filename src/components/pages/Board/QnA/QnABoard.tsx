@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Typography, Container, Box } from "@mui/material";
+import { Typography, Box, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
@@ -95,16 +95,16 @@ const QnABaord: React.FC = () => {
       <Typography variant="h5" sx={{ marginTop: 8, marginBottom: 5 }}>
         Q&A 게시판
       </Typography>
-      
+
       <Box>
         {boardItems?.map((value) => {
           // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
           const Skill = value.language
             ? skillData.map((data) => {
-                if (value.language === data.name) {
-                  return <img src={data.logo} width="25" height="25" />;
-                }
-              })
+              if (value.language === data.name) {
+                return <img src={data.logo} width="25" height="25" />;
+              }
+            })
             : null;
           const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
           const noPreTagContent = value.content.replace(regex, "");

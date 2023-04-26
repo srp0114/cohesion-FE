@@ -5,6 +5,7 @@ import {
   Box,
   Grid,
   Typography,
+  Skeleton
 } from "@mui/material";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
@@ -13,7 +14,7 @@ import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
-import Loading from "../../../layout/Loading";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -36,6 +37,7 @@ const FreeDetails = () => {
   const { id } = useParams() as { id: string };
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [bookmarkCheck, setBookmarkCheck] = useState(false);
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
 
   useEffect(() => {
     axios({
@@ -148,10 +150,10 @@ const FreeDetails = () => {
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-      <Reply board={"free"} postingId={id} /> 
-      </>
+      <Reply board={"free"} postingId={id} />
+    </>
   ) : (
-    <Loading />
+    <PostingSkeleton />
   );
   {
     /*은서: 상세보기에도 rightbar, leftbar 들어갈 경우, 좌우 15rem X */
