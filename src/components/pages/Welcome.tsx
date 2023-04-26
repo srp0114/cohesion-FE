@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
 import "../style/Board.css";
@@ -9,6 +9,7 @@ import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import {logoutHandler} from "../logoutHandler";
+import Profile from "../layout/Profile";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -195,11 +196,13 @@ const Welcome = () => {
                     {defaultNickname}
                   </Typography>
                 </ImageButton>
+                
+                
                 <ImageButton 
                   style={flag === 2 ? clickBorder : defaultBorder} 
                   onClick={()=>setFlag(2)}
                 >
-                  <ProfileIcon sx={{ fontSize: 50 }} />
+                  <Profile/>
                   <Typography
                     variant="subtitle1"
                     sx={{
