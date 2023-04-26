@@ -7,7 +7,7 @@ import {
 export function userInfo(writer: string, imgUrl: string, stuId: number) {
   return <Stack
     direction="row"
-    sx={{ display: "flex", justifyContent: "start" }}
+    sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
   >
     <Avatar
       srcSet={imgUrl}
@@ -16,8 +16,8 @@ export function userInfo(writer: string, imgUrl: string, stuId: number) {
         height: "3rem",
         marginRight: "0.75rem", //12px
       }} />
-    <Typography variant="h6" textAlign={"center"}>
-      {`${writer} (${Math.floor(stuId/100000)}학번)`}
+    <Typography variant="h6">
+      {`${writer} (${stuId.toString().slice(0,2)}학번)`}
     </Typography>
   </Stack>;
 }
