@@ -75,7 +75,7 @@ const FreeBoard = () => {
             variant="h5" >
             자유게시판
           </Typography>
-          <FilterPosting />
+
           {displayPosting}
           <PaginationControl
             page={page}
