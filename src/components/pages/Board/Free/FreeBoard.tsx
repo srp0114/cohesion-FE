@@ -134,6 +134,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         overflow: "hidden",
         textOverflow: "ellipsis",
         alignItems: "stretch",
+        maxHeight: "6.5rem"
       }}>
         <Typography variant="body1">
           <div
