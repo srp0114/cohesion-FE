@@ -98,7 +98,7 @@ const Navbar = () => {
           sx={{ display: "flex", justifyContent: "flex-start"}}
         >
           <Box sx={{width:100, backgroundColor:'#ddd', mr: 3}}/>
-            <Button onClick={moveToHome} className="navButton">홈</Button>
+          <Button onClick={moveToHome} className="navButton">홈</Button>
           <Button
             className="navButton"
             aria-controls={open ? "basic-menu" : undefined}
@@ -109,7 +109,7 @@ const Navbar = () => {
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <MenuItem onClick={moveToFree}>자유게시판</MenuItem>
             <MenuItem onClick={moveToQna}>Q&A게시판</MenuItem>
-            <MenuItem onClick={moveToRecruit}>모집게시판</MenuItem>
+            <MenuItem onClick={moveToRecruit}>구인게시판</MenuItem>
           </Menu>
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Box>

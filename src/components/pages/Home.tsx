@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Box, Modal, Typography, ButtonBase } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Box, Modal, Typography, Button, Paper } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
-import HomeFreeBoard from "../layout/HomeFreeBoard";
-import HomeQnABoard from "../layout/HomeQnABoard";
+import HomeBoard from "../layout/HomeBoard";
 import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/WritingButton";
+import { styled } from '@mui/material/styles';
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -58,84 +57,85 @@ const Home: React.FC = () => {
       setOpen(!open);
   };
 
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  }));         
+
   return (
     <>
-      <Grid container spacing={3} sx={{position:"relative"}}>
-          <Grid xs>
-            <SideBar nickname={nickname} />
+      <Grid container spacing={2}>
+      <Grid item xs={9}>
+        <Item>xs=8</Item>
+        <Banner/>
+        <Grid container spacing={2} onClick={openModal}>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
+            <Box sx={loginModalstyle}>
+              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+              <Button className="startButton" onClick={handleLogin}>
+                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+              </Button>
+            </Box>
+          </Modal>
+
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            <HomeBoard board="free" loginState={isLogin} />
           </Grid>
-
-          <Grid xs={8}>
-            <Banner/>
-
-            <Grid container spacing={5}
-                  onClick={openModal}
-            >
-
-              <Grid xs
-                sx={{
-                  // 로그인 여부에 따라 블러 처리              
-                  filter: isLogin? null : "blur(1.5px)"
-                }}
-                // 로그인 토큰 없는 상태에서 클릭하는 경우 - 모달창 open
-              >
-                <Modal
-                  open={open}
-                  onClose={handleClose}
-                  sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-                > 
-                <Box sx={loginModalstyle}>
-                  <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-                  <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-                  <StartButton onClick={handleLogin}>
-                    <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-                  </StartButton>
-                </Box>
-                </Modal>
-
-                <HomeFreeBoard loginState={isLogin} />
-              </Grid>
-
-
-              <Grid xs
-                sx={{
-                  // 로그인 여부에 따라 블러 처리              
-                  filter: isLogin? null : "blur(1.5px)"
-                }}>
-                <HomeQnABoard loginState={isLogin} />
-              </Grid>
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            <HomeBoard board="qna" loginState={isLogin} />
           </Grid>
-
         </Grid>
 
-        <Grid xs>
-          <SideBar />
+        <Grid container spacing={2} onClick={openModal}>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
+            <Box sx={loginModalstyle}>
+              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+              <Button className="startButton" onClick={handleLogin}>
+                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+              </Button>
+            </Box>
+          </Modal>
+
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
+            <HomeBoard board="free" loginState={isLogin} />
+          </Grid>
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            {/* TODO: 공지사항 main api 작업 후 board 수정*/}
+            <HomeBoard board="free" loginState={isLogin} />
+          </Grid>
         </Grid>
       </Grid>
-      {isLogin ? <WritingButton/> : null}
+
+      <Grid item xs={3}>
+        <Item>xs=3</Item>s
+      </Grid>
+
+      </Grid>
     </>
   );
 };
 
-// 모달 내 box스타일
-const loginModalstyle = {
-  borderRadius: 5,
-  p: 4,
-  bgcolor: 'background.paper',
-  boxShadow: 20,
-};
-
-// 선택 버튼 커스텀
-const StartButton = styled(ButtonBase)(({ theme }) => ({
-  width:600,
-  height: 80,
-  "&:hover, &.Mui-focusVisible": {
-    zIndex: 2,
-    backgroundColor: '#f7f7f7',
-    transform: 'translateY(-7%)',
-  },
-  borderRadius: 20,
-  border: '2px solid #777777'
-}));
+  const loginModalstyle = {
+    borderRadius: 5,
+    p: 4,
+    bgcolor: 'background.paper',
+    boxShadow: 20,
+  };
 
 export default Home;

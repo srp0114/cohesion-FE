@@ -5,7 +5,7 @@ const Banner: React.FC = () => {
       <>
         <Box sx={{
           height:300,
-          backgroundColor: '#c9c9c9',
+          backgroundColor: '#d3d3d3',
           }}
         />
       </>

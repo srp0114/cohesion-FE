@@ -6,10 +6,8 @@ import Time from "./Time";
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
-import "../style/Board.css";
 
-// FreeBoardItems 인터페이스
-interface FreeBoardItems {
+interface HomeBoardItems {
     id: number;
     title: string;
     content: string;
@@ -19,12 +17,13 @@ interface FreeBoardItems {
     reply: number;
 }
 
-interface Props {
+interface HomeBoardProps {
+    board: string,
     loginState: boolean
 }
   
-const HomeFreeBoard = ({ loginState }: Props) => {
-    const [boardItems, setBoardItems] = useState<FreeBoardItems[]>([]);
+const HomeBoard = (props: HomeBoardProps) => {
+    const [boardItems, setBoardItems] = useState<HomeBoardItems[]>([]);
 
     //403 에러 여부 확인
     const [addInfoError, setAddInfoError] = useState<boolean>(false);
@@ -32,27 +31,27 @@ const HomeFreeBoard = ({ loginState }: Props) => {
     const handleClose = () => setOpen(false);
   
     const navigate = useNavigate();
+    let board = props.board;
 
     const goToPost = (postId: number) => {
-        navigate(`/free/${postId}`);
+        navigate(`/${board}/${postId}`);
     };
 
-    // error(true)인 경우 클릭 시, 모달 출력
     const openInfoModal = () => {
         if(addInfoError) { 
             setOpen(!open);
-
-            // 모달창 열린 후 1.5초 후 리다이렉트 -> 추가정보페이지로 이동
             setTimeout(() => {
                 navigate('/redirect');
             }, 1500)
         }
     };
 
+    // HomeFreeBaord, HomeQnaBoard -> HomeBoard 통합
+    // home에서 board에 따라 api 설정하도록 변경
     useEffect(() => {
         axios({
             method : "get",
-            url : "/api/free/main"
+            url : `/api/${board}/main`
         }).then((res)=>{
             setBoardItems(res.data.data);
         }).catch((err)=>{
@@ -67,6 +66,11 @@ const HomeFreeBoard = ({ loginState }: Props) => {
         })
 
     }, []);
+
+    const boardName: string = board === "free" ? "자유게시판"
+        : board === "qna" ? "Q&A게시판"
+        : board === "recruit" ? "구인게시판"
+        : board === "notice" ? "공지사항" : "";
 
     return (
         <>
@@ -83,22 +87,21 @@ const HomeFreeBoard = ({ loginState }: Props) => {
                     </Box>
                 </Modal>
                 
-                <Typography variant="h5">자유게시판</Typography>
+                <Typography variant="h6" sx={{mt:6, mb:2}}>{boardName}</Typography>
                 {boardItems && boardItems.map((posting) => {
                     return (
-                        <>
-                       <Box sx={{ 
-                        height:130,
+                    <>
+                    <Box sx={{ 
+                        p: '1rem',
+                        m: '0.5rem',
+                        height:'9rem',
                         '&:hover': {
-                            backgroundColor: 'gainsboro',
-                            opacity: [1.0, 0.8, 0.7],
+                            backgroundColor: '#f2f2f2',
+                            opacity: [1.0, 0.9, 0.9],
                         },
-                        m:2, 
-                        p:2, 
-                        border:'1.2px solid gainsboro',
                         borderRadius:5
-                        }} 
-                        onClick={() => loginState ? goToPost(posting.id) : openInfoModal()}>
+                    }} 
+                    onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
                             <UserIcon fontSize="large"/>
@@ -116,9 +119,9 @@ const HomeFreeBoard = ({ loginState }: Props) => {
                             <BookmarkIcon/><Typography sx={{pl:0.7}}>{posting.bookmark}</Typography>
                         </Box>
                     </Box>
-                    <Divider/>
-                    </>
-                    );
+                    <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
+                </>
+                );
                 })}
             </Box>
         </>
@@ -135,4 +138,4 @@ const addInfoModalStyle = {
     transform: 'translate(0%, -100%)',
 };
 
-export default HomeFreeBoard;
+export default HomeBoard;
