@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import Button from '@mui/material/Button';
 
 //전체 프로젝트에서 사용할 theme을 지정.
 export const theme = createTheme({
@@ -63,7 +64,38 @@ export const theme = createTheme({
             wordWrap: "break-word"
           }
         }
-      }
-      
-    }
+      },
+      MuiButton: {
+  styleOverrides: {
+    root: {
+      '&.navButton': {
+        width: '6rem',
+        backgroundColor: 'transparent',
+        padding: '0.2rem',
+        color: 'black',
+        fontSize: '0.9rem',
+        disableRipple: true,
+        disableTouchRipple: true,
+        disableElevation: true,
+        outline: 'none',
+        '&:hover': {
+          fontSize: '1rem',
+        },
+        '&:active': {
+          fontSize: '1rem',
+        },
+      },
+      '&.loginButton': {
+        backgroundColor: 'transparent',
+        color: '#008CFF',
+        fontSize: '0.9rem',
+        disableRipple: true,
+        disableTouchRipple: true,
+        outline: 'none',
+      },
+    },
+  },
+},
+
+    },
   });

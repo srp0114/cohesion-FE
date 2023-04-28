@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
 import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import styled from '@emotion/styled';
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
 
-
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -90,58 +90,39 @@ const Navbar: React.FC = () => {
     navigate("/mypage");
     handleClose();
   };
-
+  
   return (
     <div>
-      <Box sx={{ display: "flex", justifyContent: "space-between", m: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt:3, mb:4 }}>
         <Box
-          sx={{ display: "flex", justifyContent: "flex-start", marginLeft: 3 }}
+          sx={{ display: "flex", justifyContent: "flex-start"}}
         >
+          <Box sx={{width:100, backgroundColor:'#ddd', mr: 3}}/>
+            <Button onClick={moveToHome} className="navButton">홈</Button>
           <Button
-            onClick={moveToHome}
-            sx={{ color: "black", paddingLeft: 3, paddingRight: 3 }}
-          >
-            홈
-          </Button>
-          <Button
+            className="navButton"
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
-            sx={{ color: "black", paddingLeft: 3, paddingRight: 3 }}
-          >
-            게시판
-          </Button>
+          >게시판</Button>
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <MenuItem onClick={moveToFree}>자유게시판</MenuItem>
             <MenuItem onClick={moveToQna}>Q&A게시판</MenuItem>
             <MenuItem onClick={moveToRecruit}>모집게시판</MenuItem>
           </Menu>
-          <Button sx={{ color: "black", paddingLeft: 3, paddingRight: 3 }}>
-            학부정보
-          </Button>
-          <Button
-            onClick={moveToNotice}
-            sx={{ color: "black", paddingLeft: 3, paddingRight: 3 }}
-          >
-            공지사항
-          </Button>
+          <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Box>
-
-          <Box sx={{display:'flex'}}>
-              <IconButton onClick={moveToMyPage}>
-              <UserIcon fontSize="large" /> 
-              </IconButton>
-              {/* 서버로부터 받아올 이름 - 여기에 작업해주시면 됩니다! */}
-              <Typography sx={{pt:2.5}}variant="subtitle1">
-                {
-                  nickname ? `${nickname} 님`: null
-                }
-              </Typography>
-            <Button sx={{ m: 2 }} onClick={handleLogin}>
-              {isLogin ? "로그아웃" : "로그인"}
-            </Button>
-        </Box>
+        <Box sx={{display:'flex'}}>
+            <Typography sx={{pt:2.5}}variant="subtitle1">
+              {
+                nickname ? `${nickname} 님`: null
+              }
+            </Typography>
+          <Button onClick={handleLogin} className="loginButton">
+            {isLogin ? "로그아웃" : "로그인"}
+          </Button>
+      </Box>
       </Box>
     </div>
   );
