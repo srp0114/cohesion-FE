@@ -36,6 +36,7 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
+  const [hasUserPoint ,setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -45,6 +46,21 @@ const PostForm = () => {
       }
     });
   }, []);
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : `/api/user-info`
+    }).then((res)=>{
+      if(res.status===200){
+        console.log(res.data.point);
+        setHasUserPoint(res.data.point);
+      }
+    }).catch((err)=>{
+      console.log(err);
+    })
+  },[])
+
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -138,48 +154,52 @@ const PostForm = () => {
         .catch((err) => console.log(err));
     } else if (boardType === "question") {
       // Q&A 게시판인 경우
-
+    if(hasUserPoint >= point) {
       if (fileList.length > 0) {
         axios({
           method: "post",
           url: "/api/qna",
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {"Content-Type": "multipart/form-data"},
           data: JSON.stringify(qna_formData),
         })
-          .then((res) => {
-            if (res.status === 200) {
-              // 성공 시 작업
-              window.location.href = "/";
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => {
-            if (err.response.status === 401) {
-              console.log("로그인 x");
-            } else if (err.response.status === 403) {
-              console.log("권한 x");
-            }
-          });
+            .then((res) => {
+              if (res.status === 200) {
+                // 성공 시 작업
+                window.location.href = "/";
+              } // 응답(401, 403 등) 핸들링 ...
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                console.log("로그인 x");
+              } else if (err.response.status === 403) {
+                console.log("권한 x");
+              }
+            });
       } else {
         axios({
           method: "post",
           url: "/api/qna/no-file",
-          headers: { "Content-Type": "application/json" },
+          headers: {"Content-Type": "application/json"},
           data: JSON.stringify(request_qna),
         })
-          .then((res) => {
-            if (res.status === 200) {
-              // 성공 시 작업
-              window.location.href = "/";
-            }
-          })
-          .catch((err) => {
-            if (err.response.status === 401) {
-              console.log("로그인 x");
-            } else if (err.response.status === 403) {
-              console.log("권한 x");
-            }
-          });
+            .then((res) => {
+              if (res.status === 200) {
+                // 성공 시 작업
+                window.location.href = "/";
+              }
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                console.log("로그인 x");
+              } else if (err.response.status === 403) {
+                console.log("권한 x");
+              }
+            });
       }
+    }else{
+      alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
+      window.location.reload();
+    }
     } else if (boardType === "recruit") {
       // 구인 게시판인 경우
       axios({
