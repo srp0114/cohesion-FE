@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete } from "@mui/material";
 import { skillData } from "../data/SkillData";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
-import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
@@ -68,7 +66,7 @@ const clickBorder = {
 
 const Welcome = () => {
   const [profileImg, setProfileImg] = useState("");
-  const [userAccount, setUserAccount] =
+  const [userAccount, setUserAccount] = 
     useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
   const navigate = useNavigate();
 
@@ -92,6 +90,7 @@ const Welcome = () => {
           return;
         }
         setUserAccount(payload);
+        console.log(userAccount);
         if (payload) {
           setProfileImg(payload.picture);
           // 서버에 저장된 이름 출력하기 위해 추가
@@ -134,7 +133,7 @@ const Welcome = () => {
     introduce: introduce,
     track1: userAccount.track1,
     track2: userAccount.track2,
-    
+
   };
 
   const confirm = () => {
@@ -157,7 +156,7 @@ const Welcome = () => {
   const back= ()=>{
     logoutHandler();
   }
-
+  
   return (
     <>
       <Box sx={{ m: 5, p: 1 }}>
