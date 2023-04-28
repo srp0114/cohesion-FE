@@ -33,16 +33,8 @@ const Reply = (props: ReplyProps) => {
   const [userId, setUserId] = useState<number>(0);
   const [isChosen, setIsChosen] = useState<boolean>(false);
 
-  // 댓글 수정 id, 여부를 위한 상태변수 추가
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-
-  // 기존 FreeReply, QnAReply 삭제 후, Reply로 통일 (api 주소, 작성창, 체크박스 외 동일해서)
-  // Details 컴포넌트에서 Reply 컴포넌트 호출 시 해당 게시판, 게시판 번호 전달
-  // Reply 컴포넌트에서 해당 게시판과 게시판 번호 받아서 api에 적용하도록 변경
-  // Q&A 게시판 댓글 작성, 답글 작성 확인가능
-  // TODO : 모집게시판
-  // TODO : 댓글 수정, Q&A게시판 -  채택 axios 작업 필요
 
   let id = props.postingId;
   let board = props.board;
@@ -121,7 +113,6 @@ const Reply = (props: ReplyProps) => {
 
   // 수정 버튼 클릭한 경우 - 기존 댓글 내용이 수정창으로 변경
   // 댓글 번호, 내용, 부모댓글 번호 (답글인 경우) 매개변수로 받아옴
-  // TODO : 수정 api (url)
   const editReply = (id: number, article: string, parentId?: number) => {
     setIsEditing(false);
 
@@ -134,16 +125,12 @@ const Reply = (props: ReplyProps) => {
     // 변경 api
     axios({
       method: "put",
-      url: `/api/qna/update/replies`,
+      url: `/api/${board}/update/replies`,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     })
       .then((res) => {
-        // 수정된 경우
           if(res.status===200){
-              //TODO: 바로 랜더링되게 해놨는데 마우스 포인터가 그대로 있는 이슈만 해결해주시면 될 것 같습니다.
-              //TODO: Qna 댓글에서는 수정 연동 되었는데, 현재 구조가 Reply.tsx 를 자유게시판이랑 Qna 게시판 에서 공통으로 사용하도록 바꿔 놓으신 것 같습니다! 그래서 자유게시판이랑
-              //TODO :       Qna게시판을 구분하여서 자유게시판인 경우 url을 `/api/free/update/replies` 로 되도록 해주시면 될 것 같습니다.
             const editedReply = res.data;
             const newReplyData = replyData.map((reply)=>{
                 if(reply.id === editedReply.id){
@@ -163,7 +150,7 @@ const Reply = (props: ReplyProps) => {
     // 삭제 api 추가
       axios({
           method : "delete",
-          url : "/api/free/delete/"+replyId+"/replies"
+          url : `/api/${board}/delete/${replyId}/replies`
       }).then((res)=>{
           console.log(res.data);
           setReplyData(replyData.filter((reply) => reply.id !== replyId));
@@ -181,7 +168,6 @@ const Reply = (props: ReplyProps) => {
 
   // 채택하기 변경되는 경우 값 넘어올 핸들러
   // data 보내는 경우 isChosen: replyCheck 으로 값 지정
-  // TODO : 변경된 값 어떻게 전달할지 논의 및 전달
   const handleChooseReply = (isChosen: boolean) => {
     setIsChosen(isChosen);
     console.log(isChosen);
@@ -190,7 +176,8 @@ const Reply = (props: ReplyProps) => {
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
   // 게시글 작성 시에도 현재 사용자의 id 필요
   // 현재는 모든 사용자 체크박스 확인 가능
-  // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가
+  // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가 
+  // stuId!!
   const Article = (article: string) => {
     return (
       <>
@@ -232,8 +219,6 @@ const Reply = (props: ReplyProps) => {
       <>{Article(article)}</>
     );
   };
-
-  //사용자 확인은 해당 접속 유저의 id를 받아온 상태에서 map 함수 안에서 확인 하였습니다.
 
   const replyContainer = (replies: ReplyItems[], parentId?: number) => {
     const filteredReplies = parentId
