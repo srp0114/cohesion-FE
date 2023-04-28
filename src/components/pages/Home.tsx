@@ -58,7 +58,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2} gap={4}>
+      <Grid container spacing={2} gap={3}>
       <Grid item xs={8.8}>
         <Banner/>
         <Grid container spacing={2} onClick={openModal}>
@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           </Grid>
         </Grid>
 
-        <Grid container spacing={3} onClick={openModal}>
+        <Grid container spacing={2} onClick={openModal}>
           <Modal
             open={open}
             onClose={handleClose}

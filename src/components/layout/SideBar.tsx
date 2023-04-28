@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material"
 import UserProfile from "boring-avatars";
+import Ranking from "./Ranking";
 
 interface HomeSideProps {
     nickname: string
@@ -12,7 +13,7 @@ const SideBar = (props: HomeSideProps) => {
     const isLogging = nickname === "" ? (
         <>
         <Box sx={{ height:80, borderRadius:6, backgroundColor:"secondary.light"}}>
-            <Typography variant="subtitle2" sx={{ p:3.5 }}>로그인이 필요합니다</Typography>
+        <Typography variant="subtitle2" sx={{ p:3.5 }}>로그인이 필요합니다</Typography>
         </Box>    
         </>
     ) : (
@@ -45,6 +46,7 @@ const SideBar = (props: HomeSideProps) => {
         </Box>
         </Box>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
+        <Ranking/>
         </>
     )
 
