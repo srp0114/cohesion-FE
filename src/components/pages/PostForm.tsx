@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Container,
   TextField,
@@ -19,6 +19,9 @@ import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
+import { checkLogin } from "../checkLogin";
+import { useNavigate } from "react-router";
+import "../style/Board.css";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -31,6 +34,33 @@ const PostForm = () => {
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
+  const [party, setParty] = useState<number>(0);
+  const [gathered, setGathered] = useState<number>(0);
+  const [hasUserPoint ,setHasUserPoint] = useState<number>(0);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    checkLogin().then((res) => {
+      if (!res) {
+        nav("/"); // 비로그인인 경우, 메인 페이지로 이동
+      }
+    });
+  }, []);
+
+  useEffect(()=>{
+    axios({
+      method : "get",
+      url : `/api/user-info`
+    }).then((res)=>{
+      if(res.status===200){
+        console.log(res.data.point);
+        setHasUserPoint(res.data.point);
+      }
+    }).catch((err)=>{
+      console.log(err);
+    })
+  },[])
+
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -52,6 +82,14 @@ const PostForm = () => {
 
   const getOptional = (value: string) => {
     setOptional(value);
+  };
+
+  const getParty = (value: number) => {
+    setParty(value);
+  };
+
+  const getGathered = (value: number) => {
+    setGathered(value);
   };
 
   const boardHandler = (event: SelectChangeEvent<unknown>) => {
@@ -82,6 +120,15 @@ const PostForm = () => {
       language: skill,
     };
 
+    const request_recruit = {
+      title,
+      content,
+      required,
+      optional,
+      party,
+      gathered
+    }
+
     const qna_formData = new FormData();
 
     fileList.forEach((file) => {
@@ -94,7 +141,7 @@ const PostForm = () => {
       // 자유 게시판인 경우
       axios({
         method: "post",
-        url: "/api/freeBoards",
+        url: "/api/free",
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_data),
       })
@@ -107,50 +154,67 @@ const PostForm = () => {
         .catch((err) => console.log(err));
     } else if (boardType === "question") {
       // Q&A 게시판인 경우
-
+    if(hasUserPoint >= point) {
       if (fileList.length > 0) {
         axios({
           method: "post",
-          url: "/api/qnaBoards",
-          headers: { "Content-Type": "multipart/form-data" },
+          url: "/api/qna",
+          headers: {"Content-Type": "multipart/form-data"},
           data: JSON.stringify(qna_formData),
         })
+            .then((res) => {
+              if (res.status === 200) {
+                // 성공 시 작업
+                window.location.href = "/";
+              } // 응답(401, 403 등) 핸들링 ...
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                console.log("로그인 x");
+              } else if (err.response.status === 403) {
+                console.log("권한 x");
+              }
+            });
+      } else {
+        axios({
+          method: "post",
+          url: "/api/qna/no-file",
+          headers: {"Content-Type": "application/json"},
+          data: JSON.stringify(request_qna),
+        })
+            .then((res) => {
+              if (res.status === 200) {
+                // 성공 시 작업
+                window.location.href = "/";
+              }
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                console.log("로그인 x");
+              } else if (err.response.status === 403) {
+                console.log("권한 x");
+              }
+            });
+      }
+    }else{
+      alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
+      window.location.reload();
+    }
+    } else if (boardType === "recruit") {
+      // 구인 게시판인 경우
+      axios({
+        method: "post",
+        url: "/api/recruit",
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(request_recruit),
+      })
           .then((res) => {
             if (res.status === 200) {
               // 성공 시 작업
               window.location.href = "/";
             } // 응답(401, 403 등) 핸들링 ...
           })
-          .catch((err) => {
-            if (err.response.status === 401) {
-              console.log("로그인 x");
-            } else if (err.response.status === 403) {
-              console.log("권한 x");
-            }
-          });
-      } else {
-        axios({
-          method: "post",
-          url: "/api/qnaBoardsNoFile",
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_qna),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              // 성공 시 작업
-              window.location.href = "/";
-            }
-          })
-          .catch((err) => {
-            if (err.response.status === 401) {
-              console.log("로그인 x");
-            } else if (err.response.status === 403) {
-              console.log("권한 x");
-            }
-          });
-      }
-    } else if (boardType === "recruit") {
-      // 구인 게시판인 경우
+          .catch((err) => console.log(err));
     }
   };
 
@@ -168,7 +232,7 @@ const PostForm = () => {
     boardType === "recruit" ? (
       <ConditionOptional getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === "recruit" ? <People /> : null;
+  const DesignatePeople = boardType === "recruit" ? <People getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
@@ -200,7 +264,9 @@ const PostForm = () => {
               ></TextField>
             </Grid>
             <Grid item>
-              <EditorToolbar getContent={getContent} />
+              <div className="postQuill">
+                <EditorToolbar onAddQuill={getContent} />
+              </div>
               {/* value: {content} */}
               <div>
                 <input type="file" multiple onChange={onSaveFiles} />

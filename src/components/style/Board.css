@@ -1,3 +1,41 @@
 .MuiInputBase-root{
-    border-radius: 20px !important;
+    border-radius: 15px !important;
 }
+
+.replyQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background: #ffffff;
+}
+
+.replyQuill .ql-snow .ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+}
+
+.replyQuill .ql-editor {
+    min-height: 4rem;
+    white-space: pre-wrap;
+}
+
+
+.postQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background: #ffffff;
+}
+
+.ql-snow.ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.postQuill .ql-editor {
+    min-height: 20rem;
+    white-space: pre-wrap;
+}
+

@@ -2,60 +2,56 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import axios from "axios";
 import {  Box, TextField, Button } from "@mui/material";
+import EditorToolbar from "../EditorToolbar";
+import "../../style/Board.css";
 
 interface ReplyProps{
-    url: string;
+    onAddReply: (article:string) => void;
+    board: string;
 }
   
 // 댓글 입력창 컴포넌트 
-const ReplyField = ({url} : ReplyProps) => {
+const ReplyField = (props : ReplyProps) => {
 
     const[article, setArticle] = useState<string>("");
 
-    const location = useLocation();
-
-    const onSubmit = () => {
-        
-        const data ={
-            article : article
-        }
-
-        axios({
-          method : "post",
-          url : url,
-          headers : {"Content-Type" : "application/json"},
-          data : JSON.stringify(data)
-        }).then((res)=>{
-            if(res.status === 200){
-                window.location.reload();
-            }
-        }).catch((err)=>{
-            console.log(err);
-        })
-
-        
-        // 텍스트필드 값 지우기
-        setArticle("");    
-        
-        // 수정 필요
-        window.location.href=location.pathname;  
+    const onSubmit = (e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault();
+        props.onAddReply(article);
+        setArticle('');
     }
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setArticle(e.target.value);
+    };
+        
+    const getArticle = (value: string) => {
+        setArticle(value);
+    };
+    
+    const ReplyForm = props.board === "qna" ? 
+    <>
+    <div className="replyQuill">
+        <EditorToolbar onAddQuill={getArticle}/>
+    </div>
+    </>
+    : <TextField
+                fullWidth
+                placeholder="댓글을 입력하세요."
+                variant="outlined"
+                multiline
+                sx={{ mt: 2, mb: 2}}
+                value={article}
+                onChange={handleChange}
+            />
 
     return (
         <>
         <Box>
-        <TextField
-            fullWidth
-            placeholder="댓글을 입력하세요."
-            variant="outlined"
-            multiline
-            sx={{ mt: 2, mb: 2}}
-            value={article}
-            onChange={(e) => { setArticle(e.target.value) }}
-        />
-        <Box display="flex" justifyContent="flex-end">
-        <Button onClick={onSubmit} size="large">작성하기</Button>
-        </Box>
+            {ReplyForm}
+            <Box display="flex" justifyContent="flex-end">
+                <Button onClick={onSubmit} size="large">작성하기</Button>
+            </Box>
         </Box>
         </>
     )

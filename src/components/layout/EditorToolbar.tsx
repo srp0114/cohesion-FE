@@ -6,15 +6,17 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
 import axios from 'axios';
+import "../style/Board.css";
 
-type Props = {
-    getContent: any;
+interface QuillProps  {
+    onAddQuill: (content:string) => void
 }
 
 // Undo and redo functions for Custom Toolbar
 function undoChange() {
 
 }
+
 function redoChange() {
 
 }
@@ -40,9 +42,9 @@ hljs.configure({
     languages: ['javascript', 'ruby', 'python', 'rust', 'java'],
 })
 
-const EditorToolbar: React.FC<Props> = ({getContent}) => {
+const EditorToolbar = (props : QuillProps) => {
     const QuillRef = useRef<ReactQuill>();
-    const [content, setContent] = useState("");
+    const [content, setContent] = useState<string>("");
 
     // 이미지를 업로드 하기 위한 함수
     const imageHandler = () => {
@@ -68,7 +70,7 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
             })
                 axios({
                     method: "post",
-                    url: "/api/return/imageUrl",
+                    url: "/api/qna/image",
                     headers: {"Content-Type": "multipart/form-data"},
                     data: formData,
                 }).then((response)=>{
@@ -147,25 +149,22 @@ const EditorToolbar: React.FC<Props> = ({getContent}) => {
 
     return (
         <>  
-            <div style={{height:"260px"}}>
-                <ReactQuill
-                    ref={(element) => {
-                        if (element !== null) {
-                            QuillRef.current = element;
-                        }
-                    }}
-                    value={content}
-                    onChange={(content) => {
-                        setContent(content);
-                        getContent(content);
-                    }}
-                    formats={formats}
-                    modules={modules}
-                    theme="snow"
-                    placeholder="내용을 입력해주세요."
-                    style={{ height: "200px" }} 
-                />
-            </div>
+            <ReactQuill
+                ref={(element) => {
+                    if (element !== null) {
+                        QuillRef.current = element;
+                    }
+                }}
+                value={content}
+                onChange={(content) => {
+                    setContent(content);
+                    props.onAddQuill(content);
+                }}
+                formats={formats}
+                modules={modules}
+                theme="snow"
+                placeholder="내용을 입력해주세요."
+            />
         </>
     )
 }

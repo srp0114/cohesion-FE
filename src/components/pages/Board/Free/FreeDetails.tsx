@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Stack, Typography, IconButton } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import {
+  Box,
+  Grid,
+  Typography,
+  Skeleton
+} from "@mui/material";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
+import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
+import { replyCount } from "../../../layout/postingDetail/replyCount";
+import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
+import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { PageName } from "../../../layout/postingDetail/postingCrumbs";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -23,98 +32,133 @@ interface FreeDetailItems {
   views: number; //조회수
 }
 
-const FreeDetails = (): JSX.Element => {
+const FreeDetails = () => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
-  const { id } = useParams() as { id : string };
+  const { id } = useParams() as { id: string };
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [bookmarkCheck, setBookmarkCheck] = useState(false);
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
 
-
-  useEffect(()=>{
+  useEffect(() => {
     axios({
-      method : "get",
-      url : "/api/freeBoards/"+id
-    }).then((res)=>{
-      setPostItem(res.data.data)
-    }).catch((err)=>{
-      if(err.response.status===401){
-        console.log("로그인 x");
-      }else if(err.response.status===403){
-        console.log("권한 x");
-      }
+      method: "get",
+      url: "/api/free/detail/" + id,
     })
-  },[])
+      .then((res) => {
+        setPostItem(res.data.data);
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
+    //해당 게시글의 북마크 수
+    axios({
+      method: "get",
+      url: "/api/free/" + id + "/bookmark-count",
+    })
+      .then((res) => {
+        setBookmarkCount(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
+    axios({
+      method: "get",
+      url: "/api/free/" + id + "/bookmark-check",
+    })
+      .then((res) => {
+        setBookmarkCheck(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  //북마크 등록
+  const onClickBookmark = () => {
+    if (bookmarkCheck === false) {
+      axios({
+        method: "post",
+        url: "/api/free/" + id + "/bookmark",
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            alert("해당 게시글을 북마크로 등록하였습니다.");
+            window.location.reload();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios({
+        method: "delete",
+        url: "/api/free/" + id + "/bookmark",
+      })
+        .then((res) => {
+          alert("북마크를 취소하였습니다.");
+          window.location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   const detailPosting = postItem ? (
     <>
-      <Box sx={{ paddingLeft: 3, paddingRight: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography variant="h5" sx={{ marginBottom: 1, fontWeight: 600 }}>
+      <Grid container direction="column" rowSpacing={"3rem"}>
+        {/*게시판 이름, BreadCrumbs */}
+        <Grid item xs={12}>
+          <PostingCrumbs title={postItem.title} board="free" />
+        </Grid>
+        {/*게시글 제목 */}
+        <Grid item xs={12}>
+          <Typography variant="h4" gutterBottom>
             {postItem.title}
           </Typography>
-          <Typography variant="caption">
-            <Time date={postItem.createdDate} />
+        </Grid>
+        {/*작성자 정보 , 작성 시각 */}
+        <Grid item container xs={12} justifyContent={"space-between"}>
+          <Grid item xs={4}>
+            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+          </Grid>
+
+          <Grid item justifyContent={"flex-end"}>
+            <Time date={postItem.createdDate} />{" "}
+            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
+          </Grid>
+        </Grid>
+
+        {/*게시글 내용 */}
+        <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
+          <Typography variant="h5">
+            <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
+            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
           </Typography>
-        </Box>
+        </Grid>
 
-        <Box sx={{ marginBottom: 5 }}>
-          <Stack direction="row">
-            <Avatar
-              srcSet={postItem.profileImg as string}
-              sx={{ width: "30px", height: "30px", marginRight: "5px" }}
-            />
-            <Typography variant="body2">
-              {`${postItem.writer} (${postItem.stuId})`}
-            </Typography>
-          </Stack>
-        </Box>
+        {/*북마크, 조회수 이 컴포넌트 따로 빼둘것  */}
+        <Grid item xs={12} sm={6}>
+          {bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount)}
+        </Grid>
 
-        <Box sx={{ marginBottom: 1 }}>
-          <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-        </Box>
-        <Box sx={{ marginTop: 3, marginBottom: 3 }}>
-          <Stack direction="row" sx={{ disply: "flex", justifyContent: "end" }}>
-            <IconButton size="small">
-              <Person2OutlinedIcon /> {postItem.views}
-            </IconButton>
-            <IconButton size="small">
-              <BookmarkIcon /> {postItem.bookmark}
-            </IconButton>
-          </Stack>
-        </Box>
-
-        <Box>
-          <Typography
-            variant="body1"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-          >
-            {`${postItem.reply}개의 댓글이 있습니다.`}
-          </Typography>
-          <Reply postingID={id} />
-        </Box>
-      </Box>
+        {/*댓글 */}
+        {replyCount(postItem.reply)}
+      </Grid>
+      <Reply board={"free"} postingId={id} />
     </>
   ) : (
-    <Typography>no data</Typography>
+    <PostingSkeleton />
   );
-
-  return (
-    <>
-      <Box
-        sx={{
-          borderLeft: "1px solid black",
-          borderRight: "1px solid black",
-          padding: 10,
-        }}
-      >
-        {detailPosting}
-      </Box>
-    </>
-  );
+  {
+    /*은서: 상세보기에도 rightbar, leftbar 들어갈 경우, 좌우 15rem X */
+  }
+  return <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>;
 };
 
 export default FreeDetails;

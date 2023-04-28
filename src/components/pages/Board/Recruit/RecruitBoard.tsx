@@ -28,6 +28,8 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { data } from "../../../data/RecruitData";
+import axios from "axios";
+import { WritingButton } from "../../../layout/WritingButton";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -54,7 +56,22 @@ const RecruitBoard: React.FC = () => {
   /**
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
-  const displayPosting = test.map((element, idx) => (
+  const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/recruit/list?page=0",
+    })
+      .then((res) => {
+        setBoardItems(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [])
+
+  const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
     </Grid>
@@ -82,8 +99,9 @@ const RecruitBoard: React.FC = () => {
         </Box>
       </Box>{" "}
       {/*추후에 이 부분 컴포넌트 분리하기*/}
-      <p></p>
+      
       {/*space for paginationControl*/}
+      <WritingButton />
     </>
   );
 };
@@ -193,7 +211,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
                   sx={{ width: "25px", height: "25px", marginRight: "5px" }}
                 />
                 <Typography variant="overline">
-                  {`${props.writer} (사용자 학번)`}
+                  {`${props.writer} (${props.stuId.toString().slice(0,2)}학번)`}
                 </Typography>
               </Stack>
             }

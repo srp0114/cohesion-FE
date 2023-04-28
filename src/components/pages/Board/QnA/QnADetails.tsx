@@ -1,14 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box } from '@mui/material';
+import {
+  Typography,
+  Avatar,
+  Box,
+  Grid,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import Time from "../../../layout/Time";
-import Reply from "../../../layout/Reply/QnAReply";
-import { skillData } from '../../../data/SkillData';
-import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
-import ProfileIcon from '@mui/icons-material/AccountCircle';
-import Money from '@mui/icons-material/MonetizationOn';
-import Visibility from '@mui/icons-material/VisibilityOutlined';
+import Reply from "../../../layout/Reply/Reply";
+import { skillData } from "../../../data/SkillData";
+import Money from "@mui/icons-material/MonetizationOn";
+import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
+import { replyCount } from "../../../layout/postingDetail/replyCount";
+import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
+import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { PageName } from "../../../layout/postingDetail/postingCrumbs";
+import Loading from "../../../layout/Loading";
+
+import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
+import Visibility from "@mui/icons-material/VisibilityOutlined";
+/*북마크 연동 후, 위의 두 개 아이콘(bookmark, visivility) 삭제 부탁드립니다.*/
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -16,6 +30,8 @@ interface DetailItems {
   title: string;
   content: string;
   writer: string;
+  profileImg: string;
+  stuId: number;
   createdDate: string;
   modifiedDate?: string;
   language?: string;
@@ -31,115 +47,121 @@ const QnADetails = () => {
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
 
   //axios get 할 때 받아올 게시글 번호
-  let { id } = useParams();
+  const { id } = useParams() as { id: string };
 
-    useEffect(()=>{
-        axios({
-            method : "get",
-            url : "/api/qnaBoards/"+id,
-        }).then((res)=>{
-            if(res.status ===200){
-                setPostItem(res.data);
-            }
-        }).catch((err)=>{
-            if(err.response.status===401){
-                console.log("로그인 x");
-            }else if(err.response.status===403){
-                console.log("권한 x");
-            }
-        });
-    },[])
-
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/qna/detail/" + id,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setPostItem(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
+  }, []);
 
   //입력된 언어 맞게 이미지 출력
-  const Skill = (postItem?.language) ? (
-      skillData.map((value) => {
-          if (postItem.language === value.name) {
-              return (
-                  <img src={value.logo} width="30" height="30" />
-              )
-          }
+  const Skill = postItem?.language
+    ? skillData.map((value) => {
+        if (postItem.language === value.name) {
+          return <>
+          <Typography sx={{fontSize:"1.75rem"}}><img src={value.logo} width="72" height="72" style={{marginRight:"0.75rem"}}/><span style={{fontWeight:"bold"}}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
+        }
       })
-  ) : (null);
+    : null;
 
   const PostDetails = postItem ? (
     //postItems 데이터 있는 경우 출력될 UI
     <>
-    <Box sx={{
-        display: 'flex',  
-        mt: 8,
-        mb: 3
-    }}>
-        <Box sx={{fontSize:38, mr: 3}}>{postItem.title} </Box>
-        <Box sx={{marginTop:2}}>{Skill}</Box>
-    </Box>
+      <Grid container direction="column" rowSpacing={"3rem"}>
+        {/*게시판 이름, BreadCrumbs */}
+        <Grid item xs={12}>
+          <PostingCrumbs title={postItem.title} board="questions" />
+        </Grid>
+        {/*게시글 제목 */}
+        <Grid item xs={12}>
+          <Typography variant="h4" gutterBottom>
+            {postItem.title}
+          </Typography>
+        </Grid>
+        {/*작성자 정보 , 작성 시각 */}
+        <Grid item container xs={12} justifyContent={"space-between"}>
+          <Grid item xs={4}>
+            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+          </Grid>
+          <Grid item justifyContent={"flex-end"}>
+            <Time date={postItem.createdDate} />{" "}
+            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
+          </Grid>
+        </Grid>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box sx={{ display: "flex" }}>
-          <ProfileIcon sx={{ mr: 0.5, fontSize: 45 }} />
-          <Box>
-            <Typography sx={{ fontSize: 20 }}>{postItem.writer}</Typography>
-            <Box color="gray">
-              <Time date={postItem.createdDate} />
+        {/* 질문 분야 */}
+        <Grid item xs={12} sm={6} direction="row">
+          {Skill}
+        </Grid>
+
+        {/*게시글 내용 */}
+        <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
+            {/*코드블럭 배경 css 추가*/}
+            <div className="ql-snow">
+              <div
+                className="ql-editor"
+                dangerouslySetInnerHTML={{ __html: postItem.content }}
+              />
+            </div>
+            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+        </Grid>
+
+        <Grid item xs={12} sm={6} direction="row">
+          <Typography sx={{fontSize:"1.75rem"}}>채택 시 <Money sx={{ color: "#ffcf40", fontSize: 28 }} /><span style={{fontWeight:"bold"}}>{postItem.point}</span>포인트 지급!</Typography>
+        </Grid>
+
+        {/*북마크, 조회수  */}
+        <Grid item xs={12} sm={6}>
+          <Stack
+            direction="row"
+            spacing={"0.75rem"}
+            sx={{ display: "flex", justifyContent: "flex-end" }}
+          >
+            <Box>
+              <IconButton size="small" disabled>
+                <Visibility fontSize="large" />
+                <Typography variant="h5">{postItem.views}</Typography>
+              </IconButton>
             </Box>
-          </Box>
-        </Box>
-        <Box sx={{ display: "flex" }}>
-          <BookmarkIcon />
-          <Typography>{postItem.bookmark}</Typography>
-          {/* 조회수 UI 추가 */}
-          <Visibility sx={{ ml: 1 }} />
-          <Typography>{postItem.views}</Typography>
-        </Box>
-      </Box>
 
-      <Box
-        sx={{
-          fontSize: 20,
-          mt: 12,
-          mb: 18,
-          ml: 6,
-          mr: 6,
-        }}
-      >
-        {/*코드블럭 배경 css 추가*/}
-        <div className="ql-snow">
-          <div
-            className="ql-editor"
-            dangerouslySetInnerHTML={{ __html: postItem.content }}
-          />
-        </div>
-      </Box>
-
-      <Box sx={{ display: "flex", marginBottom: 3 }}>
-        <Money sx={{ color: "#ffcf40", fontSize: 28 }} />
-        <Box sx={{ fontSize: 18, marginLeft: 0.5 }}>
-          댓글 채택시 {postItem.point} 포인트를 적립해드립니다!
-        </Box>
-      </Box>
-
-      <Box>
-        <Typography variant="h5">
-          {postItem.reply}개의 댓글이 있습니다
-        </Typography>
-          {/*댓글 입력창 텍스트필드로 변경*/}
-
-        <Reply postingID={id}/>
-      </Box>
+            <Box>
+              <IconButton size="small">
+                <BookmarkIcon fontSize="large" />
+                <Typography variant="h5">{postItem.bookmark}</Typography>
+              </IconButton>
+            </Box>
+          </Stack>
+          {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
+        </Grid>
+      
+        {/*댓글 총 몇 개 인지*/}
+        {replyCount(postItem.reply)}
+      </Grid>
+      {/*댓글 입력창 텍스트필드로 변경*/}
+      <Reply board={"qna"} postingId={id} />
     </>
   ) : (
     //postItems 데이터 없는 경우
-    <Typography variant="h3">No Data</Typography>
+    <Loading />
   );
 
   return (
     <>
-      <Box>{PostDetails}</Box>
+      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{PostDetails}</Box>
     </>
   );
 };

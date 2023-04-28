@@ -41,6 +41,8 @@ const StyledRating = styled(Rating)({
   /*Q&A 게시판 작성 시 추가될 컴포넌트 */
   const Point :React.FC<Props>= ({getPoint}) => {
     const [PointValue, setPointValue] = React.useState<number | null>(2);
+    
+    getPoint(PointValue);
 
     return (
       <>
