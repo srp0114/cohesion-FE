@@ -6,6 +6,7 @@ import Time from "./Time";
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
+import Profile from "boring-avatars";
 
 interface HomeBoardItems {
     id: number;
@@ -27,10 +28,11 @@ const HomeBoard = (props: HomeBoardProps) => {
 
     //403 에러 여부 확인
     const [addInfoError, setAddInfoError] = useState<boolean>(false);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleClose = () => setOpen(false);
   
     const navigate = useNavigate();
+
     let board = props.board;
 
     const goToPost = (postId: number) => {
@@ -104,8 +106,13 @@ const HomeBoard = (props: HomeBoardProps) => {
                     onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
-                            <UserIcon fontSize="large"/>
-                            <Typography sx={{pt:0.8, pl:0.5}}>{posting.writer}</Typography>
+                                 <Profile
+                                    name={posting.writer}
+                                    size={30}
+                                    variant="beam"
+                                    colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
+                                />
+                                <Typography sx={{pt:0.5, pl:1.5}}>{posting.writer}</Typography>
                             </Box>
                             <Box sx={{display:'flex', justifyContent:'flex-end'}}>
                                 <Time date={posting.createdDate}/> 

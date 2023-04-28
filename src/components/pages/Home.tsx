@@ -15,7 +15,7 @@ import { styled } from '@mui/material/styles';
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
-  const [nickname, setNickname] = useState(undefined);
+  const [nickname, setNickname] = useState("");
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
@@ -67,7 +67,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
       <Grid item xs={9}>
         <Item>xs=8</Item>
         <Banner/>
@@ -123,10 +123,11 @@ const Home: React.FC = () => {
       </Grid>
 
       <Grid item xs={3}>
-        <Item>xs=3</Item>s
+        <Item>xs=3</Item>
       </Grid>
 
       </Grid>
+      {isLogin ? <WritingButton/> : null}
     </>
   );
 };
