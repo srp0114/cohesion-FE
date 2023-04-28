@@ -7,9 +7,11 @@ export const theme = createTheme({
       primary: {
         main: "#008CFF",
         light: "#a9a9a9",
+        dark: "#999999"
       },
       secondary: {
         main: "#dfe6ba",
+        light: "#eeeeee"
       },
       background: {
         default: "#ffffff",
@@ -51,6 +53,9 @@ export const theme = createTheme({
       subtitle1: {
         fontSize: "1.125rem" //18px
       },
+      subtitle2: {
+        fontSize: "1rem" //16px
+      }
     },
 
     //MUI TextField 커스텀

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Box, Modal, Typography, Button, Paper } from "@mui/material";
+import { Box, Modal, Typography, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
@@ -10,7 +10,6 @@ import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/WritingButton";
-import { styled } from '@mui/material/styles';
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -57,19 +56,10 @@ const Home: React.FC = () => {
       setOpen(!open);
   };
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));         
-
   return (
     <>
-      <Grid container spacing={3}>
-      <Grid item xs={9}>
-        <Item>xs=8</Item>
+      <Grid container spacing={2} gap={4}>
+      <Grid item xs={8.8}>
         <Banner/>
         <Grid container spacing={2} onClick={openModal}>
           <Modal
@@ -95,7 +85,7 @@ const Home: React.FC = () => {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} onClick={openModal}>
+        <Grid container spacing={3} onClick={openModal}>
           <Modal
             open={open}
             onClose={handleClose}
@@ -122,8 +112,8 @@ const Home: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Grid item xs={3}>
-        <Item>xs=3</Item>
+      <Grid item xs>
+        <SideBar nickname={nickname}/> 
       </Grid>
 
       </Grid>
@@ -132,11 +122,11 @@ const Home: React.FC = () => {
   );
 };
 
-  const loginModalstyle = {
-    borderRadius: 5,
-    p: 4,
-    bgcolor: 'background.paper',
-    boxShadow: 20,
-  };
+const loginModalstyle = {
+  borderRadius: 5,
+  p: 4,
+  bgcolor: 'background.paper',
+  boxShadow: 20,
+};
 
 export default Home;
