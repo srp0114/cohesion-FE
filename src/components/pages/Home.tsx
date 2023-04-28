@@ -5,8 +5,7 @@ import { Box, Modal, Typography, ButtonBase } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Unstable_Grid2";
 import Banner from "../layout/Banner";
-import LeftSidebar from "../layout/LeftSidebar";
-import RightSidebar from "../layout/RightSidebar";
+import SideBar from "../layout/SideBar";
 import HomeFreeBoard from "../layout/HomeFreeBoard";
 import HomeQnABoard from "../layout/HomeQnABoard";
 import hansung from  "../asset/image/hansung.png";
@@ -63,7 +62,7 @@ const Home: React.FC = () => {
     <>
       <Grid container spacing={3} sx={{position:"relative"}}>
           <Grid xs>
-            <LeftSidebar nickname={nickname} />
+            <SideBar nickname={nickname} />
           </Grid>
 
           <Grid xs={8}>
@@ -110,7 +109,7 @@ const Home: React.FC = () => {
         </Grid>
 
         <Grid xs>
-          <RightSidebar />
+          <SideBar />
         </Grid>
       </Grid>
       {isLogin ? <WritingButton/> : null}

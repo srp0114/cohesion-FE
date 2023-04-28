@@ -6,7 +6,7 @@ interface Proptypes {
     nickname?: string
 }
 
-const LeftSidebar = ({nickname}: Proptypes) => {
+const SideBar = ({nickname}: Proptypes) => {
     return (
         <>
         <Box
@@ -50,4 +50,4 @@ const LeftSidebar = ({nickname}: Proptypes) => {
     );
   }
   
-  export default LeftSidebar;
+  export default SideBar;
