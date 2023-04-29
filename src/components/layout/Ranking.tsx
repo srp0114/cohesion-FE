@@ -108,8 +108,7 @@ export const UserRanking = () => {
     useEffect(() => {
         axios({
             method: "get",
-            // /api/user-rank 오류 발생 해결 후 - 주석 해제
-            //url: `/api/user-rank`,
+            url: `/api/user-rank`,
         })
         .then((res) => {
             if (res.status === 200) {

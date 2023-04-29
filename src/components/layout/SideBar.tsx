@@ -30,7 +30,7 @@ const SideBar = (props: HomeSideProps) => {
                 colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
             />
             <Box sx={{display:"flex", justifyContent: "space-around", m:0.8}}>
-                <Typography variant="subtitle1" sx={{ pl:1, pr:1 }}>김서영{nickname}</Typography>
+                <Typography variant="subtitle1" sx={{ pl:1, pr:1 }}>{nickname}</Typography>
                 <Typography variant="subtitle1" color="primary.dark">님</Typography>
             </Box>
         </Box>  

@@ -14,7 +14,7 @@ import { WritingButton } from "../layout/WritingButton";
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState<string>("");
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
@@ -55,6 +55,8 @@ const Home: React.FC = () => {
     if(!isLogin) 
       setOpen(!open);
   };
+
+  console.log(nickname);
 
   return (
     <>
