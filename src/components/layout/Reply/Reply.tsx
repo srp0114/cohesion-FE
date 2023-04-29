@@ -3,7 +3,7 @@ import axios from "axios";
 import { Typography, Box, Button, Grid } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
-import PinReply from "./PinReply";
+import AdoptReply from "./AdoptReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 import EditReplyField from "./EditReplyField";
@@ -177,7 +177,7 @@ const Reply = (props: ReplyProps) => {
   // 게시글 작성 시에도 현재 사용자의 id 필요
   // 현재는 모든 사용자 체크박스 확인 가능
   // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가 
-  const Article = (article: string) => {
+  const Article = (article: string, id:number) => {
     return (
       <>
         {board === "qna" ? (
@@ -192,7 +192,7 @@ const Reply = (props: ReplyProps) => {
               </div>
             </Grid>
             <Grid item>
-              <PinReply onReplyCheck={handleChooseReply} isChosen={isChosen} />
+              <AdoptReply replyId={id} onReplyCheck={handleChooseReply} isChosen={isChosen} />
             </Grid>
           </Grid>
         ) : (
@@ -214,7 +214,7 @@ const Reply = (props: ReplyProps) => {
         onChangeReply={editReply}
       />
     ) : (
-      <>{Article(article)}</>
+      <>{Article(article, id)}</>
     );
   };
 
