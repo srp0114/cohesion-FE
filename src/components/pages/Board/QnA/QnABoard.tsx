@@ -46,7 +46,7 @@ export const shortenContent = (str: string, length = 200) => {
   return content;
 };
 
-const QnABaord: React.FC = () => {
+const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [page, setPage] = useState(1);
