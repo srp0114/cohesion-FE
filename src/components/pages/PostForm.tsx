@@ -154,6 +154,7 @@ const PostForm = () => {
         .catch((err) => console.log(err));
     } else if (boardType === "question") {
       // Q&A 게시판인 경우
+    if(hasUserPoint >= point) {
       if (fileList.length > 0) {
         axios({
           method: "post",
@@ -195,7 +196,10 @@ const PostForm = () => {
               }
             });
       }
-    
+    }else{
+      alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
+      window.location.reload();
+    }
     } else if (boardType === "recruit") {
       // 구인 게시판인 경우
       axios({
