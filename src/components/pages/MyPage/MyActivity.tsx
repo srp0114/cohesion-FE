@@ -84,9 +84,8 @@ const MyActivity = (props: MyDataProps) => {
     // activityType에 따른 타이틀 변경
     const activityTitle = activityType === "reply" ? "작성한 댓글" :
         activityType === "bookmark" ? "북마크한 글" :
-        activityType === "post" ? "작성한 글" : null;
+        activityType === "post" ? "작성한 게시글" : null;
 
-    
     return (
         <>
             <Typography variant="h6" sx={{mt:"3rem"}}>{activityTitle}</Typography>
