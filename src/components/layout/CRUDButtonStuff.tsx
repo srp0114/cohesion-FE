@@ -37,7 +37,14 @@ interface UpdateSpeedDialProps {
   postingId: number;
   postingTitle?: string;
   postingContent?: string;
-  //postingFile?: undefined; //파일 추가될 시 지정.
+
+  // language?: string;
+
+  // require?: string; //필수조건: 분반명 등
+  // optional?: string; //기타, 우대조건: 학점, 기술스택 등
+  // party?: number; //모집할 인원수
+  // gathered?: number; //모인 인원수
+  //  // postingFile?: undefined; //파일 추가될 시 지정.
 }
 
 export const UpdateSpeedDial = (props: UpdateSpeedDialProps) => {

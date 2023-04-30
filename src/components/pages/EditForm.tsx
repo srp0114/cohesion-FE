@@ -69,16 +69,26 @@ const EditForm = () => {
     });
   }, []);
 
-  useEffect(() => { //id에 따른 게시글 정보 가져옴
+  useEffect(() => { //TODO: 게시글 id에 따라 게시글 정보 받아오기, api 완성 후 작업.
     axios({
       method: "get",
-      url: `/api/free/detail/${postingId}`
+      url: `/api/${boardType}/detail/${postingId}` //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
     }).then(
       (res) => {
         if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
           console.log(`게시글 수정을 위한 정보 가져오기 ${res.data.title} ${res.data.content}`);
           setTitle(res.data.title); //undefined로 나옴. 수정 필요
           setContent(res.data.content); //undefined로 나옴. 수정 필요
+
+          // //api 완성된 경우, 주석 푸시면 될 것 같습니다! - 은서
+          // //Q&A게시판
+          // setSkill(res.data.point); //질문한 언어, 기술
+
+          // //구인(모집) 게시판
+          // setRequired(res.data.required); //수정 불가
+          // setOptional(res.data.optional);
+          // setParty(res.data.party);
+          // setGathered(res.data.gathered); //수정 불가
         }
       }
     ).catch((err) => console.log(err));
@@ -161,7 +171,7 @@ const EditForm = () => {
     qna_formData.append("stringQna", JSON.stringify(request_qna));
 
     /**
-     * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update)
+     * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update) 수정 기능
      */
     switch (boardType) {
       case BoardType.free:
@@ -189,7 +199,8 @@ const EditForm = () => {
           })
           .then((res) => {
             if (res.status === 200) {
-              // 성공 시 작업
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
               window.location.href = "/";
             } // 응답(401, 403 등) 핸들링 ...
           })
@@ -206,7 +217,8 @@ const EditForm = () => {
          })
          .then((res) => {
            if (res.status === 200) {
-             // 성공 시 작업
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
              window.location.href = "/";
            } // 응답(401, 403 등) 핸들링 ...
          })
@@ -222,6 +234,7 @@ const EditForm = () => {
 
   const deleteHandler = () => {
     /*추후 qna, recruit 게시글 수정, 삭제 api 완성되면 추가해야함. */
+    //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
     axios({
       method: 'delete',
       url: `/api/${boardType}/delete/${postingId}`
