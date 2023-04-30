@@ -114,11 +114,6 @@ const Navbar = () => {
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Box>
         <Box sx={{display:'flex'}}>
-            <Typography sx={{pt:2.5}}variant="subtitle1">
-              {
-                nickname ? `${nickname} 님`: null
-              }
-            </Typography>
           <Button onClick={handleLogin} className="loginButton">
             {isLogin ? "로그아웃" : "로그인"}
           </Button>
