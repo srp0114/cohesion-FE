@@ -8,6 +8,7 @@ import {
   Grid,
   IconButton,
   Stack,
+  Zoom
 } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
@@ -19,9 +20,10 @@ import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
-
+import { BoardType } from "../../../model/board";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
+import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 /*북마크 연동 후, 위의 두 개 아이콘(bookmark, visivility) 삭제 부탁드립니다.*/
 
 // Q&A 상세보기 데이터
@@ -46,8 +48,9 @@ const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
   const [writerId, setWriterId] = useState<number>(0);
-
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const { id } = useParams() as { id: string };
+  const postingId = Number(id);
 
   useEffect(() => {
     axios({
@@ -78,7 +81,22 @@ const QnADetails = () => {
           }
       }).catch((err)=>{
           console.log(err);
+      });
+
+    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
+    axios({
+      method: "get",
+      url: "/api/user-info"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setAccessUserId(res.data.studentId);
+        }
       })
+      .catch((err) => {
+
+        console.log(err);
+      });
 
   }, []);
 
@@ -93,6 +111,24 @@ const QnADetails = () => {
         }
       })
     : null;
+
+  /**
+   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+   * @param studentId 
+   * @param title 
+   * @param content 
+   * @returns 게시글 정보를 포함하고있는 speedDial
+   */
+  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+    if (typeof postItem !== undefined) {
+      if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+        return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
+      }
+      else
+        return null;
+    }
+
+  }
 
   const PostDetails = postItem ? (
     //postItems 데이터 있는 경우 출력될 UI
@@ -169,6 +205,9 @@ const QnADetails = () => {
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
       <Reply board={"qna"} writerId={writerId} postingId={id} />
+      <Zoom in={true}>
+        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+      </Zoom>
     </>
   ) : (
     //postItems 데이터 없는 경우

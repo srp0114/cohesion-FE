@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Grid, Stack, Typography, IconButton } from "@mui/material";
+import { Avatar, Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
@@ -14,6 +14,8 @@ import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
+import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
+import { BoardType } from "../../../model/board";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -38,6 +40,9 @@ export interface RecruitDetailItems {
 const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+
+  const postingId = Number(id);
 
   useEffect(() => {
     axios({
@@ -52,7 +57,40 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .catch((err) => {
         console.log(err);
       });
+    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
+    //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
+    axios({
+      method: "get",
+      url: "/api/user-info"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setAccessUserId(res.data.studentId);
+        }
+      })
+      .catch((err) => {
+
+        console.log(err);
+      });
   }, []);
+
+    /**
+   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+   * @param studentId 
+   * @param title 
+   * @param content 
+   * @returns 게시글 정보를 포함하고있는 speedDial
+   */
+    const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+      if (typeof postItem !== undefined) {
+        if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+          return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
+        }
+        else
+          return null;
+      }
+  
+    }
 
   const detailPosting = postItem ? (
     <>
@@ -141,6 +179,9 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
+      <Zoom in={true}>
+        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+      </Zoom>
     </>
   ) : (
     <Loading />

@@ -9,7 +9,7 @@ import HomeBoard from "../layout/HomeBoard";
 import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
-import { WritingButton } from "../layout/WritingButton";
+import { WritingButton } from "../layout/CRUDButtonStuff";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);

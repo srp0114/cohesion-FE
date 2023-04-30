@@ -27,7 +27,7 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
