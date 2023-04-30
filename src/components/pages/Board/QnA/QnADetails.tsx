@@ -45,8 +45,8 @@ interface DetailItems {
 const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
+  const [writerId, setWriterId] = useState<number>(0);
 
-  //axios get 할 때 받아올 게시글 번호
   const { id } = useParams() as { id: string };
 
   useEffect(() => {
@@ -66,6 +66,20 @@ const QnADetails = () => {
           console.log("권한 x");
         }
       });
+
+      // 해당 게시글 작성자의 userId 받아오기
+      axios({
+        method : "get",
+        url : `/api/qna/return/user-id/${id}`
+      }).then((res)=>{
+          if(res.status===200) {
+            console.log(res)
+            setWriterId(res.data);
+          }
+      }).catch((err)=>{
+          console.log(err);
+      })
+
   }, []);
 
   //입력된 언어 맞게 이미지 출력
@@ -73,7 +87,9 @@ const QnADetails = () => {
     ? skillData.map((value) => {
         if (postItem.language === value.name) {
           return <>
-          <Typography sx={{fontSize:"1.75rem"}}><img src={value.logo} width="72" height="72" style={{marginRight:"0.75rem"}}/><span style={{fontWeight:"bold"}}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
+          <Typography sx={{fontSize:"1.75rem"}}>
+            <img src={value.logo} width="72" height="72" style={{marginRight:"0.75rem"}}/>
+            <span style={{fontWeight:"bold"}}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
         }
       })
     : null;
@@ -152,7 +168,7 @@ const QnADetails = () => {
         {replyCount(postItem.reply)}
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
-      <Reply board={"qna"} writerId={postItem.stuId} postingId={id} />
+      <Reply board={"qna"} writerId={writerId} postingId={id} />
     </>
   ) : (
     //postItems 데이터 없는 경우

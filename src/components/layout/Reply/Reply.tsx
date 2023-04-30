@@ -26,7 +26,7 @@ interface ReplyItems {
 interface ReplyProps {
   postingId: string, // 게시글 번호
   board: string; // 게시판 유형
-  writerId: number; // 게시글 작성자 학번
+  writerId?: number; // Q&A 채택을 위한 게시글 작성자 학번
 }
 
 const Reply = (props: ReplyProps) => {
@@ -54,7 +54,7 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
       });
 
-    axios({
+     axios({
         method : "get",
         url : "/api/user-id"
     }).then((res)=>{
@@ -65,7 +65,21 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
     })
 
-
+    // Q&A 게시판인 경우 해당 게시글 채택댓글이 있는지 받아올 api 추가
+    // url - 해당 게시글 번호 오류 발생 -> 1은 200 status 받아오는 상태
+    // TODO: url 수정 필요
+    if (board==="qna") {
+      axios({
+        method : "get",
+        url : `/api/qna/1/adopt-check`
+      }).then((res)=>{
+          if(res.status===200) {
+            console.log(res)
+          }
+      }).catch((err)=>{
+          console.log(err);
+      })
+    }
   }, []);
 
   // 댓글 추가 핸들러
@@ -173,10 +187,7 @@ const Reply = (props: ReplyProps) => {
     console.log(isChosen);
   };
 
-  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 id와 현재 사용자 id 비교 후 채택하기 버튼 출력 예정
-  // 게시글 작성 시에도 현재 사용자의 id 필요
-  // 현재는 모든 사용자 체크박스 확인 가능
-  // TODO : && userId === props.writerId 인 경우에도 버튼 출력하도록 조건 추가 
+  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 userId와 로그인한 사용자의 userId 비교 후 동일한 경우 채택버튼 출력
   const Article = (article: string, id:number) => {
     return (
       <>
@@ -191,9 +202,12 @@ const Reply = (props: ReplyProps) => {
                 />
               </div>
             </Grid>
-            <Grid item>
-              <AdoptReply replyId={id} onReplyCheck={handleChooseReply} isChosen={isChosen} />
-            </Grid>
+            {userId === writerId ? (
+              <Grid item>
+                <AdoptReply replyId={id} onReplyCheck={handleChooseReply} isChosen={isChosen} />
+              </Grid>
+              ) : (null)
+            }
           </Grid>
         ) : (
           // 그 외 나머지 게시판이 경우
