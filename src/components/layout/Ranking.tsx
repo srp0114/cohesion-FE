@@ -19,23 +19,23 @@ interface UserRakingItem {
 const postRank: PostRankingItem[] = [
     {
         board: "free",
-        title: "182어ㅏㄴ러;미ㅏ어리ㅏㅓㅁ아ㅣ러982"
+        title: "제목제목제목제목제목제목"
     },
     {
         board: "free",
-        title: "182어ㅏㄴ러;미ㅏ어리ㅏㅓㅁ아ㅣ러982"
+        title: "ABCDEFGHIJKLMNOPQRSTU"
     },
     {
         board: "qna",
-        title: "가나다라마바사;미ㅏ어리ㅏㅓㅁ아ㅣ러982"
+        title: "가나다라마바사아자차카타파하"
     },
     {
         board: "recruit",
-        title: "질문 있어여!"
+        title: "팀원 구하고 있어요"
     },
     {
         board: "qna",
-        title: "꺅꺅꺅꺅꺅꺅꺅꺅"
+        title: "질문 있습니다!"
     }
 ]
 
@@ -87,10 +87,10 @@ export const PostRanking = () => {
             return (
                 <>
                 <Box sx={{ display:"flex", mt:3.5 }}>
-                <Typography variant="h6" sx={{mt:"1rem", ml:"1.5rem", mr: 5}}>{index+1}위</Typography>
+                <Typography variant="h6" sx={{mt:"1rem", mr:5, ml:1}}>{index+1}위</Typography>
                 <Box>
                     <Typography variant="subtitle2" color="secondary.dark">{boardName}</Typography>
-                    <Typography variant="subtitle1">{shortenContent(value.title, 15)}</Typography>
+                    <Typography variant="subtitle1">{shortenContent(value.title, 10)}</Typography>
                 </Box>
                 </Box>
                 </>
@@ -129,8 +129,8 @@ export const UserRanking = () => {
             const studentId = value.studentId.slice(0,2);
             return (
                 <>
-                <Box sx={{ display:"flex", justifyContent: "space-evenly", mt:5 }}>
-                <Typography variant="h6" sx={{ mr:"1rem"}}>{index+1}위</Typography>
+                <Box sx={{ display:"flex", mt:5 }}>
+                <Typography variant="h6" sx={{mr:4, ml:1}}>{index+1}위</Typography>
                 <UserProfile
                     name={value.nickname}
                     size={33}
@@ -138,7 +138,7 @@ export const UserRanking = () => {
                     colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
                 />
                 <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
-                    <Typography variant="subtitle1" sx={{ width:90 }}>{shortenContent(value.nickname, 8)}</Typography>
+                    <Typography variant="subtitle1" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="subtitle2" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
                 </Box>
                 </Box>

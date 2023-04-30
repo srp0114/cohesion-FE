@@ -60,8 +60,8 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2} gap={3}>
-      <Grid item xs={8.8}>
+      <Grid container spacing={2} gap={2}>
+      <Grid item xs={8.5}>
         <Banner/>
         <Grid container spacing={2} onClick={openModal}>
           <Modal
