@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
-import UserProfile from "boring-avatars";
+import Profile from "../layout/Profile";
 import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
 
@@ -131,12 +131,7 @@ export const UserRanking = () => {
                 <>
                 <Box sx={{ display:"flex", mt:5 }}>
                 <Typography variant="h6" sx={{mr:4, ml:1}}>{index+1}위</Typography>
-                <UserProfile
-                    name={value.nickname}
-                    size={33}
-                    variant="beam"
-                    colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
-                />
+                <Profile nickname={value.nickname} size={33}/>
                 <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
                     <Typography variant="subtitle1" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="subtitle2" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
 import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
-import styled from '@emotion/styled';
-import UserIcon from '@mui/icons-material/AccountCircleOutlined';
+import Profile from "../layout/Profile";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
@@ -22,7 +21,7 @@ const Navbar = () => {
   };
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [nickname, setNickname] = useState(null);
+  const [nickname, setNickname] = useState<string>("");
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
@@ -113,10 +112,19 @@ const Navbar = () => {
           </Menu>
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Box>
-        <Box sx={{display:'flex'}}>
-          <Button onClick={handleLogin} className="loginButton">
-            {isLogin ? "로그아웃" : "로그인"}
-          </Button>
+        <Box sx={{display:'flex', justifyContent: "space-between"}}>
+          {isLogin ? (
+          <>
+            <Box sx={{mt:"0.25rem", mr:"1rem"}} onClick={moveToMyPage}>
+              <Profile nickname={nickname} size={25}/>
+            </Box>
+            <Button onClick={handleLogin} className="loginButton">
+              로그아웃
+            </Button>
+          </>
+          ) : (<Button onClick={handleLogin} className="loginButton">로그인</Button>
+          )}
+          
       </Box>
       </Box>
     </div>

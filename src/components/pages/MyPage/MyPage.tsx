@@ -49,9 +49,10 @@ const MyPage = () => {
       
       <Grid
         container
-        columnSpacing={{ md: "2.5rem", xs: "1.5rem" }} //1rem == 16px, 2.5rem == 36px, 1.5rem == 24px, 1.125rem === 18px
-        rowSpacing={4}
+        columnSpacing={{ md: "2.5rem", xs: "1rem" }} //1rem == 16px, 2.5rem == 36px, 1.5rem == 24px, 1.125rem === 18px
+        rowSpacing={2}
         direction="row"
+        sx={{m:10}}
       >
         <Grid item xs={12} md={4}>
           <MyProfile nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>

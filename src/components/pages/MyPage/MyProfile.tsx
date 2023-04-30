@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Grid, Typography, Paper } from "@mui/material";
 import { Track } from "../../model/user";
+import Profile from "../../layout/Profile";
 
 /**
  * 유저의 기본정보를 나타내는 컴포넌트
@@ -33,11 +34,7 @@ export const MyProfile = (props: MyProfileProps) => {
             <Typography>COMPUTER ENGINEERING</Typography>
           </Grid>
           <Grid item>
-            <img
-              srcSet={props.profileImg}
-              width="250px"
-              height="250px"
-              style={{ border: "1px solid black" }} />
+            <Profile nickname={props.nickname} size={100}/>
           </Grid>
           <Grid item>
             <Box>
