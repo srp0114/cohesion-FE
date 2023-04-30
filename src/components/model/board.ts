@@ -2,7 +2,7 @@ import { Posting } from "./posting";
 
 export enum BoardType {
   free = "free",
-  question = "question",
+  question = "questions",
   recruit = "recruit",
   notice = "notice",
   summary = "", //todo(은서): 마이페이지 내 공부요약글 추후 따로 빠질 수 있음

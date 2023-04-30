@@ -33,8 +33,8 @@ function App() {
           <Route path="edit/:boardType/:id" element={<EditForm />} />
           <Route path="free" element={<FreeBoard />} />
           <Route path="free/:id" element={<FreeDetails />} />
-          <Route path="question" element={<QnABoard />} />
-          <Route path="question/:id" element={<QnADetail />} />
+          <Route path="questions" element={<QnABoard />} />
+          <Route path="questions/:id" element={<QnADetail />} />
           <Route path="recruit/*" element={<RecruitBoard />} />
           <Route path="recruit/:id" element={<RecruitDetails />} />
           <Route path="mypage" element={<MyPage />} />
