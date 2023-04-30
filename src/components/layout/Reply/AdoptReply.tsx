@@ -14,9 +14,15 @@ const AdoptReply = ({ onReplyCheck, isChosen, replyId }: AdoptReplyProps) => {
 
   const handleCheckReply = async () => {
     try {
-      // post axios 추가
-      await axios.post(`/api/qna/${replyId}/adopt-replies`);
-      
+      // 댓글 채택한 경우 post axios 연동 추가
+      await axios.post(`/api/qna/${replyId}/adopt-replies`)
+      .then((res)=>{
+          if(res.status===200) {
+            console.log(res)
+          }
+      }).catch((err)=>{
+          console.log(err);
+      })
       setOpen(true);
       onReplyCheck(!isChosen);
       setMessage(isChosen ? "댓글 채택이 취소되었습니다." : "댓글이 채택되었습니다.");

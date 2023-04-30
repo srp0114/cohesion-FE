@@ -65,9 +65,9 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
     })
 
-    // Q&A 게시판인 경우 해당 게시글 채택댓글이 있는지 받아올 api 추가
-    // url - 해당 게시글 번호 오류 발생 -> 1은 200 status 받아오는 상태
-    // TODO: url 수정 필요
+    // Q&A 게시판인 경우 해당 게시글 채택 댓글이 있는지 받아올 api 추가
+    // url - 해당 게시글 번호 오류 발생
+    // TODO: url /api/qna/${id}/adopt-check 로 수정
     if (board==="qna") {
       axios({
         method : "get",
