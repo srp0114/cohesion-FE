@@ -52,8 +52,24 @@ export const UpdateSpeedDial = (props: UpdateSpeedDialProps) => {
   const navigate = useNavigate();
 
   const goToEditing = () => {
-    navigate(`/edit/${props.boardType}/${props.postingId}`);
+    navigate(`/edit/${props.boardType}/${props.postingId}`, {state: getBoardType(props.boardType)});
   };
+
+  const getBoardType = (type: string): BoardType | undefined => {
+    if (type === "free") {
+      return BoardType.free;
+    } else if (type === "questions") {
+      return BoardType.question;
+    } else if (type === "recruit") {
+      return BoardType.recruit;
+    } else if (type === "notice") {
+      return BoardType.notice;
+    } else if (type === "summary") {
+      return BoardType.summary;
+    } else {
+      return undefined;
+    }
+  }
 
   const deleteHandler = () => {
     /*추후 qna, recruit 게시글 수정, 삭제 api 완성되면 추가해야함. */
