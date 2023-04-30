@@ -6,9 +6,9 @@ import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
 import HomeBoard from "../layout/HomeBoard";
-import hansung from "../asset/image/hansung.png";
+import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
-import { checkLogin } from "../checkLogin";
+import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
 
 const Home: React.FC = () => {
@@ -28,12 +28,12 @@ const Home: React.FC = () => {
           method: "get",
           url: "/api/user-info",
         })
-          .then((res) => {
-            setNickname(res.data.nickname);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+            .then((res) => {
+              setNickname(res.data.nickname);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
       } else {
         setIsLogin(false);
       }
@@ -50,9 +50,9 @@ const Home: React.FC = () => {
 
     navigate(`/redirect`);
   };
-
+  
   const openModal = () => {
-    if (!isLogin)
+    if(!isLogin) 
       setOpen(!open);
   };
 
@@ -60,66 +60,66 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2} gap={3}>
-        <Grid item xs={8.8}>
-          <Banner />
-          <Grid container spacing={2} onClick={openModal}>
-            <Modal
-              open={open}
-              onClose={handleClose}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Box sx={loginModalstyle}>
-                <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
-                <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
-                <Button className="startButton" onClick={handleLogin}>
-                  <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
-                </Button>
-              </Box>
-            </Modal>
+      <Grid container spacing={2} gap={2}>
+      <Grid item xs={8.5}>
+        <Banner/>
+        <Grid container spacing={2} onClick={openModal}>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
+            <Box sx={loginModalstyle}>
+              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+              <Button className="startButton" onClick={handleLogin}>
+                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+              </Button>
+            </Box>
+          </Modal>
 
-            <Grid xs
-              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
-              <HomeBoard board="free" loginState={isLogin} />
-            </Grid>
-            <Grid xs
-              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
-              <HomeBoard board="qna" loginState={isLogin} />
-            </Grid>
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            <HomeBoard board="free" loginState={isLogin} />
           </Grid>
-
-          <Grid container spacing={2} onClick={openModal}>
-            <Modal
-              open={open}
-              onClose={handleClose}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Box sx={loginModalstyle}>
-                <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
-                <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
-                <Button className="startButton" onClick={handleLogin}>
-                  <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
-                </Button>
-              </Box>
-            </Modal>
-
-            <Grid xs
-              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
-              {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
-              <HomeBoard board="free" loginState={isLogin} />
-            </Grid>
-            <Grid xs
-              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
-              {/* TODO: 공지사항 main api 작업 후 board 수정*/}
-              <HomeBoard board="free" loginState={isLogin} />
-            </Grid>
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            <HomeBoard board="qna" loginState={isLogin} />
           </Grid>
         </Grid>
 
-        <Grid item xs>
-          <SideBar nickname={nickname} />
+        <Grid container spacing={2} onClick={openModal}>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
+            <Box sx={loginModalstyle}>
+              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
+              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
+              <Button className="startButton" onClick={handleLogin}>
+                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+              </Button>
+            </Box>
+          </Modal>
+
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
+            <HomeBoard board="free" loginState={isLogin} />
+          </Grid>
+          <Grid xs
+            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            {/* TODO: 공지사항 main api 작업 후 board 수정*/}
+            <HomeBoard board="free" loginState={isLogin} />
+          </Grid>
         </Grid>
+      </Grid>
+
+      <Grid item xs>
+        <SideBar nickname={nickname}/> 
+      </Grid>
 
       </Grid>
-      {isLogin ? <WritingButton /> : null}
+      {isLogin ? <WritingButton/> : null}
     </>
   );
 };
