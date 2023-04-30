@@ -31,10 +31,10 @@ export const MyProfile = (props: MyProfileProps) => {
         >
           <Grid item>
             <Grid container spacing={2}>
-              <Grid item xs={6} md={5.2}>
+              <Grid item xs={6} md={5}>
                 <Profile nickname={props.nickname} size={100}/>
               </Grid>
-              <Grid item xs={4} md={6.8} sx={{mt:"1.5rem"}}>
+              <Grid item xs={4} md={7} sx={{mt:"1.5rem"}}>
                 <Typography variant="subtitle1">{props.nickname}</Typography>
                 <Grid container spacing={2} sx={{mt:"2rem"}}>
                   <Grid item>

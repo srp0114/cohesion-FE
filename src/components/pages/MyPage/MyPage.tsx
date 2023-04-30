@@ -69,7 +69,7 @@ const MyPage = () => {
           <Grid item>
             <MyHistory reply={data?.reply ?? 0} board={data?.board ?? 0} bookmark={data?.bookmark ?? 0} point={data?.point?? 0}/>
           </Grid>
-
+          
           <Grid container item rowSpacing={{ xs: "1.125rem" }}>
             <Grid item xs={12}>
               {!(test.dailySummary===undefined) ? (
