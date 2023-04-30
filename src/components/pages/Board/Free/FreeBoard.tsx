@@ -5,7 +5,7 @@ import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";

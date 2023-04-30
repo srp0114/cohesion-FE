@@ -8,7 +8,7 @@ import { skillData } from "../../../data/SkillData";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 
