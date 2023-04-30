@@ -54,8 +54,8 @@ const MyPage = () => {
         direction="row"
         sx={{m:10}}
       >
-        <Grid item xs={12} md={4}>
-          <MyProfile nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
+        <Grid item xs={12} md={5}>
+          <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
         </Grid>
 
         <Grid
@@ -63,7 +63,7 @@ const MyPage = () => {
           item
           rowSpacing={{ md: "2.5rem", xs: "1.5rem" }}
           xs={12}
-          md={8}
+          md={6.5}
           direction="column"
         >
           <Grid item>
@@ -77,10 +77,10 @@ const MyPage = () => {
               ) : (
                 <Paper
                   sx={{
-                    border: "0.5px solid black",
-                    borderRadius: "20px",
+                    borderRadius: "15px",
                     padding: "1.125rem", //18px
                   }}
+                  elevation={3}
                 >
                   <Stack
                     direction="row"
@@ -97,7 +97,7 @@ const MyPage = () => {
                 </Paper>
               )}
             </Grid>
-
+            
             <Grid item xs={12}>
               <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
             </Grid>

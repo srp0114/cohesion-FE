@@ -26,10 +26,11 @@ export const MySummary = (props: { dailySummary?: MySummaryItems}) => {
   return (
     <Paper
       sx={{
-        border: "0.5px solid black",
-        borderRadius: "20px",
-        padding: "1.125rem", //18px
-      }}
+          borderRadius: "15px",
+          padding: "1.125rem",
+
+        }}
+        elevation={3}
     >
       <Stack
         direction="row"

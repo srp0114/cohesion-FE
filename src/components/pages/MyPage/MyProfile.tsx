@@ -8,6 +8,7 @@ import Profile from "../../layout/Profile";
  */
 interface MyProfileProps {
   nickname: string;
+  studentId: string;
   track1: string;
   track2: string;
   profileImg: string;
@@ -18,42 +19,46 @@ export const MyProfile = (props: MyProfileProps) => {
     <>
       <Paper
         sx={{
-          border: "0.5px solid black",
-          borderRadius: "20px",
-          padding: "1.125rem",
+          borderRadius: "15px",
+          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"3rem", ml:"2rem", mr:"2rem"
         }}
+        elevation={3}
       >
         <Grid
           container
           rowSpacing={{ xs: "2.5rem" }}
           direction="column"
-          sx={{ padding: "0 3rem", textAlign: "center" }}
         >
           <Grid item>
-            <Typography>HANSUNG UNIVERSITY</Typography>
-            <Typography>COMPUTER ENGINEERING</Typography>
-          </Grid>
-          <Grid item>
-            <Profile nickname={props.nickname} size={100}/>
-          </Grid>
-          <Grid item>
-            <Box>
-              <Typography variant="body1">닉네임</Typography>
-              <Typography variant="h6">{props.nickname}</Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box>
-              <Typography variant="body2">소속트랙</Typography>
-              <Typography variant="h6">{props.track1}</Typography>
-              <Typography variant="h6">{props.track2}</Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Typography>COHENSION</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6} md={5.2}>
+                <Profile nickname={props.nickname} size={100}/>
+              </Grid>
+              <Grid item xs={4} md={6.8} sx={{mt:"1.5rem"}}>
+                <Typography variant="subtitle1">{props.nickname}</Typography>
+                <Grid container spacing={2} sx={{mt:"2rem"}}>
+                  <Grid item>
+                  <Typography variant="subtitle2" color="secondary.dark">학번</Typography>
+                  </Grid>
+                  <Grid item>
+                  <Typography variant="subtitle2">{props.studentId}</Typography>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2} sx={{mt:"1rem"}}>
+                  <Grid item>
+                    <Typography variant="subtitle2" color="secondary.dark">전공</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="subtitle2">{props.track1}</Typography>
+                    <Typography variant="subtitle2">{props.track2}</Typography>
+                  </Grid>
+                </Grid>
+                </Grid>
+            </Grid>
           </Grid>
         </Grid>
-      </Paper>
+        </Paper>
+
     </>
   );
 };
