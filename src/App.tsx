@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Container } from "@mui/material";
 import Home from "./components/pages/Home";
 import PostForm from "./components/pages/PostForm";
+import EditForm from "./components/pages/EditForm";
 import FreeBoard from "./components/pages/Board/Free/FreeBoard";
 import FreeDetails from "./components/pages/Board/Free/FreeDetails";
 import QnABoard from "./components/pages/Board/QnA/QnABoard";
@@ -29,10 +30,11 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="post" element={<PostForm />} />
+          <Route path="edit/:boardType/:id" element={<EditForm />} />
           <Route path="free" element={<FreeBoard />} />
           <Route path="free/:id" element={<FreeDetails />} />
-          <Route path="questions" element={<QnABoard />} />
-          <Route path="questions/:id" element={<QnADetail />} />
+          <Route path="question" element={<QnABoard />} />
+          <Route path="question/:id" element={<QnADetail />} />
           <Route path="recruit/*" element={<RecruitBoard />} />
           <Route path="recruit/:id" element={<RecruitDetails />} />
           <Route path="mypage" element={<MyPage />} />
