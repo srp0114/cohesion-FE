@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   TextField,
@@ -39,7 +39,7 @@ const EditForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [hasUserPoint ,setHasUserPoint] = useState<number>(0);
+  const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
 
   const pathArray = window.location.href.split("/");
@@ -55,34 +55,34 @@ const EditForm = () => {
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     axios({
-      method : "get",
-      url : `/api/user-info`
-    }).then((res)=>{
-      if(res.status===200){
+      method: "get",
+      url: `/api/user-info`
+    }).then((res) => {
+      if (res.status === 200) {
         console.log(res.data.point);
         setHasUserPoint(res.data.point);
       }
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err);
     });
-},[]);
+  }, []);
 
-    useEffect(()=>{ //id에 따른 게시글 정보 가져옴
-        axios({
-            method: "get",
-            url: `/api/free/detail/${postingId}`
-        }).then(
-            (res)=>{
-                if(res.status===200){ //수정폼에 기존 내용 미리 넣어놓기
-                console.log(`게시글 수정을 위한 정보 가져오기 ${res.data.title} ${res.data.content}`);
-                setTitle(res.data.title); //undefined로 나옴. 수정 필요
-                setContent(res.data.content); //undefined로 나옴. 수정 필요
-                }
-            }
-        ).catch((err) => console.log(err));
-    },[]);
+  useEffect(() => { //id에 따른 게시글 정보 가져옴
+    axios({
+      method: "get",
+      url: `/api/free/detail/${postingId}`
+    }).then(
+      (res) => {
+        if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
+          console.log(`게시글 수정을 위한 정보 가져오기 ${res.data.title} ${res.data.content}`);
+          setTitle(res.data.title); //undefined로 나옴. 수정 필요
+          setContent(res.data.content); //undefined로 나옴. 수정 필요
+        }
+      }
+    ).catch((err) => console.log(err));
+  }, []);
 
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
@@ -163,59 +163,59 @@ const EditForm = () => {
     /**
      * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update)
      */
-    switch(boardType){
-        case BoardType.free:
-            axios({
-                method: "put", 
-                url: `/api/free/update/${postingId}`,
-                headers: { "Content-Type": "application/json" },
-                data: JSON.stringify(request_data),
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-                  nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-                } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-              })
-              .catch((err) => console.log(err));
-            break;
-        case BoardType.question:
-            /*
-            axios({
-                method: "put", 
-                url: `q&a게시판  게시글 수정 api`,
-                headers: { "Content-Type": "application/json" },
-                data: JSON.stringify(request_data),
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  // 성공 시 작업
-                  window.location.href = "/";
-                } // 응답(401, 403 등) 핸들링 ...
-              })
-              .catch((err) => console.log(err));
-            */
-            break;
-        case BoardType.recruit:
-             /*
-            axios({
-                method: "put", 
-                url: `모집(구인)게시판  게시글 수정 api`,
-                headers: { "Content-Type": "application/json" },
-                data: JSON.stringify(request_data),
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  // 성공 시 작업
-                  window.location.href = "/";
-                } // 응답(401, 403 등) 핸들링 ...
-              })
-              .catch((err) => console.log(err));
-            */
-            break;
-        /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
-        default:
-            break;
+    switch (boardType) {
+      case BoardType.free:
+        axios({
+          method: "put",
+          url: `/api/free/update/${postingId}`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_data),
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+            } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+          })
+          .catch((err) => console.log(err));
+        break;
+      case BoardType.question:
+        /*
+        axios({
+            method: "put", 
+            url: `q&a게시판  게시글 수정 api`,
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify(request_data),
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              // 성공 시 작업
+              window.location.href = "/";
+            } // 응답(401, 403 등) 핸들링 ...
+          })
+          .catch((err) => console.log(err));
+        */
+        break;
+      case BoardType.recruit:
+        /*
+       axios({
+           method: "put", 
+           url: `모집(구인)게시판  게시글 수정 api`,
+           headers: { "Content-Type": "application/json" },
+           data: JSON.stringify(request_data),
+         })
+         .then((res) => {
+           if (res.status === 200) {
+             // 성공 시 작업
+             window.location.href = "/";
+           } // 응답(401, 403 등) 핸들링 ...
+         })
+         .catch((err) => console.log(err));
+       */
+        break;
+      /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
+      default:
+        break;
     }
 
   };
@@ -227,7 +227,7 @@ const EditForm = () => {
       url: `/api/${boardType}/delete/${postingId}`
     }).then(
       (res) => {
-        if(res.status === 200){
+        if (res.status === 200) {
           console.log(`삭제 요청 완료 response.data ${res.data}`);
           <Loading delayTime={1500} />
           nav(`/${boardType}`);

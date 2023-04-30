@@ -20,7 +20,7 @@ import Layout from "./components/layout/Layout";
 function App() {
   return (
     // maxWidth 사이즈 조정
-    <Container  maxWidth="xl"> 
+    <Container maxWidth="xl">
       <Routes>
         {/*레이아웃 미적용 컴포넌트*/}
         <Route path="/redirect" element={<OAuth2 />} />

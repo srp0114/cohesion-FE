@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Fab, Box, Tooltip, SpeedDial, SpeedDialIcon, SpeedDialAction } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -40,7 +40,7 @@ interface UpdateSpeedDialProps {
   //postingFile?: undefined; //파일 추가될 시 지정.
 }
 
-export const UpdateSpeedDial = (props:UpdateSpeedDialProps) => {
+export const UpdateSpeedDial = (props: UpdateSpeedDialProps) => {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ export const UpdateSpeedDial = (props:UpdateSpeedDialProps) => {
       url: `/api/${props.boardType}/delete/${props.postingId}`
     }).then(
       (res) => {
-        if(res.status === 200){
+        if (res.status === 200) {
           console.log(`삭제 요청 완료 response.data ${res.data}`);
           <Loading delayTime={1500} />
           navigate(`/${props.boardType}`);
@@ -71,12 +71,12 @@ export const UpdateSpeedDial = (props:UpdateSpeedDialProps) => {
   };
 
   const actions = [
-    { icon: <EditOutlinedIcon />, name: '수정'},
-    { icon: <DeleteIcon />, name: '삭제'},
+    { icon: <EditOutlinedIcon />, name: '수정' },
+    { icon: <DeleteIcon />, name: '삭제' },
   ];
 
   return (
-    <Box sx={{ "& > :not(style)": { ml: 120 }, position: "fixed", bottom: "2.5rem", right: "10rem" ,transform: 'translateZ(0px)', flexGrow: 1 }}>
+    <Box sx={{ "& > :not(style)": { ml: 120 }, position: "fixed", bottom: "2.5rem", right: "10rem", transform: 'translateZ(0px)', flexGrow: 1 }}>
       <SpeedDial
         ariaLabel="게시글 수정 삭제 스피드 다이얼"
         icon={<SpeedDialIcon />}
@@ -84,16 +84,16 @@ export const UpdateSpeedDial = (props:UpdateSpeedDialProps) => {
         onOpen={handleOpen}
         open={open}
       >
-          <SpeedDialAction
-            icon={actions[0].icon}
-            tooltipTitle={actions[0].name}
-            onClick={goToEditing}
-          />
-          <SpeedDialAction
-            icon={actions[1].icon}
-            tooltipTitle={actions[1].name}
-            onClick={deleteHandler}
-          />
+        <SpeedDialAction
+          icon={actions[0].icon}
+          tooltipTitle={actions[0].name}
+          onClick={goToEditing}
+        />
+        <SpeedDialAction
+          icon={actions[1].icon}
+          tooltipTitle={actions[1].name}
+          onClick={deleteHandler}
+        />
       </SpeedDial>
     </Box>
   );

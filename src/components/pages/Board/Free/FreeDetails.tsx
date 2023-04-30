@@ -87,15 +87,15 @@ const FreeDetails = () => {
       method: "get",
       url: "/api/user-info"
     })
-    .then((res)=>{
-      if(res.status===200) {
-      setAccessUserId(res.data.studentId);
-      }
-    })
-    .catch((err)=>{
-      
-      console.log(err);
-    });
+      .then((res) => {
+        if (res.status === 200) {
+          setAccessUserId(res.data.studentId);
+        }
+      })
+      .catch((err) => {
+
+        console.log(err);
+      });
   }, []);
 
   //북마크 등록
@@ -137,14 +137,14 @@ const FreeDetails = () => {
    * @returns 게시글 정보를 포함하고있는 speedDial
    */
   const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
-    if( typeof postItem !== undefined) {
-      if(Number(studentId) === Number(accessUserId)){
-        return (<UpdateSpeedDial boardType = {BoardType.free} postingId = {postingId} postingTitle={title} postingContent={content}/>);
+    if (typeof postItem !== undefined) {
+      if (Number(studentId) === Number(accessUserId)) {
+        return (<UpdateSpeedDial boardType={BoardType.free} postingId={postingId} postingTitle={title} postingContent={content} />);
       }
       else
         return null;
     }
-    
+
   }
 
   const detailPosting = postItem ? (
@@ -190,7 +190,7 @@ const FreeDetails = () => {
       <Reply board={"free"} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-        </Zoom>
+      </Zoom>
     </>
   ) : (
     <PostingSkeleton />
