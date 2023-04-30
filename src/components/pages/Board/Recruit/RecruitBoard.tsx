@@ -56,7 +56,7 @@ const RecruitBoard: React.FC = () => {
   const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
   const [page, setPage] = useState(1);
   useEffect(() => {
-    const curPage = page-1;
+    const curPage = page - 1;
     axios({
       method: "get",
       url: "/api/recruit/list?page=" + curPage + "&size=6",
@@ -97,13 +97,13 @@ const RecruitBoard: React.FC = () => {
         </Box>
       </Box>
       <PaginationControl
-            page={page}
-            between={1}
-            total={100}
-            limit={4}
-            changePage={(page: React.SetStateAction<number>) => setPage(page)}
-            ellipsis={1}
-          />
+        page={page}
+        between={1}
+        total={100}
+        limit={4}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
       <WritingButton />
     </>
   );
@@ -214,7 +214,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
                   sx={{ width: "25px", height: "25px", marginRight: "5px" }}
                 />
                 <Typography variant="overline">
-                  {`${props.writer} (${props.stuId.toString().slice(0,2)}학번)`}
+                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
               </Stack>
             }
