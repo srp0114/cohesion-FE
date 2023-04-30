@@ -16,6 +16,8 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
+import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton } from "./ApplyAcceptStuff";
+import { propTypes } from "react-bootstrap/esm/Image";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -40,7 +42,7 @@ export interface RecruitDetailItems {
 const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
-  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [isWriter, setIsWriter] = useState<boolean>(false);
 
   const postingId = Number(id);
 
@@ -57,15 +59,15 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .catch((err) => {
         console.log(err);
       });
-    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
-    //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
+
     axios({
       method: "get",
-      url: "/api/user-info"
+      url: "/api/check"
     })
       .then((res) => {
         if (res.status === 200) {
-          setAccessUserId(res.data.studentId);
+          console.log(`유저 인증: res.data: ${res.data}`);
+          setIsWriter(res.data);
         }
       })
       .catch((err) => {
@@ -83,7 +85,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
    */
     const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
       if (typeof postItem !== undefined) {
-        if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+        if (isWriter) {
           return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
         }
         else
@@ -113,7 +115,6 @@ const RecruitDetails: React.FC = (): JSX.Element => {
 
           <Grid item justifyContent={"flex-end"}>
             <Time date={postItem.createdDate} />{" "}
-            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
           </Grid>
         </Grid>
 
@@ -146,12 +147,14 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Typography sx={{ fontSize: "0.75" }}>
-            {postItem.gathered} / {postItem.party}
+          <Grid item container xs={12} sx={{display:"flex", justifyContent:"space-between"}}>
+          <Typography variant="h6">
+            모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
           </Typography>
+          {isWriter ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton/>}
+          </Grid>
         </Grid>
 
-        {/*북마크, 조회수 이 컴포넌트 따로 빼둘것  */}
         <Grid item xs={12} sm={6}>
           <Stack
             direction="row"
@@ -174,8 +177,6 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Stack>
           {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
         </Grid>
-
-        {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
