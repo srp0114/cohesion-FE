@@ -5,6 +5,7 @@ import {
 } from "@mui/material";
 
 export function userInfo(writer: string, imgUrl: string, stuId: number) {
+  const studentId = stuId.toString();
   return <Stack
     direction="row"
     sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
@@ -17,7 +18,7 @@ export function userInfo(writer: string, imgUrl: string, stuId: number) {
         marginRight: "0.75rem", //12px
       }} />
     <Typography variant="h6">
-      {`${writer} (${stuId.toString().slice(0,2)}학번)`}
+      {`${writer} (${studentId.slice(0,2)}학번)`}
     </Typography>
   </Stack>;
 }

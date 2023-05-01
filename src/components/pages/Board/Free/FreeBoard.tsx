@@ -88,7 +88,7 @@ const FreeBoard = () => {
             variant="h5" >
             자유게시판
           </Typography>
-          <FilterPosting />
+
           {displayPosting}
           <PaginationControl
             page={page}
@@ -147,6 +147,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         overflow: "hidden",
         textOverflow: "ellipsis",
         alignItems: "stretch",
+        maxHeight: "6.5rem"
       }}>
         <Typography variant="body1">
           <div
