@@ -24,6 +24,7 @@ import { BoardType } from "../../../model/board";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
+import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 /*북마크 연동 후, 위의 두 개 아이콘(bookmark, visivility) 삭제 부탁드립니다.*/
 
 // Q&A 상세보기 데이터
@@ -83,21 +84,10 @@ const QnADetails = () => {
           console.log(err);
       });
 
-    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
-    axios({
-      method: "get",
-      url: "/api/user-info"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setAccessUserId(res.data.studentId);
-        }
-      })
-      .catch((err) => {
-
-        console.log(err);
-      });
-
+      //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
+      getCurrentUserInfo()
+        .then(userInfo => setAccessUserId(userInfo.studentId))
+        .catch(err => console.log(err));
   }, []);
 
   //입력된 언어 맞게 이미지 출력

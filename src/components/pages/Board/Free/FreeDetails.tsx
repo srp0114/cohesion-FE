@@ -18,6 +18,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
+import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -82,20 +83,9 @@ const FreeDetails = () => {
       .catch((err) => {
         console.log(err);
       });
-    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보 
-    axios({
-      method: "get",
-      url: "/api/user-info"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setAccessUserId(res.data.studentId);
-        }
-      })
-      .catch((err) => {
-
-        console.log(err);
-      });
+    getCurrentUserInfo()
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
   }, []);
 
   //북마크 등록

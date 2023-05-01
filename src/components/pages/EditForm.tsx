@@ -25,6 +25,7 @@ import "../style/Board.css";
 import { BoardType } from "../model/board";
 import { isNumericLiteral } from "typescript";
 import Loading from "../layout/Loading";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -56,17 +57,9 @@ const EditForm = () => {
   }, []);
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `/api/user-info`
-    }).then((res) => {
-      if (res.status === 200) {
-        console.log(res.data.point);
-        setHasUserPoint(res.data.point);
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+    getCurrentUserInfo()
+      .then(userInfo => setHasUserPoint(userInfo.point))
+      .catch(err => console.log(err))
   }, []);
 
   useEffect(() => { //TODO: 게시글 id에 따라 게시글 정보 받아오기, api 완성 후 작업.
