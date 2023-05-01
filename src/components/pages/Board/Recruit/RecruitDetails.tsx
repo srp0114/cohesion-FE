@@ -84,7 +84,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
     const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
       if (typeof postItem !== undefined) {
         if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
-          return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
+          return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
         }
         else
           return null;

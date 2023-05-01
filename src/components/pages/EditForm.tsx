@@ -20,7 +20,7 @@ import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
-import { Navigate, useNavigate } from "react-router";
+import {Navigate, useLocation, useNavigate} from "react-router";
 import "../style/Board.css";
 import { BoardType } from "../model/board";
 import { isNumericLiteral } from "typescript";
@@ -41,7 +41,7 @@ const EditForm = () => {
   const [gathered, setGathered] = useState<number>(0);
   const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
-
+  const {state} = useLocation();
   const pathArray = window.location.href.split("/");
   const boardTypeArray = Object.values(BoardType);
   const initialBoardType = boardTypeArray.find((type) => pathArray.includes(type));
@@ -70,9 +70,10 @@ const EditForm = () => {
   }, []);
 
   useEffect(() => { //TODO: 게시글 id에 따라 게시글 정보 받아오기, api 완성 후 작업.
+    setBoardType(state);
     axios({
       method: "get",
-      url: `/api/${boardType}/detail/${postingId}` //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
+      url: `/api/${state}/update/${postingId}` //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
     }).then(
       (res) => {
         if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
@@ -82,13 +83,13 @@ const EditForm = () => {
 
           // //api 완성된 경우, 주석 푸시면 될 것 같습니다! - 은서
           // //Q&A게시판
-          // setSkill(res.data.point); //질문한 언어, 기술
+          setSkill(res.data.language); //질문한 언어, 기술
 
           // //구인(모집) 게시판
-          // setRequired(res.data.required); //수정 불가
-          // setOptional(res.data.optional);
-          // setParty(res.data.party);
-          // setGathered(res.data.gathered); //수정 불가
+          setRequired(res.data.required); //수정 불가
+          setOptional(res.data.optional);
+          setParty(res.data.party);
+          setGathered(res.data.gathered); //수정 불가
         }
       }
     ).catch((err) => console.log(err));
@@ -190,40 +191,34 @@ const EditForm = () => {
           .catch((err) => console.log(err));
         break;
       case BoardType.question:
-        /*
         axios({
             method: "put", 
-            url: `q&a게시판  게시글 수정 api`,
+            url: `/api/questions/update/${postingId}`,
             headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(request_data),
+            data: JSON.stringify(request_qna),
           })
           .then((res) => {
             if (res.status === 200) {
               console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
               nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-              window.location.href = "/";
             } // 응답(401, 403 등) 핸들링 ...
           })
           .catch((err) => console.log(err));
-        */
         break;
       case BoardType.recruit:
-        /*
        axios({
            method: "put", 
-           url: `모집(구인)게시판  게시글 수정 api`,
+           url: `/api/recruit/update/${postingId}`,
            headers: { "Content-Type": "application/json" },
-           data: JSON.stringify(request_data),
+           data: JSON.stringify(request_recruit),
          })
          .then((res) => {
            if (res.status === 200) {
               console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
               nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-             window.location.href = "/";
            } // 응답(401, 403 등) 핸들링 ...
          })
          .catch((err) => console.log(err));
-       */
         break;
       /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
       default:
@@ -250,20 +245,20 @@ const EditForm = () => {
   }
 
   const SelectSkill =
-    boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
+    boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
 
   const SelectPoint =
     boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
 
   const DesignateConditionRequired =
     boardType === BoardType.recruit ? (
-      <ConditionRequired getRequired={getRequired} />
+      <ConditionRequired value={required} getRequired={getRequired} />
     ) : null;
   const DesignateConditionOptional =
     boardType === BoardType.recruit ? (
-      <ConditionOptional getOptional={getOptional} />
+      <ConditionOptional value={optional} getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === BoardType.recruit ? <People getParty={getParty} getGathered={getGathered} /> : null;
+  const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
@@ -276,7 +271,7 @@ const EditForm = () => {
                   <MenuItem value={"free"} defaultChecked>
                     자유게시판
                   </MenuItem>
-                  <MenuItem value={"question"}>Q&A게시판</MenuItem>
+                  <MenuItem value={"questions"}>Q&A게시판</MenuItem>
                   <MenuItem value={"recruit"}>구인게시판</MenuItem>
                   <MenuItem value={"notice"}>공지사항</MenuItem>
                 </Select>
@@ -296,7 +291,7 @@ const EditForm = () => {
             </Grid>
             <Grid item>
               <div className="postQuill">
-                <EditorToolbar onAddQuill={getContent} />
+                <EditorToolbar content={content} onAddQuill={getContent} />
               </div>
               {/* value: {content} */}
               <div>
