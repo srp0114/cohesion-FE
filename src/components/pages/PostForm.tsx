@@ -22,6 +22,7 @@ import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -48,17 +49,9 @@ const PostForm = () => {
   }, []);
 
   useEffect(()=>{
-    axios({
-      method : "get",
-      url : `/api/user-info`
-    }).then((res)=>{
-      if(res.status===200){
-        console.log(res.data.point);
-        setHasUserPoint(res.data.point);
-      }
-    }).catch((err)=>{
-      console.log(err);
-    })
+    getCurrentUserInfo()
+      .then(userInfo => setHasUserPoint(userInfo.point))
+      .catch(err => console.log(err))
   },[])
 
 
