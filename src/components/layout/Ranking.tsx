@@ -5,7 +5,7 @@ import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
 
 interface PostRankingItem {
-    board: string,
+    boardType: string,
     title: string,
 }
 
@@ -18,23 +18,23 @@ interface UserRakingItem {
 // 인기유저 테스트 데이터
 const postRank: PostRankingItem[] = [
     {
-        board: "free",
+        boardType: "free",
         title: "제목제목제목제목제목제목"
     },
     {
-        board: "free",
+        boardType: "free",
         title: "ABCDEFGHIJKLMNOPQRSTU"
     },
     {
-        board: "qna",
+        boardType: "qna",
         title: "가나다라마바사아자차카타파하"
     },
     {
-        board: "recruit",
+        boardType: "recruit",
         title: "팀원 구하고 있어요"
     },
     {
-        board: "qna",
+        boardType: "qna",
         title: "질문 있습니다!"
     }
 ]
@@ -60,8 +60,7 @@ export const PostRanking = () => {
     useEffect(() => {
         axios({
             method: "get",
-            // TODO: 인기 게시글 api 추가 필요
-            //url: ``,
+            url: `/api/popular`
         })
         .then((res) => {
             if (res.status === 200) {
@@ -69,7 +68,7 @@ export const PostRanking = () => {
             }
         })
         .catch((err) => {
-            
+            console.log(err);
         });
     }, []);
 
@@ -79,7 +78,7 @@ export const PostRanking = () => {
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {postRanking.map((value, index) => {
-            const board = value.board
+            const board = value.boardType
             const boardName: string = board === "free" ? "자유게시판"
             : board === "qna" ? "Q&A게시판"
             : board === "recruit" ? "구인게시판"

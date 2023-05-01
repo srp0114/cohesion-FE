@@ -16,6 +16,8 @@ const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
   const [nickname, setNickname] = useState<string>("");
+  const [studentId, setStudentId] = useState<number>(0);
+  const [track1, setTrack1] = useState<string>("");
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
@@ -26,7 +28,12 @@ const Home: React.FC = () => {
       if (res) {
         setIsLogin(true);
         getCurrentUserInfo()
-          .then(userInfo => setNickname(userInfo.nickname))
+          // .then(userInfo => setNickname(userInfo.nickname))
+            .then(userInfo =>{
+              setNickname(userInfo.nickname);
+              setStudentId(userInfo.studentId);
+              setTrack1(userInfo.track1);
+            })
           .catch(err => console.log(err));
       } else {
         setIsLogin(false);
@@ -98,7 +105,7 @@ const Home: React.FC = () => {
           <Grid xs
             sx={{ filter: isLogin? null : "blur(1.5px)"}}>
             {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
-            <HomeBoard board="free" loginState={isLogin} />
+            <HomeBoard board="recruit" loginState={isLogin} />
           </Grid>
           <Grid xs
             sx={{ filter: isLogin? null : "blur(1.5px)"}}>
@@ -109,7 +116,7 @@ const Home: React.FC = () => {
       </Grid>
 
       <Grid item xs>
-        <SideBar nickname={nickname}/> 
+        <SideBar nickname={nickname} studentId={studentId} track1={track1}/>
       </Grid>
 
       </Grid>
