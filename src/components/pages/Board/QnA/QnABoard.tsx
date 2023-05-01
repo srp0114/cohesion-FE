@@ -56,6 +56,7 @@ const QnABaord = () => {
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -160,7 +161,6 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
   const noPreTagContent = props.content.replace(regex, "");
 
   return (
-
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
       borderRadius: "50px",

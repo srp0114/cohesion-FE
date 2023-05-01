@@ -31,6 +31,19 @@ const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/free/total"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
+  }, [])
 
   useEffect(() => {
     setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
@@ -80,7 +93,7 @@ const FreeBoard = () => {
           <PaginationControl
             page={page}
             between={1}
-            total={100} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
+            total={total} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
             limit={4} //각 페이지 당 들어가는 최대 아이템, total / limit = 전체 페이지 수
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}

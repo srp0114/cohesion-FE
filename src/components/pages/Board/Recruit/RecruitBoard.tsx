@@ -55,6 +55,20 @@ const RecruitBoard: React.FC = () => {
    */
   const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/recruit/total"
+    })
+        .then((res) => {
+          if (res.status === 200) {
+            setTotal(res.data);
+          }
+        })
+  }, [])
+
   useEffect(() => {
     const curPage = page-1;
     axios({
@@ -99,8 +113,8 @@ const RecruitBoard: React.FC = () => {
       <PaginationControl
             page={page}
             between={1}
-            total={100}
-            limit={4}
+            total={total}
+            limit={6}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
