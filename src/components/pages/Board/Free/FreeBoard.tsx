@@ -5,7 +5,7 @@ import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
 import FilterPosting from "../../../layout/FilterPosting";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
@@ -51,7 +51,7 @@ const FreeBoard = () => {
           console.log("권한 x");
         }
       });
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     setLoading(true); //freeData 상태가 변할 때 게시글 목록
@@ -80,8 +80,8 @@ const FreeBoard = () => {
           <PaginationControl
             page={page}
             between={1}
-            total={100}
-            limit={20}
+            total={100} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
+            limit={4} //각 페이지 당 들어가는 최대 아이템, total / limit = 전체 페이지 수
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           /><WritingButton /></Box>

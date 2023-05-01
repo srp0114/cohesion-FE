@@ -8,11 +8,12 @@ import { skillData } from "../../../data/SkillData";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
+import { PaginationControl } from "react-bootstrap-pagination-control";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { PaginationControl } from "react-bootstrap-pagination-control";
-
+import { BoardSkeleton } from "../../../layout/Skeletons";
 // BoardItems 인터페이스
 export interface BoardItems {
   id: number;
@@ -52,7 +53,7 @@ export const shortenContent = (str: string, length = 200) => {
   return content;
 };
 
-const QnABaord: React.FC = () => {
+const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [page, setPage] = useState(1);
@@ -61,9 +62,10 @@ const QnABaord: React.FC = () => {
 
   useEffect(() => {
     //목록 조회 부분
+    const curPage = page - 1;
     axios({
       method: "get",
-      url: "/api/qna/list?page=0",
+      url: "/api/qna/list?page=" + curPage + "&size=4",
     })
       .then((res) => {
         setBoardItems(res.data);
@@ -75,19 +77,21 @@ const QnABaord: React.FC = () => {
           console.log("권한 x");
         }
       });
+  }, [page]);
 
+  useEffect(() => {
     axios({
       method: "get",
       url: "/api/qna/most",
     })
-      .then((res) => {
-        if (res.status === 200) {
-          setMostViewedItems(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    .then((res) => {
+      if (res.status === 200) {
+        setMostViewedItems(res.data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }, []);
 
   const displayPosting = boardItems.map((element, idx) => {

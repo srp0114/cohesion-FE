@@ -25,7 +25,6 @@ function issueToken() {
 
   return new Promise((resolve, reject) => {
     const axiosInstance = axios.create();
-    // TODO "Refresh Token"이 없는 경우 처리
     console.log("Reissue Token");
     return axiosInstance({
       url: "http://localhost:8081/oauth2/token",
@@ -40,19 +39,31 @@ function issueToken() {
       },
     })
       .then((response) => {
-        const now = new Date();
-        const expiresIn = parseInt(response.data.expires_in);
-        const expiresAt = new Date(now.getTime() + expiresIn * 1000);
+        if (response.status === 200) {
+          const now = new Date();
+          const expiresIn = parseInt(response.data.expires_in);
+          const expiresAt = new Date(now.getTime() + expiresIn * 1000);
 
-        sessionStorage.setItem("id_token", response.data.id_token);
-        sessionStorage.setItem("access_token", response.data.access_token);
-        sessionStorage.setItem("refresh_token", response.data.refresh_token);
-        sessionStorage.setItem("expires_at", expiresAt.toString());
+          sessionStorage.setItem("id_token", response.data.id_token);
+          sessionStorage.setItem("access_token", response.data.access_token);
+          sessionStorage.setItem("refresh_token", response.data.refresh_token);
+          sessionStorage.setItem("expires_at", expiresAt.toString());
 
-        resolve(response.data.access_token);
+          resolve(response.data.access_token);
+        }
       })
       .catch((err) => {
         console.log(err);
+        alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
+        fetch("http://localhost:8081/logout", { // 토큰 재 발급 실패 시, 로그아웃 처리
+          method: "get",
+          credentials: "include"
+        }).then((res) => {
+          if (res.ok) {
+            sessionStorage.clear(); // 세션 스토리지 클리어 후
+            window.location.href = "/"; // 메인 페이지로 이동
+          }
+        })
         reject(err);
       });
   });

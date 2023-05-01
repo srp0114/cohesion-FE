@@ -1,12 +1,21 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Grid, Stack, TextField } from "@mui/material";
 
 interface PeopleProps {
     getParty : any;
     getGathered : any;
+    partyValue?: number;
+    gatheredValue?: number;
 }
 
-const People : React.FC<PeopleProps> = ({getParty, getGathered}) => (
+const People : React.FC<PeopleProps> = ({getParty, getGathered, partyValue, gatheredValue}) => {
+
+  useEffect(() => {
+    getParty(partyValue);
+    getGathered(gatheredValue);
+  }, [partyValue, gatheredValue])
+
+  return (
   <Grid item>
     <Stack direction="row">
       <TextField
@@ -14,6 +23,7 @@ const People : React.FC<PeopleProps> = ({getParty, getGathered}) => (
         label="총 인원"
         placeholder="예) 조별 인원: 4"
         type="number"
+        value={partyValue}
         InputLabelProps={{
           shrink: true,
         }}
@@ -22,10 +32,12 @@ const People : React.FC<PeopleProps> = ({getParty, getGathered}) => (
       />
 
       <TextField
+        disabled={!!partyValue}
         required
         label="현재 모인 인원"
         placeholder="예) 글쓴이 포함 모인 인원: 1"
         type="number"
+        value={gatheredValue}
         InputLabelProps={{
           shrink: true,
         }}
@@ -34,6 +46,6 @@ const People : React.FC<PeopleProps> = ({getParty, getGathered}) => (
       />
     </Stack>
   </Grid>
-);
+)};
 
 export default People;
