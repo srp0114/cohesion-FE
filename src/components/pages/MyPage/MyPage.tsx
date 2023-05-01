@@ -49,12 +49,13 @@ const MyPage = () => {
       
       <Grid
         container
-        columnSpacing={{ md: "2.5rem", xs: "1.5rem" }} //1rem == 16px, 2.5rem == 36px, 1.5rem == 24px, 1.125rem === 18px
-        rowSpacing={4}
+        columnSpacing={{ md: "2.5rem", xs: "1rem" }} //1rem == 16px, 2.5rem == 36px, 1.5rem == 24px, 1.125rem === 18px
+        rowSpacing={2}
         direction="row"
+        sx={{m:10}}
       >
-        <Grid item xs={12} md={4}>
-          <MyProfile nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
+        <Grid item xs={12} md={5}>
+          <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
         </Grid>
 
         <Grid
@@ -62,13 +63,13 @@ const MyPage = () => {
           item
           rowSpacing={{ md: "2.5rem", xs: "1.5rem" }}
           xs={12}
-          md={8}
+          md={6.5}
           direction="column"
         >
           <Grid item>
             <MyHistory reply={data?.reply ?? 0} board={data?.board ?? 0} bookmark={data?.bookmark ?? 0} point={data?.point?? 0}/>
           </Grid>
-
+          
           <Grid container item rowSpacing={{ xs: "1.125rem" }}>
             <Grid item xs={12}>
               {!(test.dailySummary===undefined) ? (
@@ -76,10 +77,10 @@ const MyPage = () => {
               ) : (
                 <Paper
                   sx={{
-                    border: "0.5px solid black",
-                    borderRadius: "20px",
+                    borderRadius: "15px",
                     padding: "1.125rem", //18px
                   }}
+                  elevation={3}
                 >
                   <Stack
                     direction="row"
@@ -96,7 +97,7 @@ const MyPage = () => {
                 </Paper>
               )}
             </Grid>
-
+            
             <Grid item xs={12}>
               <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
             </Grid>
