@@ -10,6 +10,7 @@ import hansung from  "../asset/image/hansung.png";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
 const Home: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -24,16 +25,9 @@ const Home: React.FC = () => {
     checkLogin().then((res) => {
       if (res) {
         setIsLogin(true);
-        axios({
-          method: "get",
-          url: "/api/user-info",
-        })
-            .then((res) => {
-              setNickname(res.data.nickname);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+        getCurrentUserInfo()
+          .then(userInfo => setNickname(userInfo.nickname))
+          .catch(err => console.log(err));
       } else {
         setIsLogin(false);
       }

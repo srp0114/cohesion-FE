@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import ProfileIcon from "@mui/icons-material/AccountCircle";
@@ -126,6 +126,10 @@ const Welcome = () => {
     console.log(skill);
   };
 
+  const onSkillChange = (event: SyntheticEvent<Element, Event>, value: any) => {
+    setSkill(value);
+  }
+
   const request_data = {
     studentId: userAccount.sub,
     name: userAccount.name,
@@ -133,7 +137,7 @@ const Welcome = () => {
     introduce: introduce,
     track1: userAccount.track1,
     track2: userAccount.track2,
-    
+    skills: skill.map(s => s.name)
   };
 
   const confirm = () => {
@@ -295,6 +299,8 @@ const Welcome = () => {
                   }}
                 />
               )}
+              value={skill}
+              onChange={onSkillChange}
             />
           </Box>
           <Box>

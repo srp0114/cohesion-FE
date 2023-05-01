@@ -16,6 +16,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
+import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -59,19 +60,9 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       });
     //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
     //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
-    axios({
-      method: "get",
-      url: "/api/user-info"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setAccessUserId(res.data.studentId);
-        }
-      })
-      .catch((err) => {
-
-        console.log(err);
-      });
+    getCurrentUserInfo()
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
   }, []);
 
     /**
@@ -84,7 +75,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
     const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
       if (typeof postItem !== undefined) {
         if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
-          return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
+          return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
         }
         else
           return null;
