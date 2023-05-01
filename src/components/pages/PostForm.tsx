@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   TextField,
@@ -8,10 +8,6 @@ import {
   SelectChangeEvent,
   Select,
   MenuItem,
-  Menu,
-  Stack,
-  Typography,
-  Box,
 } from "@mui/material";
 import axios from "axios";
 import Point from "../layout/Point";
@@ -22,7 +18,7 @@ import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
-import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
 
 /*
@@ -38,7 +34,7 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [hasUserPoint ,setHasUserPoint] = useState<number>(0);
+  const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -49,11 +45,11 @@ const PostForm = () => {
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     getCurrentUserInfo()
       .then(userInfo => setHasUserPoint(userInfo.point))
       .catch(err => console.log(err))
-  },[])
+  }, [])
 
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
@@ -148,14 +144,14 @@ const PostForm = () => {
         .catch((err) => console.log(err));
     } else if (boardType === BoardType.question) {
       // Q&A 게시판인 경우
-    if(hasUserPoint >= point) {
-      if (fileList.length > 0) {
-        axios({
-          method: "post",
-          url: "/api/qna",
-          headers: {"Content-Type": "multipart/form-data"},
-          data: JSON.stringify(qna_formData),
-        })
+      if (hasUserPoint >= point) {
+        if (fileList.length > 0) {
+          axios({
+            method: "post",
+            url: "/api/qna",
+            headers: { "Content-Type": "multipart/form-data" },
+            data: JSON.stringify(qna_formData),
+          })
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
@@ -169,13 +165,13 @@ const PostForm = () => {
                 console.log("권한 x");
               }
             });
-      } else {
-        axios({
-          method: "post",
-          url: "/api/qna/no-file",
-          headers: {"Content-Type": "application/json"},
-          data: JSON.stringify(request_qna),
-        })
+        } else {
+          axios({
+            method: "post",
+            url: "/api/qna/no-file",
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify(request_qna),
+          })
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
@@ -189,11 +185,11 @@ const PostForm = () => {
                 console.log("권한 x");
               }
             });
+        }
+      } else {
+        alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
+        window.location.reload();
       }
-    }else{
-      alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
-      window.location.reload();
-    }
     } else if (boardType === BoardType.recruit) {
       // 구인 게시판인 경우
       axios({
@@ -202,13 +198,13 @@ const PostForm = () => {
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_recruit),
       })
-          .then((res) => {
-            if (res.status === 200) {
-              // 성공 시 작업
-              window.location.href = `/${boardType}`;
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status === 200) {
+            // 성공 시 작업
+            window.location.href = `/${boardType}`;
+          } // 응답(401, 403 등) 핸들링 ...
+        })
+        .catch((err) => console.log(err));
     }
   };
 

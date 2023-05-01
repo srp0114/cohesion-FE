@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Grid, Stack } from "@mui/material";
+import { Typography, Box, Grid } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -65,11 +62,11 @@ const QnABaord = () => {
       method: "get",
       url: "/api/questions/total"
     })
-        .then((res) => {
-          if (res.status === 200) {
-            setTotal(res.data);
-          }
-        })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
   }, [])
 
   useEffect(() => {

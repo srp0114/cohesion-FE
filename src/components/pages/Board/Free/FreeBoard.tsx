@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
-import FilterPosting from "../../../layout/FilterPosting";
+import { Box, Typography, Grid } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -18,13 +17,13 @@ export interface FreeBoardItems {
   title: string;
   content: string;
   writer: string;
-  stuId: number; //타입 string에서 number로 알맞게 변경.
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  stuId: number;
+  profileImg: string;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  views: number; //조회수
+  views: number;
   //imgUrl?: Array<string>; //이미지
 }
 const FreeBoard = () => {
@@ -93,8 +92,8 @@ const FreeBoard = () => {
           <PaginationControl
             page={page}
             between={1}
-            total={total} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
-            limit={4} //각 페이지 당 들어가는 최대 아이템, total / limit = 전체 페이지 수
+            total={total}
+            limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           /><WritingButton /></Box>

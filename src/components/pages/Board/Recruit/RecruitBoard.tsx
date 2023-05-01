@@ -19,7 +19,6 @@ import {
   ThemeProvider,
   createTheme,
   useTheme,
-  Theme,
 } from "@mui/material/styles";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -34,7 +33,7 @@ export interface RecruitBoardItems {
   id: number;
   title: string;
   writer: string;
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  profileImg: string;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
@@ -42,9 +41,9 @@ export interface RecruitBoardItems {
   views: number; //조회수
   stuId: number; //사용자 학번
   imgUrl?: Array<string>; //이미지
-  require: string; //필수조건: 분반명 등
-  optional?: string; //기타, 우대조건: 학점, 기술스택 등
-  party: number; //모집할 인원수
+  require: string;
+  optional?: string;
+  party: number;
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
 }
 
@@ -62,15 +61,15 @@ const RecruitBoard: React.FC = () => {
       method: "get",
       url: "/api/recruit/total"
     })
-        .then((res) => {
-          if (res.status === 200) {
-            setTotal(res.data);
-          }
-        })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
   }, [])
 
   useEffect(() => {
-    const curPage = page-1;
+    const curPage = page - 1;
     axios({
       method: "get",
       url: "/api/recruit/list?page=" + curPage + "&size=6",
@@ -111,13 +110,13 @@ const RecruitBoard: React.FC = () => {
         </Box>
       </Box>
       <PaginationControl
-            page={page}
-            between={1}
-            total={total}
-            limit={6}
-            changePage={(page: React.SetStateAction<number>) => setPage(page)}
-            ellipsis={1}
-          />
+        page={page}
+        between={1}
+        total={total}
+        limit={6}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
       <WritingButton />
     </>
   );
@@ -228,7 +227,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
                   sx={{ width: "25px", height: "25px", marginRight: "5px" }}
                 />
                 <Typography variant="overline">
-                  {`${props.writer} (${props.stuId.toString().slice(0,2)}학번)`}
+                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
               </Stack>
             }
