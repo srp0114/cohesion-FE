@@ -138,7 +138,7 @@ const QnABaord = () => {
           page={page}
           between={1}
           total={total}
-          limit={20}
+          limit={4}
           changePage={(page: React.SetStateAction<number>) => setPage(page)}
           ellipsis={1}
         /><WritingButton /></Box>)
