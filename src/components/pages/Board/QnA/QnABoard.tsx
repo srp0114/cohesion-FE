@@ -61,6 +61,18 @@ const QnABaord = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/questions/total"
+    })
+        .then((res) => {
+          if (res.status === 200) {
+            setTotal(res.data);
+          }
+        })
+  }, [])
+
+  useEffect(() => {
     setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
     //목록 조회 부분
     const curPage = page - 1;
@@ -125,7 +137,7 @@ const QnABaord = () => {
         <PaginationControl
           page={page}
           between={1}
-          total={100}
+          total={total}
           limit={20}
           changePage={(page: React.SetStateAction<number>) => setPage(page)}
           ellipsis={1}
