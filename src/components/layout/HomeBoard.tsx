@@ -6,7 +6,7 @@ import Time from "./Time";
 import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
-import Profile from "boring-avatars";
+import Profile from "../layout/Profile";
 
 interface HomeBoardItems {
     id: number;
@@ -76,7 +76,7 @@ const HomeBoard = (props: HomeBoardProps) => {
 
     return (
         <>
-            <Box onClick={openInfoModal} sx={{m:3}}>
+            <Box onClick={openInfoModal} sx={{m:3, mb:10}}>
                 {/* 403에러 true인 경우 모달창 출력*/}
                 <Modal
                     open={open}
@@ -106,12 +106,7 @@ const HomeBoard = (props: HomeBoardProps) => {
                     onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
-                                 <Profile
-                                    name={posting.writer}
-                                    size={30}
-                                    variant="beam"
-                                    colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
-                                />
+                                 <Profile nickname={posting.writer} size={30}/>
                                 <Typography sx={{pt:0.5, pl:1.5}}>{posting.writer}</Typography>
                             </Box>
                             <Box sx={{display:'flex', justifyContent:'flex-end'}}>
