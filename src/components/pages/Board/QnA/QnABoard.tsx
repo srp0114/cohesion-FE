@@ -50,8 +50,21 @@ const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState<number>(0);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/questions/total"
+    })
+        .then((res) => {
+          if (res.status === 200) {
+            setTotal(res.data);
+          }
+        })
+  }, [])
 
   useEffect(() => {
     //목록 조회 부분
@@ -183,7 +196,7 @@ const QnABaord = () => {
       <PaginationControl
             page={page}
             between={1}
-            total={100}
+            total={total}
             limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
