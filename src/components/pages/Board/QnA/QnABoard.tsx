@@ -26,8 +26,6 @@ export interface BoardItems {
   bookmark: number;
   reply: number;
   point: number;
-
-  //이하 추가되어야함.
   views: number; //조회수
   profileImg: string; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
@@ -56,11 +54,13 @@ export const shortenContent = (str: string, length = 200) => {
 const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
     //목록 조회 부분
     const curPage = page - 1;
     axios({
@@ -69,6 +69,7 @@ const QnABaord = () => {
     })
       .then((res) => {
         setBoardItems(res.data);
+        console.log(`get을 받아온 Q&A게시판: ${JSON.stringify(res.data)}`);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -84,15 +85,19 @@ const QnABaord = () => {
       method: "get",
       url: "/api/qna/most",
     })
-    .then((res) => {
-      if (res.status === 200) {
-        setMostViewedItems(res.data);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        if (res.status === 200) {
+          setMostViewedItems(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
+
+  useEffect(() => {
+    setLoading(true); //boardItems 상태가 변할 때 게시글 목록
+  }, [boardItems]);
 
   const displayPosting = boardItems.map((element, idx) => {
     return (
@@ -104,7 +109,7 @@ const QnABaord = () => {
 
   return (
     <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
         <Typography
           variant="h5" >
           Q&A게시판
@@ -123,7 +128,12 @@ const QnABaord = () => {
           limit={20}
           changePage={(page: React.SetStateAction<number>) => setPage(page)}
           ellipsis={1}
-        /><WritingButton /></Box>
+        /><WritingButton /></Box>)
+
+        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <BoardSkeleton />
+          <WritingButton />
+        </Box>)}
     </>
   );
 
