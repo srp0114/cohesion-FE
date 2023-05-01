@@ -23,6 +23,7 @@ import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
 import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { BoardType } from "../model/board";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -130,22 +131,22 @@ const PostForm = () => {
 
     qna_formData.append("stringQna", JSON.stringify(request_qna));
 
-    if (boardType === "free") {
+    if (boardType === BoardType.free) {
       // 자유 게시판인 경우
       axios({
         method: "post",
-        url: "/api/free",
+        url: `/api/${boardType}`,
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_data),
       })
         .then((res) => {
           if (res.status === 200) {
             // 성공 시 작업
-            window.location.href = "/";
+            window.location.href = `/${boardType}`;
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
-    } else if (boardType === "question") {
+    } else if (boardType === BoardType.question) {
       // Q&A 게시판인 경우
     if(hasUserPoint >= point) {
       if (fileList.length > 0) {
@@ -158,7 +159,7 @@ const PostForm = () => {
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
-                window.location.href = "/";
+                window.location.href = `/${boardType}`;
               } // 응답(401, 403 등) 핸들링 ...
             })
             .catch((err) => {
@@ -178,7 +179,7 @@ const PostForm = () => {
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
-                window.location.href = "/";
+                window.location.href = `/${boardType}`;
               }
             })
             .catch((err) => {
@@ -193,18 +194,18 @@ const PostForm = () => {
       alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
       window.location.reload();
     }
-    } else if (boardType === "recruit") {
+    } else if (boardType === BoardType.recruit) {
       // 구인 게시판인 경우
       axios({
         method: "post",
-        url: "/api/recruit",
+        url: `/api/${boardType}`,
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_recruit),
       })
           .then((res) => {
             if (res.status === 200) {
               // 성공 시 작업
-              window.location.href = "/";
+              window.location.href = `/${boardType}`;
             } // 응답(401, 403 등) 핸들링 ...
           })
           .catch((err) => console.log(err));
@@ -212,20 +213,20 @@ const PostForm = () => {
   };
 
   const SelectSkill =
-    boardType === "question" ? <Skill getSkill={getSkill} /> : null;
+    boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
 
   const SelectPoint =
-    boardType === "question" ? <Point getPoint={getPoint} /> : null;
+    boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
 
   const DesignateConditionRequired =
-    boardType === "recruit" ? (
+    boardType === BoardType.recruit ? (
       <ConditionRequired getRequired={getRequired} />
     ) : null;
   const DesignateConditionOptional =
-    boardType === "recruit" ? (
+    boardType === BoardType.recruit ? (
       <ConditionOptional getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === "recruit" ? <People getParty={getParty} getGathered={getGathered} /> : null;
+  const DesignatePeople = boardType === BoardType.recruit ? <People getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
@@ -235,12 +236,12 @@ const PostForm = () => {
             <Grid item>
               <FormControl style={{ minWidth: "120px" }}>
                 <Select value={boardType} onChange={boardHandler} size="small">
-                  <MenuItem value={"free"} defaultChecked>
+                  <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
                   </MenuItem>
-                  <MenuItem value={"question"}>Q&A게시판</MenuItem>
-                  <MenuItem value={"recruit"}>구인게시판</MenuItem>
-                  <MenuItem value={"notice"}>공지사항</MenuItem>
+                  <MenuItem value={BoardType.question}>Q&A게시판</MenuItem>
+                  <MenuItem value={BoardType.recruit}>구인게시판</MenuItem>
+                  <MenuItem value={BoardType.notice}>공지사항</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
