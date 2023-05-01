@@ -1,7 +1,23 @@
-import React from "react";
+import React ,{ useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 
-const Loading = () => {
+const Loading = ({ delayTime = 5000 }: { delayTime?: number }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const timerRef = useRef<number | null>(null);
+  
+    useEffect(() => {
+      timerRef.current = window.setTimeout(() => {
+        navigate(location.state?.from || "/");
+      }, delayTime);
+  
+      return () => {
+        if (timerRef.current) {
+          window.clearTimeout(timerRef.current);
+        }
+      };
+    }, [navigate]);
     return (
         <div className="contentWrap">
             <div

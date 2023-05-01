@@ -5,7 +5,8 @@ import {
   Box,
   Grid,
   Typography,
-  Skeleton
+  Skeleton,
+  Zoom
 } from "@mui/material";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
@@ -15,6 +16,8 @@ import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
+import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
+import { BoardType } from "../../../model/board";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -38,6 +41,9 @@ const FreeDetails = () => {
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [bookmarkCheck, setBookmarkCheck] = useState(false);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+
+  const postingId = Number(id);
 
   useEffect(() => {
     axios({
@@ -76,6 +82,20 @@ const FreeDetails = () => {
       .catch((err) => {
         console.log(err);
       });
+    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보 
+    axios({
+      method: "get",
+      url: "/api/user-info"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setAccessUserId(res.data.studentId);
+        }
+      })
+      .catch((err) => {
+
+        console.log(err);
+      });
   }, []);
 
   //북마크 등록
@@ -109,6 +129,24 @@ const FreeDetails = () => {
     }
   };
 
+  /**
+   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+   * @param studentId 
+   * @param title 
+   * @param content 
+   * @returns 게시글 정보를 포함하고있는 speedDial
+   */
+  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+    if (typeof postItem !== undefined) {
+      if (Number(studentId) === Number(accessUserId)) {
+        return (<UpdateSpeedDial boardType={BoardType.free} postingId={postingId} postingTitle={title} postingContent={content} />);
+      }
+      else
+        return null;
+    }
+
+  }
+
   const detailPosting = postItem ? (
     <>
       <Grid container direction="column" rowSpacing={"3rem"}>
@@ -129,8 +167,7 @@ const FreeDetails = () => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} />{" "}
-            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
+            <Time date={postItem.createdDate} />
           </Grid>
         </Grid>
 
@@ -151,6 +188,9 @@ const FreeDetails = () => {
         {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"free"} postingId={id} />
+      <Zoom in={true}>
+        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+      </Zoom>
     </>
   ) : (
     <PostingSkeleton />

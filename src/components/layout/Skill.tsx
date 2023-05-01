@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Grid, FormControl, Select, SelectChangeEvent, Avatar, MenuItem, Box } from "@mui/material";
 import { skillData } from "../data/SkillData";
 
 interface SkillProps {
   getSkill: any;
+  value?: string
 }
   
-const Skill: React.FC<SkillProps>= ({getSkill}) => {
+const Skill: React.FC<SkillProps>= ({getSkill, value}) => {
 
   const [skill, setSkill] = useState<string>("");
+
+  useEffect(() => {
+      if (value) setSkill(value);
+  }, [value])
 
   const onSelectSkill = (event: SelectChangeEvent) => {
     setSkill(event.target.value)
