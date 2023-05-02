@@ -5,7 +5,7 @@ import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
 
 interface PostRankingItem {
-    board: string,
+    boardType: string,
     title: string,
 }
 
@@ -14,30 +14,6 @@ interface UserRakingItem {
     nickname: string
     studentId: string,
 }
-
-// 인기유저 테스트 데이터
-const postRank: PostRankingItem[] = [
-    {
-        board: "free",
-        title: "제목제목제목제목제목제목"
-    },
-    {
-        board: "free",
-        title: "ABCDEFGHIJKLMNOPQRSTU"
-    },
-    {
-        board: "qna",
-        title: "가나다라마바사아자차카타파하"
-    },
-    {
-        board: "recruit",
-        title: "팀원 구하고 있어요"
-    },
-    {
-        board: "qna",
-        title: "질문 있습니다!"
-    }
-]
 
 // 인기게시글 테스트 데이터
 const userRank: UserRakingItem[] = [
@@ -55,21 +31,21 @@ const userRank: UserRakingItem[] = [
 
 // 인기게시글 컴포넌트
 export const PostRanking = () => {
-    const [postRanking, setPostRanking] = useState<PostRankingItem[]>(postRank);
+    const [postRanking, setPostRanking] = useState<PostRankingItem[]>([]);
 
     useEffect(() => {
         axios({
             method: "get",
-            // TODO: 인기 게시글 api 추가 필요
-            //url: ``,
+            url: `/api/popular`
         })
         .then((res) => {
             if (res.status === 200) {
                 setPostRanking(res.data);
+                console.log(res.data);
             }
         })
         .catch((err) => {
-            
+            console.log(err);
         });
     }, []);
 
@@ -79,7 +55,7 @@ export const PostRanking = () => {
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {postRanking.map((value, index) => {
-            const board = value.board
+            const board = value.boardType
             const boardName: string = board === "free" ? "자유게시판"
             : board === "qna" ? "Q&A게시판"
             : board === "recruit" ? "구인게시판"
@@ -113,6 +89,7 @@ export const UserRanking = () => {
         .then((res) => {
             if (res.status === 200) {
                 setUserRanking(res.data);
+                console.log(res.data);
             }
         })
         .catch((err) => {
