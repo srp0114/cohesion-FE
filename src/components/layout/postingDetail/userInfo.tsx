@@ -17,7 +17,7 @@ export function userInfo(writer: string, imgUrl: string, stuId: number) {
         height: "3rem",
         marginRight: "0.75rem", //12px
       }} />
-    <Typography variant="h6">
+    <Typography variant="h5">
       {`${writer} (${studentId.slice(0,2)}학번)`}
     </Typography>
   </Stack>;
