@@ -79,7 +79,7 @@ const FreeDetails = () => {
 
   const detailPosting = postItem ? (
     <>
-      <Grid container direction="column" rowSpacing={"3rem"}>
+      <Grid container direction="column" rowSpacing={"1.2rem"}>
         {/*게시판 이름, BreadCrumbs */}
         <Grid item xs={12}>
           <PostingCrumbs title={postItem.title} board="free" />
@@ -107,10 +107,9 @@ const FreeDetails = () => {
             <Bookmark boardType={"free"} id={id}/>
           </Stack>
         </Grid>
-        
 
         {/*게시글 내용 */}
-        <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
+        <Grid item xs={12} sx={{ m: "5rem 2rem" }}>
             <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
             {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
