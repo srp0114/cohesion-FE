@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Box, Typography, Button } from "@mui/material";
+import { Stack, Typography, Button } from "@mui/material";
 import BorderBookmark from "@mui/icons-material/BookmarkBorder";
 import FilledBookmark from '@mui/icons-material/Bookmark';
 
@@ -40,7 +40,7 @@ const Bookmark = (props: BookmarkProps) => {
     .catch((err) => {
       console.log(err);
     });
-  }, [props.id, bookmarkCheck, bookmarkCount])
+  }, [bookmarkCheck, bookmarkCount])
 
   //북마크 등록
   const onClickBookmark = () => {
@@ -82,12 +82,12 @@ const Bookmark = (props: BookmarkProps) => {
   }
 
   return (
-    <Box sx={{display:"flex", justifyContent:"flex-end"}}>
+    <Stack direction="row">
       <Button className="bookmark" onClick={onClickBookmark} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
         {bookmark ? <FilledBookmark /> : <BorderBookmark />}
       </Button>
       <Typography variant="subtitle2">{bookmarkCount}</Typography>
-    </Box>
+    </Stack>
   );
 }
 

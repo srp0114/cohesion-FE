@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Time from "../../../layout/Time";
-import {
-  Box,
-  Grid,
-  Typography,
-  Skeleton,
-  Zoom, Stack
-} from "@mui/material";
 import axios from "axios";
+import { Box, Grid, Typography, Skeleton, Zoom, Stack } from "@mui/material";
+import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
@@ -98,21 +92,20 @@ const FreeDetails = () => {
         <Grid item xs={12}>
           <Stack
             direction="row"
-            spacing={2}
-            sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "space-between", alignItems:"center" }}
           >
-            <Time date={postItem.createdDate} variant="h5"/>
+            <Stack direction="row" spacing={1}>
+              <Time date={postItem.createdDate} variant="h5"/>
               <Visibility/>
               <Typography variant="h5">{postItem.views}</Typography>
+            </Stack>
+            <Bookmark boardType={"free"} id={id}/>
           </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
           <Grid item>
             {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
-          </Grid>
-          <Grid item>
-            <Bookmark boardType={"free"} id={id} />
           </Grid>
         </Grid>
 
@@ -121,8 +114,6 @@ const FreeDetails = () => {
             <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
             {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
-
-
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
