@@ -15,30 +15,6 @@ interface UserRakingItem {
     studentId: string,
 }
 
-// 인기유저 테스트 데이터
-const postRank: PostRankingItem[] = [
-    {
-        boardType: "free",
-        title: "제목제목제목제목제목제목"
-    },
-    {
-        boardType: "free",
-        title: "ABCDEFGHIJKLMNOPQRSTU"
-    },
-    {
-        boardType: "qna",
-        title: "가나다라마바사아자차카타파하"
-    },
-    {
-        boardType: "recruit",
-        title: "팀원 구하고 있어요"
-    },
-    {
-        boardType: "qna",
-        title: "질문 있습니다!"
-    }
-]
-
 // 인기게시글 테스트 데이터
 const userRank: UserRakingItem[] = [
     {
@@ -55,7 +31,7 @@ const userRank: UserRakingItem[] = [
 
 // 인기게시글 컴포넌트
 export const PostRanking = () => {
-    const [postRanking, setPostRanking] = useState<PostRankingItem[]>(postRank);
+    const [postRanking, setPostRanking] = useState<PostRankingItem[]>([]);
 
     useEffect(() => {
         axios({
@@ -65,6 +41,7 @@ export const PostRanking = () => {
         .then((res) => {
             if (res.status === 200) {
                 setPostRanking(res.data);
+                console.log(res.data);
             }
         })
         .catch((err) => {
@@ -112,6 +89,7 @@ export const UserRanking = () => {
         .then((res) => {
             if (res.status === 200) {
                 setUserRanking(res.data);
+                console.log(res.data);
             }
         })
         .catch((err) => {

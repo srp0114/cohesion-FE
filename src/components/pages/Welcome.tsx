@@ -117,13 +117,10 @@ const Welcome = () => {
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDefaultNickname(event.target.value);
     setNickname(event.target.value);
-    console.log(nickname);
   };
 
   const onIntroduceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIntroduce(event.target.value);
-    console.log(introduce);
-    console.log(skill);
   };
 
   const onSkillChange = (event: SyntheticEvent<Element, Event>, value: any) => {
