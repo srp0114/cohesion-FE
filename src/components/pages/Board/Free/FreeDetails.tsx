@@ -21,7 +21,6 @@ interface FreeDetailItems {
   id: number;
   title: string;
   content: string;
-  //imgUrl?: Array<string>;
   writer: string;
   profileImg: string;
   stuId: number;
@@ -89,6 +88,12 @@ const FreeDetails = () => {
         <Grid item xs={12}>
           <Typography variant="h1">{postItem.title}</Typography>
         </Grid>
+        {/*작성자 정보 , 작성 시각 */}
+        <Grid item container xs={12} justifyContent={"space-between"}>
+          <Grid item>
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+          </Grid>
+        </Grid>
         <Grid item xs={12}>
           <Stack
             direction="row"
@@ -102,12 +107,7 @@ const FreeDetails = () => {
             <Bookmark boardType={"free"} id={id}/>
           </Stack>
         </Grid>
-        {/*작성자 정보 , 작성 시각 */}
-        <Grid item container xs={12} justifyContent={"space-between"}>
-          <Grid item>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
-          </Grid>
-        </Grid>
+        
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>

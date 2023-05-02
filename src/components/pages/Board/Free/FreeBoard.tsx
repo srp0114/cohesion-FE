@@ -161,7 +161,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
 
       <Grid item>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {userInfo(props.writer, props.profileImg, props.stuId)}
+          {userInfo(props.writer, props.stuId, props.profileImg)}
           {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
         </Box>
       </Grid>

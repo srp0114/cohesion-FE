@@ -137,7 +137,7 @@ const QnADetails = () => {
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
           <Grid item xs={4}>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
           <Grid item justifyContent={"flex-end"}>
             <Time date={postItem.createdDate} />{" "}
