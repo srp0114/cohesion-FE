@@ -41,7 +41,6 @@ export const PostRanking = () => {
         .then((res) => {
             if (res.status === 200) {
                 setPostRanking(res.data);
-                console.log(res.data);
             }
         })
         .catch((err) => {
@@ -89,7 +88,6 @@ export const UserRanking = () => {
         .then((res) => {
             if (res.status === 200) {
                 setUserRanking(res.data);
-                console.log(res.data);
             }
         })
         .catch((err) => {
