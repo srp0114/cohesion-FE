@@ -59,8 +59,17 @@ export const theme = createTheme({
       }
     },
 
-    //MUI TextField 커스텀
+    //MUI 컴포넌트 커스텀
     components: {    
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            '&:hover': {
+              fontSize: '1.125rem',
+            },
+          }
+        }
+      },
       MuiTextField: {      
         defaultProps: {        
           variant: "outlined",        
