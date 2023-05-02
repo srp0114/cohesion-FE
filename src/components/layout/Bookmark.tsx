@@ -17,6 +17,8 @@ const Bookmark = (props: BookmarkProps) => {
   const board = props.boardType;
   const id = props.id; 
   
+  // 기존 상세보기의 북마크 api get, post, delete - 분리
+  // boardType, 게시글 번호를 상세보기로부터 받아와 api 주소 설정
   useEffect(() => {
     //해당 게시글의 북마크 수
     axios({
