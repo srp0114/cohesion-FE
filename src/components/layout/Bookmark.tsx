@@ -12,11 +12,11 @@ interface BookmarkProps {
 const Bookmark = (props: BookmarkProps) => {
   const [bookmarkCount, setBookmarkCount] = useState<number>(0);
   const [bookmarkCheck, isBookmarked] = useState<boolean>(false);
-  const [bookmark, setBookmark] = useState<boolean>(bookmarkCheck);
+  const [bookmark, setBookmark] = useState<boolean>(false);
 
   const board = props.boardType;
   const id = props.id; 
-
+  
   useEffect(() => {
     //해당 게시글의 북마크 수
     axios({
@@ -36,11 +36,12 @@ const Bookmark = (props: BookmarkProps) => {
     })
     .then((res) => {
       isBookmarked(res.data);
+      setBookmark(bookmarkCheck);
     })
     .catch((err) => {
       console.log(err);
     });
-  }, [bookmarkCheck, bookmarkCount])
+  }, [id, board, bookmarkCheck])
 
   //북마크 등록
   const onClickBookmark = () => {
