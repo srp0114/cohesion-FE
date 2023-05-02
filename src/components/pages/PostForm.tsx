@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Container,
   TextField,
   Button,
@@ -7,6 +8,7 @@ import {
   FormControl,
   SelectChangeEvent,
   Select,
+  Snackbar,
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
@@ -20,6 +22,7 @@ import { useNavigate } from "react-router";
 import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
+import Loading from "../layout/Loading";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -35,7 +38,17 @@ const PostForm = () => {
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
   const [hasUserPoint, setHasUserPoint] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     checkLogin().then((res) => {
@@ -48,7 +61,7 @@ const PostForm = () => {
   useEffect(() => {
     getCurrentUserInfo()
       .then(userInfo => setHasUserPoint(userInfo.point))
-      .catch(err => console.log(err))
+      .catch(err => console.log(err));
   }, [])
 
 
@@ -97,7 +110,9 @@ const PostForm = () => {
     });
   };
 
-  const submitHandler = async () => {
+  const submitHandler = async (event:React.MouseEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -137,7 +152,11 @@ const PostForm = () => {
       })
         .then((res) => {
           if (res.status === 200) {
-            // 성공 시 작업
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
             window.location.href = `/${boardType}`;
           } // 응답(401, 403 등) 핸들링 ...
         })
@@ -154,7 +173,11 @@ const PostForm = () => {
           })
             .then((res) => {
               if (res.status === 200) {
-                // 성공 시 작업
+                <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    게시되었습니다.
+                  </Alert>
+                </Snackbar>
                 window.location.href = `/${boardType}`;
               } // 응답(401, 403 등) 핸들링 ...
             })
@@ -200,12 +223,22 @@ const PostForm = () => {
       })
         .then((res) => {
           if (res.status === 200) {
-            // 성공 시 작업
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
             window.location.href = `/${boardType}`;
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
     }
+    setOpen(true);
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
   };
 
   const SelectSkill =

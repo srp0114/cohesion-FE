@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Grid } from "@mui/material";
+import { Typography, Box, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
@@ -109,7 +109,11 @@ const QnABaord = () => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
   }, [boardItems]);
 
-  const displayPosting = boardItems.map((element, idx) => {
+  const displayPosting = boardItems.sort((x, y) => {
+    const dateX = new Date(x.modifiedDate || x.createdDate);
+    const dateY = new Date(y.modifiedDate || y.createdDate);
+    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
+  }).map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -189,8 +193,9 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
         <Typography variant="h5" >
           {props.title} {Skill}
         </Typography>
-
-        <Time date={props.createdDate} variant="h6" />
+        {(typeof props.modifiedDate === undefined) ?
+          <Time date={props.createdDate} variant="h6" /> :
+          <Time date={props.modifiedDate || props.createdDate} />}
       </Grid>
 
       <Grid item sx={{

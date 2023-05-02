@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -69,7 +69,11 @@ const FreeBoard = () => {
     setLoading(true); //freeData 상태가 변할 때 게시글 목록
   }, [freeData]);
 
-  const displayPosting = freeData.map((element, idx) => {
+  const displayPosting = freeData.sort((x, y) => {
+    const dateX = new Date(x.modifiedDate || x.createdDate);
+    const dateY = new Date(y.modifiedDate || y.createdDate);
+    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
+  }).map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -137,7 +141,9 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         <Typography variant="h5" >
           {props.title}
         </Typography>
-        <Time date={props.createdDate} variant="h6" />
+        {(typeof props.modifiedDate === undefined) ?
+          <Time date={props.createdDate} variant="h6" /> :
+          <Time date={props.modifiedDate || props.createdDate} />}
       </Grid>
 
       <Grid item sx={{

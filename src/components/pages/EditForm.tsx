@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Container,
   TextField,
   Button,
@@ -7,6 +8,7 @@ import {
   FormControl,
   SelectChangeEvent,
   Select,
+  Snackbar,
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
@@ -40,6 +42,16 @@ const EditForm = () => {
   const { state } = useLocation();
   const pathArray = window.location.href.split("/");
   const postingId = [...pathArray].pop();
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     checkLogin().then((res) => {
@@ -63,7 +75,7 @@ const EditForm = () => {
     }).then(
       (res) => {
         if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
-          console.log(`게시글 수정을 위한 정보 가져오기 ${res.data.title} ${res.data.content}`);
+          console.log(`게시글 수정을 위한 정보 가져오기 ${JSON.stringify(res.data)}`);
           setTitle(res.data.title);
           setContent(res.data.content);
           // //Q&A게시판
@@ -124,10 +136,12 @@ const EditForm = () => {
     });
   };
 
-  const submitHandler = async () => {
+  const submitHandler = async (event:React.MouseEvent) => {
+    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
+
     };
 
     const request_qna = {
@@ -165,26 +179,50 @@ const EditForm = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+              수정되었습니다.
+            </Alert>
+          </Snackbar>
           nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
         } // 필요시 응답(401, 403 등) 에러 핸들링 ...
       })
       .catch((err) => console.log(err));
+    setOpen(true);
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
+
   };
 
-  const deleteHandler = () => {
+  const deleteHandler = (event:React.MouseEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
     axios({
       method: 'delete',
       url: `/api/${boardType}/delete/${postingId}`
     }).then(
       (res) => {
         if (res.status === 200) {
-          console.log(`삭제 요청 완료 response.data ${res.data}`);
-          <Loading delayTime={1500} />
+          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+              삭제되었습니다.
+            </Alert>
+          </Snackbar>
           nav(`/${boardType}`); //삭제 후 게시판 목록페이지로
+          setOpen(true);
         }
       }
     ).catch((err) => console.log(err));
+
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
+
   }
 
   const SelectSkill =

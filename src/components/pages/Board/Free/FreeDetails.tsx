@@ -6,6 +6,7 @@ import {
   Grid,
   Typography,
   Skeleton,
+  Stack,
   Zoom
 } from "@mui/material";
 import axios from "axios";
@@ -18,7 +19,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
@@ -157,7 +158,9 @@ const FreeDetails = () => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} />
+          {(typeof postItem.modifiedDate === undefined) ?
+              <Time date={postItem.createdDate} variant="h6" /> :
+              <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
         </Grid>
 
