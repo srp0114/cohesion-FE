@@ -109,6 +109,13 @@ export const theme = createTheme({
               '&:focus' : {
               }
             },
+            '&.profile': {
+              padding:0,
+              backgroundColor: 'transparent',
+              minHeight: 0,
+              minWidth: 0,
+              marginRight:"1rem"
+            },
             '&.loginButton': {
               backgroundColor: 'transparent',
               color: '#008CFF',
