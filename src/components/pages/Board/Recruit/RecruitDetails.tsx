@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Visibility from "@mui/icons-material/VisibilityOutlined";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import { Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
-import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
+import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import Bookmark from "../../../layout/Bookmark";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -99,7 +96,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
           <Grid item xs={4}>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
@@ -142,31 +139,9 @@ const RecruitDetails: React.FC = (): JSX.Element => {
             {postItem.gathered} / {postItem.party}
           </Typography>
         </Grid>
-
-        {/*북마크, 조회수 이 컴포넌트 따로 빼둘것  */}
-        <Grid item xs={12} sm={6}>
-          <Stack
-            direction="row"
-            spacing={"0.75rem"}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <Box>
-              <IconButton size="small" disabled>
-                <Visibility fontSize="large" />
-                <Typography variant="h5">{postItem.views}</Typography>
-              </IconButton>
-            </Box>
-
-            <Box>
-              <IconButton size="small">
-                <BookmarkIcon fontSize="large" />
-                <Typography variant="h5">{postItem.bookmark}</Typography>
-              </IconButton>
-            </Box>
-          </Stack>
-          {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
+        <Grid item xs={12}>
+          <Bookmark boardType={"recruit"} id={id}/>
         </Grid>
-
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>

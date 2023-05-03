@@ -21,7 +21,7 @@ export const PostingCrumbs = ({ title, board }: PostingCrumbsProps) => {
   return (
     <Breadcrumbs>
       <Link
-        underline="hover"
+        underline="none"
         color="inherit"
         href="/"
         sx={{ fontSize: "1rem" }}
@@ -29,7 +29,7 @@ export const PostingCrumbs = ({ title, board }: PostingCrumbsProps) => {
         Home
       </Link>
       <Link
-        underline="hover"
+        underline="none"
         color="inherit"
         href={`/${board}`}
         sx={{ fontSize: "1rem" }}

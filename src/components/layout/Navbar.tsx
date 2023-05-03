@@ -115,9 +115,9 @@ const Navbar = () => {
         <Box sx={{display:'flex', justifyContent: "space-between"}}>
           {isLogin ? (
           <>
-            <Box sx={{mt:"0.25rem", mr:"1rem"}} onClick={moveToMyPage}>
+            <Button className="profile" onClick={moveToMyPage}>
               <Profile nickname={nickname} size={25}/>
-            </Box>
+            </Button>
             <Button onClick={handleLogin} className="loginButton">
               로그아웃
             </Button>

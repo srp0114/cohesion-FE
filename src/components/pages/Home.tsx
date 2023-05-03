@@ -57,8 +57,6 @@ const Home: React.FC = () => {
       setOpen(!open);
   };
 
-  console.log(nickname);
-
   return (
     <>
       <Grid container spacing={2} gap={2}>
@@ -84,6 +82,7 @@ const Home: React.FC = () => {
           </Grid>
           <Grid xs
             sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+            {/* qna -> questions로 수정*/}
             <HomeBoard board="qna" loginState={isLogin} />
           </Grid>
         </Grid>

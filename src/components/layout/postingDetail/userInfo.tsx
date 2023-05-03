@@ -1,24 +1,29 @@
-import React from "react";
-import {
-  Avatar, Stack,
-  Typography
-} from "@mui/material";
 
-export function userInfo(writer: string, imgUrl: string, stuId: number) {
-  const studentId = stuId.toString();
-  return <Stack
-    direction="row"
-    sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
-  >
-    <Avatar
+import React from "react";
+import { Avatar, Stack, Typography } from "@mui/material";
+import Profile from "../Profile";
+
+export function userInfo(writer: string, stuId: number, imgUrl?: string) {
+  const studentId = stuId.toString().slice(0,2);
+
+  console.log(imgUrl)
+  const profile = imgUrl === undefined ? (
+    <Profile nickname={writer} size={30} />
+  ) : (<Avatar
       srcSet={imgUrl}
       sx={{
-        width: "3rem",
-        height: "3rem",
-        marginRight: "0.75rem", //12px
-      }} />
-    <Typography variant="h6">
-      {`${writer} (${studentId.slice(0,2)}학번)`}
-    </Typography>
-  </Stack>;
+        width: "2rem",
+        height: "2rem",
+      }} />);
+
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+    > 
+      {profile}
+      <Typography variant="h5">{`${writer} (${studentId}학번)`}</Typography>
+    </Stack>
+  )
 }
