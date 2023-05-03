@@ -14,6 +14,8 @@ import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
+import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton } from "./ApplyAcceptStuff";
+import { propTypes } from "react-bootstrap/esm/Image";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -38,7 +40,7 @@ export interface RecruitDetailItems {
 const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
-  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [isWriter, setIsWriter] = useState<boolean>(false);
 
   const postingId = Number(id);
 
@@ -135,14 +137,16 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Typography sx={{ fontSize: "0.75" }}>
-            {postItem.gathered} / {postItem.party}
+          <Grid item container xs={12} sx={{display:"flex", justifyContent:"space-between"}}>
+          <Typography variant="h6">
+            모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
           </Typography>
+          {isWriter ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton/>}
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <Bookmark boardType={"recruit"} id={id}/>
         </Grid>
-        {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
