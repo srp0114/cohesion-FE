@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete } from "@mui/material";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
@@ -117,14 +117,15 @@ const Welcome = () => {
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDefaultNickname(event.target.value);
     setNickname(event.target.value);
-    console.log(nickname);
   };
 
   const onIntroduceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIntroduce(event.target.value);
-    console.log(introduce);
-    console.log(skill);
   };
+
+  const onSkillChange = (event: SyntheticEvent<Element, Event>, value: any) => {
+    setSkill(value);
+  }
 
   const request_data = {
     studentId: userAccount.sub,
@@ -133,7 +134,7 @@ const Welcome = () => {
     introduce: introduce,
     track1: userAccount.track1,
     track2: userAccount.track2,
-
+    skills: skill.map(s => s.name)
   };
 
   const confirm = () => {
@@ -297,6 +298,8 @@ const Welcome = () => {
                   }}
                 />
               )}
+              value={skill}
+              onChange={onSkillChange}
             />
           </Box>
           <Box>

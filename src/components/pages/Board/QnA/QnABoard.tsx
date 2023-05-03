@@ -5,13 +5,14 @@ import { Typography, Box, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
-import { WritingButton } from "../../../layout/WritingButton";
-
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
+import { PaginationControl } from "react-bootstrap-pagination-control";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
+import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { BoardSkeleton } from "../../../layout/Skeletons";
 // BoardItems 인터페이스
-interface BoardItems {
+export interface BoardItems {
   id: number;
   title: string;
   content: string;
@@ -22,6 +23,9 @@ interface BoardItems {
   bookmark: number;
   reply: number;
   point: number;
+  views: number; //조회수
+  profileImg: string; //사용자 이미지 img
+  stuId: number; //사용자 아이디, 학번
 }
 
 // MostViewedItems 인터페이스
@@ -44,20 +48,38 @@ export const shortenContent = (str: string, length = 200) => {
   return content;
 };
 
-const QnABaord: React.FC = () => {
+const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState<number>(0);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    //목록 조회 부분
     axios({
       method: "get",
-      url: "/api/qna/list?page=0",
+      url: "/api/questions/total"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
+  }, [])
+
+  useEffect(() => {
+    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
+    //목록 조회 부분
+    const curPage = page - 1;
+    axios({
+      method: "get",
+      url: "/api/qna/list?page=" + curPage + "&size=4",
     })
       .then((res) => {
         setBoardItems(res.data);
+        console.log(`get을 받아온 Q&A게시판: ${JSON.stringify(res.data)}`);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -66,7 +88,9 @@ const QnABaord: React.FC = () => {
           console.log("권한 x");
         }
       });
+  }, [page]);
 
+  useEffect(() => {
     axios({
       method: "get",
       url: "/api/qna/most",
@@ -81,103 +105,126 @@ const QnABaord: React.FC = () => {
       });
   }, []);
 
-  //게시글 선택시 해당 게시물 상세보기로 페이지 이동
+  useEffect(() => {
+    setLoading(true); //boardItems 상태가 변할 때 게시글 목록
+  }, [boardItems]);
+
+  const displayPosting = boardItems.sort((x, y) => {
+    const dateX = new Date(x.modifiedDate || x.createdDate);
+    const dateY = new Date(y.modifiedDate || y.createdDate);
+    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
+  }).map((element, idx) => {
+    return (
+      <>
+        <PreviewPosting {...element} key={idx} />
+      </>
+    );
+  });
+
+  return (
+    <>
+      {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        <Typography
+          variant="h5" >
+          Q&A게시판
+        </Typography>
+
+        {/* 조회수 높은 게시물 */}
+        <MostViewedPost
+          data={mostViewedItems} // mostViewedItems 를 props 로 전달
+        />
+
+        {displayPosting}
+        <PaginationControl
+          page={page}
+          between={1}
+          total={total}
+          limit={4}
+          changePage={(page: React.SetStateAction<number>) => setPage(page)}
+          ellipsis={1}
+        /><WritingButton /></Box>)
+
+        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <BoardSkeleton />
+          <WritingButton />
+        </Box>)}
+    </>
+  );
+
+}
+
+const PreviewPosting: React.FunctionComponent<BoardItems> = (
+  props: BoardItems
+) => {
+  const navigate = useNavigate();
+
   const goToPost = (postId: number) => {
     navigate(`/questions/${postId}`);
   };
 
+  // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
+  const Skill = props.language
+    ? skillData.map((data) => {
+      if (props.language === data.name) {
+        return <img src={data.logo} width="25" height="25" />;
+      }
+    })
+    : null;
+  const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
+  const noPreTagContent = props.content.replace(regex, "");
+
   return (
-    <>
-      {/* 조회수 높은 게시물 */}
-      <MostViewedPost
-        data={mostViewedItems} // mostViewedItems 를 props 로 전달
-      />
-      <Typography variant="h5" sx={{ marginTop: 8, marginBottom: 5 }}>
-        Q&A 게시판
-      </Typography>
+    <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
+      bgcolor: "background.paper",
+      borderRadius: "50px",
+      border: "0.5px solid black",
+      "&:hover": {
+        boxShadow: 5,
+        pointer: "cursor"
+      },
+      margin: "2.25rem 0",
+      padding: "0.75rem 2rem 1.25rem",
+      height: "16rem", //게시글 박스 높이
+      justifyContent: "space-between",
+      alignItems: "stretch"
+    }}
+      onClick={() => goToPost(props.id)}>
+      <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h5" >
+          {props.title} {Skill}
+        </Typography>
+        {(typeof props.modifiedDate === undefined) ?
+          <Time date={props.createdDate} variant="h6" /> :
+          <Time date={props.modifiedDate || props.createdDate} />}
+      </Grid>
 
-      <Box>
-        {boardItems?.map((value) => {
-          // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-          const Skill = value.language
-            ? skillData.map((data) => {
-              if (value.language === data.name) {
-                return <img src={data.logo} width="25" height="25" />;
-              }
-            })
-            : null;
-          const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
-          const noPreTagContent = value.content.replace(regex, "");
+      <Grid item sx={{
+        whiteSpace: "pre-line",
+        wordWrap: "break-word",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        alignItems: "stretch",
+        maxHeight: "6.5rem"
+      }}>
+        <Typography variant="body1">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: shortenContent(noPreTagContent, 50)
+            }}
+          />
+        </Typography>
+        {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+      </Grid>
 
-          return (
-            <>
-              <Box
-                sx={{
-                  bgcolor: "background.paper",
-                  boxShadow: 2,
-                  borderRadius: 2,
-                  p: 2.5,
-                  minWidth: 300,
-                  marginTop: 2,
-                  marginBottom: 4,
-                  "&:hover": {
-                    opacity: [0.9, 0.8, 0.7],
-                  },
-                }}
-                onClick={() => goToPost(value.id)}
-              >
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography
-                    sx={{
-                      color: "text.primary",
-                      fontSize: 22,
-                      fontWeight: "medium",
-                    }}
-                  >
-                    {value.title}
-                  </Typography>
-                  <Box sx={{ display: "flex" }}>
-                    <Typography sx={{ marginRight: 1 }}>
-                      <Time date={value.createdDate} />
-                    </Typography>
-                    {Skill}
-                  </Box>
-                </Box>
-                <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: shortenContent(noPreTagContent),
-                    }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    fontWeight: "bold",
-                    mx: 0.5,
-                    fontSize: 15,
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box sx={{ color: "text.secondary", display: "flex" }}>
-                    <ProfileIcon sx={{ marginRight: 0.5 }} />
-                    <Typography>{value.writer}</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex" }}>
-                    <BookmarkIcon />
-                    <Typography>{value.bookmark}</Typography>
-                    <ChatIcon sx={{ marginLeft: 1, marginRight: 0.5 }} />
-                    <Typography>{value.reply}</Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </>
-          );
-        })}
-      </Box>
-      <WritingButton />
-    </>
+      <Grid item>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          {userInfo(props.writer, props.stuId, props.profileImg)}
+          {reply_bookmark_views(props)}
+        </Box>
+      </Grid>
+    </Grid>
   );
-};
+}
+
 
 export default QnABaord;
