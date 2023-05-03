@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Visibility from "@mui/icons-material/VisibilityOutlined";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import { Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
-import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
+import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import Bookmark from "../../../layout/Bookmark";
 import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton } from "./ApplyAcceptStuff";
 import { propTypes } from "react-bootstrap/esm/Image";
 
@@ -59,40 +57,30 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .catch((err) => {
         console.log(err);
       });
-
-    axios({
-      method: "get",
-      url: "/api/check"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          console.log(`유저 인증: res.data: ${res.data}`);
-          setIsWriter(res.data);
-        }
-      })
-      .catch((err) => {
-
-        console.log(err);
-      });
+    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
+    //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
+    getCurrentUserInfo()
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
   }, []);
 
-    /**
-   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
-   * @param studentId 
-   * @param title 
-   * @param content 
-   * @returns 게시글 정보를 포함하고있는 speedDial
-   */
-    const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
-      if (typeof postItem !== undefined) {
-        if (isWriter) {
-          return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
-        }
-        else
-          return null;
+  /**
+ * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+ * @param studentId 
+ * @param title 
+ * @param content 
+ * @returns 게시글 정보를 포함하고있는 speedDial
+ */
+  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+    if (typeof postItem !== undefined) {
+      if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+        return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
       }
-  
+      else
+        return null;
     }
+
+  }
 
   const detailPosting = postItem ? (
     <>
@@ -110,11 +98,13 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
           <Grid item xs={4}>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} />{" "}
+          {(typeof postItem.modifiedDate === undefined) ?
+              <Time date={postItem.createdDate} variant="h6" /> :
+              <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
         </Grid>
 
@@ -128,18 +118,18 @@ const RecruitDetails: React.FC = (): JSX.Element => {
 
         <Grid item container xs={12} direction="row" columnSpacing={"3rem"}>
           {!!postItem.optional ? <><Grid item xs={6} md={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>필수</Typography>
+            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
             <Typography variant="h5">
               <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
             </Typography>
           </Grid>
-          <Grid item xs={6} md={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>우대</Typography>
-            <Typography variant="h5">
-              <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
-            </Typography>
-          </Grid></> : <Grid item xs={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>필수</Typography>
+            <Grid item xs={6} md={12}>
+              <Typography sx={{ fontSize: "1.75rem" }}>우대</Typography>
+              <Typography variant="h5">
+                <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
+              </Typography>
+            </Grid></> : <Grid item xs={12}>
+            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
             <Typography variant="h5">
               <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
             </Typography>
@@ -154,28 +144,8 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           {isWriter ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton/>}
           </Grid>
         </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Stack
-            direction="row"
-            spacing={"0.75rem"}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <Box>
-              <IconButton size="small" disabled>
-                <Visibility fontSize="large" />
-                <Typography variant="h5">{postItem.views}</Typography>
-              </IconButton>
-            </Box>
-
-            <Box>
-              <IconButton size="small">
-                <BookmarkIcon fontSize="large" />
-                <Typography variant="h5">{postItem.bookmark}</Typography>
-              </IconButton>
-            </Box>
-          </Stack>
-          {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
+        <Grid item xs={12}>
+          <Bookmark boardType={"recruit"} id={id}/>
         </Grid>
         {replyCount(postItem.reply)}
       </Grid>

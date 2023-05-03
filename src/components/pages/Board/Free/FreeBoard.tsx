@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
-import FilterPosting from "../../../layout/FilterPosting";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -18,19 +17,32 @@ export interface FreeBoardItems {
   title: string;
   content: string;
   writer: string;
-  stuId: number; //타입 string에서 number로 알맞게 변경.
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  stuId: number;
+  profileImg: string;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  views: number; //조회수
+  views: number;
   //imgUrl?: Array<string>; //이미지
 }
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/free/total"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
+  }, [])
 
   useEffect(() => {
     setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
@@ -57,7 +69,11 @@ const FreeBoard = () => {
     setLoading(true); //freeData 상태가 변할 때 게시글 목록
   }, [freeData]);
 
-  const displayPosting = freeData.map((element, idx) => {
+  const displayPosting = freeData.sort((x, y) => {
+    const dateX = new Date(x.modifiedDate || x.createdDate);
+    const dateY = new Date(y.modifiedDate || y.createdDate);
+    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
+  }).map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -75,13 +91,13 @@ const FreeBoard = () => {
             variant="h5" >
             자유게시판
           </Typography>
-          <FilterPosting />
+
           {displayPosting}
           <PaginationControl
             page={page}
             between={1}
-            total={100} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
-            limit={4} //각 페이지 당 들어가는 최대 아이템, total / limit = 전체 페이지 수
+            total={total}
+            limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           /><WritingButton /></Box>
@@ -125,7 +141,9 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         <Typography variant="h5" >
           {props.title}
         </Typography>
-        <Time date={props.createdDate} variant="h6" />
+        {(typeof props.modifiedDate === undefined) ?
+          <Time date={props.createdDate} variant="h6" /> :
+          <Time date={props.modifiedDate || props.createdDate} />}
       </Grid>
 
       <Grid item sx={{
@@ -134,6 +152,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         overflow: "hidden",
         textOverflow: "ellipsis",
         alignItems: "stretch",
+        maxHeight: "6.5rem"
       }}>
         <Typography variant="body1">
           <div
@@ -147,7 +166,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
 
       <Grid item>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {userInfo(props.writer, props.profileImg, props.stuId)}
+          {userInfo(props.writer, props.stuId, props.profileImg)}
           {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
         </Box>
       </Grid>
