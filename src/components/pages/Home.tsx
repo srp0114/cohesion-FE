@@ -59,7 +59,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2} gap={2}>
+      <Grid container spacing={2} gap={3.5}>
       <Grid item xs={8.5}>
         <Banner/>
         <Grid container spacing={2} onClick={openModal}>
