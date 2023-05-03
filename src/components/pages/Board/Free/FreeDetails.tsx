@@ -15,7 +15,6 @@ import { BoardType } from "../../../model/board";
 import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
-
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
   id: number;
@@ -90,8 +89,14 @@ const FreeDetails = () => {
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
-          <Grid item>
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+          <Grid item xs={4}>
+            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+          </Grid>
+
+          <Grid item justifyContent={"flex-end"}>
+          {(typeof postItem.modifiedDate === undefined) ?
+              <Time date={postItem.createdDate} variant="h6" /> :
+              <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
         </Grid>
         <Grid item xs={12}>

@@ -37,7 +37,7 @@ interface DetailItems {
 const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
-  const [writerId, setWriterId] = useState<number>(0);
+  const [writerId, setWriterId] = useState<number>(0)
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const { id } = useParams() as { id: string };
   const postingId = Number(id);
@@ -89,7 +89,7 @@ const QnADetails = () => {
             <span style={{fontWeight:"bold"}}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
         }
       })
-    : null;
+    : <Typography sx={{fontSize:"1.75rem"}}><span style={{fontWeight:"bold"}}>?</span>에 대한 질문입니다.</Typography>;
 
   /**
    * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
@@ -100,7 +100,7 @@ const QnADetails = () => {
    */
   const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
     if (typeof postItem !== undefined) {
-      if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+      if (Number(studentId) === Number(accessUserId)) {
         return (<UpdateSpeedDial boardType={BoardType.question} postingId={postingId} postingTitle={title} postingContent={content} />);
       }
       else
@@ -129,8 +129,9 @@ const QnADetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
           <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} />{" "}
-            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
+          {(typeof postItem.modifiedDate === undefined) ?
+              <Time date={postItem.createdDate} variant="h6" /> :
+              <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
         </Grid>
 

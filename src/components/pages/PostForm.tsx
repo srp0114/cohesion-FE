@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Container,
   TextField,
   Button,
@@ -7,11 +8,8 @@ import {
   FormControl,
   SelectChangeEvent,
   Select,
+  Snackbar,
   MenuItem,
-  Menu,
-  Stack,
-  Typography,
-  Box,
 } from "@mui/material";
 import axios from "axios";
 import Point from "../layout/Point";
@@ -22,7 +20,9 @@ import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
-import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
+import { BoardType } from "../model/board";
+import Loading from "../layout/Loading";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -37,8 +37,18 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [hasUserPoint ,setHasUserPoint] = useState<number>(0);
+  const [hasUserPoint, setHasUserPoint] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     checkLogin().then((res) => {
@@ -48,11 +58,11 @@ const PostForm = () => {
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     getCurrentUserInfo()
       .then(userInfo => setHasUserPoint(userInfo.point))
-      .catch(err => console.log(err))
-  },[])
+      .catch(err => console.log(err));
+  }, [])
 
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
@@ -100,7 +110,9 @@ const PostForm = () => {
     });
   };
 
-  const submitHandler = async () => {
+  const submitHandler = async (event:React.MouseEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -130,35 +142,43 @@ const PostForm = () => {
 
     qna_formData.append("stringQna", JSON.stringify(request_qna));
 
-    if (boardType === "free") {
+    if (boardType === BoardType.free) {
       // 자유 게시판인 경우
       axios({
         method: "post",
-        url: "/api/free",
+        url: `/api/${boardType}`,
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_data),
       })
         .then((res) => {
           if (res.status === 200) {
-            // 성공 시 작업
-            window.location.href = "/";
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
+            window.location.href = `/${boardType}`;
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
-    } else if (boardType === "question") {
+    } else if (boardType === BoardType.question) {
       // Q&A 게시판인 경우
-    if(hasUserPoint >= point) {
-      if (fileList.length > 0) {
-        axios({
-          method: "post",
-          url: "/api/qna",
-          headers: {"Content-Type": "multipart/form-data"},
-          data: JSON.stringify(qna_formData),
-        })
+      if (hasUserPoint >= point) {
+        if (fileList.length > 0) {
+          axios({
+            method: "post",
+            url: "/api/qna",
+            headers: { "Content-Type": "multipart/form-data" },
+            data: JSON.stringify(qna_formData),
+          })
             .then((res) => {
               if (res.status === 200) {
-                // 성공 시 작업
-                window.location.href = "/";
+                <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    게시되었습니다.
+                  </Alert>
+                </Snackbar>
+                window.location.href = `/${boardType}`;
               } // 응답(401, 403 등) 핸들링 ...
             })
             .catch((err) => {
@@ -168,17 +188,17 @@ const PostForm = () => {
                 console.log("권한 x");
               }
             });
-      } else {
-        axios({
-          method: "post",
-          url: "/api/qna/no-file",
-          headers: {"Content-Type": "application/json"},
-          data: JSON.stringify(request_qna),
-        })
+        } else {
+          axios({
+            method: "post",
+            url: "/api/qna/no-file",
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify(request_qna),
+          })
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
-                window.location.href = "/";
+                window.location.href = `/${boardType}`;
               }
             })
             .catch((err) => {
@@ -188,44 +208,54 @@ const PostForm = () => {
                 console.log("권한 x");
               }
             });
+        }
+      } else {
+        alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
+        window.location.reload();
       }
-    }else{
-      alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
-      window.location.reload();
-    }
-    } else if (boardType === "recruit") {
+    } else if (boardType === BoardType.recruit) {
       // 구인 게시판인 경우
       axios({
         method: "post",
-        url: "/api/recruit",
+        url: `/api/${boardType}`,
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(request_recruit),
       })
-          .then((res) => {
-            if (res.status === 200) {
-              // 성공 시 작업
-              window.location.href = "/";
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status === 200) {
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
+            window.location.href = `/${boardType}`;
+          } // 응답(401, 403 등) 핸들링 ...
+        })
+        .catch((err) => console.log(err));
     }
+    setOpen(true);
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
   };
 
   const SelectSkill =
-    boardType === "question" ? <Skill getSkill={getSkill} /> : null;
+    boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
 
   const SelectPoint =
-    boardType === "question" ? <Point getPoint={getPoint} /> : null;
+    boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
 
   const DesignateConditionRequired =
-    boardType === "recruit" ? (
+    boardType === BoardType.recruit ? (
       <ConditionRequired getRequired={getRequired} />
     ) : null;
   const DesignateConditionOptional =
-    boardType === "recruit" ? (
+    boardType === BoardType.recruit ? (
       <ConditionOptional getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === "recruit" ? <People getParty={getParty} getGathered={getGathered} /> : null;
+  const DesignatePeople = boardType === BoardType.recruit ? <People getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
@@ -235,12 +265,12 @@ const PostForm = () => {
             <Grid item>
               <FormControl style={{ minWidth: "120px" }}>
                 <Select value={boardType} onChange={boardHandler} size="small">
-                  <MenuItem value={"free"} defaultChecked>
+                  <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
                   </MenuItem>
-                  <MenuItem value={"question"}>Q&A게시판</MenuItem>
-                  <MenuItem value={"recruit"}>구인게시판</MenuItem>
-                  <MenuItem value={"notice"}>공지사항</MenuItem>
+                  <MenuItem value={BoardType.question}>Q&A게시판</MenuItem>
+                  <MenuItem value={BoardType.recruit}>구인게시판</MenuItem>
+                  <MenuItem value={BoardType.notice}>공지사항</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

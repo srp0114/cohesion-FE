@@ -5,9 +5,6 @@ import { Typography, Box, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -65,11 +62,11 @@ const QnABaord = () => {
       method: "get",
       url: "/api/questions/total"
     })
-        .then((res) => {
-          if (res.status === 200) {
-            setTotal(res.data);
-          }
-        })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
   }, [])
 
   useEffect(() => {
@@ -112,7 +109,11 @@ const QnABaord = () => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
   }, [boardItems]);
 
-  const displayPosting = boardItems.map((element, idx) => {
+  const displayPosting = boardItems.sort((x, y) => {
+    const dateX = new Date(x.modifiedDate || x.createdDate);
+    const dateY = new Date(y.modifiedDate || y.createdDate);
+    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
+  }).map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -192,8 +193,9 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
         <Typography variant="h5" >
           {props.title} {Skill}
         </Typography>
-
-        <Time date={props.createdDate} variant="h6" />
+        {(typeof props.modifiedDate === undefined) ?
+          <Time date={props.createdDate} variant="h6" /> :
+          <Time date={props.modifiedDate || props.createdDate} />}
       </Grid>
 
       <Grid item sx={{

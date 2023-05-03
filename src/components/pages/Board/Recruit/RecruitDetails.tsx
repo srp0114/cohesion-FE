@@ -62,23 +62,23 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .catch(err => console.log(err));
   }, []);
 
-    /**
-   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
-   * @param studentId 
-   * @param title 
-   * @param content 
-   * @returns 게시글 정보를 포함하고있는 speedDial
-   */
-    const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
-      if (typeof postItem !== undefined) {
-        if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
-          return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
-        }
-        else
-          return null;
+  /**
+ * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+ * @param studentId 
+ * @param title 
+ * @param content 
+ * @returns 게시글 정보를 포함하고있는 speedDial
+ */
+  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+    if (typeof postItem !== undefined) {
+      if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
+        return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
       }
-  
+      else
+        return null;
     }
+
+  }
 
   const detailPosting = postItem ? (
     <>
@@ -100,8 +100,9 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} />{" "}
-            {/*은서: Time 컴포넌트 Typography 수정 가능하도록 수정 필요*/}
+          {(typeof postItem.modifiedDate === undefined) ?
+              <Time date={postItem.createdDate} variant="h6" /> :
+              <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
         </Grid>
 
@@ -115,18 +116,18 @@ const RecruitDetails: React.FC = (): JSX.Element => {
 
         <Grid item container xs={12} direction="row" columnSpacing={"3rem"}>
           {!!postItem.optional ? <><Grid item xs={6} md={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>필수</Typography>
+            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
             <Typography variant="h5">
               <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
             </Typography>
           </Grid>
-          <Grid item xs={6} md={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>우대</Typography>
-            <Typography variant="h5">
-              <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
-            </Typography>
-          </Grid></> : <Grid item xs={12}>
-            <Typography sx={{fontSize:"1.75rem"}}>필수</Typography>
+            <Grid item xs={6} md={12}>
+              <Typography sx={{ fontSize: "1.75rem" }}>우대</Typography>
+              <Typography variant="h5">
+                <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
+              </Typography>
+            </Grid></> : <Grid item xs={12}>
+            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
             <Typography variant="h5">
               <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
             </Typography>
