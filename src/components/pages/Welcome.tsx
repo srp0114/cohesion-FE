@@ -202,7 +202,7 @@ const Welcome = () => {
                   style={flag === 2 ? clickBorder : defaultBorder} 
                   onClick={()=>setFlag(2)}
                 >
-                  <Profile/>
+                  <Profile nickname={nickname} size={20}/>
                   <Typography
                     variant="subtitle1"
                     sx={{

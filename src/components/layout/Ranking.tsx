@@ -50,7 +50,7 @@ export const PostRanking = () => {
 
     return (
         <Box sx={{ p:2 }}>
-        <Typography variant="h6" sx={{mt:20, ml:2, mb:2}}>Top Posting</Typography>
+        <Typography variant="h3" sx={{mt:20, ml:2, mb:2}}>Top Posting</Typography>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {postRanking.map((value, index) => {
@@ -62,10 +62,10 @@ export const PostRanking = () => {
             return (
                 <>
                 <Box sx={{ display:"flex", mt:3.5 }}>
-                <Typography variant="h6" sx={{mt:"1rem", mr:5, ml:1}}>{index+1}위</Typography>
+                <Typography variant="h4" sx={{mt:"1rem", mr:5, ml:1}}>{index+1}위</Typography>
                 <Box>
-                    <Typography variant="subtitle2" color="secondary.dark">{boardName}</Typography>
-                    <Typography variant="subtitle1">{shortenContent(value.title, 10)}</Typography>
+                    <Typography variant="h6" color="secondary.dark">{boardName}</Typography>
+                    <Typography variant="h5">{shortenContent(value.title, 10)}</Typography>
                 </Box>
                 </Box>
                 </>
@@ -97,7 +97,7 @@ export const UserRanking = () => {
 
     return (
         <Box sx={{ p:2 }}>
-        <Typography variant="h6" sx={{mt:10, ml:2, mb:2}}>Top User</Typography>
+        <Typography variant="h3" sx={{mt:10, ml:2, mb:2}}>Top User</Typography>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {userRanking.map((value, index) => {
@@ -105,11 +105,11 @@ export const UserRanking = () => {
             return (
                 <>
                 <Box sx={{ display:"flex", mt:5 }}>
-                <Typography variant="h6" sx={{mr:4, ml:1}}>{index+1}위</Typography>
+                <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
                 <Profile nickname={value.nickname} size={33}/>
                 <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
-                    <Typography variant="subtitle1" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
-                    <Typography variant="subtitle2" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
+                    <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
+                    <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
                 </Box>
                 </Box>
                 </>
