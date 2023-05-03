@@ -13,8 +13,8 @@ import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabled
 export const ApplyButton = () => {
     const [open, setOpen] = React.useState(false);
     const clickHandler = () => { //신청확인모달띄우기
-        console.log(`신청하기 버튼 버튼 클릭 clickHandler`);
-        setOpen(true);
+        setOpen(true); //open이 false에서 true
+        alert(`신청하기 버튼 clickHandler ${open}`);
     }
     return (
         <>
@@ -32,7 +32,7 @@ export const ApplyButton = () => {
 export const RecruitCompleteButton = () => {
     const [open, setOpen] = React.useState<boolean>(false);
     const clickHandler = () => { //신청확인모달띄우기
-        console.log(`모집완료 버튼 클릭 clickHandler`);
+        alert(`모집완료 버튼 clickHandler ${open}`);
         setOpen(true);
     }
     return (
@@ -57,7 +57,6 @@ interface DoubleCheckModalProps {
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
-    const handleClose = () => setOpen(false);
 
     const sentences = [
         { who: false, sentence: "신청하시겠습니까? (신청이 완료된 후, 취소는 불가합니다.)", source: "applyBtn" },
@@ -79,14 +78,17 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         //모집완료면 게시글 disabled
         //승인이면...모인인원 + 1
         setOpen(false);
-        console.log(`모달 clickHandler 확인 버튼 누름`);
+        alert(`모달 clickHandler 확인 버튼 누름`);
+        props.onClose();
     }
+
+    // const handleClose = () => setOpen(false);
 
     return (
         <>
             <Modal
-                open={open}
-                onClose={handleClose}
+                open={props.open}
+                onClose={props.onClose}
                 sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Box sx={doubleCheckModalstyle}>
                     <Typography align="center" variant="h5" sx={{ mt: 2 }}>

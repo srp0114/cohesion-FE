@@ -12,7 +12,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton } from "./ApplyAcceptStuff";
 import { propTypes } from "react-bootstrap/esm/Image";
@@ -40,7 +40,6 @@ export interface RecruitDetailItems {
 const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
-  const [isWriter, setIsWriter] = useState<boolean>(false);
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
   const postingId = Number(id);
@@ -103,7 +102,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-          {(typeof postItem.modifiedDate === undefined) ?
+            {(typeof postItem.modifiedDate === undefined) ?
               <Time date={postItem.createdDate} variant="h6" /> :
               <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
@@ -138,15 +137,18 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Grid item container xs={12} sx={{display:"flex", justifyContent:"space-between"}}>
-          <Typography variant="h6">
-            모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
-          </Typography>
-          {isWriter ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton/>}
+          <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">
+              모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
+            </Typography>
+            {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
+            {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
+            {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
+              ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton />}
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <Bookmark boardType={"recruit"} id={id}/>
+          <Bookmark boardType={"recruit"} id={id} />
         </Grid>
         {replyCount(postItem.reply)}
       </Grid>
