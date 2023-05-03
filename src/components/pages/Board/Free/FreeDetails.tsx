@@ -15,6 +15,7 @@ import { BoardType } from "../../../model/board";
 import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
+
 //자유 상세보기 인터페이스
 interface FreeDetailItems {
   id: number;
@@ -43,13 +44,13 @@ const FreeDetails = () => {
       method: "get",
       url: "/api/free/detail/" + id,
     })
-      .then((res) => {
-        setPostItem(res.data.data);
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          console.log("로그인 x");
-        } else if (err.response.status === 403) {
+    .then((res) => {
+      setPostItem(res.data.data);
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
           console.log("권한 x");
         }
       });
@@ -59,12 +60,12 @@ const FreeDetails = () => {
   }, []);
 
   /**
-   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
-   * @param studentId 
-   * @param title 
-   * @param content 
-   * @returns 게시글 정보를 포함하고있는 speedDial
-   */
+  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
+  * @param studentId 
+  * @param title 
+  * @param content 
+  * @returns 게시글 정보를 포함하고있는 speedDial
+  */
   const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
     if (typeof postItem !== undefined) {
       if (Number(studentId) === Number(accessUserId)) {
@@ -89,14 +90,8 @@ const FreeDetails = () => {
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
-          <Grid item xs={4}>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
-          </Grid>
-
-          <Grid item justifyContent={"flex-end"}>
-          {(typeof postItem.modifiedDate === undefined) ?
-              <Time date={postItem.createdDate} variant="h6" /> :
-              <Time date={postItem.modifiedDate || postItem.createdDate} />}
+          <Grid item>
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
         </Grid>
         <Grid item xs={12}>
@@ -105,9 +100,10 @@ const FreeDetails = () => {
             sx={{ display: "flex", justifyContent: "space-between", alignItems:"center" }}
           >
             <Stack direction="row" spacing={1}>
-              <Time date={postItem.createdDate} variant="h5"/>
-              <Visibility/>
-              <Typography variant="h5">{postItem.views}</Typography>
+            {(typeof postItem.modifiedDate === undefined) ?
+            <Time date={postItem.createdDate} variant="h6" /> :
+            <Time date={postItem.modifiedDate || postItem.createdDate} />}                   <Visibility/>
+            <Typography variant="h5">{postItem.views}</Typography>
             </Stack>
             <Bookmark boardType={"free"} id={id}/>
           </Stack>
@@ -121,11 +117,11 @@ const FreeDetails = () => {
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-      <Reply board={"free"} postingId={id} />
-      <Zoom in={true}>
-        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-      </Zoom>
-    </>
+    <Reply board={"free"} postingId={id} />
+    <Zoom in={true}>
+      <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+    </Zoom>
+  </>
   ) : (
     <PostingSkeleton />
   );
