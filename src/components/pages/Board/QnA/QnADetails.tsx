@@ -1,31 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  Typography,
-  Avatar,
-  Box,
-  Grid,
-  IconButton,
-  Stack,
-  Zoom
-} from "@mui/material";
+import { Typography, Box, Grid, IconButton, Stack, Zoom } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
 import Money from "@mui/icons-material/MonetizationOn";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
-import { bookmarkNviews } from "../../../layout/postingDetail/bookmarkNviews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { BoardType } from "../../../model/board";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import Visibility from "@mui/icons-material/VisibilityOutlined";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
-/*북마크 연동 후, 위의 두 개 아이콘(bookmark, visivility) 삭제 부탁드립니다.*/
+import Bookmark from "../../../layout/Bookmark";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -137,7 +126,7 @@ const QnADetails = () => {
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
           <Grid item xs={4}>
-            {userInfo(postItem.writer, postItem.profileImg, postItem.stuId)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
           <Grid item justifyContent={"flex-end"}>
             <Time date={postItem.createdDate} />{" "}
@@ -166,30 +155,9 @@ const QnADetails = () => {
           <Typography sx={{fontSize:"1.75rem"}}>채택 시 <Money sx={{ color: "#ffcf40", fontSize: 28 }} /><span style={{fontWeight:"bold"}}>{postItem.point}</span>포인트 지급!</Typography>
         </Grid>
 
-        {/*북마크, 조회수  */}
-        <Grid item xs={12} sm={6}>
-          <Stack
-            direction="row"
-            spacing={"0.75rem"}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <Box>
-              <IconButton size="small" disabled>
-                <Visibility fontSize="large" />
-                <Typography variant="h5">{postItem.views}</Typography>
-              </IconButton>
-            </Box>
-
-            <Box>
-              <IconButton size="small">
-                <BookmarkIcon fontSize="large" />
-                <Typography variant="h5">{postItem.bookmark}</Typography>
-              </IconButton>
-            </Box>
-          </Stack>
-          {/*bookmarkNviews(postItem.bookmark, onClickBookmark, bookmarkCount) 북마크 기능 추가 시 여기 주석만 지워주시면 됩니다. 은서*/}
+        <Grid item xs={12}>
+          <Bookmark boardType={"questions"} id={id}/>
         </Grid>
-      
         {/*댓글 총 몇 개 인지*/}
         {replyCount(postItem.reply)}
       </Grid>

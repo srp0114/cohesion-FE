@@ -70,7 +70,7 @@ const HomeBoard = (props: HomeBoardProps) => {
     }, []);
 
     const boardName: string = board === "free" ? "자유게시판"
-        : board === "qna" ? "Q&A게시판"
+        : board === "questions" ? "Q&A게시판"
         : board === "recruit" ? "구인게시판"
         : board === "notice" ? "공지사항" : "";
 
@@ -89,7 +89,7 @@ const HomeBoard = (props: HomeBoardProps) => {
                     </Box>
                 </Modal>
                 
-                <Typography variant="h6" sx={{mt:6, mb:2}}>{boardName}</Typography>
+                <Typography variant="h3" sx={{mt:6, mb:2}}>{boardName}</Typography>
                 {boardItems && boardItems.map((posting) => {
                     return (
                     <>
