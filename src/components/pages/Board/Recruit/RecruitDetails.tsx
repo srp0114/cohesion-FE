@@ -41,6 +41,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
   const [isWriter, setIsWriter] = useState<boolean>(false);
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
   const postingId = Number(id);
 
