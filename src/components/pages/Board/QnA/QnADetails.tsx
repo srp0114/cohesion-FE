@@ -13,7 +13,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { BoardType } from "../../../model/board";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 
 // Q&A 상세보기 데이터
@@ -60,36 +60,36 @@ const QnADetails = () => {
         }
       });
 
-      // 해당 게시글 작성자의 userId 받아오기
-      axios({
-        method : "get",
-        url : `/api/qna/return/user-id/${id}`
-      }).then((res)=>{
-          if(res.status===200) {
-            console.log(res)
-            setWriterId(res.data);
-          }
-      }).catch((err)=>{
-          console.log(err);
-      });
+    // 해당 게시글 작성자의 userId 받아오기
+    axios({
+      method: "get",
+      url: `/api/qna/return/user-id/${id}`
+    }).then((res) => {
+      if (res.status === 200) {
+        console.log(res)
+        setWriterId(res.data);
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
 
-      //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
-      getCurrentUserInfo()
-        .then(userInfo => setAccessUserId(userInfo.studentId))
-        .catch(err => console.log(err));
+    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
+    getCurrentUserInfo()
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
   }, []);
 
   //입력된 언어 맞게 이미지 출력
   const Skill = postItem?.language
     ? skillData.map((value) => {
-        if (postItem.language === value.name) {
-          return <>
-          <Typography sx={{fontSize:"1.75rem"}}>
-            <img src={value.logo} width="72" height="72" style={{marginRight:"0.75rem"}}/>
-            <span style={{fontWeight:"bold"}}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
-        }
-      })
-    : <Typography sx={{fontSize:"1.75rem"}}><span style={{fontWeight:"bold"}}>?</span>에 대한 질문입니다.</Typography>;
+      if (postItem.language === value.name) {
+        return <>
+          <Typography sx={{ fontSize: "1.75rem" }}>
+            <img src={value.logo} width="72" height="72" style={{ marginRight: "0.75rem" }} />
+            <span style={{ fontWeight: "bold" }}>{postItem.language}</span>에 대한 질문입니다.</Typography></>;
+      }
+    })
+    : <Typography sx={{ fontSize: "1.75rem" }}><span style={{ fontWeight: "bold" }}>?</span>에 대한 질문입니다.</Typography>;
 
   /**
    * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
@@ -129,7 +129,7 @@ const QnADetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
           <Grid item justifyContent={"flex-end"}>
-          {(typeof postItem.modifiedDate === undefined) ?
+            {(typeof postItem.modifiedDate === undefined) ?
               <Time date={postItem.createdDate} variant="h6" /> :
               <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
@@ -142,22 +142,22 @@ const QnADetails = () => {
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
-            {/*코드블럭 배경 css 추가*/}
-            <div className="ql-snow">
-              <div
-                className="ql-editor"
-                dangerouslySetInnerHTML={{ __html: postItem.content }}
-              />
-            </div>
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+          {/*코드블럭 배경 css 추가*/}
+          <div className="ql-snow">
+            <div
+              className="ql-editor"
+              dangerouslySetInnerHTML={{ __html: postItem.content }}
+            />
+          </div>
+          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
 
         <Grid item xs={12} sm={6} direction="row">
-          <Typography sx={{fontSize:"1.75rem"}}>채택 시 <Money sx={{ color: "#ffcf40", fontSize: 28 }} /><span style={{fontWeight:"bold"}}>{postItem.point}</span>포인트 지급!</Typography>
+          <Typography sx={{ fontSize: "1.75rem" }}>채택 시 <Money sx={{ color: "#ffcf40", fontSize: 28 }} /><span style={{ fontWeight: "bold" }}>{postItem.point}</span>포인트 지급!</Typography>
         </Grid>
 
         <Grid item xs={12}>
-          <Bookmark boardType={"questions"} id={id}/>
+          <Bookmark boardType={"questions"} id={id} />
         </Grid>
         {/*댓글 총 몇 개 인지*/}
         {replyCount(postItem.reply)}

@@ -12,7 +12,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 
@@ -44,13 +44,13 @@ const FreeDetails = () => {
       method: "get",
       url: "/api/free/detail/" + id,
     })
-    .then((res) => {
-      setPostItem(res.data.data);
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
+      .then((res) => {
+        setPostItem(res.data.data);
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
           console.log("권한 x");
         }
       });
@@ -97,31 +97,31 @@ const FreeDetails = () => {
         <Grid item xs={12}>
           <Stack
             direction="row"
-            sx={{ display: "flex", justifyContent: "space-between", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
           >
             <Stack direction="row" spacing={1}>
-            {(typeof postItem.modifiedDate === undefined) ?
-            <Time date={postItem.createdDate} variant="h6" /> :
-            <Time date={postItem.modifiedDate || postItem.createdDate} />}                   <Visibility/>
-            <Typography variant="h5">{postItem.views}</Typography>
+              {(typeof postItem.modifiedDate === undefined) ?
+                <Time date={postItem.createdDate} variant="h6" /> :
+                <Time date={postItem.modifiedDate || postItem.createdDate} />}                   <Visibility />
+              <Typography variant="h5">{postItem.views}</Typography>
             </Stack>
-            <Bookmark boardType={"free"} id={id}/>
+            <Bookmark boardType={"free"} id={id} />
           </Stack>
         </Grid>
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "5rem 2rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+          <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
+          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-    <Reply board={"free"} postingId={id} />
-    <Zoom in={true}>
-      <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-    </Zoom>
-  </>
+      <Reply board={"free"} postingId={id} />
+      <Zoom in={true}>
+        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+      </Zoom>
+    </>
   ) : (
     <PostingSkeleton />
   );

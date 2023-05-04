@@ -12,7 +12,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 
 //모집 상세보기 인터페이스
@@ -100,7 +100,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-          {(typeof postItem.modifiedDate === undefined) ?
+            {(typeof postItem.modifiedDate === undefined) ?
               <Time date={postItem.createdDate} variant="h6" /> :
               <Time date={postItem.modifiedDate || postItem.createdDate} />}
           </Grid>
@@ -140,7 +140,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Bookmark boardType={"recruit"} id={id}/>
+          <Bookmark boardType={"recruit"} id={id} />
         </Grid>
         {/*댓글 */}
         {replyCount(postItem.reply)}
