@@ -82,11 +82,7 @@ const RecruitBoard: React.FC = () => {
       });
   }, [page])
 
-  const displayPosting = boardItems.sort((x, y) => {
-    const dateX = new Date(x.modifiedDate || x.createdDate);
-    const dateY = new Date(y.modifiedDate || y.createdDate);
-    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
-  }).map((element, idx) => (
+  const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
     </Grid>
