@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, Grid, Typography, Skeleton, Zoom, Stack } from "@mui/material";
+import { Box, Chip, Grid, Typography, Skeleton, Zoom, Stack } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
@@ -100,9 +100,9 @@ const FreeDetails = () => {
             sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
           >
             <Stack direction="row" spacing={1}>
+              <Time date={postItem.createdDate} variant="h6" />
               {(typeof postItem.modifiedDate === undefined) ?
-                <Time date={postItem.createdDate} variant="h6" /> :
-                <Time date={postItem.modifiedDate || postItem.createdDate} />}                   <Visibility />
+                 null : <Chip label="modified" size="small" variant="outlined" color="error"/>}                   <Visibility />
               <Typography variant="h5">{postItem.views}</Typography>
             </Stack>
             <Bookmark boardType={"free"} id={id} />

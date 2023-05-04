@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Grid, Stack } from "@mui/material";
+import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
@@ -189,9 +189,9 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
         <Typography variant="h5" >
           {props.title} {Skill}
         </Typography>
+        <Time date={props.createdDate} variant="h6" />
         {(typeof props.modifiedDate === undefined) ?
-          <Time date={props.createdDate} variant="h6" /> :
-          <Time date={props.modifiedDate || props.createdDate} />}
+          null : <Chip label="modified" size="small" variant="outlined" color="error" />}
       </Grid>
 
       <Grid item sx={{

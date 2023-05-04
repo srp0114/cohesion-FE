@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Typography, Grid, Stack } from "@mui/material";
+import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -137,9 +137,9 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         <Typography variant="h5" >
           {props.title}
         </Typography>
+        <Time date={props.createdDate} variant="h6" />
         {(typeof props.modifiedDate === undefined) ?
-          <Time date={props.createdDate} variant="h6" /> :
-          <Time date={props.modifiedDate || props.createdDate} />}
+          null : <Chip label="modified" size="small" variant="outlined" color="error" />}
       </Grid>
 
       <Grid item sx={{
@@ -166,7 +166,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
           {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
         </Box>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 

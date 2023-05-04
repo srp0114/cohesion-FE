@@ -5,6 +5,7 @@ import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
+  Chip,
   Card,
   CardHeader,
   CardContent,
@@ -213,9 +214,9 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         <CardHeader
           subheader={
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Time date={props.createdDate} variant="h6" />
               {(typeof props.modifiedDate === undefined) ?
-                <Time date={props.createdDate} variant="h6" /> :
-                <Time date={props.modifiedDate || props.createdDate} />}
+                null : <Chip label="modified" size="small" variant="outlined" color="error" />}
             </div>
           }
         />

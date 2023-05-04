@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Grid, IconButton, Stack, Zoom } from "@mui/material";
+import { Typography, Box, Chip, Grid, IconButton, Stack, Zoom } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
@@ -129,9 +129,9 @@ const QnADetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
           </Grid>
           <Grid item justifyContent={"flex-end"}>
+            <Time date={postItem.createdDate} variant="h6" />
             {(typeof postItem.modifiedDate === undefined) ?
-              <Time date={postItem.createdDate} variant="h6" /> :
-              <Time date={postItem.modifiedDate || postItem.createdDate} />}
+              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
           </Grid>
         </Grid>
 

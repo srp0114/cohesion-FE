@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
+import { Box, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
@@ -100,9 +100,9 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
+            <Time date={postItem.createdDate} variant="h6" />
             {(typeof postItem.modifiedDate === undefined) ?
-              <Time date={postItem.createdDate} variant="h6" /> :
-              <Time date={postItem.modifiedDate || postItem.createdDate} />}
+              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
           </Grid>
         </Grid>
 
