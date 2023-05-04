@@ -14,7 +14,7 @@ import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
-import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton } from "./ApplyAcceptStuff";
+import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton, Applicant } from "./ApplyAcceptStuff";
 import { propTypes } from "react-bootstrap/esm/Image";
 
 //모집 상세보기 인터페이스
@@ -41,6 +41,21 @@ const RecruitDetails: React.FC = (): JSX.Element => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [potentialPartyId, setPotentialPartyId] = useState<Array<number>>([]);
+  const [applicationInfo, setApplicationInfo] = useState<Array<Applicant>>([]);
+  const [gatheredParty, setGatheredParty] = useState<number>();
+
+  const updatePotentialPartyId = (newPotentialPartyId: Array<number>) => {
+      setPotentialPartyId(newPotentialPartyId);
+  }
+
+  const updateApplicationInfo = (newApplicationInfo: Array<Applicant>) => {
+    setApplicationInfo(newApplicationInfo);
+  }
+
+  const updateGatheredParty = (newGatheredParty: number) => {
+    setGatheredParty(newGatheredParty);
+  }
 
   const postingId = Number(id);
 
@@ -52,6 +67,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .then((res) => {
         if (res.status === 200) {
           setPostItem(res.data);
+          setGatheredParty(res.data.gathered);
         }
       })
       .catch((err) => {
@@ -62,6 +78,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
     getCurrentUserInfo()
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
+
   }, []);
 
   /**
@@ -139,12 +156,15 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         <Grid item xs={12} sm={6}>
           <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6">
-              모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
+              모인 사람 {gatheredParty} / 최종 인원 {postItem.party}
             </Typography>
             {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
             {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
             {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
-              ? <><RecruitCompleteButton /> <ApplicantList /></> : <ApplyButton />}
+              ? <><RecruitCompleteButton /> <ApplicantList {...Object.assign(applicationInfo)} postingId={postingId} onGatheredPartyUpdate={updateGatheredParty}/></>
+              : <><ApplyButton postingId={postingId} isMeetOptional={true} isMeetRequired={true}
+              {...Object.assign(userInfo) } onPotentialPartyIdChange={updatePotentialPartyId} onApplicationInfoUpdate={updateApplicationInfo}/></>}
+              <Typography variant="h4">신청인원 수: {potentialPartyId.length}</Typography>
           </Grid>
         </Grid>
         <Grid item xs={12}>
