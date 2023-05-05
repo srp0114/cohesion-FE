@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
+import { Box, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
@@ -108,9 +108,11 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         </Grid>
         {/*게시글 제목 */}
         <Grid item xs={12}>
-          <Typography variant="h4" gutterBottom>
-            {postItem.title}
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <Typography variant="h1">{postItem.title}</Typography>
+            {(typeof postItem.modifiedDate === 'object') ?
+              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+          </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
@@ -119,9 +121,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
           </Grid>
 
           <Grid item justifyContent={"flex-end"}>
-            {(typeof postItem.modifiedDate === undefined) ?
-              <Time date={postItem.createdDate} variant="h6" /> :
-              <Time date={postItem.modifiedDate || postItem.createdDate} />}
+            <Time date={postItem.createdDate} variant="h6" />
           </Grid>
         </Grid>
 
