@@ -119,9 +119,11 @@ const QnADetails = () => {
         </Grid>
         {/*게시글 제목 */}
         <Grid item xs={12}>
-          <Typography variant="h4" gutterBottom>
-            {postItem.title}
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}>
+            <Typography variant="h1">{postItem.title}</Typography>
+            {(typeof postItem.modifiedDate === 'object') ?
+              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+          </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
@@ -130,8 +132,6 @@ const QnADetails = () => {
           </Grid>
           <Grid item justifyContent={"flex-end"}>
             <Time date={postItem.createdDate} variant="h6" />
-            {(typeof postItem.modifiedDate === undefined) ?
-              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
           </Grid>
         </Grid>
 

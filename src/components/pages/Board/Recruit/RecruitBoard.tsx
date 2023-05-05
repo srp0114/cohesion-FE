@@ -215,14 +215,16 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           subheader={
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Time date={props.createdDate} variant="h6" />
-              {(typeof props.modifiedDate === undefined) ?
-                null : <Chip label="modified" size="small" variant="outlined" color="error" />}
             </div>
           }
         />
         <CardActionArea onClick={() => goToPost(props.id)}>
           <CardHeader
-            title={props.title}
+            title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+              <Typography variant="h5">{props.title}</Typography>
+              {(typeof props.modifiedDate === 'object') ?
+                null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+            </Stack>}
             subheader={
               <Stack direction="row">
                 <Avatar

@@ -134,12 +134,13 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
     }}
       onClick={() => goToPost(props.id)}>
       <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h5" >
-          {props.title}
-        </Typography>
+        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+          <Typography variant="h5">{props.title}</Typography>
+          {(typeof props.modifiedDate === 'object') ?
+            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+        </Stack>
+
         <Time date={props.createdDate} variant="h6" />
-        {(typeof props.modifiedDate === undefined) ?
-          null : <Chip label="modified" size="small" variant="outlined" color="error" />}
       </Grid>
 
       <Grid item sx={{
