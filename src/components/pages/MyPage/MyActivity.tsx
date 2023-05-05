@@ -67,24 +67,27 @@ const MyActivity = (props: MyDataProps) => {
     // ex) /api/${userId}/${activity} => /api/102/reply  
     // TODO: 연동 url 추가
 
-    axios({
-        method : "get",
-        url : `/api/user/${activityType}/mypage`
-    }).then((res)=>{
-        if(res.status === 200){}
-            setActivity(res.data);
-    }).catch((err)=>{
-        console.log(err);
-    })
+    useEffect (()=>{
+        axios({
+            method : "get",
+            url : `/api/user/${activityType}/mypage`
+        }).then((res)=>{
+            if(res.status === 200)
+                setActivity(res.data);
+        }).catch((err)=>{
+            console.log(err);
+        })
+    }, [activityType])
         
     // activityType에 따른 타이틀 변경
-    const activityTitle = activityType === "reply" ? "작성한 댓글" :
+    const activityTitle = activityType === "summary" ? "공부기록" :
+        activityType === "reply" ? "작성한 댓글" :
         activityType === "bookmark" ? "북마크한 글" :
         activityType === "post" ? "작성한 게시글" : null;
 
     return (
         <>
-            <Typography variant="h6" sx={{mt:"3rem"}}>{activityTitle}</Typography>
+            <Typography variant="h4" sx={{mt:"3rem"}}>{activityTitle}</Typography>
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
             {activity.map((value) => {
                 return (
