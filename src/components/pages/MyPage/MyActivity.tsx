@@ -54,34 +54,37 @@ const MyActivity = (props: MyDataProps) => {
     return (
         <>
         <Typography variant="h4" sx={{mt:"3rem"}}>{activityTitle}</Typography>
-        <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
-            {activityType === "summary" ? <MySummary/> :
-                activity.map((value) => {
-                    return (
-                        // TODO: 카드 높이 조정 필요
-                        <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px"}}>
-                        <CardContent>
-                            <Typography variant="subtitle2" color="black" gutterBottom>{value.title}</Typography>
-                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                <Box>
-                                <Typography variant="subtitle2" color="secondary.dark"> {value.writer}</Typography>
+        {activity.length === 0 ? 
+            <Typography variant="h2" textAlign="center" p={5} color="primary.dark">아직 {activityTitle}이 없습니다</Typography> : 
+            <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
+                {activityType === "summary" ? <MySummary/> :
+                    activity.map((value) => {
+                        return (
+                            // TODO: 카드 높이 조정 필요
+                            <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px"}}>
+                            <CardContent>
+                                <Typography variant="subtitle2" color="black" gutterBottom>{value.title}</Typography>
+                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Box>
+                                    <Typography variant="subtitle2" color="secondary.dark"> {value.writer}</Typography>
+                                    </Box>
+                                    <Box sx={{display:"flex"}}>
+                                    <BookmarkIcon />
+                                    <Typography>{value.bookmark}</Typography>
+                                    <ChatIcon sx={{ marginLeft: 1, marginRight: 0.5 }} />
+                                    <Typography>{value.reply}</Typography>
+                                    </Box>
                                 </Box>
-                                <Box sx={{display:"flex"}}>
-                                <BookmarkIcon />
-                                <Typography>{value.bookmark}</Typography>
-                                <ChatIcon sx={{ marginLeft: 1, marginRight: 0.5 }} />
-                                <Typography>{value.reply}</Typography>
-                                </Box>
-                            </Box>
-                        </CardContent>
-                        <CardActions>
-                            <Button size="small" onClick={()=>goToDetails(value.id, value.boardType)}>자세히 보기</Button>
-                        </CardActions>
-                        </Card>
-                    )
-                })
-            }
-        </Box>    
+                            </CardContent>
+                            <CardActions>
+                                <Button size="small" onClick={()=>goToDetails(value.id, value.boardType)}>자세히 보기</Button>
+                            </CardActions>
+                            </Card>
+                        )
+                    })
+                }
+            </Box>  
+        }  
         </>
     )
 }
