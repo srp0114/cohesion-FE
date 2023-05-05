@@ -20,7 +20,7 @@ export const MyProfile = (props: MyProfileProps) => {
       <Paper
         sx={{
           borderRadius: "15px",
-          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"1.8rem"
+          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"2.5rem"
         }}
         elevation={3}
       >
@@ -58,7 +58,7 @@ export const MyProfile = (props: MyProfileProps) => {
           </Grid>
         </Grid>
         </Paper>
-
+        
     </>
   );
 };

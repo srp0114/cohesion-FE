@@ -4,9 +4,7 @@ import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import { Track } from "../../model/user";
 import { MyProfile } from "./MyProfile";
 import { MyHistory } from "./MyHistory";
-import { MySummary } from "./MySummary";
 import { MyIntroduction } from "./MyIntroduction";
-import { MySummaryItems } from "./MySummary";
 
 import { myPageData_fresh, myPageData_sopho } from "../../data/MyPageData";
 import axios from "axios"; //시험용 데이터
@@ -21,7 +19,6 @@ export interface MyPageItems {
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
   point: number; //사용자의 포인트
-  dailySummary?: MySummaryItems; //
   skill?: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
   language?: Array<string>; //추가정보페이지에서 선택한 언어, js, java, c, python의 언어 의미
   selfIntroduction: string; //추가정보페이지에서 입력한 자기소개
@@ -48,60 +45,24 @@ const MyPage = () => {
     <>
       <Grid 
         container 
-        direction="row" 
+        direction="row"
         gap={4}
         mt={"4rem"}
         p={2}
       >
-        <Grid container item xs={12} md={4.5} rowSpacing={{ xs: "1.5rem" }} pl={"2rem"} pr={"2rem"} >
+        <Grid item xs={12} md={4.5} rowSpacing={{ xs: "1.5rem" }} pl={"2rem"} pr={"2rem"} >
+          <Grid container item direction="column" gap={4}>
           <Grid item xs={12}>
-          <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
+            <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
           </Grid>
           <Grid item xs={12}>
           <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
           </Grid>
+          </Grid>
         </Grid>
 
-        <Grid
-          container
-          item
-          rowSpacing={{ xs: "1.5rem" }}
-          xs={12}
-          md={7}
-          direction="column"
-        >
-          <Grid item>
-            <MyHistory reply={data?.reply ?? 0} board={data?.board ?? 0} bookmark={data?.bookmark ?? 0} point={data?.point?? 0}/>
-          </Grid>
-          
-          <Grid container item rowSpacing={{ xs: "1.125rem" }}>
-            <Grid item xs={12}>
-              {!(test.dailySummary===undefined) ? (
-                <MySummary dailySummary={test.dailySummary} />
-              ) : (
-                <Paper
-                  sx={{
-                    borderRadius: "15px",
-                    padding: "1.125rem", //18px
-                  }}
-                  elevation={3}
-                >
-                  <Stack
-                    direction="row"
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Typography>공부한 내용 요약 기록</Typography>
-
-                    <IconButton>
-                      <CreateOutlinedIcon />
-                    </IconButton>
-                  </Stack>
-
-                  <Typography>아직 공부기록이 없습니다.</Typography>
-                </Paper>
-              )}
-            </Grid>
-          </Grid>
+        <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
+          <MyHistory reply={data?.reply ?? 0} board={data?.board ?? 0} bookmark={data?.bookmark ?? 0} point={data?.point?? 0}/>
         </Grid>
       </Grid>
     </>
