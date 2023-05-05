@@ -20,7 +20,7 @@ export const MyProfile = (props: MyProfileProps) => {
       <Paper
         sx={{
           borderRadius: "15px",
-          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"3rem", ml:"2rem", mr:"2rem"
+          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"1.8rem"
         }}
         elevation={3}
       >

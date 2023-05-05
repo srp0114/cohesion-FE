@@ -46,24 +46,28 @@ const MyPage = () => {
 
   return (
     <>
-      
-      <Grid
-        container
-        columnSpacing={{ md: "2.5rem", xs: "1rem" }} //1rem == 16px, 2.5rem == 36px, 1.5rem == 24px, 1.125rem === 18px
-        rowSpacing={2}
-        direction="row"
-        sx={{m:10}}
+      <Grid 
+        container 
+        direction="row" 
+        gap={4}
+        mt={"4rem"}
+        p={2}
       >
-        <Grid item xs={12} md={5}>
+        <Grid container item xs={12} md={4.5} rowSpacing={{ xs: "1.5rem" }} pl={"2rem"} pr={"2rem"} >
+          <Grid item xs={12}>
           <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
+          </Grid>
+          <Grid item xs={12}>
+          <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
+          </Grid>
         </Grid>
 
         <Grid
           container
           item
-          rowSpacing={{ md: "2.5rem", xs: "1.5rem" }}
+          rowSpacing={{ xs: "1.5rem" }}
           xs={12}
-          md={6.5}
+          md={7}
           direction="column"
         >
           <Grid item>
@@ -96,10 +100,6 @@ const MyPage = () => {
                   <Typography>아직 공부기록이 없습니다.</Typography>
                 </Paper>
               )}
-            </Grid>
-            
-            <Grid item xs={12}>
-              <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
             </Grid>
           </Grid>
         </Grid>
