@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, Grid, Typography, Skeleton, Zoom, Stack } from "@mui/material";
+import { Box, Chip, Grid, Typography, Skeleton, Zoom, Stack } from "@mui/material";
 import Time from "../../../layout/Time";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
@@ -12,7 +12,7 @@ import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
-import {getCurrentUserInfo} from "../../../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 
@@ -44,13 +44,13 @@ const FreeDetails = () => {
       method: "get",
       url: "/api/free/detail/" + id,
     })
-    .then((res) => {
-      setPostItem(res.data.data);
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
+      .then((res) => {
+        setPostItem(res.data.data);
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
           console.log("권한 x");
         }
       });
@@ -86,7 +86,11 @@ const FreeDetails = () => {
         </Grid>
         {/*게시글 제목 */}
         <Grid item xs={12}>
-          <Typography variant="h1">{postItem.title}</Typography>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <Typography variant="h1">{postItem.title}</Typography>
+            {(typeof postItem.modifiedDate === 'object') ?
+              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+          </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
         <Grid item container xs={12} justifyContent={"space-between"}>
@@ -97,31 +101,30 @@ const FreeDetails = () => {
         <Grid item xs={12}>
           <Stack
             direction="row"
-            sx={{ display: "flex", justifyContent: "space-between", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
           >
             <Stack direction="row" spacing={1}>
-            {(typeof postItem.modifiedDate === undefined) ?
-            <Time date={postItem.createdDate} variant="h6" /> :
-            <Time date={postItem.modifiedDate || postItem.createdDate} />}                   <Visibility/>
-            <Typography variant="h5">{postItem.views}</Typography>
+              <Time date={postItem.createdDate} variant="h6" />
+              <Visibility />
+              <Typography variant="h5">{postItem.views}</Typography>
             </Stack>
-            <Bookmark boardType={"free"} id={id}/>
+            <Bookmark boardType={"free"} id={id} />
           </Stack>
         </Grid>
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "5rem 2rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+          <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
+          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
         {/*댓글 */}
         {replyCount(postItem.reply)}
       </Grid>
-    <Reply board={"free"} postingId={id} />
-    <Zoom in={true}>
-      <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-    </Zoom>
-  </>
+      <Reply board={"free"} postingId={id} />
+      <Zoom in={true}>
+        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+      </Zoom>
+    </>
   ) : (
     <PostingSkeleton />
   );

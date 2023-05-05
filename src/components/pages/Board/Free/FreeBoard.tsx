@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Typography, Grid, Stack } from "@mui/material";
+import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -69,11 +69,7 @@ const FreeBoard = () => {
     setLoading(true); //freeData 상태가 변할 때 게시글 목록
   }, [freeData]);
 
-  const displayPosting = freeData.sort((x, y) => {
-    const dateX = new Date(x.modifiedDate || x.createdDate);
-    const dateY = new Date(y.modifiedDate || y.createdDate);
-    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
-  }).map((element, idx) => {
+  const displayPosting = freeData.map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -138,12 +134,13 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
     }}
       onClick={() => goToPost(props.id)}>
       <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h5" >
-          {props.title}
-        </Typography>
-        {(typeof props.modifiedDate === undefined) ?
-          <Time date={props.createdDate} variant="h6" /> :
-          <Time date={props.modifiedDate || props.createdDate} />}
+        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+          <Typography variant="h5">{props.title}</Typography>
+          {(typeof props.modifiedDate === 'object') ?
+            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+        </Stack>
+
+        <Time date={props.createdDate} variant="h6" />
       </Grid>
 
       <Grid item sx={{
@@ -170,7 +167,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
           {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
         </Box>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 
