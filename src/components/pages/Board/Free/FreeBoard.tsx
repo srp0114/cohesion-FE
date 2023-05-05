@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Avatar, Box, Typography, Grid, Stack } from "@mui/material";
-import FilterPosting from "../../../layout/FilterPosting";
+import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
@@ -18,19 +17,32 @@ export interface FreeBoardItems {
   title: string;
   content: string;
   writer: string;
-  stuId: number; //타입 string에서 number로 알맞게 변경.
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  stuId: number;
+  profileImg: string;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  views: number; //조회수
+  views: number;
   //imgUrl?: Array<string>; //이미지
 }
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/api/free/total"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
+  }, [])
 
   useEffect(() => {
     setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
@@ -75,13 +87,13 @@ const FreeBoard = () => {
             variant="h5" >
             자유게시판
           </Typography>
-          <FilterPosting />
+
           {displayPosting}
           <PaginationControl
             page={page}
             between={1}
-            total={100} // 전체 아이템 수 => DB에 저장되어있는 전체 게시글 수 정보가 필요.
-            limit={4} //각 페이지 당 들어가는 최대 아이템, total / limit = 전체 페이지 수
+            total={total}
+            limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           /><WritingButton /></Box>
@@ -122,9 +134,12 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
     }}
       onClick={() => goToPost(props.id)}>
       <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h5" >
-          {props.title}
-        </Typography>
+        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+          <Typography variant="h5">{props.title}</Typography>
+          {(typeof props.modifiedDate === 'object') ?
+            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+        </Stack>
+
         <Time date={props.createdDate} variant="h6" />
       </Grid>
 
@@ -134,6 +149,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         overflow: "hidden",
         textOverflow: "ellipsis",
         alignItems: "stretch",
+        maxHeight: "6.5rem"
       }}>
         <Typography variant="body1">
           <div
@@ -147,11 +163,11 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
 
       <Grid item>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {userInfo(props.writer, props.profileImg, props.stuId)}
+          {userInfo(props.writer, props.stuId, props.profileImg)}
           {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
         </Box>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 

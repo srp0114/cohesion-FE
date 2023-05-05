@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, ButtonGroup } from "@mui/material";
 import { skillData } from "../data/SkillData";
-import ProfileIcon from "@mui/icons-material/AccountCircle";
-import "../style/Board.css";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import {logoutHandler} from "../logoutHandler";
+import Profile from "../layout/Profile";
 
 // 회원가입 데이터- 받아온 정보
 interface UserAccountItems {
@@ -67,7 +66,7 @@ const clickBorder = {
 
 const Welcome = () => {
   const [profileImg, setProfileImg] = useState("");
-  const [userAccount, setUserAccount] =
+  const [userAccount, setUserAccount] = 
     useState<UserAccountItems>(TestUserAccount); // initialState 변경 필요
   const navigate = useNavigate();
 
@@ -91,6 +90,7 @@ const Welcome = () => {
           return;
         }
         setUserAccount(payload);
+        console.log(userAccount);
         if (payload) {
           setProfileImg(payload.picture);
           // 서버에 저장된 이름 출력하기 위해 추가
@@ -117,14 +117,15 @@ const Welcome = () => {
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDefaultNickname(event.target.value);
     setNickname(event.target.value);
-    console.log(nickname);
   };
 
   const onIntroduceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIntroduce(event.target.value);
-    console.log(introduce);
-    console.log(skill);
   };
+
+  const onSkillChange = (event: SyntheticEvent<Element, Event>, value: any) => {
+    setSkill(value);
+  }
 
   const request_data = {
     studentId: userAccount.sub,
@@ -133,7 +134,7 @@ const Welcome = () => {
     introduce: introduce,
     track1: userAccount.track1,
     track2: userAccount.track2,
-    
+    skills: skill.map(s => s.name)
   };
 
   const confirm = () => {
@@ -156,7 +157,7 @@ const Welcome = () => {
   const back= ()=>{
     logoutHandler();
   }
-
+  
   return (
     <>
       <Box sx={{ m: 5, p: 1 }}>
@@ -195,11 +196,13 @@ const Welcome = () => {
                     {defaultNickname}
                   </Typography>
                 </ImageButton>
+                
+                
                 <ImageButton 
                   style={flag === 2 ? clickBorder : defaultBorder} 
                   onClick={()=>setFlag(2)}
                 >
-                  <ProfileIcon sx={{ fontSize: 50 }} />
+                  <Profile nickname={nickname} size={20}/>
                   <Typography
                     variant="subtitle1"
                     sx={{
@@ -295,6 +298,8 @@ const Welcome = () => {
                   }}
                 />
               )}
+              value={skill}
+              onChange={onSkillChange}
             />
           </Box>
           <Box>

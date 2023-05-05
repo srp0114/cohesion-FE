@@ -5,6 +5,7 @@ import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
+  Chip,
   Card,
   CardHeader,
   CardContent,
@@ -19,7 +20,6 @@ import {
   ThemeProvider,
   createTheme,
   useTheme,
-  Theme,
 } from "@mui/material/styles";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -27,14 +27,14 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import { WritingButton } from "../../../layout/WritingButton";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
   id: number;
   title: string;
   writer: string;
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  profileImg: string;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
@@ -42,9 +42,9 @@ export interface RecruitBoardItems {
   views: number; //조회수
   stuId: number; //사용자 학번
   imgUrl?: Array<string>; //이미지
-  require: string; //필수조건: 분반명 등
-  optional?: string; //기타, 우대조건: 학점, 기술스택 등
-  party: number; //모집할 인원수
+  require: string;
+  optional?: string;
+  party: number;
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
 }
 
@@ -55,8 +55,22 @@ const RecruitBoard: React.FC = () => {
    */
   const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState<number>(0);
+
   useEffect(() => {
-    const curPage = page-1;
+    axios({
+      method: "get",
+      url: "/api/recruit/total"
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setTotal(res.data);
+        }
+      })
+  }, [])
+
+  useEffect(() => {
+    const curPage = page - 1;
     axios({
       method: "get",
       url: "/api/recruit/list?page=" + curPage + "&size=6",
@@ -97,13 +111,13 @@ const RecruitBoard: React.FC = () => {
         </Box>
       </Box>
       <PaginationControl
-            page={page}
-            between={1}
-            total={100}
-            limit={4}
-            changePage={(page: React.SetStateAction<number>) => setPage(page)}
-            ellipsis={1}
-          />
+        page={page}
+        between={1}
+        total={total}
+        limit={6}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
       <WritingButton />
     </>
   );
@@ -200,13 +214,17 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         <CardHeader
           subheader={
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Time date={props.createdDate} />
+              <Time date={props.createdDate} variant="h6" />
             </div>
           }
         />
         <CardActionArea onClick={() => goToPost(props.id)}>
           <CardHeader
-            title={props.title}
+            title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+              <Typography variant="h5">{props.title}</Typography>
+              {(typeof props.modifiedDate === 'object') ?
+                null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+            </Stack>}
             subheader={
               <Stack direction="row">
                 <Avatar
@@ -214,7 +232,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
                   sx={{ width: "25px", height: "25px", marginRight: "5px" }}
                 />
                 <Typography variant="overline">
-                  {`${props.writer} (${props.stuId.toString().slice(0,2)}학번)`}
+                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
               </Stack>
             }

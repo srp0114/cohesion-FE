@@ -5,10 +5,14 @@ import Ranking from "./Ranking";
 
 interface HomeSideProps {
     nickname: string
+    studentId : number
+    track1 : string
 }
 
 const SideBar = (props: HomeSideProps) => {
     const nickname = props.nickname;
+    const studentId = props.studentId;
+    const track1 = props.track1;
 
     const isLogging = nickname === "" ? (
         <>
@@ -37,12 +41,12 @@ const SideBar = (props: HomeSideProps) => {
         <Box sx={{display:"flex", justifyContent: "flex-start", mt:5, ml: 0.7}}>
             <Typography variant="subtitle1" color="primary.dark">학번</Typography>
             {/*TODO: 사용자 학번 받아오기*/}
-            <Typography variant="subtitle1" sx={{ ml:3 }}>2071274</Typography>
+            <Typography variant="subtitle1" sx={{ ml:3 }}>{studentId}</Typography>
         </Box>
         <Box sx={{display:"flex", justifyContent: "flex-start", mt:2, ml: 0.7 }}>
             <Typography variant="subtitle1" color="primary.dark">전공</Typography>
             {/*TODO: 사용자 트랙 받아오기*/}
-            <Typography variant="subtitle1" sx={{ ml:3 }}>웹공학트랙</Typography>
+            <Typography variant="subtitle1" sx={{ ml:3 }}>{track1}</Typography>
         </Box>
         </Box>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
