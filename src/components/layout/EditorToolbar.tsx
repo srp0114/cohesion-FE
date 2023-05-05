@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import {useRef, useState, useMemo, useEffect} from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "react-quill/dist/quill.core.css";
@@ -10,6 +10,7 @@ import "../style/Board.css";
 
 interface QuillProps  {
     onAddQuill: (content:string) => void
+    content?: string
 }
 
 // Undo and redo functions for Custom Toolbar
@@ -45,6 +46,10 @@ hljs.configure({
 const EditorToolbar = (props : QuillProps) => {
     const QuillRef = useRef<ReactQuill>();
     const [content, setContent] = useState<string>("");
+
+    useEffect(() => {
+        if (props.content) setContent(props.content);
+    }, [props.content])
 
     // 이미지를 업로드 하기 위한 함수
     const imageHandler = () => {

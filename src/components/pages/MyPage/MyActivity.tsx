@@ -69,11 +69,11 @@ const MyActivity = (props: MyDataProps) => {
     useEffect(() => {
         axios({
         method: "get",
-        url: ``
+        url: `/api/user/${activityType}/mypage`
         })
         .then((res) => {
             if (res.status === 200) {
-                //setActivity(res.data);
+                setActivity(res.data);
             }
         })
         .catch((err) => {

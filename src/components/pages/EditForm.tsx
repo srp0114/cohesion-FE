@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Container,
   TextField,
   Button,
@@ -7,11 +8,8 @@ import {
   FormControl,
   SelectChangeEvent,
   Select,
+  Snackbar,
   MenuItem,
-  Menu,
-  Stack,
-  Typography,
-  Box,
 } from "@mui/material";
 import axios from "axios";
 import Point from "../layout/Point";
@@ -20,11 +18,11 @@ import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
-import { Navigate, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import "../style/Board.css";
 import { BoardType } from "../model/board";
-import { isNumericLiteral } from "typescript";
 import Loading from "../layout/Loading";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -41,11 +39,19 @@ const EditForm = () => {
   const [gathered, setGathered] = useState<number>(0);
   const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
-
+  const { state } = useLocation();
   const pathArray = window.location.href.split("/");
-  const boardTypeArray = Object.values(BoardType);
-  const initialBoardType = boardTypeArray.find((type) => pathArray.includes(type));
   const postingId = [...pathArray].pop();
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     checkLogin().then((res) => {
@@ -56,39 +62,29 @@ const EditForm = () => {
   }, []);
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `/api/user-info`
-    }).then((res) => {
-      if (res.status === 200) {
-        console.log(res.data.point);
-        setHasUserPoint(res.data.point);
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+    getCurrentUserInfo()
+      .then(userInfo => setHasUserPoint(userInfo.point))
+      .catch(err => console.log(err))
   }, []);
 
-  useEffect(() => { //TODO: 게시글 id에 따라 게시글 정보 받아오기, api 완성 후 작업.
+  useEffect(() => {
+    setBoardType(state);
     axios({
       method: "get",
-      url: `/api/${boardType}/detail/${postingId}` //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
+      url: `/api/${state}/update/${postingId}`
     }).then(
       (res) => {
         if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
-          console.log(`게시글 수정을 위한 정보 가져오기 ${res.data.title} ${res.data.content}`);
-          setTitle(res.data.title); //undefined로 나옴. 수정 필요
-          setContent(res.data.content); //undefined로 나옴. 수정 필요
-
-          // //api 완성된 경우, 주석 푸시면 될 것 같습니다! - 은서
+          console.log(`게시글 수정을 위한 정보 가져오기 ${JSON.stringify(res.data)}`);
+          setTitle(res.data.title);
+          setContent(res.data.content);
           // //Q&A게시판
-          // setSkill(res.data.point); //질문한 언어, 기술
-
+          setSkill(res.data.language); //질문한 언어, 기술
           // //구인(모집) 게시판
-          // setRequired(res.data.required); //수정 불가
-          // setOptional(res.data.optional);
-          // setParty(res.data.party);
-          // setGathered(res.data.gathered); //수정 불가
+          setRequired(res.data.required); //수정 불가
+          setOptional(res.data.optional);
+          setParty(res.data.party);
+          setGathered(res.data.gathered); //수정 불가
         }
       }
     ).catch((err) => console.log(err));
@@ -140,10 +136,12 @@ const EditForm = () => {
     });
   };
 
-  const submitHandler = async () => {
+  const submitHandler = async (event:React.MouseEvent) => {
+    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
+
     };
 
     const request_qna = {
@@ -173,97 +171,75 @@ const EditForm = () => {
     /**
      * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update) 수정 기능
      */
-    switch (boardType) {
-      case BoardType.free:
-        axios({
-          method: "put",
-          url: `/api/free/update/${postingId}`,
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_data),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-            } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-          })
-          .catch((err) => console.log(err));
-        break;
-      case BoardType.question:
-        /*
-        axios({
-            method: "put", 
-            url: `q&a게시판  게시글 수정 api`,
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(request_data),
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-              window.location.href = "/";
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => console.log(err));
-        */
-        break;
-      case BoardType.recruit:
-        /*
-       axios({
-           method: "put", 
-           url: `모집(구인)게시판  게시글 수정 api`,
-           headers: { "Content-Type": "application/json" },
-           data: JSON.stringify(request_data),
-         })
-         .then((res) => {
-           if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-             window.location.href = "/";
-           } // 응답(401, 403 등) 핸들링 ...
-         })
-         .catch((err) => console.log(err));
-       */
-        break;
-      /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
-      default:
-        break;
-    }
+    axios({
+      method: "put",
+      url: `/api/${boardType}/update/${postingId}`,
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(request_data),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+              수정되었습니다.
+            </Alert>
+          </Snackbar>
+          nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+        } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+      })
+      .catch((err) => console.log(err));
+    setOpen(true);
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
 
   };
 
-  const deleteHandler = () => {
-    /*추후 qna, recruit 게시글 수정, 삭제 api 완성되면 추가해야함. */
-    //은서: Q&A 게시판에서 안되면 ${boardType}을 qna로 바꿔보시면 될 것 같습니다.
+  const deleteHandler = (event:React.MouseEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
     axios({
       method: 'delete',
       url: `/api/${boardType}/delete/${postingId}`
     }).then(
       (res) => {
         if (res.status === 200) {
-          console.log(`삭제 요청 완료 response.data ${res.data}`);
-          <Loading delayTime={1500} />
-          nav(`/${boardType}`);
+          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+              삭제되었습니다.
+            </Alert>
+          </Snackbar>
+          nav(`/${boardType}`); //삭제 후 게시판 목록페이지로
+          setOpen(true);
         }
       }
     ).catch((err) => console.log(err));
+
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
+
   }
 
   const SelectSkill =
-    boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
+    boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
 
   const SelectPoint =
     boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
 
   const DesignateConditionRequired =
     boardType === BoardType.recruit ? (
-      <ConditionRequired getRequired={getRequired} />
+      <ConditionRequired value={required} getRequired={getRequired} />
     ) : null;
   const DesignateConditionOptional =
     boardType === BoardType.recruit ? (
-      <ConditionOptional getOptional={getOptional} />
+      <ConditionOptional value={optional} getOptional={getOptional} />
     ) : null;
-  const DesignatePeople = boardType === BoardType.recruit ? <People getParty={getParty} getGathered={getGathered} /> : null;
+  const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
@@ -273,12 +249,12 @@ const EditForm = () => {
             <Grid item>
               <FormControl style={{ minWidth: "120px" }}>
                 <Select value={boardType} onChange={boardHandler} size="small" disabled>
-                  <MenuItem value={"free"} defaultChecked>
+                  <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
                   </MenuItem>
-                  <MenuItem value={"question"}>Q&A게시판</MenuItem>
-                  <MenuItem value={"recruit"}>구인게시판</MenuItem>
-                  <MenuItem value={"notice"}>공지사항</MenuItem>
+                  <MenuItem value={BoardType.question}>Q&A게시판</MenuItem>
+                  <MenuItem value={BoardType.recruit}>구인게시판</MenuItem>
+                  <MenuItem value={BoardType.notice}>공지사항</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -296,9 +272,8 @@ const EditForm = () => {
             </Grid>
             <Grid item>
               <div className="postQuill">
-                <EditorToolbar onAddQuill={getContent} />
+                <EditorToolbar content={content} onAddQuill={getContent} />
               </div>
-              {/* value: {content} */}
               <div>
                 <input type="file" multiple onChange={onSaveFiles} />
               </div>
