@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Typography, Box, Button, Grid } from "@mui/material";
 import ReplyField from "./ReplyField";
@@ -7,6 +7,7 @@ import AdoptReply from "./AdoptReply";
 import Time from "../Time";
 import Profile from "@mui/icons-material/AccountCircle";
 import EditReplyField from "./EditReplyField";
+
 interface User {
   id: number;
   nickname: string;
@@ -29,10 +30,18 @@ interface ReplyProps {
   writerId?: number; // Q&A 채택을 위한 게시글 작성자 학번
 }
 
+interface AdoptReplyProps {
+  check: boolean;
+  id: number | null;
+}
+
 const Reply = (props: ReplyProps) => {
   const [replyData, setReplyData] = useState<ReplyItems[]>([]);
   const [userId, setUserId] = useState<number>(0);
-  const [isChosen, setIsChosen] = useState<boolean>(false);
+  const [isChosen, setIsChosen] = useState<AdoptReplyProps>({
+    check: false,
+    id: null
+  });
 
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -40,6 +49,23 @@ const Reply = (props: ReplyProps) => {
   const id = props.postingId;
   const board = props.board;
   const writerId = props.writerId;
+   
+  const getAdoptReply = useCallback(() => {
+    if (board === "questions") {
+      axios({
+        method: "get",
+        url: `/api/questions/${id}/adopt-check`,
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            setIsChosen(res.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [board, id]);
 
   useEffect(() => {
     axios({
@@ -54,7 +80,7 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
       });
 
-     axios({
+      axios({
         method : "get",
         url : "/api/user-id"
     }).then((res)=>{
@@ -65,22 +91,20 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
     })
 
-    // Q&A 게시판인 경우 해당 게시글 채택 댓글이 있는지 받아올 api 추가
-    // url - 해당 게시글 번호 오류 발생
-    // TODO: url /api/qna/${id}/adopt-check 로 수정
-    if (board==="qna") {
-      axios({
-        method : "get",
-        url : `/api/qna/1/adopt-check`
-      }).then((res)=>{
-          if(res.status===200) {
-            console.log(res)
-          }
-      }).catch((err)=>{
-          console.log(err);
-      })
+    getAdoptReply();
+  }, [board, id, getAdoptReply]);
+
+  // 채택하기 변경되는 경우 값 넘어올 핸들러
+  const handleAdoptReply = async (replyId: number) => {
+    try {
+      isChosen.check ?
+        await axios.put(`/api/questions/${replyId}/adopt-cancel`) :
+        await axios.post(`/api/questions/${replyId}/adopt-replies`)
+      await getAdoptReply()
+    } catch (err) {
+      console.error(err)
     }
-  }, []);
+  };
 
   // 댓글 추가 핸들러
   const handleAddReply = (article: string) => {
@@ -171,7 +195,6 @@ const Reply = (props: ReplyProps) => {
       }).catch((err)=>{
           console.log(err);
       })
-
   };
 
   // 수정 버튼 클릭 시, 적용될 핸들러
@@ -180,21 +203,14 @@ const Reply = (props: ReplyProps) => {
     setIsEditing(true);
   };
 
-  // 채택하기 변경되는 경우 값 넘어올 핸들러
-  // data 보내는 경우 isChosen: replyCheck 으로 값 지정
-  const handleChooseReply = (isChosen: boolean) => {
-    setIsChosen(isChosen);
-    console.log(isChosen);
-  };
-
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 userId와 로그인한 사용자의 userId 비교 후 동일한 경우 채택버튼 출력
   const Article = (article: string, id:number) => {
     return (
       <>
-        {board === "qna" ? (
+        {board === "questions" ? (
           // Q&A 게시판인 경우
-          <Grid container spacing={2}>
-            <Grid item xs={11}>
+          <Grid container direction="row" spacing={2}>
+            <Grid item xs={9} md={10}>
               <div className="ql-snow">
                 <div
                   className="ql-editor"
@@ -203,8 +219,10 @@ const Reply = (props: ReplyProps) => {
               </div>
             </Grid>
             {userId === writerId ? (
-              <Grid item>
-                <AdoptReply replyId={id} onReplyCheck={handleChooseReply} isChosen={isChosen} />
+              <Grid item xs={3} md={2}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <AdoptReply replyId={id} onReplyAdopt={handleAdoptReply} check={isChosen.check} checkId={isChosen.id} />
+                </Box>
               </Grid>
               ) : (null)
             }
