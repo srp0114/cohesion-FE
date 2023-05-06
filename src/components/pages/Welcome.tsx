@@ -1,36 +1,34 @@
-import React, { Fragment, SyntheticEvent, useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, Grid, Icon, InputAdornment} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, Grid } from "@mui/material";
 import { skillData } from "../data/SkillData";
-import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import {logoutHandler} from "../logoutHandler";
+import { logoutHandler } from "../logoutHandler";
 import Profile from "../layout/Profile";
 import { useForm, Controller } from "react-hook-form";
 
 interface UserInfoItems {
-  sub: number; //학번
-  name: string; //이름
-  track1: string; //1트랙
-  track2: string; //2트랙
-  picture: string; //프로필
-  nickname: string; //닉네임
-  introduce?: string; //자기소개
+  sub: number;
+  name: string;
+  track1: string;
+  track2: string;
+  picture: string;
+  nickname: string;
+  introduce?: string;
   skills?: string[];
 }
 
 interface UserAddItems {
-  nickname: string; //닉네임
-  introduce?: string; //자기소개
+  nickname: string;
+  introduce?: string; 
   skills?: {name:string}[];
   picture: string;
 }
 
 const Welcome = () => {
   const [profileImg, setProfileImg] = useState<string>("");
-
   const [userInfo, setUserInfo] = useState<UserInfoItems>({
     sub: 0,
     name: "",
@@ -41,14 +39,16 @@ const Welcome = () => {
     introduce: "",
     skills: [],
   });
+  const [flag, setFlag] = useState<number>(-1);
 
-  const {  formState: { errors }, register, control, handleSubmit, watch } =
-  useForm<UserAddItems>({
-    mode: "onChange"
-  });
+  const {  formState: { errors }, register, control, handleSubmit } = useForm<UserAddItems>({ mode: "onChange" });
 
   const navigate = useNavigate();
 
+  const back = () => {
+    logoutHandler();
+  }
+  
   useEffect(() => {
     idTokenVerifier();
   }, []);
@@ -68,7 +68,7 @@ const Welcome = () => {
           alert("토큰이 만료되었습니다.");
           return;
         }
-        setUserInfo((prev) => ({ ...prev, ...payload }));
+        setUserInfo((prev) => ({ ...prev, ...payload, nickname: payload.name }));
         if (payload) {
           setProfileImg(payload.picture);
         }
@@ -78,113 +78,101 @@ const Welcome = () => {
       window.location.href = "/";
     }
   };
-
-  // 프로필 선택 여부 확인을 위한 useState 
-  // 기본 -1로 지정
-  const [flag, setFlag] = useState<number>(-1);
-
-  const onSubmit = (data: UserAddItems) => {
-    const newUserData = {
-      nickname: data.nickname,
-      introduce: data.introduce ?? "",
-      skills: (data.skills || []).map((s) => s.name),
+  
+  const onSubmit = (userAdd: UserAddItems) => {
+    const addUserData = {
+      nickname: userAdd.nickname,
+      introduce: userAdd.introduce ?? "",
+      skills: (userAdd.skills || []).map((s) => s.name),
     };
 
-    setUserInfo(prev => ({
-      ...prev,
-      nickname: newUserData.nickname,
-      introduce: newUserData.introduce,
-      skills: newUserData.skills,
-    }));
-  };
-
-  useEffect(() => {
-    confirm();
-  }, [userInfo]);
-
-  const confirm = () => {
-    console.log(userInfo);
+    const userAccountInfo = {
+      ...userInfo,
+      ...addUserData,
+      studentId: userInfo.sub
+    };
 
     axios({
       method: "post",
       url: "/api/join",
       headers: { "Content-Type": "application/json" },
-      data: JSON.stringify(userInfo),
+      data: JSON.stringify(userAccountInfo),
     })
-      .then((response) => {
-        if (response.status === 200) { // 부가 정보 입력 정상 완료 시
-          navigate("/"); // 메인 페이지로 이동 
-        } // 에러 핸들링 ...
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    .then((response) => {
+      if (response.status === 200) { // 부가 정보 입력 정상 완료 시
+        console.log(userAccountInfo);
+        navigate("/"); // 메인 페이지로 이동 
+      } // 에러 핸들링 ...
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   };
-  const back= ()=>{
-    logoutHandler();
-  }
 
-   const onProfileChange = (flag: number) => {
-    setFlag(flag);
+  const onProfileChange = (flag: number) => {
     setUserInfo({ ...userInfo, picture: flag === 1 ? profileImg : "" });
   }
 
-
   return (
     <>
-      <Grid item xs={12}>
-        <Grid item>
-        <Box sx={{ m: 5, mt:10, mb:10,  p: 1 }}>
-          <Typography variant="h3" align="center">
-            추가 정보를 입력해주세요
-          </Typography>
-        </Box>
+    <Grid container direction="column" justifyContent="center" alignItems="center" md={12} mt={"5rem"} mb={"4rem"}>
+        <Grid item md={12}>
+          <Box mb={"4rem"}>
+            <Typography variant="h2" align="center">추가 정보를 입력해주세요</Typography>
+          </Box>
         </Grid>
-
-        <Grid>
-        <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ pl: 15, pr: 15, mb: 5 }}>
-          <Stack spacing={5}>
+        <Grid item md={12}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={5}>
             <Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-evenly",
-                  mt: 2,
-                }}
-              >
-                    <ImageButton 
-                    style={flag === 1 ? clickBorder : defaultBorder} 
-                    onClick={()=>onProfileChange(1)}
+            <Controller
+              control={control}
+              name="picture"
+              rules={{
+                required: "프로필을 선택해주세요",
+              }}
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <>
+                <Grid container direction="row" spacing={5}>
+                <Grid item>
+                  <ImageButton
+                  style={flag === 1 ? clickBorder : defaultBorder}
+                  onClick={() => {
+                    setFlag(1);
+                    onChange(profileImg);
+                    onProfileChange(1);
+                  }}
                   >
-                    <ListItemAvatar>
-                      <Avatar src={profileImg} />
-                    </ListItemAvatar>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        p: 4,
-                      }}
-                    >
-                      {userInfo.name}
-                    </Typography>
+                  <ListItemAvatar>
+                  <Avatar src={profileImg} />
+                  </ListItemAvatar>
+                  <Typography variant="subtitle1" sx={{ p: 4 }}>
+                  {userInfo.name}
+                  </Typography>
                   </ImageButton>
-                  
-                  <ImageButton 
-                    style={flag === 2 ? clickBorder : defaultBorder} 
-                    onClick={()=>onProfileChange(2)}
+                </Grid>
+                <Grid item>
+                  <ImageButton
+                  style={flag === 2 ? clickBorder : defaultBorder}
+                  onClick={() => {
+                    setFlag(2);
+                    onChange("avatar");
+                    onProfileChange(2);
+                  }}
                   >
-                    <Profile nickname={userInfo.nickname} size={40}/>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        p: 4,
-                      }}
-                    >
-                      {userInfo.nickname}
-                    </Typography>
+                  <Profile nickname={userInfo.nickname} size={40} />
+                  <Typography variant="subtitle1" sx={{ p: 4 }}>
+                  {userInfo.nickname}
+                  </Typography>
                   </ImageButton>
-              </Box>
+                </Grid>
+                </Grid>
+                <Box pl={"0.9rem"} pt={"0.2rem"}>
+                <Typography variant="h6" color="error.main">{error?.message}</Typography>
+                </Box>
+              </>
+              )}
+            />
             </Box>
             <Box>
               <TextField
@@ -207,129 +195,113 @@ const Welcome = () => {
                 sx={{ mt: 2 }}
               />
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ width: "400px" }}>
+            <Box sx={{ width: '100%' }}>
+            <Grid container direction="row" spacing={2}>
+              <Grid item xs={6}>
                 <TextField
                   disabled
                   fullWidth
                   variant="outlined"
                   label="1트랙"
                   value={userInfo.track1}
-                  sx={{ mt: 2 }}
                 />
-              </Box>
-              <Box sx={{ width: "400px" }}>
+              </Grid>
+              <Grid item xs>
                 <TextField
                   disabled
                   fullWidth
                   variant="outlined"
                   label="2트랙"
                   value={userInfo.track2}
-                  sx={{ mt: 2 }}
                 />
-              </Box>
+              </Grid>
+            </Grid>
             </Box>
             <Box>
-                <Controller
-                  control={control}
-                  name="nickname"
-                  rules={{
-                    required: true,
-                    maxLength: 10,
-                  }}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="닉네임"
-                      placeholder="닉네임을 입력해주세요"
-                      sx={{ mt: 2 }}
-                      error={error !== undefined}
-                      helperText={error ? "false" : "true"}
-                    />
-                  )}
-                />
-            </Box>
-            <Box>
-               <Controller
+              <Controller
                 control={control}
-                name="skills"
+                name="nickname"
                 rules={{
-                  validate: (data) => {
-                    if(data && data.length > 3) return false;
-                  }
+                  required: true,
+                  maxLength: 8,
                 }}
-                render={({ field: { ref, onChange, ...field }, fieldState }) => (
-                  <Autocomplete
-                    multiple
-                    options={skillData}
-                    getOptionLabel={(option) => option.name}
-                    onChange={(_, data) => onChange(data)}
-                    renderOption={(props, option) => (
-                      <Box
-                        component="li"
-                        sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                        {...props}
-                      >
-                        <img src={option.logo} width={20} height={20}/>
-                        {option.name}
-                      </Box>
-                    )}
-                    renderInput={(params) => (
-                      <TextField
-                        {...field}
-                        {...params}
-                        fullWidth
-                        placeholder="관심기술을 선택해주세요!"
-                        inputRef={ref}
-                        variant="outlined"
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message} 
-                      />
-                    )}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="닉네임"
+                    placeholder="닉네임을 입력해주세요"
+                    error={error !== undefined}
+                    helperText={error ? "닉네임을 입력해주세요" : ""}
                   />
                 )}
               />
             </Box>
             <Box>
               <Controller
-                  control={control}
-                  name="introduce"
-                  defaultValue={userInfo.introduce}
-                  rules={{
-                    maxLength: 100,
-                  }}
-                  render={({ field, fieldState: { error } }) => (
+              control={control}
+              name="skills"
+              rules={{
+              validate: (data) => {
+                  if(data && data.length > 3) return false;
+                }
+              }}
+              render={({ field: { ref, onChange, ...field }, fieldState }) => (
+                <Autocomplete
+                  multiple
+                  options={skillData}
+                  getOptionLabel={(option) => option.name}
+                  onChange={(_, data) => onChange(data)}
+                  renderOption={(props, option) => (
+                    <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>
+                      <img src={option.logo} width={20} height={20}/>{option.name}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
                     <TextField
-                      multiline
-                      fullWidth
-                      variant="outlined"
-                      label="자기소개"
-                      placeholder="본인소개를 해주세요."
                       {...field}
-                      rows={2}
-                      sx={{ mt: 2 }}
-                      error={error !== undefined}
-                      helperText={error ? "false" : "true"}
+                      {...params}
+                      fullWidth
+                      placeholder="관심기술을 선택해주세요!"
+                      inputRef={ref}
+                      variant="outlined"
+                      error={fieldState.error !== undefined}
+                      helperText={fieldState.error ? "관심기술은 5개까지만 선택할 수 있습니다. " : ""}
                     />
                   )}
                 />
-              
+                )}
+              />
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button sx={{ mr: 1 }} onClick={back}>뒤로</Button>
-              <Button type="submit" variant="contained">
-                완료
-              </Button>
+            <Box>
+              <Controller
+                control={control}
+                name="introduce"
+                defaultValue={userInfo.introduce}
+                rules={{
+                  maxLength: 100,
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                  multiline
+                  fullWidth
+                  variant="outlined"
+                  label="자기소개"
+                  placeholder="자기소개를 해주세요."
+                  {...field}
+                  rows={2}
+                  error={error !== undefined}
+                  helperText={error ? "글자 수를 초과했습니다." : ""}
+                  />
+                )}
+              />
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
+              <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
+              <Button type="submit" variant="contained">완료</Button>
             </Box>
           </Stack>
-        </Box>
-        </form>
+          </form>
         </Grid>
       </Grid>
     </>
