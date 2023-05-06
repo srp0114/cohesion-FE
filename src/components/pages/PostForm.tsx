@@ -157,7 +157,7 @@ const PostForm = () => {
                 게시되었습니다.
               </Alert>
             </Snackbar>
-            window.location.href = `/${boardType}`;
+            nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
@@ -198,7 +198,7 @@ const PostForm = () => {
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
-                window.location.href = `/${boardType}`;
+                nav(`/${boardType}/${res.data}`)
               }
             })
             .catch((err) => {
@@ -228,7 +228,7 @@ const PostForm = () => {
                 게시되었습니다.
               </Alert>
             </Snackbar>
-            window.location.href = `/${boardType}`;
+            nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
