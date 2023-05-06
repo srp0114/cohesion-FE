@@ -68,7 +68,6 @@ const Welcome = () => {
           alert("토큰이 만료되었습니다.");
           return;
         }
-        console.log(payload);
         setUserInfo((prev) => ({ ...prev, ...payload, nickname: payload.name }));
         if (payload) {
           setProfileImg(payload.picture);
