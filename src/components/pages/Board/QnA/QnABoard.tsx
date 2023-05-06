@@ -75,7 +75,7 @@ const QnABaord = () => {
     const curPage = page - 1;
     axios({
       method: "get",
-      url: "/api/qna/list?page=" + curPage + "&size=4",
+      url: "/api/questions/list?page=" + curPage + "&size=4",
     })
       .then((res) => {
         setBoardItems(res.data);
@@ -93,7 +93,7 @@ const QnABaord = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: "/api/qna/most",
+      url: "/api/questions/most",
     })
       .then((res) => {
         if (res.status === 200) {

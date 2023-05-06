@@ -45,7 +45,7 @@ const QnADetails = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: "/api/qna/detail/" + id,
+      url: "/api/questions/detail/" + id,
     })
       .then((res) => {
         if (res.status === 200) {
@@ -63,7 +63,7 @@ const QnADetails = () => {
     // 해당 게시글 작성자의 userId 받아오기
     axios({
       method: "get",
-      url: `/api/qna/return/user-id/${id}`
+      url: `/api/questions/return/user-id/${id}`
     }).then((res) => {
       if (res.status === 200) {
         console.log(res)
@@ -163,7 +163,7 @@ const QnADetails = () => {
         {replyCount(postItem.reply)}
       </Grid>
       {/*댓글 입력창 텍스트필드로 변경*/}
-      <Reply board={"qna"} writerId={writerId} postingId={id} />
+      <Reply board={"questions"} writerId={writerId} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>

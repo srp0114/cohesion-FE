@@ -167,7 +167,7 @@ const PostForm = () => {
         if (fileList.length > 0) {
           axios({
             method: "post",
-            url: "/api/qna",
+            url: "/api/questions",
             headers: { "Content-Type": "multipart/form-data" },
             data: JSON.stringify(qna_formData),
           })
@@ -191,7 +191,7 @@ const PostForm = () => {
         } else {
           axios({
             method: "post",
-            url: "/api/qna/no-file",
+            url: "/api/questions/no-file",
             headers: { "Content-Type": "application/json" },
             data: JSON.stringify(request_qna),
           })
