@@ -101,8 +101,11 @@ const Welcome = () => {
     })
     .then((response) => {
       if (response.status === 200) { // 부가 정보 입력 정상 완료 시
+        setUserInfo({...userInfo, nickname: userAccountInfo.nickname});
         console.log(userAccountInfo);
-        navigate("/"); // 메인 페이지로 이동 
+        setTimeout(() => 
+          navigate("/") // 메인 페이지로 이동 
+        , 1000)
       } // 에러 핸들링 ...
     })
     .catch((error) => {
