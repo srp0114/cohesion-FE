@@ -83,7 +83,7 @@ const Home: React.FC = () => {
           <Grid xs
             sx={{ filter: isLogin? null : "blur(1.5px)"}}>
             {/* qna -> questions로 수정*/}
-            <HomeBoard board="qna" loginState={isLogin} />
+            <HomeBoard board="questions" loginState={isLogin} />
           </Grid>
         </Grid>
 

@@ -15,7 +15,7 @@ const AdoptReply = ({ onReplyCheck, isChosen, replyId }: AdoptReplyProps) => {
   const handleCheckReply = async () => {
     try {
       // 댓글 채택한 경우 post axios 연동 추가
-      await axios.post(`/api/qna/${replyId}/adopt-replies`)
+      await axios.post(`/api/questions/${replyId}/adopt-replies`)
       .then((res)=>{
           if(res.status===200) {
             console.log(res)

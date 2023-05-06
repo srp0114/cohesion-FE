@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Grid, Stack } from "@mui/material";
+import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
@@ -75,7 +75,7 @@ const QnABaord = () => {
     const curPage = page - 1;
     axios({
       method: "get",
-      url: "/api/qna/list?page=" + curPage + "&size=4",
+      url: "/api/questions/list?page=" + curPage + "&size=4",
     })
       .then((res) => {
         setBoardItems(res.data);
@@ -93,7 +93,7 @@ const QnABaord = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: "/api/qna/most",
+      url: "/api/questions/most",
     })
       .then((res) => {
         if (res.status === 200) {
@@ -109,11 +109,7 @@ const QnABaord = () => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
   }, [boardItems]);
 
-  const displayPosting = boardItems.sort((x, y) => {
-    const dateX = new Date(x.modifiedDate || x.createdDate);
-    const dateY = new Date(y.modifiedDate || y.createdDate);
-    return Number(dateY) - Number(dateX); // 최신 순서대로 정렬
-  }).map((element, idx) => {
+  const displayPosting = boardItems.map((element, idx) => {
     return (
       <>
         <PreviewPosting {...element} key={idx} />
@@ -190,12 +186,12 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
     }}
       onClick={() => goToPost(props.id)}>
       <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h5" >
-          {props.title} {Skill}
-        </Typography>
-        {(typeof props.modifiedDate === undefined) ?
-          <Time date={props.createdDate} variant="h6" /> :
-          <Time date={props.modifiedDate || props.createdDate} />}
+        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+          <Typography variant="h5">{props.title}</Typography>
+          {(typeof props.modifiedDate === 'object') ?
+            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+        </Stack>
+        <Time date={props.createdDate} variant="h6" />
       </Grid>
 
       <Grid item sx={{

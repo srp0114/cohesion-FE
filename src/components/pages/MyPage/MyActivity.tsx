@@ -66,20 +66,16 @@ const MyActivity = (props: MyDataProps) => {
     // 댓글 컴포넌트와 유사하게 activity로부터 reply, bookmark, post 셋중 하나를 받아와서 url에 적용
     // ex) /api/${userId}/${activity} => /api/102/reply  
     // TODO: 연동 url 추가
-    useEffect(() => {
-        axios({
-        method: "get",
-        url: ``
-        })
-        .then((res) => {
-            if (res.status === 200) {
-                //setActivity(res.data);
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }, []);
+
+    axios({
+        method : "get",
+        url : `/api/user/${activityType}/mypage`
+    }).then((res)=>{
+        if(res.status === 200){}
+            setActivity(res.data);
+    }).catch((err)=>{
+        console.log(err);
+    })
         
     // activityType에 따른 타이틀 변경
     const activityTitle = activityType === "reply" ? "작성한 댓글" :
