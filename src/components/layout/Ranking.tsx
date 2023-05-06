@@ -56,7 +56,7 @@ export const PostRanking = () => {
         {postRanking.map((value, index) => {
             const board = value.boardType
             const boardName: string = board === "free" ? "자유게시판"
-            : board === "qna" ? "Q&A게시판"
+            : board === "questions" ? "Q&A게시판"
             : board === "recruit" ? "구인게시판"
             : board === "notice" ? "공지사항" : "";
             return (

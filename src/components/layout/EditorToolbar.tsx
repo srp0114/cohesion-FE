@@ -75,7 +75,7 @@ const EditorToolbar = (props : QuillProps) => {
             })
                 axios({
                     method: "post",
-                    url: "/api/qna/image",
+                    url: "/api/questions/image",
                     headers: {"Content-Type": "multipart/form-data"},
                     data: formData,
                 }).then((response)=>{
