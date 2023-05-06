@@ -1,5 +1,5 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, Grid } from "@mui/material";
+import React, { Fragment, SyntheticEvent, useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, Grid, Icon, InputAdornment} from "@mui/material";
 import { skillData } from "../data/SkillData";
 import profileImg from "../asset/image/react.png";
 import { styled } from "@mui/material/styles";
@@ -8,39 +8,44 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import {logoutHandler} from "../logoutHandler";
 import Profile from "../layout/Profile";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
-interface UserAccountItems {
+interface UserInfoItems {
   sub: number; //학번
   name: string; //이름
   track1: string; //1트랙
   track2: string; //2트랙
-  picture: string; //프로팔
-}
-
-interface UserInfoItems {
+  picture: string; //프로필
   nickname: string; //닉네임
   introduce?: string; //자기소개
-  skills?: Array<string>; //관심기술 - 최대 5개
+  skills?: string[];
+}
+
+interface UserAddItems {
+  nickname: string; //닉네임
+  introduce?: string; //자기소개
+  skills?: {name:string}[];
+  picture: string;
 }
 
 const Welcome = () => {
   const [profileImg, setProfileImg] = useState<string>("");
-  const [userAccount, setUserAccount] = useState<UserAccountItems>({
+
+  const [userInfo, setUserInfo] = useState<UserInfoItems>({
     sub: 0,
     name: "",
     track1: "",
     track2: "",
-    picture: profileImg
-  });
-  const [userInfo, setUserInfo] = useState<UserInfoItems>({
+    picture: profileImg,
     nickname: "",
     introduce: "",
+    skills: [],
   });
-  const [skill, setSkill] = useState<typeof skillData>([]);
 
-
-
+  const {  formState: { errors }, register, control, handleSubmit, watch } =
+  useForm<UserAddItems>({
+    mode: "onChange"
+  });
 
   const navigate = useNavigate();
 
@@ -63,7 +68,7 @@ const Welcome = () => {
           alert("토큰이 만료되었습니다.");
           return;
         }
-        setUserAccount(payload);
+        setUserInfo((prev) => ({ ...prev, ...payload }));
         if (payload) {
           setProfileImg(payload.picture);
         }
@@ -78,38 +83,33 @@ const Welcome = () => {
   // 기본 -1로 지정
   const [flag, setFlag] = useState<number>(-1);
 
-  // 닉네임, 자기소개 핸들러
-  const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInfo({...userInfo, nickname: event.target.value})
+  const onSubmit = (data: UserAddItems) => {
+    const newUserData = {
+      nickname: data.nickname,
+      introduce: data.introduce ?? "",
+      skills: (data.skills || []).map((s) => s.name),
+    };
+
+    setUserInfo(prev => ({
+      ...prev,
+      nickname: newUserData.nickname,
+      introduce: newUserData.introduce,
+      skills: newUserData.skills,
+    }));
   };
 
-  const onIntroduceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInfo({...userInfo, introduce: event.target.value})
-  };
-
-  const onSkillChange = (event: SyntheticEvent<Element, Event>, value: any) => {
-    setUserInfo({...userInfo, skills: value});
-    setSkill(value);
-  }
-
-  const request_data = {
-    studentId: userAccount.sub,
-    name: userAccount.name,
-    track1: userAccount.track1,
-    track2: userAccount.track2,
-    picture: userAccount.picture,
-    nickname: userInfo.nickname,
-    introduce: userInfo.introduce,
-    skills: skill.map(s => s.name)
-  };
-
+  useEffect(() => {
+    confirm();
+  }, [userInfo]);
 
   const confirm = () => {
+    console.log(userInfo);
+
     axios({
       method: "post",
       url: "/api/join",
       headers: { "Content-Type": "application/json" },
-      data: JSON.stringify(request_data),
+      data: JSON.stringify(userInfo),
     })
       .then((response) => {
         if (response.status === 200) { // 부가 정보 입력 정상 완료 시
@@ -120,18 +120,15 @@ const Welcome = () => {
         console.error(error);
       });
   };
-
   const back= ()=>{
     logoutHandler();
   }
 
-  const onProfileChange = (flag: number) => {
+   const onProfileChange = (flag: number) => {
     setFlag(flag);
-    flag === 1 ? 
-      setUserAccount({...userAccount, picture: profileImg})
-     : 
-      setUserAccount({...userAccount, picture: ""})
+    setUserInfo({ ...userInfo, picture: flag === 1 ? profileImg : "" });
   }
+
 
   return (
     <>
@@ -145,10 +142,10 @@ const Welcome = () => {
         </Grid>
 
         <Grid>
+        <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ pl: 15, pr: 15, mb: 5 }}>
           <Stack spacing={5}>
             <Box>
-              <Typography>* 프로필을 선택해주세요</Typography>
               <Box
                 sx={{
                   display: "flex",
@@ -156,7 +153,7 @@ const Welcome = () => {
                   mt: 2,
                 }}
               >
-                  <ImageButton 
+                    <ImageButton 
                     style={flag === 1 ? clickBorder : defaultBorder} 
                     onClick={()=>onProfileChange(1)}
                   >
@@ -169,7 +166,7 @@ const Welcome = () => {
                         p: 4,
                       }}
                     >
-                      {userAccount.name}
+                      {userInfo.name}
                     </Typography>
                   </ImageButton>
                   
@@ -194,7 +191,7 @@ const Welcome = () => {
                 disabled
                 variant="outlined"
                 label="이름"
-                value={userAccount.name}
+                value={userInfo.name}
                 fullWidth
                 //InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
                 sx={{ mt: 2 }}
@@ -206,7 +203,7 @@ const Welcome = () => {
                 fullWidth
                 variant="outlined"
                 label="학번"
-                value={userAccount.sub}
+                value={userInfo.sub}
                 sx={{ mt: 2 }}
               />
             </Box>
@@ -222,7 +219,7 @@ const Welcome = () => {
                   fullWidth
                   variant="outlined"
                   label="1트랙"
-                  value={userAccount.track1}
+                  value={userInfo.track1}
                   sx={{ mt: 2 }}
                 />
               </Box>
@@ -232,74 +229,112 @@ const Welcome = () => {
                   fullWidth
                   variant="outlined"
                   label="2트랙"
-                  value={userAccount.track2}
+                  value={userInfo.track2}
                   sx={{ mt: 2 }}
                 />
               </Box>
             </Box>
             <Box>
-              <TextField
-                fullWidth
-                variant="outlined"
-                label="닉네임"
-                placeholder="닉네임을 입력해주세요!"
-                sx={{ mt: 2 }}
-                onChange={onNicknameChange}
+                <Controller
+                  control={control}
+                  name="nickname"
+                  rules={{
+                    required: true,
+                    maxLength: 10,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="닉네임"
+                      placeholder="닉네임을 입력해주세요"
+                      sx={{ mt: 2 }}
+                      error={error !== undefined}
+                      helperText={error ? "false" : "true"}
+                    />
+                  )}
                 />
             </Box>
             <Box>
-              <Autocomplete
-                multiple
-                options={skillData}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...props}
-                  >
-                    {option.name}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    label="관심기술"
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                    }}
+               <Controller
+                control={control}
+                name="skills"
+                rules={{
+                  validate: (data) => {
+                    if(data && data.length > 3) return false;
+                  }
+                }}
+                render={({ field: { ref, onChange, ...field }, fieldState }) => (
+                  <Autocomplete
+                    multiple
+                    options={skillData}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(_, data) => onChange(data)}
+                    renderOption={(props, option) => (
+                      <Box
+                        component="li"
+                        sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                        {...props}
+                      >
+                        <img src={option.logo} width={20} height={20}/>
+                        {option.name}
+                      </Box>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...field}
+                        {...params}
+                        fullWidth
+                        placeholder="관심기술을 선택해주세요!"
+                        inputRef={ref}
+                        variant="outlined"
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message} 
+                      />
+                    )}
                   />
                 )}
-                value={skill}
-                onChange={onSkillChange}
               />
             </Box>
             <Box>
-              <TextField
-                multiline
-                fullWidth
-                variant="outlined"
-                label="자기소개"
-                placeholder="본인소개를 해주세요."
-                rows={3}
-                onChange={onIntroduceChange}
-                sx={{ mt: 2 }}
-              />
+              <Controller
+                  control={control}
+                  name="introduce"
+                  defaultValue={userInfo.introduce}
+                  rules={{
+                    maxLength: 100,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      multiline
+                      fullWidth
+                      variant="outlined"
+                      label="자기소개"
+                      placeholder="본인소개를 해주세요."
+                      {...field}
+                      rows={2}
+                      sx={{ mt: 2 }}
+                      error={error !== undefined}
+                      helperText={error ? "false" : "true"}
+                    />
+                  )}
+                />
+              
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button sx={{ mr: 1 }} onClick={back}>뒤로</Button>
-              <Button variant="contained" onClick={confirm}>
+              <Button type="submit" variant="contained">
                 완료
               </Button>
             </Box>
           </Stack>
         </Box>
+        </form>
         </Grid>
       </Grid>
     </>
   );
 };
-
 
 //프로필 선택 버튼
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
