@@ -51,10 +51,10 @@ const Reply = (props: ReplyProps) => {
   const writerId = props.writerId;
    
   const getAdoptReply = useCallback(() => {
-    if (board === "qna") {
+    if (board === "questions") {
       axios({
         method: "get",
-        url: `/api/qna/${id}/adopt-check`,
+        url: `/api/questions/${id}/adopt-check`,
       })
         .then((res) => {
           if (res.status === 200) {
@@ -98,8 +98,8 @@ const Reply = (props: ReplyProps) => {
   const handleAdoptReply = async (replyId: number) => {
     try {
       isChosen.check ?
-        await axios.put(`/api/qna/${replyId}/adopt-cancel`) :
-        await axios.post(`/api/qna/${replyId}/adopt-replies`)
+        await axios.put(`/api/questions/${replyId}/adopt-cancel`) :
+        await axios.post(`/api/questions/${replyId}/adopt-replies`)
       await getAdoptReply()
     } catch (err) {
       console.error(err)
@@ -207,7 +207,7 @@ const Reply = (props: ReplyProps) => {
   const Article = (article: string, id:number) => {
     return (
       <>
-        {board === "qna" ? (
+        {board === "questions" ? (
           // Q&A 게시판인 경우
           <Grid container direction="row" spacing={2}>
             <Grid item xs={9} md={10}>
