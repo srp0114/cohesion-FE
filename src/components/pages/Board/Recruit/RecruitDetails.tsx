@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
+import { Box, Button, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
@@ -14,8 +14,12 @@ import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
-import { ApplyButton, ApplicantList, DoubleCheckModal, RecruitCompleteButton, Applicant } from "./ApplyAcceptStuff";
+import { ApplicantList, DoubleCheckModal, Applicant } from "./ApplyAcceptStuff";
+import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import { propTypes } from "react-bootstrap/esm/Image";
+import { skillData } from "../../../data/SkillData";
+import { profile } from "console";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -37,27 +41,27 @@ export interface RecruitDetailItems {
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
 }
 
-const RecruitDetails: React.FC = (): JSX.Element => {
+const RecruitDetails = () => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  //이하 Applicant에 필요한 데이터
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
-  const [potentialPartyId, setPotentialPartyId] = useState<Array<number>>([]);
-  const [applicationInfo, setApplicationInfo] = useState<Array<Applicant>>([]);
-  const [gatheredParty, setGatheredParty] = useState<number>();
+  const [postingId, setPostingId] = useState<number>(Number(id));
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
+  const [isMeetOptional, setIsMeetOptional] = useState<boolean | undefined>(undefined);
+  const [studentId, setStudentId] = useState<number>(-1);
+  const [profileImg, setProfileImg] = useState<string>(""); //simpleUser에 profileImg 추가필요
+  const [nickname, setNickname] = useState<string>("");
+  const [skills, setSkills] = useState<typeof skillData | undefined>(undefined); //simpleUser에 skills 추가필요
+  const [introduce, setIntroduce] = useState<string>("");
+  const [track1, setTrack1] = useState<string>("미정");
+  const [track2, setTrack2] = useState<string>("미정");
 
-  const updatePotentialPartyId = (newPotentialPartyId: Array<number>) => {
-      setPotentialPartyId(newPotentialPartyId);
-  }
+  const [party, setParty] = useState<number>(-1);
+  const [gathered, setGathered] = useState<number>(-1);
 
-  const updateApplicationInfo = (newApplicationInfo: Array<Applicant>) => {
-    setApplicationInfo(newApplicationInfo);
-  }
-
-  const updateGatheredParty = (newGatheredParty: number) => {
-    setGatheredParty(newGatheredParty);
-  }
-
-  const postingId = Number(id);
 
   useEffect(() => {
     axios({
@@ -66,17 +70,28 @@ const RecruitDetails: React.FC = (): JSX.Element => {
     })
       .then((res) => {
         if (res.status === 200) {
+          console.log(`상세보기 첫 입장: ${JSON.stringify(res.data)}`);
           setPostItem(res.data);
-          setGatheredParty(res.data.gathered);
+          setIsMeetOptional(res.data.optional);
+          setParty(res.data.party);
+          setGathered(res.data.gathered);
         }
       })
       .catch((err) => {
         console.log(err);
       });
-    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
-    //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
+
     getCurrentUserInfo()
-      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .then(userInfo => {
+        setAccessUserId(userInfo.studentId);
+        setStudentId(userInfo.studentId);
+        setNickname(userInfo.nickname);
+        setIntroduce(userInfo.introduce);
+        // setProfileImg(userInfo.profileImg);
+        // setSkills(userInfo.skills);
+        setTrack1(userInfo.track1);
+        setTrack2(userInfo.track2);
+      })
       .catch(err => console.log(err));
 
   }, []);
@@ -98,6 +113,26 @@ const RecruitDetails: React.FC = (): JSX.Element => {
     }
 
   }
+
+    setIsMeetRequired(isMeetRequired);
+    setIsMeetOptional(isMeetOptional);
+    setIsApproved(isApproved);
+
+    const ApplicantInfo = {
+      postingId: postingId,
+      isApproved: isApproved,
+      isMeetRequired: isMeetRequired,
+      isMeetOptional: isMeetOptional,
+      id: accessUserId,
+      studentId: studentId,
+      profileImg: "../../asset/image/react.png",//profileImg,
+      nickname: nickname,
+      skills: [{ name: "C", logo: "../../asset/image/c.png" }], //예시데이터
+      introduce: introduce,
+      track1: track1,
+      track2: track2
+    };
+  
 
   const detailPosting = postItem ? (
     <>
@@ -156,15 +191,25 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         <Grid item xs={12} sm={6}>
           <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6">
-              모인 사람 {gatheredParty} / 최종 인원 {postItem.party}
+              모인 사람 {postItem.gathered} / 최종 인원 {postItem.party}
             </Typography>
             {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
             {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
             {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
-              ? <><RecruitCompleteButton /> <ApplicantList {...Object.assign(applicationInfo)} postingId={postingId} onGatheredPartyUpdate={updateGatheredParty}/></>
-              : <><ApplyButton postingId={postingId} isMeetOptional={true} isMeetRequired={true}
-              {...Object.assign(userInfo) } onPotentialPartyIdChange={updatePotentialPartyId} onApplicationInfoUpdate={updateApplicationInfo}/></>}
-              <Typography variant="h4">신청인원 수: {potentialPartyId.length}</Typography>
+              ? <>
+                <Button variant="outlined" startIcon={<AssignmentTurnedInIcon />} size="small" onClick={() => setModalOpen(true)}>
+                  모집완료
+                </Button>
+                <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" applicant={ApplicantInfo}/>
+                <ApplicantList {...Object.assign(ApplicantInfo)} />
+              </>
+              : <>
+                <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)}>
+                  신청하기
+                </Button>
+                <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" applicant={ApplicantInfo}/>
+              </>}
+            <Typography variant="h4">신청인원 수: </Typography>
           </Grid>
         </Grid>
         <Grid item xs={12}>

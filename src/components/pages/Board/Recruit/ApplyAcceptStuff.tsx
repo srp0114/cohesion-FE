@@ -1,153 +1,76 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Box, Button, Drawer, Divider, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, Modal } from "@mui/material"
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import { Avatar, Box, Button, Chip, Collapse, Drawer, Divider, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
 import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabledOutlined';
+import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import axios from "axios";
 import Point from "../../../layout/Point";
-import { request } from "http";
+import { skillData } from "../../../data/SkillData";
+import { Track } from "../../../model/user";
 
-const dummy:Applicant[] = [{
-    postingId:25,
+const dummy: Applicant[] = [
+    {
+        postingId: 23,
+        isApproved: false,
+        isMeetRequired: true,
+        isMeetOptional: false,
+        id: 2, //유저의 아이디
+        studentId: 2271123,  //유저의 학번
+        profileImg: "",
+        nickname: "커스터드푸딩",
+        skills: [skillData[0],skillData[3]],
+        introduce: "푸딩쫀맛",
+        track1: Track.bigData,
+        track2: Track.mobile,
+    },
+    {
+        postingId: 23,
+        isApproved: false,
+        isMeetRequired: true,
+        isMeetOptional: false,
+        id: 2, //유저의 아이디
+        studentId: 2271123,  //유저의 학번
+        profileImg: "",
+        nickname: "커스터드푸딩",
+        skills: [skillData[3]],
+        introduce: "푸딩쫀맛",
+        track1: Track.bigData,
+        track2: Track.mobile,
+    }, {
+        postingId: 23,
+        isApproved: false,
+        isMeetRequired: true,
+        isMeetOptional: false,
+        id: 2, //유저의 아이디
+        studentId: 2271123,  //유저의 학번
+        profileImg: "",
+        nickname: "커스터드푸딩",
+        skills: [skillData[1],skillData[2]],
+        introduce: "푸딩쫀맛",
+        track1: Track.bigData,
+        track2: Track.mobile,
+    },
+];
 
-    isApproved: false,
-    isMeetRequired: true,
-   
-    id: 2,
-    studentId: 1971096,
-    partyId: 5,
-    name: "김이박",
-    nickname: "닉네임",
-    career: "커리어.....?",
-    introduce: "말하는감자잉ㅂ니",
-    track1: "웹공학",
-    track2: "모바일소프트웨어"} ,
-{
-    postingId:25,
-
-    isApproved: false,
-    isMeetRequired: true,
-   
-    id: 4,
-    studentId: 2091096,
-    partyId: 7,
-    name: "최권강",
-    nickname: "왈왈왈왈!!!!",
-    career: "커리어.....?",
-    introduce: "말하는감자잉ㅂ니",
-    track1: "빅데이터",
-    track2: "모바일소프트웨어"}]
 
 export interface Applicant { //얘가 결국에는 신청자 목록에 들어가야하고, 곧 파티원의 정보가 된다. //필요 없는 부분 삭제 필요
     postingId: number;
 
     isApproved: boolean;
-    isMeetRequired: boolean;
-    isMeetoptional?: boolean;
+    isMeetRequired?: boolean;
+    isMeetOptional?: boolean;
 
     id: number; //유저의 아이디
     studentId: number; //유저의 학번
-    partyId: number; //파티원 아이디
-    name: string;
+    profileImg: string;
     nickname: string;
-    career: string;
+    skills?: typeof skillData; //skillData[]
     introduce: string;
     track1: string;
     track2: string;
-}
-
-/**
- * 
- *'신청하기' 버튼 //게시글 작성자 제외한 모든 사용자에게서 보임.
- */
-interface ApplyButtonProps {
-    postingId: number; //게시글 아이디
-
-    id: number; //유저의 아이디
-    studentId: number; //유저의 학번
-    name: string;
-    nickname: string;
-    career: string;
-    introduce: string;
-    track1: string;
-    track2: string;
-
-    isMeetRequired: boolean,
-    isMeetOptional: boolean,
-
-    onPotentialPartyIdChange: (potentialPartyId: Array<number>) => void; //신청자 수 변경 관리 위함. api 필요, 추후 삭제 및 수정
-    onApplicationInfoUpdate: (applicationInfo: Array<Applicant>) => void; //신청자 목록 관리 위함. api 필요, 추후 삭제 및 수정
-}
-export const ApplyButton = (props: ApplyButtonProps) => {
-    const [open, setOpen] = React.useState(false);
-    const [potentialPartyId, setPotentialPartyId] = useState<Array<number>>([]);
-    const [applicationInfo, setApplicationInfo] = useState<Array<Applicant>>([]);
-
-    
-    const clickHandler = () => { //신청확인모달띄우기
-        setOpen(true);
-    }
-
-    const submittedApplication = () => { //신청 제출함. modal 창에서 확인버튼 누름
-        const applicant_data = {
-            //dummydata
-            isMeetRequired: props.isMeetRequired,
-            isMeetOptional: props.isMeetOptional,
-        };
-        setOpen(false); //모달 닫고
-
-        axios({ //신청정보를 서버로 보낸다.
-            method: "post",
-            url: `/api/recruit/${props.postingId}/application`,
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(applicant_data)
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    const newApplicationInfo = {
-                        isApproved: false, //default
-                        partyId: res.data,
-                        ...applicant_data,
-                        ...props,
-                    }
-                    setPotentialPartyId((prevState) => [...prevState, res.data]);
-                    setApplicationInfo((prevState) => [...prevState, newApplicationInfo]);
-                    alert(`신청자 정보 ${potentialPartyId} ${applicationInfo}`); //1, 2, 3 ... 인덱스? 사람 수? 아이디?
-                    props.onPotentialPartyIdChange([...potentialPartyId, res.data]);
-                    props.onPotentialPartyIdChange([...potentialPartyId, res.data]);
-                }
-            })
-            .catch((err) => { console.log(err); });
-    }
-
-    return (
-        <>
-            <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={clickHandler}>
-                신청하기
-            </Button>
-            <DoubleCheckModal isWriter={false} callNode="applyBtn" open={open} onClose={() => submittedApplication()} />
-        </>
-    );
-}
-
-/**
- * '구인(모집)완료버튼' //게시글 작성자에게만 보임
- */
-export const RecruitCompleteButton = () => {
-    const [open, setOpen] = React.useState<boolean>(false);
-    const clickHandler = () => { //신청확인모달띄우기
-        setOpen(true);
-    }
-    return (
-        <>
-            <Button variant="outlined" startIcon={<AssignmentTurnedInIcon />} size="small" onClick={clickHandler}>
-                모집완료
-            </Button>
-            <DoubleCheckModal isWriter={true} callNode="completeBtn" open={open} onClose={() => setOpen(false)} />
-        </>
-    );
 }
 
 /**
@@ -155,50 +78,147 @@ export const RecruitCompleteButton = () => {
  */
 
 interface DoubleCheckModalProps {
-    isWriter: boolean; //작성자면 true, 일반 사용자면 false
-    callNode: HTMLElement | string; //아마...이벤트타겟객체어쩌고이런거로...안되면 그냥 하나하나 만들어야지 뭐
+    who: boolean; //접속한 유저가 작성자인지 신청자인지
+    callNode: string; //모달을 부른 곳이 어디인지
+    isComplete?: boolean;
     open: boolean;
-    onClose: () => void;
+    applicant: Applicant;
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
-    const [open, setOpen] = React.useState<boolean>(false);
-
-    const sentences = [
-        { who: false, sentence: "신청하시겠습니까? (신청이 완료된 후, 취소는 불가합니다.)", source: "applyBtn" },
-        { who: true, sentence: "승인하시겠습니까?", source: "applicantList" }, // 사라질수도...
-        { who: true, sentence: "승인을 취소하시겠습니까?", source: "applicantList" }, // 사라질수도...
-        { who: true, sentence: "모집을 완료하시겠습니까?", source: "completeBtn" },
+    const [modalOpen, setModalOpen] = useState<boolean>(props.open);
+    const operators = [
+        { who: false, callNode: "applyBtn" },
+        { who: true, callNode: "approveBtn" },
+        { who: true, callNode: "rejectBtn" },
+        { who: true, callNode: "completeBtn" }
     ];
 
-    const designateAnnouncement = () => {
-        const printingSentence = [...sentences].find((element) => (props.isWriter == element.who && props.callNode == element.source))?.sentence;
-        console.log(`DoubleCheckModal의 designateAnnouncement 함수`);
-        console.log(`출력될 문장 => ${JSON.stringify(printingSentence)} props.isWriter => ${props.isWriter} ${typeof props.isWriter}`);
-        console.log(`props.callNode => ${JSON.stringify(props.callNode)} ${typeof props.callNode}`);
-        return (printingSentence || 'error');
+    const sentences = [
+        "신청하시겠습니까? (신청이 완료된 후, 취소는 불가합니다.)",
+        "승인하시겠습니까?", // 사라질수도...
+        "승인을 취소하시겠습니까?", // 사라질수도...
+        "모집을 완료하시겠습니까?"
+    ]
+
+    const designateOperator = (who: boolean, callNode: "applyBtn" | "approveBtn" | "rejectBtn" | "completeBtn" | string) => {
+        const operatorArray = [...operators];
+        const foundOperator = operatorArray.find((element) => props.who === element.who && props.callNode === element.callNode);
+        if (foundOperator) {
+            return operatorArray.indexOf(foundOperator);
+        } else {
+            return -1;
+        }
     }
 
-    const clickHandler = () => { //확인 버튼 눌렀을 때,
-        setOpen(false);
-        //모집완료면 게시글 disabled
-        //승인이면...모인인원 + 1
-        props.onClose();
+    const designateSentence = () => {
+        const sentenceArray = Object.values(sentences);
+        return sentenceArray[designateOperator(props.who, props.callNode)];
+    }
+
+    /**
+     * 신청정보 서버로 전송
+     */
+    const postApplicantInfo = () => {
+        axios({
+            method: "post",
+            url: `/api/recruit/${props.applicant.postingId}/application`
+        }).catch((res) => {
+            if (res.status === 200)
+                console.log(`${res.data} ${JSON.stringify(res.data)}`);
+        }).then((err) => {
+            console.log(err);
+        });
+    }
+
+    /**
+     * 승인 혹은 승인취소(거절) 정보를 서버로 전송
+     */
+    const putApprove = () => {
+        axios({
+            method: "put",
+            url: `/api/recruit/${props.applicant.postingId}/approval/${props.applicant.id}`,
+        }).catch((res) => {
+            if (res.status === 200)
+                console.log(`$${res.data} ${JSON.stringify(res.data)}`);
+        }).then((err) => {
+            console.log(err);
+        });
+    }
+
+    /**
+     * 승인취소(거절) 정보를 서버로 전송
+     */
+    const putReject = () => {
+        // axios({
+        //     method: "put",
+        //     url: `/api/recruit/${props.applicant.postingId}/approval/${props.applicant.id}`,
+        // }).catch((res) => {
+        //     if (res.status === 200)
+        //         console.log(`$${res.data} ${JSON.stringify(res.data)}`);
+        // }).then((err) => {
+        //     console.log(err);
+        // });
+    }
+
+    /**
+     *  모집이 완료 or 취소되었다는 걸 서버로 전송
+     */
+    const putRecruitComplete = () => {
+        // useEffect(() => {
+        //     axios({
+        //         method: "put",
+        //         url: `/api/recruit/${props.applicant.postingId}/application`
+        //     }).catch((res) => {
+        //         if (res.status === 200)
+        //             console.log(`${res.data} ${JSON.stringify(res.data)}`);
+        //     }).then((err) => {
+        //         console.log(err);
+        //     });
+        // }, []);
+    }
+
+    const confirmClickHandler = (operator: number) => { //확인 버튼 눌렀을 때,
+        switch (operator) {
+            case 0:
+                postApplicantInfo(); //신청정보서버로
+                break;
+            case 1:
+                putApprove(); //승인정보서버로
+                break;
+            case 2:
+                putReject(); //승인취소정보서버로
+                break;
+            case 3:
+                putRecruitComplete(); //모집완료정보서버로
+                break;
+
+        }
+        setModalOpen(false);
+    }
+
+    const modalCloseHandler = () => { //취소버튼 클릭 혹은 배경의 백드롭클릭 시
+        setModalOpen(false);
     }
 
     return (
         <>
             <Modal
                 open={props.open}
-                onClose={props.onClose}
+                onClose={modalCloseHandler}
                 sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Box sx={doubleCheckModalstyle}>
                     <Typography align="center" variant="h5" sx={{ mt: 2 }}>
-                        {designateAnnouncement()}
+                        {designateSentence()}
                     </Typography>
-                    {/* 여기 필수조건, 우대조건 띄우고, 체크박스로 true false 띄우고,우대조건 디폴트는 false. */}
-                    <Button onClick={clickHandler}>
-                        네, 확인했어요!
-                    </Button>
+                    { }
+                    <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                        <Button onClick={() => confirmClickHandler(Number(designateOperator(props.who, props.callNode)))}>
+                            Confirm
+                        </Button>
+                        <Button onClick={modalCloseHandler}>
+                            Cancel
+                        </Button>
+                    </Stack>
                 </Box>
 
             </Modal>
@@ -219,26 +239,14 @@ const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
  */
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-export const ApplicantList = (applicants: Applicant[], postingId:number, onGatheredPartyUpdate: (gatheredParty: number) => void) => { //UI 확인용 임시.
+export const ApplicantList = (applicants: Applicant) => { //UI 확인용 임시.
     const [state, setState] = React.useState({
         right: false,
     });
     const [dense, setDense] = React.useState(false);
     const [secondary, setSecondary] = React.useState(false);
-    const [gatheredParty, setGatheredParty] = useState<number>(0);
-    const [writerId, setWriterId] = useState<number>(0);
-
-    axios({
-        method: "get",
-        url: `/api/recruit/detail/${dummy[0].postingId}`, //${postingId}`, dummy 데이터로 테스트 중이기 때문에..
-    }).then( (res) => {
-        if(res.status === 200) {
-            setGatheredParty(res.data.gathered);
-            setWriterId(res.data.id);
-        }
-    }
-    ).catch((err) => console.log(err));
-
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [collapseOpen, setCollapseOpen] = React.useState(false);
 
     //더미 데이터로 테스트
     const applications: Applicant[] = Array.from(new Set(Array.from(dummy)));//Array.from(new Set(Array.from(applicants)));
@@ -258,66 +266,65 @@ export const ApplicantList = (applicants: Applicant[], postingId:number, onGathe
                 setState({ ...state, [anchor]: open });
             };
 
-    const approvedApplicant = (targetApplicant: Applicant) => { //승인된 신청자
-        const request_approve = {
-            boardId: targetApplicant.postingId,
-            userId: writerId,
-            targetUserId: targetApplicant.id
-        }
-        //신청 승인정보를 서버로 보내기
-        axios({
-            method: "put",
-            url: `/api/recruit/${targetApplicant.postingId}/approval/${targetApplicant.id}`,
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(request_approve),
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    setGatheredParty(Number(gatheredParty+1));
-                    onGatheredPartyUpdate(gatheredParty);
-                    alert(`승인되었습니다. ${targetApplicant.isApproved} Hello, ${targetApplicant.nickname}!`);
-                }
-            })
-            .catch((err) => console.log(err));
-    }
-
     return (
         <div>
             {(["right"] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
-                    <Button
-                        startIcon={<SportsKabaddiIcon />}
-                        onClick={toggleDrawer(anchor, true)}
-                    >
-                        신청자 목록
-                    </Button>
+                    <Tooltip title="신청자 목록">
+                        <Button
+                            startIcon={<FolderSharedOutlinedIcon />}
+                            onClick={toggleDrawer(anchor, true)}
+                        />
+                    </Tooltip>
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
                         <Box sx={{ width: 250 }} role="presentation"
                             onClick={toggleDrawer(anchor, false)}
                             onKeyDown={toggleDrawer(anchor, false)}
                         >
-                            <List dense={dense}>
-                                {applications.map((app: Applicant) => (
-                                    <ListItem key={app.id}
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="approve" onClick={() => approvedApplicant(app)}>
-                                                <PersonAddOutlinedIcon />
-                                            </IconButton>
-                                        }
 
-                                    /* 추후 secondaryAction 해당 유저 상태에 따라 바뀔 수 있게끔...<IconButton edge="end" aria-label="reject">
-                                    <PersonAddDisabledOutlinedIcon />
-                                    </IconButton>*/
-                                    >
+                            <List dense={dense}>
+                                <ListSubheader>
+                                    신청자 목록
+                                </ListSubheader>
+                                {applications.map((app) => (
+                                    <ListItem key={app.id}>
+                                        <ListItemAvatar><Avatar src={app.profileImg} variant="rounded" /></ListItemAvatar>
+
                                         <ListItemText primary={app.nickname} secondary={`학번: ${app.studentId.toString().slice(0, 2)}`} />
+                                        <ListItemText primary={app.isMeetRequired ? <Chip size="small" variant="outlined" label="👌" /> : <Chip size="small" variant="outlined" label="❌" />} secondary={(typeof app.isMeetOptional !== undefined && app.isMeetOptional === true) ? <Chip size="small" variant="outlined" label="👌" /> : <Chip size="small" variant="outlined" label="❌" />} />
+                                        <ListItemButton>{collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
+                                        <Collapse in={collapseOpen} timeout="auto" unmountOnExit>
+                                            {/* 신청자 정보 */}
+                                            {/* 1트랙, 2트랙 */}
+                                            <Typography>{app.track1}</Typography>
+                                            <Typography>{app.track2}</Typography>
+                                            {/* 선택한 기술 */}
+                                            {/*<Box>{app.skills}</Box>*/}
+                                            {/* 자기소개 */}
+                                            <Typography>{app.introduce}</Typography>
+                                        </Collapse>
+
+                                        <ListItemButton>
+                                            {!(app.isApproved) ? <>
+                                                <IconButton edge="end" aria-label="approve" onClick={() => setModalOpen(true)} >
+                                                    <PersonAddOutlinedIcon />
+                                                </IconButton>
+                                                <DoubleCheckModal who={true} callNode="approveBtn" open={modalOpen} applicant={app} /></>
+                                                : <><IconButton edge="end" aria-label="reject" onClick={() => setModalOpen(true)} >
+                                                    <PersonAddDisabledOutlinedIcon />
+                                                </IconButton>
+                                                    <DoubleCheckModal who={true} callNode="rejectBtn" open={modalOpen} applicant={app} /></>}
+                                        </ListItemButton>
                                     </ListItem>
                                 ))}
                             </List>
+
                         </Box>
                     </Drawer>
-                </React.Fragment>
-            ))}
-        </div>
+                </React.Fragment >
+            ))
+            }
+        </div >
     );
 }
 
