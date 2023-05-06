@@ -15,9 +15,6 @@ export const myPageData_sopho:MyPageItems = {
     board: 8, //각 게시글들과 관련?,여기서 필요한건 게시글 아이디, 게시글 제목, 게시글 타입(어디게시판인지) 정도만 있어도...되지 않나?
     bookmark: 5, //게시글 아이디, 게시글 제목,게시글 타입(어디게시판인지) 정도만? 클릭하면 해당 게시글이 있는 곳으로 전환
     point: 410,
-    dailySummary: { summaryId: "q1w2e3r4",
-    date: "2023-04-011",
-    content: "자바스크립트에서 !! 연산자는 boolean 값이 아닌걸 강제 boolean으로 변환시키는 것."},
     skill: [skillData[3].name],
     language: [skillData[0].name, skillData[2].name],
     selfIntroduction: `자기소개 예시 위 경우 Up 값은 0, Down 은 1 이 됩니다. 자동-증가하는 기능은 멤버 값 자체에는 신경 쓰지 않지만, 각 값이 같은 열거형의 다른 값과 구별돼야 하는 경우에 유용합니다.

@@ -1,51 +1,57 @@
 import React, { useState } from 'react';
-import { Button, Snackbar } from '@mui/material';
-import axios from "axios";
+import { Button, Snackbar, SnackbarOrigin, Alert } from '@mui/material';
 
-interface AdoptReplyProps {
-  onReplyCheck: (isChosen: boolean) => void;
-  isChosen: boolean;
-  replyId: number;
+export interface State extends SnackbarOrigin {
+  open: boolean;
 }
 
-const AdoptReply = ({ onReplyCheck, isChosen, replyId }: AdoptReplyProps) => {
-  const [open, setOpen] = useState(false);
+interface AdoptReplyProps {
+  replyId: number;
+  check: boolean;
+  checkId: number | null
+  onReplyAdopt: (replyId: number) => void;
+}
+
+const AdoptReply = ({ onReplyAdopt, check, checkId, replyId }: AdoptReplyProps) => {
+  const [state, setState] = useState<State>({
+    open: false,
+    vertical: 'top',
+    horizontal: 'right',
+  });
+
+  const { vertical, horizontal, open } = state;
+
   const [message, setMessage] = useState<string>("");
-
-  const handleCheckReply = async () => {
-    try {
-      // 댓글 채택한 경우 post axios 연동 추가
-      await axios.post(`/api/qna/${replyId}/adopt-replies`)
-      .then((res)=>{
-          if(res.status===200) {
-            console.log(res)
-          }
-      }).catch((err)=>{
-          console.log(err);
-      })
-      setOpen(true);
-      onReplyCheck(!isChosen);
-      setMessage(isChosen ? "댓글 채택이 취소되었습니다." : "댓글이 채택되었습니다.");
-    } catch (error) {
-      console.error(error);
-    }
+  
+  const handleCheckReply = () => {
+    onReplyAdopt(replyId);
+    setMessage(check ? "댓글 채택이 취소되었습니다." : "댓글이 채택되었습니다.");
+    setState({ open: true, vertical: 'top', horizontal: 'right'});  
   };
-
+  
   const handleClose = () => {
-    setOpen(false);
+    setState({ ...state, open: false });
   };
 
   return (
-    <Button onClick={handleCheckReply}>
-      채택하기
+    <>
+      {check ? 
+        replyId === checkId ? <Button 
+        onClick={handleCheckReply}>채택취소</Button> : null 
+        : <Button onClick={handleCheckReply}>채택하기</Button>
+      } 
       <Snackbar
-        autoHideDuration={1500}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={2000}
         open={open}
-        message={message}
         onClose={handleClose}
-      />
-    </Button>
-  );
+      >
+        <Alert onClose={handleClose} severity="success">
+          {message}
+        </Alert>
+      </Snackbar>
+    </>
+  )
 };
 
 export default AdoptReply;

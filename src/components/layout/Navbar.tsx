@@ -6,6 +6,7 @@ import Profile from "../layout/Profile";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,14 +32,9 @@ const Navbar = () => {
         .then((res) => {
           if (res) {
             setIsLogin(true);
-            axios({
-              method: "get",
-              url: "/api/user-info"
-            }).then((res) => {
-              setNickname(res.data.nickname);
-            }).catch((err) => {
-              console.log(err);
-            });
+            getCurrentUserInfo()
+              .then((userInfo) => setNickname(userInfo.nickname))
+              .catch((err) => console.log(err));
           } else {
             setIsLogin(false);
           }
