@@ -29,7 +29,7 @@ const ReplyField = (props : ReplyProps) => {
         setArticle(value);
     };
     
-    const ReplyForm = props.board === "qna" ? 
+    const ReplyForm = props.board === "questions" ?
     <>
     <div className="replyQuill">
         <EditorToolbar onAddQuill={getArticle}/>
