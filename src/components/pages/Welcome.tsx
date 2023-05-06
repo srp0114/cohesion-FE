@@ -48,7 +48,7 @@ const Welcome = () => {
   const back = () => {
     logoutHandler();
   }
-  
+
   useEffect(() => {
     idTokenVerifier();
   }, []);
@@ -68,6 +68,7 @@ const Welcome = () => {
           alert("토큰이 만료되었습니다.");
           return;
         }
+        console.log(payload);
         setUserInfo((prev) => ({ ...prev, ...payload, nickname: payload.name }));
         if (payload) {
           setProfileImg(payload.picture);
@@ -160,7 +161,7 @@ const Welcome = () => {
                     onProfileChange(2);
                   }}
                   >
-                  <Profile nickname={userInfo.nickname} size={40} />
+                  <Profile nickname={userInfo.nickname} imgUrl={undefined} size={40} />
                   <Typography variant="subtitle1" sx={{ p: 4 }}>
                   {userInfo.nickname}
                   </Typography>

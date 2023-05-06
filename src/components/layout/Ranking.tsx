@@ -106,7 +106,7 @@ export const UserRanking = () => {
                 <>
                 <Box sx={{ display:"flex", mt:5 }}>
                 <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
-                <Profile nickname={value.nickname} size={33}/>
+                <Profile nickname={value.nickname} imgUrl={undefined} size={33}/>
                 <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
                     <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>

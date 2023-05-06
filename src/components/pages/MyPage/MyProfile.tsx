@@ -32,7 +32,7 @@ export const MyProfile = (props: MyProfileProps) => {
           <Grid item>
             <Grid container spacing={2}>
               <Grid item xs={6} md={5}>
-                <Profile nickname={props.nickname} size={100}/>
+                <Profile nickname={props.nickname} imgUrl={undefined} size={100}/>
               </Grid>
               <Grid item xs={4} md={7} sx={{mt:"1.5rem"}}>
                 <Typography variant="subtitle1">{props.nickname}</Typography>

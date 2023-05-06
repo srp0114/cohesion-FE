@@ -116,7 +116,7 @@ const Navbar = () => {
           {isLogin ? (
           <>
             <Button className="profile" onClick={moveToMyPage}>
-              <Profile nickname={nickname} size={25}/>
+              <Profile nickname={nickname} imgUrl={undefined} size={25}/>
             </Button>
             <Button onClick={handleLogin} className="loginButton">
               로그아웃
