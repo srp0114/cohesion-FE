@@ -74,7 +74,6 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
         setReplyData(res.data);
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);

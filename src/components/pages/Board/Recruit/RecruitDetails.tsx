@@ -140,8 +140,6 @@ const RecruitDetails: React.FC = (): JSX.Element => {
             {postItem.gathered} / {postItem.party}
           </Typography>
         </Grid>
-        {/*댓글 */}
-        {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
       <Zoom in={true}>
