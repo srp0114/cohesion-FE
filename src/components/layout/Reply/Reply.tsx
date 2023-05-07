@@ -371,7 +371,7 @@ const Reply = (props: ReplyProps) => {
         );
       })
   ) : (
-    <Typography variant="h6" sx={{ color: "grey", m: 2 }}>
+    <Typography variant="h3" sx={{ color: "primary.dark", m: 2 }}>
       아직 댓글이 없습니다.
     </Typography>
   );

@@ -85,11 +85,10 @@ const Bookmark = (props: BookmarkProps) => {
   }
 
   return (
-    <Stack direction="row">
+    <Stack sx={{ justifyContent: "end", alignItems:"center" }}>
       <Button className="bookmark" onClick={onClickBookmark} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
-        {bookmark ? <FilledBookmark /> : <BorderBookmark />}
+        {bookmark ? <FilledBookmark sx={{fontSize: "2rem"}} /> : <BorderBookmark sx={{fontSize:  "2rem"}}/>}
       </Button>
-      <Typography variant="subtitle2">{bookmarkCount}</Typography>
     </Stack>
   );
 }
