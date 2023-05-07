@@ -288,7 +288,7 @@ const PostForm = () => {
             </Grid>
             <Grid item>
               <div className="postQuill">
-                <EditorToolbar onAddQuill={getContent} />
+                <EditorToolbar onAddQuill={getContent} content={content} />
               </div>
               {/* value: {content} */}
               <div>
