@@ -115,7 +115,7 @@ const QnADetails = () => {
         <Grid item xs={12}>
           {Skill}
         </Grid>
-        <Grid item xs={12} display="flex" justifyContent="space-between">
+        <Grid item xs={12}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}>
             <Typography variant="h1">{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
@@ -160,7 +160,8 @@ const QnADetails = () => {
 
   return (
     <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{PostDetails}</Box>
+      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        {PostDetails}</Box>
     </>
   );
 };
