@@ -10,7 +10,7 @@ import "../style/Board.css";
 
 interface QuillProps  {
     onAddQuill: (content:string) => void
-    content?: string
+    content: string
 }
 
 // Undo and redo functions for Custom Toolbar
@@ -48,7 +48,7 @@ const EditorToolbar = (props : QuillProps) => {
     const [content, setContent] = useState<string>("");
 
     useEffect(() => {
-        if (props.content) setContent(props.content);
+        setContent(props.content);
     }, [props.content])
 
     // 이미지를 업로드 하기 위한 함수
@@ -160,7 +160,7 @@ const EditorToolbar = (props : QuillProps) => {
                         QuillRef.current = element;
                     }
                 }}
-                value={content}
+                value={props.content}
                 onChange={(content) => {
                     setContent(content);
                     props.onAddQuill(content);
