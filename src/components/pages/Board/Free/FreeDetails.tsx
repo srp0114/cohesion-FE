@@ -78,7 +78,7 @@ const FreeDetails = () => {
 
   const PostDetails = postItem ? (
     <>
-      <Grid container direction="column" rowSpacing={"1.5rem"} mb={"1rem"}>
+      <Grid container direction="column" rowSpacing={"2rem"} mb={"0.5rem"}>
         <Grid item xs={12}>
           <PostingCrumbs title={postItem.title} board="free" />
         </Grid>

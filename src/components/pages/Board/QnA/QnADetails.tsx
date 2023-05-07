@@ -108,7 +108,7 @@ const QnADetails = () => {
 
   const PostDetails = postItem ? (
     <>
-      <Grid container direction="column" rowSpacing={"1rem"} mb={"1rem"}>
+      <Grid container direction="column" rowSpacing={"1.5rem"} mb={"1rem"}>
         <Grid item xs={12}>
           <PostingCrumbs title={postItem.title} board="questions" />
         </Grid>
