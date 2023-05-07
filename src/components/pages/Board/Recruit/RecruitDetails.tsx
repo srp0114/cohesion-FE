@@ -106,7 +106,7 @@ const RecruitDetails: React.FC = (): JSX.Element => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"questions"} id={id} />
+           <Bookmark boardType={"recruit"} id={id} />
         </Grid>
 
         {/*게시글 내용 */}

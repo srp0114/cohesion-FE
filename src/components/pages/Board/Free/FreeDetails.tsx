@@ -98,7 +98,7 @@ const FreeDetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"questions"} id={id} />
+           <Bookmark boardType={"free"} id={id} />
         </Grid>
         <Grid item xs={12} sx={{ m: "4rem 2rem 8rem 2rem" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
