@@ -198,9 +198,6 @@ const RecruitDetails = () => {
             <Typography variant="h4">신청인원 수: {applicants}</Typography>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Bookmark boardType={"recruit"} id={id} />
-        </Grid>
         {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
