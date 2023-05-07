@@ -13,6 +13,7 @@ import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
+import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
@@ -119,7 +120,7 @@ const RecruitDetails = () => {
 
   const detailPosting = postItem ? (
     <>
-      <Grid container direction="column" rowSpacing={"3rem"}>
+      <Grid container direction="column" rowSpacing={"2rem"} mb={"0.5rem"}>
         {/*게시판 이름, BreadCrumbs */}
         <Grid item xs={12}>
           <PostingCrumbs title={postItem.title} board="recruit" />
@@ -133,22 +134,22 @@ const RecruitDetails = () => {
           </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
-        <Grid item container xs={12} justifyContent={"space-between"}>
-          <Grid item xs={4}>
+         <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+          >
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
-          </Grid>
-
-          <Grid item justifyContent={"flex-end"}>
-            <Time date={postItem.createdDate} variant="h6" />
-          </Grid>
+            {TimeAndViews (postItem.createdDate, postItem.views)}
+          </Stack>
+           <Bookmark boardType={"recruit"} id={id} />
         </Grid>
 
         {/*게시글 내용 */}
-        <Grid item xs={12} sx={{ padding: "0 2.5rem" }}>
-          <Typography variant="h5">
+        <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
             <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
             {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-          </Typography>
         </Grid>
 
         <Grid item container xs={12} direction="row" columnSpacing={"3rem"}>
