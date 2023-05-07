@@ -193,7 +193,7 @@ interface Application {
     skills: typeof skillData
 }
 
-export const ApplicantList = (postingId: number) => { //UI 확인용 임시.
+export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI 확인용 임시.
     const [state, setState] = React.useState({
         right: false,
     });
@@ -201,17 +201,21 @@ export const ApplicantList = (postingId: number) => { //UI 확인용 임시.
     const [secondary, setSecondary] = React.useState(false);
     const [applications, setApplications] = useState<Application[]>([]);
 
-    axios({ //신청자 목록 확인
-        method: "get",
-        url: `/api/recruit/${postingId}/applicants`,
-    }).then((res) => {
-        if (res.status === 200) {
-            setApplications(Array.from(new Set(Array.from(res.data))));
-            console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
-        }
-    }).catch((err) => {
-        console.log(err);
-    });
+    React.useEffect(() => {
+        const fetchApplicants = async () => {
+          try {
+            const response = await axios.get(`/api/recruit/${postingId}/applicants`);
+            if (response.status === 200) {
+              setApplications(Array.from(new Set(Array.from(response.data))));
+              console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+    
+        fetchApplicants();
+      }, [postingId]);
 
     const toggleDrawer =
         (anchor: Anchor, open: boolean) =>

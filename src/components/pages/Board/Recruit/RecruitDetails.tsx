@@ -185,7 +185,7 @@ const RecruitDetails = () => {
                 </Button>
                 <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId} 
                 onModalOpenChange={handleModalOpenChange} />
-                {/*<ApplicantList postingId={postingId}/>*/}
+                <ApplicantList postingId={postingId}/>
               </>
               : <>
                 <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={false}>
