@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
 import { Box, Button, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
-import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
@@ -48,7 +47,6 @@ const RecruitDetails = () => {
   const [gathered, setGathered] = useState<number>(-1);
   const [applicants, setApplicants] = useState<number>(-100); //신청인원수
   const [approvedApplicants, setApprovedApplicants] = useState<number>(-100); //승인된 인원수
-  const [condition, setCondition] = useState<boolean>(false); //require, optional 둘 다 있으면 true, require만 있으면 false
   const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
 
   const postingId = Number(id);
@@ -96,7 +94,6 @@ const RecruitDetails = () => {
         if (res.status === 200) {
           setPostItem(res.data);
           setGathered(res.data.gathered);
-          setCondition((res.data.require) && (res.data.optional));
         }
       })
       .catch((err) => {
@@ -211,7 +208,8 @@ const RecruitDetails = () => {
                 <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
                   신청하기
                 </Button>
-                <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId} condition={condition} 
+                <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId}
+                requireContext={postItem.require} optionalContext={postItem.optional}
                 onModalOpenChange={handleModalOpenChange} onApplicantChange={updateApplicant}/>
               </>}
             <Typography variant="h4">신청인원 수: {applicants}</Typography>
