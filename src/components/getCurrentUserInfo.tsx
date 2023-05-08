@@ -4,6 +4,7 @@ interface SimpleUserInfo {
   id: number;
   studentId: number;
   name: string;
+  profileImg: string | null;
   point: number;
   nickname: string;
   career: string;

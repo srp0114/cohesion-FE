@@ -2,7 +2,7 @@
 import { Stack, Typography } from "@mui/material";
 import Profile from "../Profile";
 
-export function userInfo(writer: string, stuId: number, imgUrl?: string) {
+export function userInfo(writer: string, stuId: number, imgUrl: string | null) {
   const studentId = stuId.toString().slice(0,2);
 
   return (

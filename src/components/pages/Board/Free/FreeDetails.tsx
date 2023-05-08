@@ -21,7 +21,7 @@ interface FreeDetailItems {
   title: string;
   content: string;
   writer: string;
-  profileImg: string;
+  profileImg: string | null;
   stuId: number;
   createdDate: string;
   modifiedDate?: string;

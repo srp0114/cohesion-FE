@@ -3,13 +3,13 @@ import { Avatar } from "@mui/material";
 
 interface ProfileProps {
     nickname: string;
-    imgUrl: string | undefined;
+    imgUrl: string | null;
     size: number;
 }
 
 const Profile = ({nickname, imgUrl, size} : ProfileProps) => {
     return (
-        imgUrl === undefined ? 
+        imgUrl === null ?
         <BoringAvatar
             name={nickname}
             size={size}
