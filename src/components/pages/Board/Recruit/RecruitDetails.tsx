@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
+import { Box, Button, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
 import { data } from "../../../data/RecruitData";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
+import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -34,14 +36,56 @@ export interface RecruitDetailItems {
   optional?: string; //기타, 우대조건: 학점, 기술스택 등
   party: number; //모집할 인원수
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
+
+  //isCompleted: boolean; // 해당속성 추가되어야함.
 }
 
-const RecruitDetails: React.FC = (): JSX.Element => {
+const RecruitDetails = () => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
+  const [modalOpen, setModalOpen] = useState<boolean>(false); //신청, 승인, 모집완료 모달 open 상태 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [gathered, setGathered] = useState<number>(-1);
+  const [applicants, setApplicants] = useState<number>(-100); //신청인원수
+  const [approvedApplicants, setApprovedApplicants] = useState<number>(-100); //승인된 인원수
+  const [condition, setCondition] = useState<boolean>(false); //require, optional 둘 다 있으면 true, require만 있으면 false
+  const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
 
   const postingId = Number(id);
+
+  const handleModalOpenChange = () => {
+    setModalOpen(false);
+  }
+
+  const handleApplyBtnAccessible = () => {
+    setIsApplyBtnAvailale(true);
+  }
+
+  const updateApplicant = () => {
+      axios({ //신청자 목록의 인원수
+        method: "get",
+        url: `/api/recruit/${postingId}/applicants-number`,
+      }).then((res) => {
+        if (res.status === 200) {
+          setApplicants(res.data);
+          console.log(`신청자 인원수: ${JSON.stringify(res.data)}`);
+        }
+      }).catch((err) => console.log(err));
+  }
+
+  //승인된 인원수 == gathered에 더해져야함.
+  const updateApprovedApplicant = () => { 
+    //     axios({
+    //   method:"get",
+    //   url:`/api/recruit/${postingId}/approval-number`, //승인된 인원수 구해오는 api
+    // }).then((res)=>{
+    //   if(res.status === 200){
+    //       setApprovedApplicants(res.data);
+    //       setGathered(gathered + approvedApplicants); //모인사람 수도 업데이트
+    //       console.log(`승인된 인원수 ${JSON.stringify(res.data)} 모인 사람 수 ${gathered}`);
+    //   }
+    // }).catch(err => console.log(`updateApproveapplicant: ${err}`));
+  }
 
   useEffect(() => {
     axios({
@@ -51,16 +95,28 @@ const RecruitDetails: React.FC = (): JSX.Element => {
       .then((res) => {
         if (res.status === 200) {
           setPostItem(res.data);
+          setGathered(res.data.gathered);
+          setCondition((res.data.require) && (res.data.optional));
         }
       })
       .catch((err) => {
         console.log(err);
       });
-    //접속 유저가 해당 게시글의 작성자인지 체크 => 접속한 유저정보
-    //학번만 받아오는 api가 아님. 학번만 받아오는 api 완성되면 변경 - 은서
+
     getCurrentUserInfo()
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
+
+    axios({ //신청자 목록의 인원수
+      method: "get",
+      url: `/api/recruit/${postingId}/applicants-number`,
+    }).then((res) => {
+      if (res.status === 200) {
+        setApplicants(res.data);
+        console.log(`신청자 인원수: ${JSON.stringify(res.data)}`);
+      }
+    }).catch((err) => console.log(err));
+
   }, []);
 
   /**
@@ -136,10 +192,32 @@ const RecruitDetails: React.FC = (): JSX.Element => {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <Typography sx={{ fontSize: "0.75" }}>
-            {postItem.gathered} / {postItem.party}
-          </Typography>
+          <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">
+              모인 사람 {gathered + approvedApplicants} / 최종 인원 {postItem.party}
+            </Typography>
+            {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
+            {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
+            {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
+              ? <>
+                <Button variant="outlined" startIcon={<AssignmentTurnedInIcon />} size="small" onClick={() => setModalOpen(true)}>
+                  모집완료
+                </Button>
+                <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId} 
+                onModalOpenChange={handleModalOpenChange} />
+                <ApplicantList postingId={postingId} />
+              </>
+              : <>
+                <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
+                  신청하기
+                </Button>
+                <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId} condition={condition} 
+                onModalOpenChange={handleModalOpenChange} onApplicantChange={updateApplicant}/>
+              </>}
+            <Typography variant="h4">신청인원 수: {applicants}</Typography>
+          </Grid>
         </Grid>
+        {replyCount(postItem.reply)}
       </Grid>
       <Reply board={"recruit"} postingId={id} />
       <Zoom in={true}>
@@ -153,6 +231,5 @@ const RecruitDetails: React.FC = (): JSX.Element => {
   return (
     <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>
   );
-};
-
+}
 export default RecruitDetails;
