@@ -33,21 +33,13 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
     const [isMeetOptional, setIsMeetOptional] = useState<boolean>(false);
 
-    // React.useEffect(() => {
-    //     setOpen(props.open);
-    //   }, [props.open]);
-
     const operators = [
         { who: false, callNode: "applyBtn" },
-        { who: true, callNode: "approveBtn" },
-        { who: true, callNode: "rejectBtn" },
         { who: true, callNode: "completeBtn" }
     ];
 
     const sentences = [
         "신청하시겠습니까? (신청이 완료된 후, 취소는 불가합니다.)",
-        "승인하시겠습니까?", // 사라질수도...
-        "승인을 취소하시겠습니까?", // 사라질수도...
         "모집을 완료하시겠습니까?"
     ]
 
@@ -109,38 +101,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
     }
 
-    //신청 승인정보를 서버로 보내기
-    // const putApprove = (targetId: number | undefined, postingId: number) => {
-    //     if (typeof targetId === 'number') {
-    //         axios({
-    //             method: "put",
-    //             url: `/api/recruit/${postingId}/approval/${targetId}`,
-    //         })
-    //             .then((res) => {
-    //                 if (res.status === 200) {
-    //                     alert(`승인되었습니다.`);
-    //                 }
-    //             })
-    //             .catch((err) => console.log(err));
-    //     }
-    // }
-
-    //승인 취소정보를 서버로 보내기
-    //  const putReject = (targetId: number | undefined, postingId: number) => {
-    //     if (typeof targetId === 'number') {
-    //         axios({
-    //             method: "put",
-    //             url: `/api/recruit/${postingId}/reject/${targetId}`,
-    //         })
-    //             .then((res) => {
-    //                 if (res.status === 200) {
-    //                     alert(`승인되었습니다.`);
-    //                 }
-    //             })
-    //             .catch((err) => console.log(err));
-    //     }
-    // }
-
     const putRecruitComplete = (postingId: number) => {
         axios({
             method: "put",
@@ -178,12 +138,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                 postApplicantInfo(); //신청정보서버로
                 break;
             case 1:
-                // putApprove(props.targetId, props.postingId); //승인정보서버로
-                break;
-            case 2:
-                // putReject(props.targetId, props.postingId); //승인취소정보서버로
-                break;
-            case 3:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
                 break;
             default:
@@ -289,7 +243,6 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
         right: false,
     });
     const [dense, setDense] = React.useState(false);
-    const [secondary, setSecondary] = React.useState(false);
     const [applications, setApplications] = useState<Application[]>([]);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [collapseOpen, setCollapseOpen] = React.useState(false);
@@ -347,7 +300,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
         // })
         //     .then((res) => {
         //         if (res.status === 200) {
-        //             alert(`승인되었습니다.`);
+        //             alert(`승인취소되었습니다.`);
         //         }
         //     })
         //     .catch((err) => console.log(err));

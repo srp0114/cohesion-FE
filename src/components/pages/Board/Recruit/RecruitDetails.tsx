@@ -49,11 +49,16 @@ const RecruitDetails = () => {
   const [applicants, setApplicants] = useState<number>(-100); //신청인원수
   const [approvedApplicants, setApprovedApplicants] = useState<number>(-100); //승인된 인원수
   const [condition, setCondition] = useState<boolean>(false); //require, optional 둘 다 있으면 true, require만 있으면 false
+  const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
 
   const postingId = Number(id);
 
   const handleModalOpenChange = () => {
     setModalOpen(false);
+  }
+
+  const handleApplyBtnAccessible = () => {
+    setIsApplyBtnAvailale(true);
   }
 
   const updateApplicant = () => {
@@ -66,6 +71,20 @@ const RecruitDetails = () => {
           console.log(`신청자 인원수: ${JSON.stringify(res.data)}`);
         }
       }).catch((err) => console.log(err));
+  }
+
+  //승인된 인원수 == gathered에 더해져야함.
+  const updateApprovedApplicant = () => { 
+    //     axios({
+    //   method:"get",
+    //   url:`/api/recruit/${postingId}/approval-number`, //승인된 인원수 구해오는 api
+    // }).then((res)=>{
+    //   if(res.status === 200){
+    //       setApprovedApplicants(res.data);
+    //       setGathered(gathered + approvedApplicants); //모인사람 수도 업데이트
+    //       console.log(`승인된 인원수 ${JSON.stringify(res.data)} 모인 사람 수 ${gathered}`);
+    //   }
+    // }).catch(err => console.log(`updateApproveapplicant: ${err}`));
   }
 
   useEffect(() => {
@@ -175,7 +194,7 @@ const RecruitDetails = () => {
         <Grid item xs={12} sm={6}>
           <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6">
-              모인 사람 {gathered} / 최종 인원 {postItem.party}
+              모인 사람 {gathered + approvedApplicants} / 최종 인원 {postItem.party}
             </Typography>
             {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
             {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
@@ -186,10 +205,10 @@ const RecruitDetails = () => {
                 </Button>
                 <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId} 
                 onModalOpenChange={handleModalOpenChange} />
-                <ApplicantList postingId={postingId}/>
+                <ApplicantList postingId={postingId} />
               </>
               : <>
-                <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={false}>
+                <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
                   신청하기
                 </Button>
                 <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId} condition={condition} 
