@@ -46,6 +46,8 @@ export interface RecruitBoardItems {
   optional?: string;
   party: number;
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
+
+  isCompleted: boolean;
 }
 
 
@@ -89,38 +91,38 @@ const RecruitBoard: React.FC = () => {
     </Grid>
   ));
 
-  return (
-    <>
-      <Box>
-        <Typography
-          variant="h5"
-          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
+return (
+  <>
+    <Box>
+      <Typography
+        variant="h5"
+        sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
+      >
+        모집게시판
+      </Typography>
+      <FilterPosting />
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid
+          container
+          rowSpacing={4}
+          columnSpacing={{ xs: 1, sm: 2, md: 4 }}
+          alignItems="stretch"
         >
-          모집게시판
-        </Typography>
-        <FilterPosting />
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid
-            container
-            rowSpacing={4}
-            columnSpacing={{ xs: 1, sm: 2, md: 4 }}
-            alignItems="stretch"
-          >
-            {displayPosting}
-          </Grid>
-        </Box>
+          {displayPosting}
+        </Grid>
       </Box>
-      <PaginationControl
-        page={page}
-        between={1}
-        total={total}
-        limit={6}
-        changePage={(page: React.SetStateAction<number>) => setPage(page)}
-        ellipsis={1}
-      />
-      <WritingButton />
-    </>
-  );
+    </Box>
+    <PaginationControl
+      page={page}
+      between={1}
+      total={total}
+      limit={6}
+      changePage={(page: React.SetStateAction<number>) => setPage(page)}
+      ellipsis={1}
+    />
+    <WritingButton />
+  </>
+);
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
@@ -151,10 +153,10 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         },
         styleOverrides: {
           //css 설정, rule네임에 따라
-          root: {
-            backgroundColor: _theme.palette.background,
+          root: { //모집 완료된 게시글은 배경색이 palette.neutral(회색)
+            backgroundColor: (!props.isCompleted) ? _theme.palette.background : _theme.palette.neutral,
             boxShadow: "none",
-            border: `1px solid ${_theme.palette.info.main}`,
+            border: (!props.isCompleted) ? `1px solid ${_theme.palette.info.main}` : `1px solid ${_theme.palette.warning.main}`,
             borderRadius: "20px",
             padding: "0 10px 10px",
             height: "100%",
@@ -170,10 +172,10 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           title: {
             fontSize: "1.25rem",
             fontWeight: 500,
-            color: _theme.palette.primary.main,
+            color: (!props.isCompleted) ? _theme.palette.primary.main : _theme.palette.warning.main,
           },
           subheader: {
-            color: _theme.palette.secondary.main,
+            color: (!props.isCompleted) ? _theme.palette.secondary.main : _theme.palette.warning.main,
           },
         },
       },
@@ -181,7 +183,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         styleOverrides: {
           root: {
             fontSize: "1rem",
-            color: _theme.palette.info.main,
+            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.warning.main,
             paddingTop: 0,
           },
         },
@@ -192,7 +194,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         },
         styleOverrides: {
           root: {
-            color: _theme.palette.info.main,
+            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.warning.main,
           },
           spacing: {
             disableSpacing: true,
@@ -261,7 +263,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           </Stack>
           <Box>
             <Typography variant="h5">
-              {remain === 0 ? "모집 마감" : `${remain}명 모집 중`}
+              {(remain === 0 || props.isCompleted) ? "모집 마감" : `${remain}명 모집 중`}
             </Typography>
           </Box>
         </CardActions>
