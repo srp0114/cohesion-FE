@@ -14,7 +14,7 @@ interface UserInfoItems {
   name: string;
   track1: string;
   track2: string;
-  picture: string;
+  picture: string | null;
   nickname: string;
   introduce?: string;
   skills?: string[];
@@ -113,7 +113,7 @@ const Welcome = () => {
   };
 
   const onProfileChange = (flag: number) => {
-    setUserInfo({ ...userInfo, picture: flag === 1 ? profileImg : "" });
+    setUserInfo({ ...userInfo, picture: flag === 1 ? profileImg : null });
   }
 
   return (
@@ -163,7 +163,7 @@ const Welcome = () => {
                     onProfileChange(2);
                   }}
                   >
-                  <Profile nickname={userInfo.nickname} imgUrl={undefined} size={40} />
+                  <Profile nickname={userInfo.nickname} imgUrl={null} size={40} />
                   <Typography variant="subtitle1" sx={{ p: 4 }}>
                   {userInfo.nickname}
                   </Typography>

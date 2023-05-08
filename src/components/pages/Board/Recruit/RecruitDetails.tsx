@@ -24,7 +24,7 @@ export interface RecruitDetailItems {
   title: string;
   content: string;
   writer: string;
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  profileImg: string | null; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;

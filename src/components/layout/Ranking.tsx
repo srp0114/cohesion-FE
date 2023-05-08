@@ -13,8 +13,10 @@ interface PostRankingItem {
 
 interface UserRakingItem {
     adoptSize: number,
-    nickname: string
+    nickname: string,
     studentId: string,
+    profileImg: string | null
+
 }
 
 // 인기게시글 테스트 데이터
@@ -22,12 +24,14 @@ const userRank: UserRakingItem[] = [
     {
         adoptSize: 1,
         nickname: "yoddddddung",
-        studentId: "182982"
+        studentId: "182982",
+        profileImg: null
     },
     {
         adoptSize: 2,
         nickname: "dddd",
-        studentId: "18222982"
+        studentId: "18222982",
+        profileImg: null
     }
 ]
 
@@ -117,7 +121,7 @@ export const UserRanking = () => {
                 <>
                 <Box sx={{ display:"flex", mt:5 }}>
                 <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
-                <Profile nickname={value.nickname} imgUrl={undefined} size={33}/>
+                <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
                 <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
                     <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>

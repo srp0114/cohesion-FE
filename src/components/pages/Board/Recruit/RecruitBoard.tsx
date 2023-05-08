@@ -34,7 +34,7 @@ export interface RecruitBoardItems {
   id: number;
   title: string;
   writer: string;
-  profileImg: string;
+  profileImg: string | null;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;

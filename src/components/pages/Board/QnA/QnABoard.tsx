@@ -24,7 +24,7 @@ export interface BoardItems {
   reply: number;
   point: number;
   views: number; //조회수
-  profileImg: string; //사용자 이미지 img
+  profileImg: string | null; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
 }
 
