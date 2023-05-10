@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Grid } from "@mui/material";
 
 interface NestedReplyProps {
   parentId: number;
@@ -23,21 +23,30 @@ const NestedReplyField = (props: NestedReplyProps) => {
     setReplyArticle(e.target.value);  
   };
 
+  const isDisabled = () => {
+    return replyArticle.trim() === '';
+  }
+
+
   return (
     <Box>
-      <Button onClick={()=>{ setOpenReplyField(!openReplyField)}}>답글</Button>
+      <Button onClick={()=>{setOpenReplyField(!openReplyField)}} sx={{ m:"1rem" }}>답글</Button>
       {openReplyField && 
         <>
-        <TextField 
-          variant="standard" 
-          placeholder="답글달기.."
-          multiline
-          value={replyArticle}
-          onChange={handleChange}
-        />
-        <Box display="flex" justifyContent="flex-end">
-        <Button size="large" onClick={onReplySumbit}>답글 달기</Button>
-        </Box>       
+        <Grid container spacing={2} direction="row" sx={{ display:"flex", justifyContent:"space-between", alignItems:"center", pl:"2.5rem", pr:"1.5rem" }}>
+        <Grid item xs={8} md={10}>
+          <TextField
+            placeholder="답글달기.."
+            variant="standard"
+            multiline
+            value={replyArticle}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item>
+          <Button disabled={isDisabled()} onClick={onReplySumbit}>답글달기</Button>
+        </Grid>
+        </Grid>
         </> 
       }          
     </Box>

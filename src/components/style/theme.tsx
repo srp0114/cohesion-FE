@@ -112,7 +112,6 @@ export const theme = createTheme({
       defaultProps: {
         variant: "outlined",
         fullWidth: true,
-        sx: { mt: 2 },
       },
       styleOverrides: {
         root: {
@@ -147,7 +146,6 @@ export const theme = createTheme({
           '&.summaryButton': {
             width: "3.5rem",
             height: "3.5rem",
-            marginTop: "1rem",
             "&:hover, &.Mui-focusVisible": {
               zIndex: 2,
               backgroundColor: "#B5CC6C",

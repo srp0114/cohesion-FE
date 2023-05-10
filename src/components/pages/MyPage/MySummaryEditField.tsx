@@ -11,7 +11,7 @@ const MySummaryEditField = (props : EditMySummaryProps) => {
     const [content, setContent] = useState<string>(props.content);
     const summaryId = props.summaryId;
 
-    const handleSummary = () => {
+    const handleEditSummary = () => {
         props.editSummary(summaryId, content);
         setContent("");
     }
@@ -26,11 +26,10 @@ const MySummaryEditField = (props : EditMySummaryProps) => {
                 multiline
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                sx={{m:0}}
             />
         </Grid>
         <Grid item xs={1} md={1}>
-            <Button onClick={handleSummary}>수정</Button>
+            <Button onClick={handleEditSummary}>수정</Button>
         </Grid>
         </Grid>
         </>
