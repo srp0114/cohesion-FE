@@ -93,38 +93,38 @@ const RecruitBoard: React.FC = () => {
     </Grid>
   ));
 
-return (
-  <>
-    <Box>
-      <Typography
-        variant="h5"
-        sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-      >
-        모집게시판
-      </Typography>
-      <FilterPosting />
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid
-          container
-          rowSpacing={4}
-          columnSpacing={{ xs: 1, sm: 2, md: 4 }}
-          alignItems="stretch"
+  return (
+    <>
+      <Box>
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
-          {displayPosting}
-        </Grid>
+          모집게시판
+        </Typography>
+        <FilterPosting />
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            rowSpacing={4}
+            columnSpacing={{ xs: 1, sm: 2, md: 4 }}
+            alignItems="stretch"
+          >
+            {displayPosting}
+          </Grid>
+        </Box>
       </Box>
-    </Box>
-    <PaginationControl
-      page={page}
-      between={1}
-      total={total}
-      limit={6}
-      changePage={(page: React.SetStateAction<number>) => setPage(page)}
-      ellipsis={1}
-    />
-    <WritingButton />
-  </>
-);
+      <PaginationControl
+        page={page}
+        between={1}
+        total={total}
+        limit={6}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
+      <WritingButton />
+    </>
+  );
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
@@ -231,7 +231,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             </Stack>}
             subheader={
               <Stack direction="row">
-                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30}/>
+                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
                 <Typography variant="overline">
                   {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
