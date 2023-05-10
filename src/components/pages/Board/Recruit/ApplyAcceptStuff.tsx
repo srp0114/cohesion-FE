@@ -10,7 +10,7 @@ import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefault
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import axios from "axios";
-import BoringAvatar from "boring-avatars";
+import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
 
@@ -197,7 +197,7 @@ interface Application {
     profileImg: string,
     studentId: number,
     track1: string,
-    skills: typeof skillData,
+    skills: string[],
 
     isApproved: boolean,
     collapseOpen?: boolean,
@@ -312,11 +312,9 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
 
                                             <Grid item xs={3}>
                                                 <ListItemAvatar>
-                                                    {app.profileImg ? <BoringAvatar size={'64px'} variant="beam" colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]} />
-                                                        : <Avatar srcSet={app.profileImg} sx={{ width: '64px', height: '64px' }} />}
+                                                    <Profile nickname={app.nickname} imgUrl={app.profileImg} size={48} />
                                                 </ListItemAvatar>
                                             </Grid>
-
                                             <Grid item container xs={7} rowSpacing={1}>
                                                 <Grid item>
                                                     <Typography variant="h4">{app.nickname}</Typography>
@@ -324,10 +322,9 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
                                                 <Grid item>
                                                     <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
                                                     <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" />}
-                                                        {app.isMeetOptional ?? false ? <Chip size="small" variant="outlined" label="우대사항 👌" />
-                                                            : null}
-                                                        {app.isMeetOptional ? null : <Chip size="small" variant="outlined" label="우대사항 ❌" />}
+                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" color="primary" />}
+                                                        {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대사항 👌" color="secondary" /> : null}
+                                                        {typeof app.isMeetOptional === 'boolean' && !(app.isMeetOptional) ? <Chip size="small" variant="outlined" label="우대사항 ❌" color="secondary" /> : null}
                                                     </Stack>
                                                 </Grid>
                                             </Grid>
@@ -352,7 +349,20 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
                                                     {/* 1트랙 */}
                                                     <Typography variant="h5">1트랙: {app.track1}</Typography>
                                                     {/* 선택한 기술 */}
-                                                    {app.skills?.map(skill => <Chip avatar={<Avatar srcSet={`${skill.logo}`} />} label={`${skill.name}`} sx={{ ml: 1 }} />)}
+                                                    {(app.skills.length > 0) ? app.skills.map(skill => {
+                                                        const matchingSkill = skillData.find(data => data.name === skill); // 일치하는 기술 데이터를 찾음
+                                                        if (matchingSkill) {
+                                                            return (
+                                                                <Chip
+                                                                    avatar={<Avatar src={matchingSkill.logo} />} // 일치하는 기술의 로고를 사용
+                                                                    label={skill}
+                                                                    sx={{ ml: 1 }}
+                                                                    variant="outlined"
+                                                                    color="info"
+                                                                />
+                                                            );
+                                                        }
+                                                    }) : <Chip avatar={<Avatar />} label="선택한 기술이 없습니다." sx={{ ml: 1 }} />}
                                                 </Collapse>
                                             </Grid>
                                         </Grid>
