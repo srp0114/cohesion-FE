@@ -1,18 +1,14 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material"
-import UserProfile from "boring-avatars";
+import { UserInfoItems } from "../pages/Home";
 import Ranking from "./Ranking";
+import Profile from "./Profile";
 
-interface HomeSideProps {
-    nickname: string
-    studentId : number
-    track1 : string
-}
-
-const SideBar = (props: HomeSideProps) => {
+const SideBar = (props: UserInfoItems) => {
     const nickname = props.nickname;
     const studentId = props.studentId;
     const track1 = props.track1;
+    const profileImg = props.profileImg;
 
     const isLogging = nickname === "" ? (
         <>
@@ -27,12 +23,7 @@ const SideBar = (props: HomeSideProps) => {
                 display: "flex",
                 justifyContent: "flex-start",
         }}>
-            <UserProfile
-                name={nickname}
-                size={45}
-                variant="beam"
-                colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
-            />
+            <Profile nickname={nickname} imgUrl={profileImg} size={45}/>
             <Box sx={{display:"flex", justifyContent: "space-around", m:0.8}}>
                 <Typography variant="subtitle1" sx={{ pl:1, pr:1 }}>{nickname}</Typography>
                 <Typography variant="subtitle1" color="primary.dark">님</Typography>

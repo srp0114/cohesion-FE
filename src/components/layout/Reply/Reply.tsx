@@ -5,12 +5,13 @@ import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
 import AdoptReply from "./AdoptReply";
 import Time from "../Time";
-import Profile from "@mui/icons-material/AccountCircle";
+import Profile from "../Profile";
 import EditReplyField from "./EditReplyField";
 
 interface User {
   id: number;
   nickname: string;
+  profileImg: string | null;
 }
 
 interface ReplyItems {
@@ -267,20 +268,16 @@ const Reply = (props: ReplyProps) => {
                 }}
               >
                 <Box
-                  sx={{
-                    display: "flex",
-                  }}
+                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
                 >
-                  <Profile fontSize="large" />
-                  <Box sx={{ mt: 0.3 }}>
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                      {reply.user.nickname}
-                    </Typography>
-                    <Typography variant="subtitle2" sx={{ ml: 1 }}>
-                      <Time date={reply.createdAt} />
-                    </Typography>
-                  </Box>
-                </Box>
+                <Profile nickname={reply.user.nickname} imgUrl={reply.user.profileImg} size={20} />
+                <Typography variant="h5" sx={{ ml: 1 }}>
+                  {reply.user.nickname}
+                </Typography>
+                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
+                  <Time date={reply.createdAt} />
+                </Typography>
+              </Box>
                 <Box>
                   {reply.user.id === userId ? (
                     <>
@@ -326,19 +323,15 @@ const Reply = (props: ReplyProps) => {
               }}
             >
               <Box
-                sx={{
-                  display: "flex",
-                }}
+                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
               >
-                <Profile fontSize="large" />
-                <Box sx={{ mt: 0.3 }}>
-                  <Typography variant="h6" sx={{ ml: 1 }}>
-                    {value.user.nickname}
-                  </Typography>
-                  <Typography variant="subtitle2" sx={{ ml: 1 }}>
-                    <Time date={value.createdAt} />
-                  </Typography>
-                </Box>
+                <Profile nickname={value.user.nickname} imgUrl={value.user.profileImg} size={20} />
+                <Typography variant="h5" sx={{ ml: 1 }}>
+                  {value.user.nickname}
+                </Typography>
+                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
+                  <Time date={value.createdAt} />
+                </Typography>
               </Box>
               <Box>
                 {value.user.id === userId ? (

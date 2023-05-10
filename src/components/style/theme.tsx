@@ -52,10 +52,10 @@ export const theme = createTheme({
         fontSize: "0.75rem" //12px
       },
       subtitle1: {
-        fontSize: "1.125rem" //18px
+        fontSize: "1.124rem"
       },
       subtitle2: {
-        fontSize: "1rem" //16px
+        fontSize: "1rem"
       }
     },
 

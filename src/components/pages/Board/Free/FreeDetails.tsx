@@ -100,7 +100,7 @@ const FreeDetails = () => {
           </Stack>
            <Bookmark boardType={"free"} id={id} />
         </Grid>
-        <Grid item xs={12} sx={{ m: "4rem 2rem 8rem 2rem" }}>
+        <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
         </Grid>
       </Grid>
