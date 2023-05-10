@@ -11,7 +11,7 @@ import axios from "axios"; //시험용 데이터
 
 export interface MyPageItems {
   studentId: string; //사용자 고유식별번호, 학번, 사용자의 아이디
-  profileImg: string; //추가정보에서 선택한 프로필사진
+  profileImg: string | null; //추가정보에서 선택한 프로필사진
   nickname: string; //추가정보페이지의 닉네임
   track1: string; //1트랙 1학년인 경우 1,2트랙 모두 none으로 나옴.
   track2: string; //2트랙
@@ -53,7 +53,7 @@ const MyPage = () => {
         <Grid item xs={12} md={4.5} rowSpacing={{ xs: "1.5rem" }} pl={"2rem"} pr={"2rem"} >
           <Grid container item direction="column" gap={4}>
           <Grid item xs={12}>
-            <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={test.profileImg}/>
+            <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={data?.profileImg ?? null}/>
           </Grid>
           <Grid item xs={12}>
           <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>

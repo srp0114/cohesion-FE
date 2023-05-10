@@ -6,6 +6,7 @@ import Profile from "../layout/Profile";
 import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Navbar = () => {
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
+  const [profileImg, setProfileImg] = useState<string | null>(null);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
@@ -31,14 +33,12 @@ const Navbar = () => {
         .then((res) => {
           if (res) {
             setIsLogin(true);
-            axios({
-              method: "get",
-              url: "/api/user-info"
-            }).then((res) => {
-              setNickname(res.data.nickname);
-            }).catch((err) => {
-              console.log(err);
-            });
+            getCurrentUserInfo()
+              .then((userInfo) => {
+                setNickname(userInfo.nickname);
+                setProfileImg(userInfo.profileImg);
+              })
+              .catch((err) => console.log(err));
           } else {
             setIsLogin(false);
           }
@@ -116,7 +116,7 @@ const Navbar = () => {
           {isLogin ? (
           <>
             <Button className="profile" onClick={moveToMyPage}>
-              <Profile nickname={nickname} size={25}/>
+              <Profile nickname={nickname} imgUrl={profileImg} size={25}/>
             </Button>
             <Button onClick={handleLogin} className="loginButton">
               로그아웃

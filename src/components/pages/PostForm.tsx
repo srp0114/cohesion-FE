@@ -157,7 +157,7 @@ const PostForm = () => {
                 게시되었습니다.
               </Alert>
             </Snackbar>
-            window.location.href = `/${boardType}`;
+            nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
@@ -167,7 +167,7 @@ const PostForm = () => {
         if (fileList.length > 0) {
           axios({
             method: "post",
-            url: "/api/qna",
+            url: "/api/questions",
             headers: { "Content-Type": "multipart/form-data" },
             data: JSON.stringify(qna_formData),
           })
@@ -191,14 +191,14 @@ const PostForm = () => {
         } else {
           axios({
             method: "post",
-            url: "/api/qna/no-file",
+            url: "/api/questions/no-file",
             headers: { "Content-Type": "application/json" },
             data: JSON.stringify(request_qna),
           })
             .then((res) => {
               if (res.status === 200) {
                 // 성공 시 작업
-                window.location.href = `/${boardType}`;
+                nav(`/${boardType}/${res.data}`)
               }
             })
             .catch((err) => {
@@ -228,7 +228,7 @@ const PostForm = () => {
                 게시되었습니다.
               </Alert>
             </Snackbar>
-            window.location.href = `/${boardType}`;
+            nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
         })
         .catch((err) => console.log(err));
@@ -288,7 +288,7 @@ const PostForm = () => {
             </Grid>
             <Grid item>
               <div className="postQuill">
-                <EditorToolbar onAddQuill={getContent} />
+                <EditorToolbar onAddQuill={getContent} content={content} />
               </div>
               {/* value: {content} */}
               <div>

@@ -13,6 +13,7 @@ interface HomeBoardItems {
     title: string;
     content: string;
     writer: string;
+    profileImg: string | null;
     createdDate: string;
     bookmark: number;
     reply: number;
@@ -106,7 +107,7 @@ const HomeBoard = (props: HomeBoardProps) => {
                     onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Box sx={{display:'flex', justifyContent:'space-between'}}>
                             <Box sx={{display:'flex'}}>
-                                 <Profile nickname={posting.writer} size={30}/>
+                                 <Profile nickname={posting.writer} imgUrl={posting.profileImg} size={30}/>
                                 <Typography sx={{pt:0.5, pl:1.5}}>{posting.writer}</Typography>
                             </Box>
                             <Box sx={{display:'flex', justifyContent:'flex-end'}}>

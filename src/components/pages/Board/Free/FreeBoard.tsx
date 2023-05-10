@@ -18,7 +18,7 @@ export interface FreeBoardItems {
   content: string;
   writer: string;
   stuId: number;
-  profileImg: string;
+  profileImg: string | null;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
