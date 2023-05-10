@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Grid, Box, IconButton, Typography, Stack, Paper } from "@mui/material";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+import MySummaryField from "./MySummaryField";
 
-/**
- * 유저가 오늘 공부한 것들을 기록하는 컴포넌트
- * 날짜, id, string,
- */
 export interface MySummaryItems { //유저가 작성한 공부기록들 중 가장 최신 글을 가지고와야한다.
   summaryId: number; //공부내용 요약 고유 id
   date: string; //가장 최신 공부기록의 날짜
@@ -41,15 +38,39 @@ const MySummary = () => {
           url : `/api/user/summary/mypage`
       }).then((res)=>{
           if(res.status === 200)
-              setSummary(res.data);
+            setSummary(res.data);
       }).catch((err)=>{
           console.log(err);
       })
-  }, []);
+  }, [summary]);
+
+  const onAddSummary = (content: string) => {
+    const data = {
+      content: content,
+    };
+    axios({
+      method: "post",
+      url: `/api/user/summary/mypage`,
+      headers: { "Content-Type": "application/json" },
+      data: data,
+    })
+    .then((res) => {
+      if (res.status === 200) {
+          console.log(res.data);
+          const newSummary = res.data;
+          setSummary([...summary, newSummary]);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    console.log(data);
+  }
 
   return (
     <>
       <Grid container direction="column" xs={12} md={12} mt={1}>
+      <MySummaryField onAddSummary={onAddSummary}/>
       {summary.map((value) => {
         return (
           <Grid item p={1.5}>
