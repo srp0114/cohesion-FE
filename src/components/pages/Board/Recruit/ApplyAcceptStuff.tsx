@@ -13,6 +13,7 @@ import axios from "axios";
 import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
+import { propTypes } from "react-bootstrap/esm/Image";
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -37,7 +38,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
     const [open, setOpen] = React.useState<boolean>(false);
     const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
-    const [isMeetOptional, setIsMeetOptional] = useState<boolean>(false);
+    const [isMeetOptional, setIsMeetOptional] = useState<boolean | null>(false);
 
     const operators = [
         { who: false, callNode: "applyBtn" },
@@ -120,7 +121,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                     <Typography variant="subtitle1">
                         {props.requireContext}
                     </Typography>
-                    <FormControlLabel control={<Checkbox required onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" />} label="필수사항" labelPlacement="start" />
+                    <FormControlLabel control={<Checkbox required onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} size="small" />} label="필수사항" labelPlacement="start" />
                 </FormGroup>
             );
     }
@@ -205,7 +206,13 @@ interface Application {
     collapseOpen?: boolean,
 }
 
-export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI 확인용 임시.
+interface ApplicantListProps {
+    postingId: number,
+    onNewApprovedApplicants: () => void,
+    onApprovedApplicantsOut: () => void,
+}
+
+export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원수가 바뀌었는지 감지{()=>void}) => { //UI 확인용 임시.
     const [state, setState] = React.useState({
         right: false,
     });
@@ -213,10 +220,11 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
     const [modalOpen, setModalOpen] = React.useState(false);
     const [applications, setApplications] = useState<Application[]>([]);
 
+
     React.useEffect(() => {
         const fetchApplicants = async () => {
             try {
-                const response = await axios.get(`/api/recruit/${postingId}/applicants`);
+                const response = await axios.get(`/api/recruit/${props.postingId}/applicants`);
                 if (response.status === 200) {
                     console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(response.data)}  ${typeof response.data}`);
 
@@ -232,7 +240,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
             }
         };
         fetchApplicants();
-    }, [postingId]);
+    }, [props.postingId]);
 
     const toggleCollapse = (index: number) => {
         setApplications((prevState) => {
@@ -262,7 +270,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
     const putApprove = (targetId: number) => {
         axios({
             method: "put",
-            url: `/api/recruit/${postingId}/approval/${targetId}`,
+            url: `/api/recruit/${props.postingId}/approval/${targetId}`,
         })
             .then((res) => {
                 if (res.status === 200) {
@@ -270,6 +278,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
                         app.id === targetId ? { ...app, isApproved: true } : app
                     );
                     setApplications(updatedApplications);
+                    props.onNewApprovedApplicants();
                     alert(`승인되었습니다.`);
                 }
             })
@@ -279,7 +288,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
     const putReject = (targetId: number) => {
         axios({
             method: "put",
-            url: `/api/recruit/${postingId}/disapproval/${targetId}`,
+            url: `/api/recruit/${props.postingId}/disapproval/${targetId}`,
         })
             .then((res) => {
                 if (res.status === 200) {
@@ -287,6 +296,7 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
                         app.id === targetId ? { ...app, isApproved: false } : app
                     );
                     setApplications(updatedApplications);
+                    props.onApprovedApplicantsOut();
                     alert(`승인취소되었습니다.`);
                 }
             })

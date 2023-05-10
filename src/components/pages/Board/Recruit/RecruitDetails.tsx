@@ -47,7 +47,6 @@ const RecruitDetails = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false); //신청, 승인, 모집완료 모달 open 상태 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
-  const [gathered, setGathered] = useState<number>(-1);
   const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
@@ -68,6 +67,14 @@ const RecruitDetails = () => {
     console.log(`applicants ${applicants}`);
   }
 
+  const handleNewApprovedApplicants = () => {
+    setApprovedApplicants(prevState => prevState + 1);
+  }
+
+  const handleApprovedApplicantsOut = () => {
+    setApprovedApplicants(prevState => prevState - 1);
+  }
+
   useEffect(() => {
     axios({
       method: "get",
@@ -76,9 +83,7 @@ const RecruitDetails = () => {
       .then((res) => {
         if (res.status === 200) {
           setPostItem(res.data);
-          setGathered(res.data.gathered);
           setIsCompleted(res.data.isCompleted);
-          console.log(`주요 useEffect에서 gathrered ${gathered} applicants ${applicants}`);
         }
       })
       .catch((err) => {
@@ -108,9 +113,7 @@ const RecruitDetails = () => {
       url: `/api/recruit/${postingId}/approvers-number`, //승인된 인원수 구해오는 api
     }).then((res) => {
       if (res.status === 200) {
-        setApprovedApplicants(res.data);
-        setGathered((prevState) => prevState + approvedApplicants); //모인사람 수도 업데이트
-        console.log(`승인된 인원수 res.data ${JSON.stringify(res.data)} approvedApplicants ${approvedApplicants} gathered ${gathered}`);
+        setApprovedApplicants((prevState) => res.data);
       }
     }).catch(err => console.log(`updateApproveapplicant: ${err}`));
   }, [approvedApplicants]);
@@ -127,7 +130,6 @@ const RecruitDetails = () => {
     }).catch((err) => console.log(err));
   }, [applicants]);
 
-
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
  * @param studentId 
@@ -143,7 +145,6 @@ const RecruitDetails = () => {
       else
         return null;
     }
-
   }
 
   const detailPosting = postItem ? (
@@ -208,7 +209,7 @@ const RecruitDetails = () => {
         <Grid item xs={12} sm={6}>
           <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h3">
-              모인 사람 {gathered} / 최종 인원 {postItem.party}
+              모인 사람 {postItem.gathered + approvedApplicants} / 최종 인원 {postItem.party}
             </Typography>
             {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
             {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
@@ -219,7 +220,7 @@ const RecruitDetails = () => {
                 </Button>
                 <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                   onModalOpenChange={handleModalOpenChange} />
-                <ApplicantList postingId={postingId} />
+                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut}/>
               </>
               : <>
                 <Tooltip title="신청">
