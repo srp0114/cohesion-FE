@@ -133,7 +133,7 @@ const QnADetails = () => {
           </Stack>
            <Bookmark boardType={"questions"} id={id} />
         </Grid>
-        <Grid item xs={12} sx={{ m: "4rem 2rem 8rem 2rem" }}>
+        <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
         <div className="ql-snow">
           <div
             className="ql-editor"

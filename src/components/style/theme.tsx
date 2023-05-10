@@ -71,33 +71,33 @@ export const theme = createTheme({
     },
   },
 
-  //Typography 글자크기 커스텀.
-  typography: {
-    h1: {
-      fontSize: "2rem" //32px
+    //Typography 글자크기 커스텀.
+    typography: {
+      h1: {
+        fontSize: "2rem" //32px
+      },
+      h2: {
+        fontSize: "1.5rem" //24px
+      },
+      h3: {
+        fontSize: "1.25rem" //20px
+      },
+      h4: {
+        fontSize: "1.125rem" //18px
+      },
+      h5: {
+        fontSize: "1rem" //16px
+      },
+      h6: {
+        fontSize: "0.75rem" //12px
+      },
+      subtitle1: {
+        fontSize: "1.124rem"
+      },
+      subtitle2: {
+        fontSize: "1rem"
+      }
     },
-    h2: {
-      fontSize: "1.5rem" //24px
-    },
-    h3: {
-      fontSize: "1.25rem" //20px
-    },
-    h4: {
-      fontSize: "1.125rem" //18px
-    },
-    h5: {
-      fontSize: "1rem" //16px
-    },
-    h6: {
-      fontSize: "0.75rem" //12px
-    },
-    subtitle1: {
-      fontSize: "1.125rem" //18px
-    },
-    subtitle2: {
-      fontSize: "1rem" //16px
-    }
-  },
 
   //MUI 컴포넌트 커스텀
   components: {

@@ -15,8 +15,7 @@ const Profile = ({nickname, imgUrl, size} : ProfileProps) => {
             size={size}
             variant="beam"
             colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]}
-        /> :  <Avatar srcSet={imgUrl} sx={{ width: "2rem", height: "2rem"}} />
-
+        /> : <Avatar srcSet={imgUrl} sx={{ width: `${size/12}rem`, height: `${size/12}rem`}} />
     )
 }
 

@@ -28,6 +28,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
+import Profile from "../../../layout/Profile";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -230,10 +231,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             </Stack>}
             subheader={
               <Stack direction="row">
-                <Avatar
-                  srcSet={props.profileImg as string}
-                  sx={{ width: "25px", height: "25px", marginRight: "5px" }}
-                />
+                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30}/>
                 <Typography variant="overline">
                   {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
