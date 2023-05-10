@@ -29,7 +29,7 @@ interface DoubleCheckModalProps {
     requireContext?: string;
     optionalContext?: string;
     onModalOpenChange?: (open: boolean) => void;
-    onApplicantChange?: () => void; //신청 인원수가 바뀌었는지 감지
+    onApplicantsChange?: () => void; //신청 인원수가 바뀌었는지 감지
     //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
@@ -77,8 +77,10 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             headers: { "Content-Type": "application/json" },
             data: JSON.stringify(request_apply),
         }).then((res) => {
-            if (res.status === 200)
+            if (res.status === 200) {
+                (props.onApplicantsChange) ? props.onApplicantsChange() : alert(`신청하는데 오류가 발생했습니다.`);
                 alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
+            }
         }).catch((err) => {
             console.log(err);
         });

@@ -49,7 +49,7 @@ const RecruitDetails = () => {
 
   const [gathered, setGathered] = useState<number>(-1);
   const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
-  const [applicants, setApplicants] = useState<number>(0); //신청인원수...는 새로 고침해야 반영이된다.
+  const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
 
   const postingId = Number(id);
@@ -62,16 +62,10 @@ const RecruitDetails = () => {
     setIsApplyBtnAvailale(true);
   }
 
-  const updateApplicant = () => {
-    axios({ //신청자 목록의 인원수
-      method: "get",
-      url: `/api/recruit/${postingId}/applicants-number`,
-    }).then((res) => {
-      if (res.status === 200) {
-        setApplicants(res.data);
-        alert(`함수! 신청자 인원수: ${JSON.stringify(res.data)}`);
-      }
-    }).catch((err) => console.log(err));
+  const handleApplicantsChange = () => {
+    console.log(`prevState ${applicants}`);
+    setApplicants(prevState => prevState + 1);
+    console.log(`applicants ${applicants}`);
   }
 
   useEffect(() => {
@@ -84,6 +78,7 @@ const RecruitDetails = () => {
           setPostItem(res.data);
           setGathered(res.data.gathered);
           setIsCompleted(res.data.isCompleted);
+          console.log(`주요 useEffect에서 gathrered ${gathered} applicants ${applicants}`);
         }
       })
       .catch((err) => {
@@ -94,17 +89,17 @@ const RecruitDetails = () => {
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
 
-    axios({
+    axios({ //신청자 목록의 인원수
       method: "get",
       url: `/api/recruit/${postingId}/applicants-number`,
     }).then((res) => {
       if (res.status === 200) {
-        setApplicants(res.data);
-        alert(`함수아님 신청자 인원수: ${JSON.stringify(res.data)}`);
+        setApplicants(applicants);
+        console.log(`useEffect 시행 후의 신청인원수 ${applicants}`);
       }
     }).catch((err) => console.log(err));
 
-  }, [applicants, approvedApplicants]);
+  }, []);
 
   useEffect(() => {
     //승인된 인원수 + 기존에 작성자가 선택한 gathered = 모인인원.
@@ -114,11 +109,23 @@ const RecruitDetails = () => {
     }).then((res) => {
       if (res.status === 200) {
         setApprovedApplicants(res.data);
-        setGathered(gathered + approvedApplicants); //모인사람 수도 업데이트
-        console.log(`승인된 인원수 ${JSON.stringify(res.data)} 모인 사람 수 ${gathered}`);
+        setGathered((prevState) => prevState + approvedApplicants); //모인사람 수도 업데이트
+        console.log(`승인된 인원수 res.data ${JSON.stringify(res.data)} approvedApplicants ${approvedApplicants} gathered ${gathered}`);
       }
     }).catch(err => console.log(`updateApproveapplicant: ${err}`));
   }, [approvedApplicants]);
+
+  useEffect(() => {
+    axios({ //신청자 목록의 인원수
+      method: "get",
+      url: `/api/recruit/${postingId}/applicants-number`,
+    }).then((res) => {
+      if (res.status === 200) {
+        setApplicants(res.data);
+        console.log(`useEffect 시행 후의 신청인원수 ${applicants}`);
+      }
+    }).catch((err) => console.log(err));
+  }, [applicants]);
 
 
   /**
@@ -222,7 +229,7 @@ const RecruitDetails = () => {
                 </Tooltip>
                 <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId}
                   requireContext={postItem.require} optionalContext={postItem.optional}
-                  onModalOpenChange={handleModalOpenChange} onApplicantChange={updateApplicant} />
+                  onModalOpenChange={handleModalOpenChange} onApplicantsChange={handleApplicantsChange} />
               </>}
             <Typography variant="h4">지금까지 {applicants}명이 신청했어요!</Typography>
           </Grid>
