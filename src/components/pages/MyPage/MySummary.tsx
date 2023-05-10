@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Grid, Box, IconButton, Typography, Stack, Paper } from "@mui/material";
+import { Grid, Button, IconButton, Typography, Stack, Paper } from "@mui/material";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import MySummaryField from "./MySummaryField";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/EditOutlined';
 
 export interface MySummaryItems { //유저가 작성한 공부기록들 중 가장 최신 글을 가지고와야한다.
   summaryId: number; //공부내용 요약 고유 id
@@ -31,14 +33,13 @@ const testSummary : MySummaryItems[] = [
 const MySummary = () => {
   const [summary, setSummary] = useState<MySummaryItems[]>(testSummary);
 
-  // api url 수정 필요
   useEffect (()=>{
       axios({
           method : "get",
           url : `/api/user/summary/mypage`
       }).then((res)=>{
           if(res.status === 200)
-            setSummary(res.data);
+            console.log(res.data);
       }).catch((err)=>{
           console.log(err);
       })
@@ -67,6 +68,37 @@ const MySummary = () => {
     console.log(data);
   }
 
+  const onDeleteSummary = (id:number) => {
+    axios({
+        method : "delete",
+        url : `api/user/${id}/summary/mypage`
+    }).then((res)=>{
+        console.log(res.data);
+    }).catch((err)=>{
+        console.log(err);
+    })
+  }
+
+  const onEditSummary = (id:number, content:string) => {
+    const data = {
+      content: content,
+    };
+    axios({
+      method: "put",
+      url: `/api/user/${id}/summary/mypage`,
+      headers: { "Content-Type": "application/json" },
+      data: data,
+    })
+    .then((res) => {
+      if (res.status === 200) {
+          console.log(res.data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
   return (
     <>
       <Grid container direction="column" xs={12} md={12} mt={1}>
@@ -81,8 +113,20 @@ const MySummary = () => {
             }}
             elevation={3}
           >
-          <Typography>{value.content}</Typography>
-
+          <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center"}}>
+            <Grid item>
+            <Typography>{value.content}</Typography>
+            </Grid>
+            <Grid item>
+              <IconButton>
+                <EditIcon/>
+              </IconButton>
+              <IconButton onClick={()=>onDeleteSummary(value.summaryId)}>
+                <DeleteIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+          
           <Stack
             direction="row"
             sx={{
