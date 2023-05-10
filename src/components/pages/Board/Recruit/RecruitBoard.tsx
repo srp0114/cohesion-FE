@@ -88,6 +88,7 @@ const RecruitBoard: React.FC = () => {
   const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
+      <Typography>{element.isCompleted}</Typography>
     </Grid>
   ));
 

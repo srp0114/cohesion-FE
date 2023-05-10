@@ -10,6 +10,7 @@ import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefault
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import axios from "axios";
+import BoringAvatar from "boring-avatars";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
 
@@ -28,7 +29,8 @@ interface DoubleCheckModalProps {
     requireContext?: string;
     optionalContext?: string;
     onModalOpenChange?: (open: boolean) => void;
-    onApplicantChange?: () => void;
+    onApplicantChange?: () => void; //신청 인원수가 바뀌었는지 감지
+    //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
@@ -43,7 +45,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     ];
 
     const sentences = [
-        "신청하시겠습니까? (신청이 완료된 후, 취소는 불가합니다.)",
+        "신청하시겠습니까? (신청 후, 취소는 불가합니다.)",
         "모집을 완료하시겠습니까?"
     ]
 
@@ -68,7 +70,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             isMeetRequired: isMeetRequired,
             isMeetOptional: isMeetOptional
         }
-
+        console.log(`request_apply: ${JSON.stringify(request_apply)} ${(request_apply)}`);
         axios({ //신청하기
             method: "post",
             url: `/api/recruit/${props.postingId}/application`,
@@ -77,28 +79,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         }).then((res) => {
             if (res.status === 200)
                 alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
-        }).catch((err) => {
-            console.log(err);
-        });
-
-        axios({ //신청자 목록 확인
-            method: "get",
-            url: `/api/recruit/${props.postingId}/applicants-number`,
-        }).then((res) => {
-            if (res.status === 200) {
-                console.log(`신청자 수: ${JSON.stringify(res.data)}`);
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-
-        axios({ //신청자 목록 확인
-            method: "get",
-            url: `/api/recruit/${props.postingId}/applicants`,
-        }).then((res) => {
-            if (res.status === 200) {
-                console.log(`신청자 목록 확인하기: ${JSON.stringify(Array.from(new Set(Array.from(res.data))))} ${res.data} ${typeof Array.from(new Set(Array.from(res.data)))}`);
-            }
         }).catch((err) => {
             console.log(err);
         });
@@ -119,26 +99,26 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     }
 
     const applicationCheckbox = () => {
-        if (typeof props.optionalContext !== undefined)
+        if (props.optionalContext ?? false)
             return (
-                <FormGroup>
+                <FormGroup sx={{ p: 2 }}>
                     <Typography variant="subtitle1">
                         {props.requireContext}
                     </Typography>
-                    <FormControlLabel control={<Checkbox required value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} size="small"/>} label="필수사항" labelPlacement="start" />
+                    <FormControlLabel control={<Checkbox required onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" />} label="필수사항" labelPlacement="start" />
                     <Typography variant="subtitle1">
                         {props.optionalContext}
                     </Typography>
-                    <FormControlLabel control={<Checkbox value="optional" onChange={() => setIsMeetOptional(!isMeetOptional)} size="small"/>} label="우대사항" labelPlacement="start" />
+                    <FormControlLabel control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
                 </FormGroup>
             );
         else
             return (
-                <FormGroup>
+                <FormGroup sx={{ p: 2 }}>
                     <Typography variant="subtitle1">
                         {props.requireContext}
                     </Typography>
-                    <FormControlLabel control={<Checkbox required value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} size="small"/>} label="필수사항" labelPlacement="start" />
+                    <FormControlLabel control={<Checkbox required onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" />} label="필수사항" labelPlacement="start" />
                 </FormGroup>
             );
     }
@@ -148,22 +128,22 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         switch (operator) {
             case 0:
                 postApplicantInfo(); //신청정보서버로
+                (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
                 break;
             case 1:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
+                (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
                 break;
             default:
-                alert(`from: confirmClickHandler: something went wrong`);
+                alert("에러 발생");
                 setOpen(false);
         }
-        (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
-
     }
 
     const cancelClickHandler = () => {
         (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
+        alert("취소되었습니다");
     };
-
 
     return (
         <>
@@ -174,15 +154,17 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
                 <Grid container xs={4} sx={doubleCheckModalstyle} spacing={'1.5rem'}>
                     <Grid item xs={12}>
-                        <Typography align="center" variant="h4" sx={{ mt: 2 }} fontWeight="800">
+                        <Typography align="center" variant="h4" sx={{ my: 2 }} fontWeight="800">
                             {designateSentence()}
                         </Typography>
+                        <Divider variant="middle" />
                     </Grid>
                     {((props.who === false) && (props.callNode === 'applyBtn')) ? <Grid item xs={12} >{applicationCheckbox()}</Grid> : null}
+                    <Divider variant="fullWidth" />
                     <Grid item xs={12}>
                         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                            <Button onClick={confirmClickHandler}>Confirm</Button>
-                            <Button onClick={cancelClickHandler}>Cancel</Button>
+                            <Button className="modalCancelButton" onClick={cancelClickHandler} variant="outlined" color="info" >취소</Button>
+                            <Button className="modalConfirmButton" onClick={confirmClickHandler} variant="contained" color="info" >확인</Button>
                         </Stack>
                     </Grid>
                 </Grid>
@@ -194,7 +176,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
 const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
     borderRadius: 5,
-    p: 4,
+    p: 2,
     bgcolor: 'background.paper',
     boxShadow: 20,
 };
@@ -207,7 +189,7 @@ const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
 //더미데이터
 const dummy: Application[] = [{
     id: 1,
-    nickname: "오늘은",
+    nickname: "오이카와토오루와이프",
     isMeetRequired: true,
     isMeetOptional: true,
     profileImg: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxASERUQEhIVFRUVFRAVFRgVFRUQFRcWFRUWFhUXFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLi0BCgoKDg0OGhAQGi0lIB8tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBIgACEQEDEQH/xAAcAAACAgMBAQAAAAAAAAAAAAAABQQGAgMHAQj/xABBEAABAwIEAwYDBQcDAwUBAAABAAIDBBEFEiExBkFREyJhcYGRMqGxB0JSwdEUI2JykuHwM0OCJFOyF1Rjk6IV/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAECAwQFBv/EADIRAAIBAwMCAgkEAwEBAAAAAAABAgMRIQQSQTFRYfAFEyJxgZGhscEjMtHhFDNC8RX/2gAMAwEAAhEDEQA/AO4oQhAAhCxebAlAC3FawNBBNgNylEGKRSHKx4cfVZY/PkZqNZNB5blV6iqMugAF+gsnFHWoaZOlfn6GOPU1U5xIeHN/A0uFiNtDus8JxGaBhbMbi3dF7kW5XXkleWvbc312S5r+3nsfhb3neQ2Hqp2OlGnvp7JpbUr3Ss/P3GVXXOLc7t3fCPwtSnNc3WVdPmcVjGE4oupw2R6WN8bVuAWMYXjnIIt3ZmSvC5ay9YlyAsbcyMy0Zl7nQPaPMDxQwvF/hOhCvUbw4AjUHULlYerjwhiWYGFx1GrfLmFFo5XpDTY9ZHjqWdYPeBubJLxDxHFSixN3dOirmF8Xtnfl7OQn+qwvbXooGKloq1SHrFF2LwapvivRVN8UtjfdbgU7FbpoYNeDsVml4UmGW+hSK5Qt0N6EIQQBCEIAEIQgAQhCABa5/hPkVsWLm3FkAc+4txBwDI8ulzd3ToPBIBXCx1sR6+qtHEMFiWkKj1dHZ12Xv03TjJJZPTaOrSVNRkreK5J0s4yGTpoD1PMrZgukDpTvI4gfyj+91DxiN0UTWEWIbcjxOqmRnLSxD+G/urP+febXZ0k1/wBS+iz/AAaQblSogoURUyM6KTFUPJ6uxyDf6L2M33SWOY9s4He49k3gchqxKpS2KyJfZAjoU4oeGy4B0j7A62br80pB0VuwSTNC3wuPYqFzl6urUhBODtk8gwKmb9zN4uJd/ZSRhkH/AGmf0hSAsgkcp1JvrJ/MgT4HTO/2wPFpy/RKX4c6mkE0L75cxyO3IsRYEbqzpBxZTOMJey9266dErllKrUb2bnZ4zlZ9/wCLFTwOk/balz5ruZ3i65Iv3rWuNrq9UuHQRNyRMa1vhv6ncqn8I15BIy2B16bKzurm6FvNSeMHQ16qOpsWIpJJcYXUhw4kYHObOC1t+6QDY6m5HhsnFDXxyi7HA/X2UF+SUZHgOF9QdVujw+CEZ2Ny5fp08VG5lqqnJZTUn26fXORq0rJaWFbQUjGybC+4WxRaU6kKUkUSVmCEIQRBCEIAEIQgAQhRq6bK3zQNK7sI+IWtk23+qS4FhILzO8aNNmg83dfRSqxxkcGDcmyaS2a0MGwFlBXOh+yCiuSjcdQkuzcj/dLKeozUzerLg+iteN0olYW8+RVIdDLA4sc05XcwLi/IhaIv2bdsne0VaM6Kpt5i/mun2N8UymRTJDK8tK3Q1vVWWT6G6dHcroauhaXZ7ancqREl8dSDzW9s4SM8oS6DHOrngkZbCwHe1/fVVTAcPdM4OIswHU9fAK8sFtFXI42vmsU1x1/gyCyC8Xqic2xksZGBwIOx0Xq9CRE5zLRSQTSN5NJLL82nYfktkWLZQLhul7akDXfmrni+ERVDcrxqPhcNCPVUnEeFZIwXZswadetlO52qOso1Y/q9ccfXz+SUyeSaOSduVoYQCA61xbW1+a3YHJNPpZwjBBJd9633W+HUqHheHsFrgHz1HsrRSkAWQQrV4JOMF7r8fV39/AyYVuaVFjcpDXKJymSaX4vRTEvjfY3CnMeCLhRKJrNzJCEIIAhCEACEIQAJFjlTuOmidSOsCVT8Zn1KTNOmheR7gzLudKfu6DzO/wAvqteLV7292ON0jj/xaB1c46Dy3UykbkhaOZ7x8z/gUConQka+smxdD+1lwMnYhvMNzONvA7LdLBdZicFbWlTSJMR12CNk5a9dkpfwpJfuu91eGNCkxMCaRbDV1aatFlHpODpzvJb0VkwvhCFlnSEvPidPZWGILcE3JkKnpDUTVnL5GMUYaLAWA2A0W1eISMVj1ZArBzrAm1/AblKxxBAHZJc8Lv8A5WlgPk7b5pDUW+g4WQWpjwRcEEHYjUe6zCREzWL2AixC9C9RciU+sg7GUs5HVvkf0UqnnU/iWjzxFw+JneHlzCqVNiAOxv5apuVjZT9uPiW2KZS4ZLpFQh7/AAHzTuBoAsmVTjYmNK2wyZT4KO0raFEpa4GKFHppPu+ykJGdqzBCEIECEIQBGr32YVRMVnAN3bXFz0BOpPgrpjL7MVNZMwTsLyA25uTttzPJR5N+lxFyJPEWKxQRGV7gGNaNd7jlbrdcodxBimIymOhiflB+4AbD+N50b5JnjWDmvxRuG073Cnb+9kAOZjL/ABFnQWOg2uV0SgwyKZjqOmJhooT2bjEcj55B8QzjUNHM7kpkZ1HH2UcgrMQxSgcO3lieb6s7Vkrh55dQr3wtxFHVRhzdDs4Hdp6Kq/azwjT4e6KSHMI5c7cpOazm66HxBVd4MrTFUsLT3ZCGO8z8J9/qpJcotptNXTudzYpcKgQuu0HqAptOpIclgnMW4LU1bQgoYLG6xmka0FziABqSTYAeJVEx77UqKBxZHmmcNO5YN/qO/ok8As9C+5lhNG14yvaHA7ggELk3/q+Qe9SED+e31CseB/aXQzkNc4xOO3afD/UNEroe0s9LhXYvDoHFrCe9G67m25ln4SnIUSGYEAg3B2I1B8ipLSmKTbeTYF6FiFkEisxmF2keBXO8ODQ4jxP1XQp3Wa49AfouXUM2t/E/VDeTXpFfd8PyXSjkTGNyr1BMnVPIpDqQsMGFbWlRY3KQ0pMzSRua6xupoN9VACl0ztLdFEpmsXNyEIQVAhCEAKcfPdHqqxhzQZjcXAa/x8FZeINh5FIsIj1kf4Bvub/konQoO1JlT4YApKHEsSa0NfLNJFHYWs1rsgt4ZiT6K0/ZnWxOoWNDhmYXiS5F8xcSXHzve6UcVYcYsIZE03BqSXEdHySO19SFxbiOOSJ9szhfoS248bbq3banu8R+p3aaVTnd9F/6W37bOJoqqojp4XBzIM2ZwNwZHb2POwCpeBX7WMdZI7f1hYUGBzy089UwDs6bs+0JNj3zYZRz3T77OsMM9ZFp3WESO8maj52VUb3KKSe7B2qFtmgeCm0wWkMUumjVqNMnglNW0LFoULHXvFO8M+NwDG/zPOUfVBmkUvFY5MVklzSmDDaYkSyA5TM9vxAHm0bea2YHgb5mXwyCGjg1aKiWMTVMtvvNLgcrd/7Jd9pNUIGQ4TB3Y4o2vltu57r5Q48+bj1LgupcMPjdRwGK2Tso8tvAbJbbLd3J1IuNKNRr917Lsu/xOOcbcM4rSt7aWqknivYuD3WbfbMw6AKgvgaT32/8mgNd52Gjl9QcW9n+w1Pa2ydhNmvtbKV8p4bXH4Xa3TTTwydCpCa2yWe6L1wTxTNQSRwzvMlJKbMfqezJNtOlubfVdwhdcXGq+daCDtc1Ide2B7P+GYAmMg9DbKeuYdF0r7NGzVlGx81TKWsvH2TCIR3NBne3vu9wo2s7BVg4OzOjNK9WmlpmRtysaGjoPqep8VuTRQQsbnyU8rujHfRcsoXrpPFQJpZB1AHzXMoBY2Vcn7Rt0i9lsstBKn1JIqtQuT+jcrEXVIj2JylMKgQOUuMpmGSJLVIpTqQorVIpfi9FEon0ZMQhCRQCEIQApx4d0eqTUzCITY2LnON7XOmmxT3Gx3B6pLTO/d2/C4/PX9VHk20f9ZBZQy1FDPTSF2ckvhLy0uJBDm3DWgDUbdCuc4ng0dVDqcsjTYg6EEcvPddYikSjF+GKeeTti58bz8RjIGfxcCLX8VfBpYfQ1aauqblCf7ZfH345T58cnGaXgyqN2CQiNxbmA0DrG4uOa65wZw0yki27zgMxO9uiaYfgsEOrbuPV5zH0GwU/tAk7dIiqVKaTjRjZPnN34c4MmxBb4mi1wb+Wq0scDossMoYoIxFE3KxuwuT8zqkZZNknKvWxBzmg7BwPqNQvV6063SK28HHOO4nPrqp5F8rgBvsGNt8lWuG/tEr8NvHHkkiLiezlBIBO5Y4EFvzHgunccUfZ1gmI/d1DGi/IStFiD5tsfQrl3GPCkzHdrG27Trp8lZUvKKtwdWtB19NT2Zsljvw7eKaPOMftLr8Rj7F4ZDCSCWRZrvttneTcjw0Cp1L8Yss46d4cMzHEXFxqCRfUXXQKjAaapmE9LSvpoWxsBa/Ul43da5+qpjByZgoaec5JJWXfpbzwK8OYRLAR8Qlgt59o2y6l9nGEWineJJWsdVVWRrH5G5WyOAOgVN4ewWSWr/dtzdj+812zD/TBP89j5ArsWC4c2mgjgabhjQCfxHdzvU3KuqpbrGn0glGrtXC/slxtsANdOpufUndekr1YuKrMIu4iP/Tu8SB7Lmzmd5X7iqazRH0GvmdSqUY9VQ8yN+mXskqiCfUaU0kacUrVfEtmxpTqZGokAUuNMxTJDVJpfi9FGYpVENyomefRktCEJGcEIQgCDizbxqqNnyP12Oh/Iq41rbsKpWIs3S5NulacWmbZZC0rJlWlkckgFnMcW8jY6fqFjISNRsmmaHHuNzVBa3Ttduk5qCvBOpXGoljpmNPM+6mxh45g/JVylrLJtBWBSK5xkM25uZA8tVm1RWVAK3NkSKHcwxOhjqInQyC7TqOrXDZzTyIVHrqOspwYnxmaMfDI1pk0/ibu0/JX4OWQcmpWwW0a8qWLXXWz791yjmEclM25fE7NYW7pFjz0svXsqqj91TU7mst8Th2bdB47ldOIHQey9upb/A0P0hJ5Uc+Lb+mCtcFYaYI7Boyv7xcRllEg0c2Qag67EFWgLXde3UG7mGUnKTk+rNi1lwGp2Gq8L0vxSps23VRk7K4Rjd2EGNT53kpUyLVTJ9SvYIlCETpR9lG2miTSnYo8EaYQsVxXORIiCkxrSwKQwJGaRuCm0g7t+qgeCaMFgAoszVHixkhCEiki4hWshYZHmwHuT0C53jfG0zyRGcjeVt/Urb9oGLF0vZA91mnrzVCnkumek9Hej4KCqVFdvvwPqPimcSszSOLc7Q67idCQCrxVkNcXWvoSPPkuPuK6tFOJaeOUfeY2/nbX5pO2CfpKlCOyUV3T+6/Irrp3HW6VTVUg2d+aazSDZ3uoVTTc+SGjLGzw0Qhio2e0jxbr8lsjq2O+FwPhsfYrRNTKBV0ZDbjc6BLKH6q/QesnspkNbZUyWSaFmjnOsL2+LT9Eui4tlae/GCOoOvshzSdmQqw9W8s6lDiCmR4iOq53FxC3m1w+aks4ii5uI8wVZkJaeS6xZ0NmIjqt7a9vVc9i4ghO0jfe31UxmJjkR7pXKXRReRWDqshVBUluK+K2DGQOadxeoLn+0hYOqwOarFLVzSm0Ub3+QNvU7BNo8NexokqnZQdmNN3OPS+wRcg4Rjhv+RjHMXAu+6Nz+XmkmITFxsOeg8+SaSSlzQ2wYwbNH5nmUlxYRjKcxAuL25eKg43dx01Z3JFfADEyYaZRlf4EdfooeCOdMHuawlrXWuNtrpxTxiWN7HH/AFGlrrbE8njpySrgqZzO1pHjvxPk0OhIuO95fkVI0U3+lPlxt8u/4GFNMwuLQbluh0NgfNMI2qHW4hTstGHMzE62A38XDRSqaQEC2p90yqonZOzS8SUwLc1YNatl0jMzfRsu6/RMVopo8rfE6lb1Eyzd2CEIQROH8Q1BfK93Vzj7lInpli1xI4Hk5w9ilbnKTPdxVopeBhIVeuEKr9yIjzaHD8/yVB1cQ0blWugl7N0fhYemyiUaiHrIOPnA5rlFpanKcrvhPy8VJrSlzwmceOUNTRX8lurMGJja4AXFzrpopXC95I3Md9xwsedjfT5J5WUnaRuZfLmFrjkFFvJVUruEl4M5fXNeA5rPvNLD5G17ey1VLXzd10UbW5WsPcbfu8wdwVbZcAc2drBdzSMxNuh1C8w7ApJml/w9MwOp5qE9HQqVFVkso1zraeX6jfC+7tjrwyrtwoW2+SxfgzTyXRMEwZ8Zd2gbYiw5qXJg0BOsYHldvyC17yL9Jre0spco5ZFw7ncGNbcn5DqVaKLhmOLKWABzbG9gdfEHdXCKhjYLMaB5D6lapGgFQk7merq5VscHtDT0rtJKaEO6hjcp+WidRYbTt+GKMeTG/ok7HBbo6l7PhPodR/ZRsc+cHwPNAOgCpklQaiUyOHc+54AHT1NrqXi3EgbG+N8bgXMe0EG4uQQFpwuG0RI17lx7ckkW0abppya9wvr6nXKDoFCZTNcbEXuvH3zWIIPO6nUbOfT6lNZNr9lEeOJ0J0JMV+91aOZHgsMUw+nqpBI2Ql7WNbIWaZxc5QfEDcp3EzTz+ijDA4cxcA4E/hcW+1kyEarhLcnZmqgwimj+5dw5uOc/NMaZridnW9GBRX4G07SSD/kSilc+nkEb9c3wu118DfmghKbm273fiPGiyk0UOY3Ow+qh1VSxsfauNmiwdztc2XkHE1KLNBdbrlUTO6dSUbwi2P0KJSYhFL8DwfDY+ylpGRxcXZghCECON8ZUGSqlFtC5zh5ON/zVedh2bmupfaDhBewVDRqzR/8ALyPouftKfB7DRaj11CL7YfvXm/xI9HQMj159Tqs55FnJKoM0iaRqii0OkzNB6gfRRnvaNyB6pBJWyEBuawAtYae60XRYwx0L5Z1Pg1g7Fzgb5n208Am1c9wyhuhLgPml/B8OSiiHUOd/UbrzFcTELHVBFw0sAH8zgHetlg1c8bLtbuVwllv8fE4dZfqytmz/AKHLnAEDqbD6rVWz5G30GtrkXt6JHPiQkqIcjrta0vP/AC0+l08leJLsG3J38Q2t4KM9UqiqU4ytK+2Pvax+eDP6u1m17yVSOJYC7f29bHZEo1UXCqm94zuNr72GhB8ipsy06asqtKM028c9brDv436kdu2djSVCxBndJHJTwtdQy7SPBaS2L2u5XIsRHVTY6wHmua4/jDoqt0LSdN72tfTb3WmLiKcHdlvI/qlCTkrnWjonWjugdFxgMfG4eGi38MVGZgHgWqNwxhQqoe1e6QNJs21m5hbU6g6XR2LaWpMTScpta5ubovkwyUVelfKNeMSNdNYbtFneakQs0A5nU+u3yUjFaEF7ZuTx3vAj9VhBrd3+apoe9OKtx9+hIjGv+clvYP8APqtcY0uvKmpbG25Owvbmgr6uyJTAlPENXEI8pcM4c0tA1N7/AKXSuuxiWTQHI3oN/UpHDE+aoa0fC3vE/RNI3UtFZOc3ayvjz8PiXqNwfDLGQbGIm/LZVCEKzyzdnBK4m4LbN9dAqxCUizRq0Ze9fO2SbA8tNwSD4aK5YBivajI/4xz6j9VS4ypdDUmORrxyI9uaGrkdTQVWNueDoiFo/amdV6oHA2vsZSxhwLSLgixB2IXL+LeF5IHGWIF0RJOmpZ4Hw8V1RYvaCLEXCDTpdXPTS3R6Pqu58/PlUdzl1zHeA6Wcl8d4nn8IGQnxb+llT6v7OK5h7hjkHUPLD7OH5qVz0dH0np6i/dZ9n5sVNehPBwTiN7dh/wDttvqmdD9nFY4/vHRxt598vd6AC3zTuXPWaeOXUj87/a5ccL7tPE0f9pn0VdxwGWke1u8bw5w52G/6qxyRdiGRXvkaG32vYb2SuroLvMschjcRZ2ge1w/iaVhrUd8k1wmvnb64X2PNt5b75+5XeEpBdx8ldqGcF7WjxPkAqvw66me5zOzGbK5wygxk5eRANlNwXEHOdkiMbHuaDqHHxsDfcLiR0i/yIVnLDeEuuOM2XbklKXstDund/wBU4D8Tv/EX+d03m2UDCsN7K7nOzvO52HU2U2c7LuaOlKnCTnhyk5W7XfT+fEyyaclbg8C9cNFg0rM7LYSZyrjPhd8lQ+Vl391zrMYQWFxGsjvv8gPNIaLhOaS2WOVzri+4Hjy8l3rDWixNtb6/kpgWWpp23iTSLP8AMnBbV92KuGoahlO1tQGh40AbyaPhB8VS/tCe+CpbKNWvAPq3Q29F0pVjj3CP2ilJaLvj746kfeHt9FclZJdg0VWMdQt/SWH8f7MsKqo6iAAHuuHseqiiItOQ7jf/ADyVd4GjnijzuLezdqBfvWJtcDpdW5sjJSbGxaS09dN9FNMcoOlUnBO6XK+WfsyDiFZ2TLjfkPokche5tzcuecx590aD539grQ/D4Sbv72t9Tptbb0Wmtq4oxlGUact07ltHUxjaMI3b8rx8eBBT4W92/dHimkNPFC07Dm4n81GmxT8I99FUuKn1D7ODiWjdo0Hn4qSV2b4UqupklN2Xnz1J+M442UiKP/Tad/xH9FrgeqtTThOaSp5KbWDrPTqnDbEexvWwuUGGVTIGlzmtG7iAPU2ULGOUbPIy/an9ShW7/wDjRIULnH/zKXYZIQhI5YIQhAAhCEAVziVliHdQkkVTfRW3GqTtIiBuNR+YVBkuClY30LTp27DjD6aJjy9rQHO3I/zRTKfDYBJ2wZZ+u21zubJBDWEJnTYkFH1cey7kZ05roWFr1rlkufJLxXX2WTJlakRjSayye0raCoUcqkNemKSN1FJZ9vxfVM0kcbG45apxG+4B6qLKqizczQhCRUc+4mlkoDpEHwEkxn8BOpYfDojhbG/2iN+YsEua9vhu0nYFXevo45o3RSNDmuFiD+XiuScS8JT0bjJFmfFfQtvcDo8D6po62lVDUwdOXs1Hz3+trvlc+LHvENZaYtY82ytuAbgOO4v7Je1991W6as8U0gqgVZtVjtR0qpQUVxzZZGjXIe0HdRmTLaJErEHFi6pwaJxzAWPhoiLDWtTEvWp0gUtztYuVWdrXMY4rKycH0Rkm7Ujux/8AkdkmwyhlqH5GD+Z33QOpP5LpOGUTIIxGzYbnmTzJUJM5npHU+rg4X9p/RefPS8tCEKB58EIQgAQhCABCEIAFTeJsN7N/atHddv4FXJap4GvaWOFwRYoLaVR05XOfspQ8LRNQyN1bqmk9MYJSw7cvEJkMtlKyZulU22a6MSYRSVE2bKAMtr5ja9+inPw2rb/t3/lIKsmEU+Rl7WzG/wCinqJmnqXuwlYon7aWHK9rmno4Fv1TCmqweastRTskble0OHQi6p+NYO+ncJIQ50Z3HxFv9k7llOpCo7PD+g5Ybphh0mhb0+irWF1wcNd08oX/ALwW6G/lZNldaDV0xshCFEygsSL6FZIQBVcZ4Fo5yXtBieebLAX8W7Kq1X2f1kZ/dPjkHi4sd7HRdUQmm10N1H0lqKSspXXZ5/s42/AsRZvTyH+UZvoV63Dq7/2s3/1vXY0KW9mv/wC1UfWEfr/Jyml4dr5P9ks8XuyfLf5J/hvBFiHVEt/4WberiruhLeyir6VryxG0fcvy7kakpI4mhkbQ1o5DT36qShCic5tt3YIQhAgQhCABCEIAEIQgAQhCAE3E3+moODbhCE49DXH/AFFnQhCRkBCEIAqWLf6vqU7wT4EITXQ11P8AVEZIQhIyAhCEACEIQAIQhAAhCEACEIQAIQhAH//Z",
@@ -253,7 +235,8 @@ interface Application {
     track1: string,
     skills: typeof skillData,
 
-    isApproved: boolean; //추가되어야함
+    isApproved: boolean,
+    collapseOpen?: boolean,
 }
 
 export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI 확인용 임시.
@@ -261,27 +244,40 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
         right: false,
     });
     const [dense, setDense] = React.useState(false);
-    const [applications, setApplications] = useState<Application[]>([]);
     const [modalOpen, setModalOpen] = React.useState(false);
-    const [collapseOpen, setCollapseOpen] = React.useState(false);
+    const [applications, setApplications] = useState<Application[]>([]);
 
     React.useEffect(() => {
         const fetchApplicants = async () => {
             try {
                 const response = await axios.get(`/api/recruit/${postingId}/applicants`);
                 if (response.status === 200) {
-                    setApplications(Array.from(new Set(Array.from(response.data))));
+                    console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(response.data)}  ${typeof response.data}`);
+
+                    const initialize = response.data.map((data: Application) => ({ //서버에서 받아온 신청자 목록 데이터
+                        ...data,
+                        collapseOpen: false //리스트의 collapse 여닫기를 위한 속성 추가
+                    }));
+                    setApplications(Array.from(new Set(initialize)));
                     console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
-                    // setApplications(Array.from(new Set(Array.from(dummy))));
-                    // console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
                 }
             } catch (error) {
                 console.log(error);
             }
         };
-
         fetchApplicants();
     }, [postingId]);
+
+    const toggleCollapse = (index: number) => {
+        setApplications((prevState) => {
+            const updatedApps = [...prevState];
+            updatedApps[index] = {
+                ...updatedApps[index],
+                collapseOpen: !updatedApps[index].collapseOpen
+            };
+            return updatedApps;
+        });
+    };
 
     const toggleDrawer =
         (anchor: Anchor, open: boolean) =>
@@ -304,6 +300,10 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
         })
             .then((res) => {
                 if (res.status === 200) {
+                    const updatedApplications = applications.map((app) =>
+                        app.id === targetId ? { ...app, isApproved: true } : app
+                    );
+                    setApplications(updatedApplications);
                     alert(`승인되었습니다.`);
                 }
             })
@@ -311,17 +311,20 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
     }
 
     const putReject = (targetId: number) => {
-        alert(`${targetId} 승인취소되었습니다.`);
-        // axios({
-        //     method: "put",
-        //     url: `/api/recruit/${postingId}/reject/${targetId}`,
-        // })
-        //     .then((res) => {
-        //         if (res.status === 200) {
-        //             alert(`승인취소되었습니다.`);
-        //         }
-        //     })
-        //     .catch((err) => console.log(err));
+        axios({
+            method: "put",
+            url: `/api/recruit/${postingId}/disapproval/${targetId}`,
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    const updatedApplications = applications.map((app) =>
+                        app.id === targetId ? { ...app, isApproved: false } : app
+                    );
+                    setApplications(updatedApplications);
+                    alert(`승인취소되었습니다.`);
+                }
+            })
+            .catch((err) => console.log(err));
     }
 
     return (
@@ -329,54 +332,74 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
             {(["right"] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Tooltip title="신청자 목록">
-                        <IconButton onClick={toggleDrawer(anchor, true)}>
+                        <IconButton className="applicantListIconButton" onClick={toggleDrawer(anchor, true)} size="large">
                             <FolderSharedOutlinedIcon />
                         </IconButton>
                     </Tooltip>
-                    <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "50%" } }} >
+                    <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
                         <Box>
-                            <List dense={dense}>
+                            <List dense={dense} >
                                 <ListSubheader>
                                     신청자 목록
                                 </ListSubheader>
-                                {applications.map((app) => (
-                                    <ListItem key={app.id}>
-                                        <ListItemAvatar><Avatar srcSet={app.profileImg} variant="rounded" /></ListItemAvatar>
+                                {applications.map((app, idx) => (
+                                    <><ListItem key={app.id} sx={{ p: 3 }} className="applicantsListItem">
+                                        <Grid container xs={12} columnSpacing={2} >
 
-                                        <ListItemText primary={app.nickname} secondary={`학번: ${app.studentId.toString().slice(0, 2)}`} />
-                                        <ListItemText primary={app.isMeetRequired ? <Chip size="small" variant="outlined" label="👌" /> : <Chip size="small" variant="outlined" label="❌" />} secondary={(typeof app.isMeetOptional !== undefined && app.isMeetOptional === true) ? <Chip size="small" variant="outlined" label="👌" /> : <Chip size="small" variant="outlined" label="❌" />} />
-                                        <ListItem>
-                                            <ListItemButton onClick={() => setCollapseOpen(!collapseOpen)}>{collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
-                                            <Collapse in={collapseOpen} timeout="auto" unmountOnExit>
-                                                {/* 신청자 정보 */}
-                                                {/* 1트랙, 2트랙 */}
-                                                <Typography>{app.track1}</Typography>
-                                                <Typography>{/*app.track2*/}</Typography>
-                                                {/* 선택한 기술 */}
-                                                {app.skills?.map(skill => <Chip label={skill.name}></Chip>)}
-                                                {/* 자기소개 */}
-                                                <Typography>{/*app.introduce*/}</Typography>
-                                            </Collapse>
-                                        </ListItem>
+                                            <Grid item xs={3}>
+                                                <ListItemAvatar>
+                                                    {app.profileImg ? <BoringAvatar size={'64px'} variant="beam" colors={["#58B76B", "#FFE045", "#B5CC6C", "#AED62E", "#87D241"]} />
+                                                        : <Avatar srcSet={app.profileImg} sx={{ width: '64px', height: '64px' }} />}
+                                                </ListItemAvatar>
+                                            </Grid>
 
+                                            <Grid item container xs={7} rowSpacing={1}>
+                                                <Grid item>
+                                                    <Typography variant="h4">{app.nickname}</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
+                                                    <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" />}
+                                                        {app.isMeetOptional ?? false  ? <Chip size="small" variant="outlined" label="우대사항 👌" />
+                                                            : null}
+                                                        {app.isMeetOptional ? null : <Chip size="small" variant="outlined" label="우대사항 ❌" />}
+                                                    </Stack>
+                                                </Grid>
+                                            </Grid>
 
-                                        {(!app.isApproved) ? <>
-                                            <Tooltip title="승인대기">
-                                                <IconButton edge="end" aria-label="approve" onClick={() => putApprove(app.id)} >
-                                                    <PersonAddOutlinedIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </>
-                                            : <><Tooltip title="승인완료"><IconButton edge="end" aria-label="reject" onClick={() => putReject(app.id)} >
-                                                <PersonAddDisabledOutlinedIcon />
-                                            </IconButton></Tooltip>
-                                            </>}
-
+                                            <Grid item xs={2}>
+                                                {(!app.isApproved) ? <Grid item xs={2}>
+                                                    <Tooltip title="승인대기">
+                                                        <IconButton edge="end" aria-label="approve" onClick={() => putApprove(app.id)} >
+                                                            <PersonAddOutlinedIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Grid>
+                                                    : <Grid item><Tooltip title="승인완료"><IconButton edge="end" aria-label="reject" onClick={() => putReject(app.id)} >
+                                                        <PersonAddDisabledOutlinedIcon />
+                                                    </IconButton></Tooltip>
+                                                    </Grid>}
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
+                                                <Collapse in={app.collapseOpen} timeout="auto" unmountOnExit>
+                                                    {/* 신청자 정보 */}
+                                                    {/* 1트랙 */}
+                                                    <Typography variant="h5">1트랙: {app.track1}</Typography>
+                                                    {/* 선택한 기술 */}
+                                                    {app.skills?.map(skill => <Chip avatar={<Avatar srcSet={`${skill.logo}`} />} label={`${skill.name}`} sx={{ ml: 1 }} />)}
+                                                </Collapse>
+                                            </Grid>
+                                        </Grid>
                                     </ListItem>
+                                        <Divider />
+                                    </>
                                 ))}
                             </List>
-                            <Tooltip title="닫기">
-                                <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)}>
+                            <Divider />
+                            <Tooltip title="닫기" sx={{ display: 'flex', flexStart: "flex-end" }}>
+                                <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
                                     < DisabledByDefaultOutlinedIcon />
                                 </IconButton>
                             </Tooltip>
