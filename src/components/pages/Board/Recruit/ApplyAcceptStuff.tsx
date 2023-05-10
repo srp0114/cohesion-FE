@@ -11,6 +11,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import axios from "axios";
 import { skillData } from "../../../data/SkillData";
+import { useTheme } from "@mui/material/styles";
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -23,12 +24,15 @@ interface DoubleCheckModalProps {
     who: boolean; //접속한 유저가 작성자인지 신청자인지
     callNode: string; //모달을 부른 곳이 어디인지
     isComplete?: boolean;
-    condition?: boolean;
     open: boolean;
+    requireContext?: string;
+    optionalContext?: string;
     onModalOpenChange?: (open: boolean) => void;
     onApplicantChange?: () => void;
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
+    const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
+
     const [open, setOpen] = React.useState<boolean>(false);
     const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
     const [isMeetOptional, setIsMeetOptional] = useState<boolean>(false);
@@ -109,24 +113,32 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             .then((res) => {
                 if (res.status === 200) {
                     alert(`${JSON.stringify(res.data)} 모집이 완료되었습니다.`);
-                    //isCompleted는 db에서 false => true로 바뀜.
                 }
             })
             .catch((err) => console.log(err));
     }
 
     const applicationCheckbox = () => {
-        if (props.condition)
+        if (typeof props.optionalContext !== undefined)
             return (
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} />} label="필수사항" />
-                    <FormControlLabel control={<Checkbox value="optional" onChange={() => setIsMeetOptional(!isMeetOptional)} />} label="우대사항" />
+                    <Typography variant="subtitle1">
+                        {props.requireContext}
+                    </Typography>
+                    <FormControlLabel control={<Checkbox required value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} size="small"/>} label="필수사항" labelPlacement="start" />
+                    <Typography variant="subtitle1">
+                        {props.optionalContext}
+                    </Typography>
+                    <FormControlLabel control={<Checkbox value="optional" onChange={() => setIsMeetOptional(!isMeetOptional)} size="small"/>} label="우대사항" labelPlacement="start" />
                 </FormGroup>
             );
         else
             return (
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} />} label="필수사항" />
+                    <Typography variant="subtitle1">
+                        {props.requireContext}
+                    </Typography>
+                    <FormControlLabel control={<Checkbox required value="required" onChange={() => setIsMeetRequired(!isMeetRequired)} size="small"/>} label="필수사항" labelPlacement="start" />
                 </FormGroup>
             );
     }
@@ -159,16 +171,22 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                 open={props.open}
                 onClose={cancelClickHandler}
                 sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Box sx={doubleCheckModalstyle}>
-                    <Typography align="center" variant="h5" sx={{ mt: 2 }}>
-                        {designateSentence()}
-                    </Typography>
-                    {((props.who === false) && (props.callNode === 'applyBtn')) ? applicationCheckbox() : null}
-                    <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                        <Button onClick={confirmClickHandler}>Confirm</Button>
-                        <Button onClick={cancelClickHandler}>Cancel</Button>
-                    </Stack>
-                </Box>
+
+                <Grid container xs={4} sx={doubleCheckModalstyle} spacing={'1.5rem'}>
+                    <Grid item xs={12}>
+                        <Typography align="center" variant="h4" sx={{ mt: 2 }} fontWeight="800">
+                            {designateSentence()}
+                        </Typography>
+                    </Grid>
+                    {((props.who === false) && (props.callNode === 'applyBtn')) ? <Grid item xs={12} >{applicationCheckbox()}</Grid> : null}
+                    <Grid item xs={12}>
+                        <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                            <Button onClick={confirmClickHandler}>Confirm</Button>
+                            <Button onClick={cancelClickHandler}>Cancel</Button>
+                        </Stack>
+                    </Grid>
+                </Grid>
+
             </Modal>
         </>
     );
@@ -252,10 +270,10 @@ export const ApplicantList = ({ postingId }: { postingId: number }) => { //UI �
             try {
                 const response = await axios.get(`/api/recruit/${postingId}/applicants`);
                 if (response.status === 200) {
-                    //setApplications(Array.from(new Set(Array.from(response.data))));
-                    //console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
-                    setApplications(Array.from(new Set(Array.from(dummy))));
+                    setApplications(Array.from(new Set(Array.from(response.data))));
                     console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
+                    // setApplications(Array.from(new Set(Array.from(dummy))));
+                    // console.log(`서버에서 받아온 신청자 목록 확인하기: ${JSON.stringify(applications)}  ${typeof applications}`);
                 }
             } catch (error) {
                 console.log(error);
