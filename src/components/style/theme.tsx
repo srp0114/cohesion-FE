@@ -126,6 +126,9 @@ export const theme = createTheme({
                 borderColor: '#B5CC6C',
               },
             },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#B5CC6C',
+            },
           },
         }
       }

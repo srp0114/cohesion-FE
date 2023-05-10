@@ -5,6 +5,7 @@ import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import MySummaryField from "./MySummaryField";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/EditOutlined';
+import MySummaryEditField from "./MySummaryEditField";
 
 export interface MySummaryItems { //유저가 작성한 공부기록들 중 가장 최신 글을 가지고와야한다.
   summaryId: number; //공부내용 요약 고유 id
@@ -32,6 +33,8 @@ const testSummary : MySummaryItems[] = [
 
 const MySummary = () => {
   const [summary, setSummary] = useState<MySummaryItems[]>(testSummary);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editSummaryId, setEditSummaryId] = useState<number>(0);
 
   useEffect (()=>{
       axios({
@@ -83,6 +86,7 @@ const MySummary = () => {
     const data = {
       content: content,
     };
+    
     axios({
       method: "put",
       url: `/api/user/${id}/summary/mypage`,
@@ -91,13 +95,22 @@ const MySummary = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-          console.log(res.data);
+        console.log(res.data);
+        const editedSummary = res.data;
+        setSummary({...summary, ...editedSummary})
+        setIsEditing(false);
       }
     })
     .catch((err) => {
       console.log(err);
     });
+    setIsEditing(false);
   }
+ 
+  const editHandler = (id: number) => {
+    setEditSummaryId(id);
+    setIsEditing(true);
+  };
 
   return (
     <>
@@ -109,38 +122,38 @@ const MySummary = () => {
           <Paper
             sx={{
               borderRadius: "15px",
-              p: "1.125rem",
+              p: "1.7rem 1.5rem 1.9rem 1.7rem",
             }}
             elevation={3}
           >
-          <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center"}}>
-            <Grid item>
-            <Typography>{value.content}</Typography>
+            <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center", pl:"0.8rem"}}>
+              <Grid item >
+                <Typography variant="h5" color="primary.dark">{value.date}</Typography>
+              </Grid>
+              <Grid item>
+                <IconButton><MoreHorizOutlinedIcon /></IconButton>
+              </Grid>
             </Grid>
-            <Grid item>
-              <IconButton>
-                <EditIcon/>
-              </IconButton>
-              <IconButton onClick={()=>onDeleteSummary(value.summaryId)}>
-                <DeleteIcon />
-              </IconButton>
+            {editSummaryId === value.summaryId && isEditing ? 
+            <>
+            <MySummaryEditField summaryId={value.summaryId} content={value.content} editSummary={onEditSummary}/> 
+            </> : 
+            <>
+            <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center", pl:"0.8rem"}}>
+              <Grid item>
+                <Typography>{value.content}</Typography> 
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <EditIcon onClick={()=>editHandler(value.summaryId)}/>
+                </IconButton>
+                <IconButton onClick={()=>onDeleteSummary(value.summaryId)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
             </Grid>
-          </Grid>
-          
-          <Stack
-            direction="row"
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "1.125rem",
-            }}
-          >
-            <Typography>{value.date}</Typography>
-
-            <IconButton>
-              <MoreHorizOutlinedIcon />
-            </IconButton>
-          </Stack>
+            </>
+            }
         </Paper>
         </Grid>
           )
