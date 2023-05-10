@@ -23,7 +23,7 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
 
     return (
         <>
-        <Grid container item spacing={2} direction="row" sx={{ p:"0 1rem 1.5rem", display:"flex", justifyContent:"space-between"}} >
+        <Grid container item spacing={2} direction="row" sx={{ p:"0 1rem 1.5rem", mt:"0.5rem", display:"flex", justifyContent:"space-between"}} >
         <Grid item xs={11} md={11}>
             <TextField 
                 className="summaryField"
