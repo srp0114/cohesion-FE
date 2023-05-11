@@ -31,6 +31,7 @@ const MyActivity = (props: MyDataProps) => {
     const navigate = useNavigate();
 
     useEffect (()=>{
+        activityType === "summary" ? setActivity([]) :
         axios({
             method : "get",
             url : `/api/user/${activityType}/mypage`
@@ -54,10 +55,10 @@ const MyActivity = (props: MyDataProps) => {
     return (
         <>
         <Typography variant="h4" sx={{mt:"3rem"}}>{activityTitle}</Typography>
-        {activity.length === 0 ? 
-            <Typography variant="h2" textAlign="center" p={5} color="primary.dark">아직 {activityTitle}이 없습니다</Typography> : 
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
                 {activityType === "summary" ? <MySummary/> :
+                activity.length === 0 ? 
+                    <Typography variant="h2" textAlign="center" p={5} color="primary.dark">아직 {activityTitle}이 없습니다</Typography> : 
                     activity.map((value) => {
                         return (
                             // TODO: 카드 높이 조정 필요
@@ -84,7 +85,6 @@ const MyActivity = (props: MyDataProps) => {
                     })
                 }
             </Box>  
-        }  
         </>
     )
 }

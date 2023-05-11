@@ -19,8 +19,7 @@ export interface MyPageItems {
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
   point: number; //사용자의 포인트
-  skill?: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
-  language?: Array<string>; //추가정보페이지에서 선택한 언어, js, java, c, python의 언어 의미
+  skills?: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
   selfIntroduction: string; //추가정보페이지에서 입력한 자기소개
 }
 
@@ -56,7 +55,7 @@ const MyPage = () => {
             <MyProfile studentId={data?.studentId ?? ""} nickname={data?.nickname ?? ""} track1 = {data?.track1 ?? ""} track2 = {data?.track2 ?? ""} profileImg={data?.profileImg ?? null}/>
           </Grid>
           <Grid item xs={12}>
-          <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} language={test.language} skill={test.skill}/>
+          <MyIntroduction nickname={data?.nickname ?? ""} selfIntroduction = {data?.selfIntroduction ?? ""} skill={data?.skills}/>
           </Grid>
           </Grid>
         </Grid>

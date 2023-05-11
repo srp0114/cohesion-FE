@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Grid, TextField, Button, Box } from "@mui/material";
 import EditorToolbar from "../EditorToolbar";
 import "../../style/Board.css";
 
@@ -20,10 +20,15 @@ const ReplyField = (props : ReplyProps) => {
     props.onAddReply(article);
     setArticle("");
   };
+  
+  const isDisabled = () => {
+    return article.trim() === '';
+  }
 
   return (
-    <Box>
-      { props.board === "questions" ? 
+    <Grid container spacing={2} direction="row" sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+      <Grid item xs={9} md={10.5}>
+      {props.board === "questions" ? 
         <div className="replyQuill">
           <EditorToolbar onAddQuill={onQuillChange} content={article} />
         </div> : 
@@ -32,15 +37,15 @@ const ReplyField = (props : ReplyProps) => {
           placeholder="댓글을 입력하세요."
           variant="outlined"
           multiline
-          sx={{ mt: 2, mb: 2 }}
           value={article}
           onChange={(e) => setArticle(e.target.value)}
         />
       }
-      <Box display="flex" justifyContent="flex-end">
-        <Button onClick={onSubmit} size="large">작성하기</Button>
-      </Box>
-    </Box>
+      </Grid>
+      <Grid item>
+        <Button disabled={isDisabled()} onClick={onSubmit}>작성하기</Button>
+      </Grid>
+    </Grid>
   )
 }
 

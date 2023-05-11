@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Grid, TextField, Button } from "@mui/material";
 
 interface EditReplyProps {
   article: string;
@@ -24,10 +24,10 @@ const EditReplyField = (props: EditReplyProps) => {
   };
 
   return (
-    <div style={{ width: '100%' }}>
-      {props.isEditing && 
-        <>
-        <Box sx={{display:"flex", justifyContent:"space-evenly"}}>
+    <>
+    {props.isEditing && 
+      <Grid container spacing={2} direction="row" sx={{display:"flex", justifyContent:"space-evenly", alignItems:"center", mr:"1rem"}}>
+        <Grid item xs={9} md={10}>
           <TextField 
             variant="standard" 
             multiline 
@@ -35,11 +35,13 @@ const EditReplyField = (props: EditReplyProps) => {
             value={editArticle} 
             onChange={handleEditArticleChange} 
           />
-          <Button onClick={handleSubmit}>수정</Button>
-        </Box>
-        </>
-      }
-    </div>
+        </Grid>
+      <Grid item>
+        <Button onClick={handleSubmit}>수정하기</Button>
+      </Grid>
+      </Grid>
+    }
+    </>
   );
 };
 

@@ -46,7 +46,6 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
 
       <Grid container rowSpacing={"1.125rem"} direction="column">
         <Grid item>
-          <Typography>추가정보에서 작성한 기술스택</Typography>
           <Box>
             {language?.map((lang, idx) => {
               return <Chip key={idx} label={lang} variant="filled" />;
@@ -58,8 +57,6 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
         </Grid>
 
         <Grid item>
-          <Typography>추가정보에서 작성한 자기소개</Typography>
-
           <Typography>{props.selfIntroduction}</Typography>
         </Grid>
       </Grid>
