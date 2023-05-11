@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Button, Chip, Grid, Stack, Typography, IconButton, Zoom } from "@mui/material";
+import { Box, Button, Chip, Divider, Grid, Stack, Typography, IconButton, Zoom, Tooltip } from "@mui/material";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
@@ -16,6 +16,7 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import { Application } from "./ApplyAcceptStuff";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -34,20 +35,22 @@ export interface RecruitDetailItems {
   require: string; //필수조건: 분반명 등
   optional?: string; //기타, 우대조건: 학점, 기술스택 등
   party: number; //모집할 인원수
-  gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
 
-  //isCompleted: boolean; // 해당속성 추가되어야함.
+  gathered: number; //모집된 인원 수
+  isCompleted: boolean;
 }
 
 const RecruitDetails = () => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
+
+  const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
   const [modalOpen, setModalOpen] = useState<boolean>(false); //신청, 승인, 모집완료 모달 open 상태 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
-  const [gathered, setGathered] = useState<number>(-1);
-  const [applicants, setApplicants] = useState<number>(-100); //신청인원수
-  const [approvedApplicants, setApprovedApplicants] = useState<number>(-100); //승인된 인원수
-  const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
+
+  const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
+  const [applicants, setApplicants] = useState<number>(0); //신청인원수
+  const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
 
   const postingId = Number(id);
 
@@ -59,30 +62,18 @@ const RecruitDetails = () => {
     setIsApplyBtnAvailale(true);
   }
 
-  const updateApplicant = () => {
-      axios({ //신청자 목록의 인원수
-        method: "get",
-        url: `/api/recruit/${postingId}/applicants-number`,
-      }).then((res) => {
-        if (res.status === 200) {
-          setApplicants(res.data);
-          console.log(`신청자 인원수: ${JSON.stringify(res.data)}`);
-        }
-      }).catch((err) => console.log(err));
+  const handleApplicantsChange = () => {
+    console.log(`prevState ${applicants}`);
+    setApplicants(prevState => prevState + 1);
+    console.log(`applicants ${applicants}`);
   }
 
-  //승인된 인원수 == gathered에 더해져야함.
-  const updateApprovedApplicant = () => { 
-    //     axios({
-    //   method:"get",
-    //   url:`/api/recruit/${postingId}/approval-number`, //승인된 인원수 구해오는 api
-    // }).then((res)=>{
-    //   if(res.status === 200){
-    //       setApprovedApplicants(res.data);
-    //       setGathered(gathered + approvedApplicants); //모인사람 수도 업데이트
-    //       console.log(`승인된 인원수 ${JSON.stringify(res.data)} 모인 사람 수 ${gathered}`);
-    //   }
-    // }).catch(err => console.log(`updateApproveapplicant: ${err}`));
+  const handleNewApprovedApplicants = () => {
+    setApprovedApplicants(prevState => prevState + 1);
+  }
+
+  const handleApprovedApplicantsOut = () => {
+    setApprovedApplicants(prevState => prevState - 1);
   }
 
   useEffect(() => {
@@ -93,7 +84,7 @@ const RecruitDetails = () => {
       .then((res) => {
         if (res.status === 200) {
           setPostItem(res.data);
-          setGathered(res.data.gathered);
+          setIsCompleted(res.data.isCompleted);
         }
       })
       .catch((err) => {
@@ -109,12 +100,46 @@ const RecruitDetails = () => {
       url: `/api/recruit/${postingId}/applicants-number`,
     }).then((res) => {
       if (res.status === 200) {
-        setApplicants(res.data);
-        console.log(`신청자 인원수: ${JSON.stringify(res.data)}`);
+        setApplicants(applicants);
+        console.log(`useEffect 시행 후의 신청인원수 ${applicants}`);
       }
     }).catch((err) => console.log(err));
 
+    axios({ //서버로부터 신청자 목록 받아오기
+      method: "get",
+      url: `/api/recruit/${postingId}/applicants`,
+    }).then((res) => {
+      if(res.status === 200) {
+        const applicantIdArray: Application[] = res.data.map((resData: Application) => (resData.id));
+        applicantIdArray.find(appId => appId.id === accessUserId) ? setIsApplyBtnAvailale(true) : setIsApplyBtnAvailale(false);
+      }
+    }).catch((err) => console.log(`상세보기 최초 useEffect때 신청자 목록 받아오기 ${err}`)); // 권한이 없어서 못 받아 오는건가
+
   }, []);
+
+  useEffect(() => {
+    //승인된 인원수 + 기존에 작성자가 선택한 gathered = 모인인원.
+    axios({
+      method: "get",
+      url: `/api/recruit/${postingId}/approvers-number`, //승인된 인원수 구해오는 api
+    }).then((res) => {
+      if (res.status === 200) {
+        setApprovedApplicants((prevState) => res.data);
+      }
+    }).catch(err => console.log(`updateApproveapplicant: ${err}`));
+  }, [approvedApplicants]);
+
+  useEffect(() => {
+    axios({ //신청자 목록의 인원수
+      method: "get",
+      url: `/api/recruit/${postingId}/applicants-number`,
+    }).then((res) => {
+      if (res.status === 200) {
+        setApplicants(res.data);
+        console.log(`useEffect 시행 후의 신청인원수 ${applicants}`);
+      }
+    }).catch((err) => console.log(err));
+  }, [applicants]);
 
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
@@ -131,7 +156,6 @@ const RecruitDetails = () => {
       else
         return null;
     }
-
   }
 
   const detailPosting = postItem ? (
@@ -150,48 +174,53 @@ const RecruitDetails = () => {
           </Stack>
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
-         <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
+        <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack
             direction="row"
             spacing={1}
-            sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
-            {TimeAndViews (postItem.createdDate, postItem.views)}
+            {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"recruit"} id={id} />
+          <Bookmark boardType={"recruit"} id={id} />
         </Grid>
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
+          <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
+          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
 
-        <Grid item container xs={12} direction="row" columnSpacing={"3rem"}>
-          {!!postItem.optional ? <><Grid item xs={6} md={12}>
-            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
-            <Typography variant="h5">
-              <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
-            </Typography>
-          </Grid>
-            <Grid item xs={6} md={12}>
-              <Typography sx={{ fontSize: "1.75rem" }}>우대</Typography>
-              <Typography variant="h5">
-                <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
+        <Grid item container xs={12} direction="row" spacing={"3rem"}>
+          {postItem.optional ? <>
+            <Grid item container xs={12}>
+              <Grid item xs={6}>
+                <Typography variant="h3" sx={{ mb: 1 }}>필수</Typography>
+                <Typography variant="h4">
+                  <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h3" sx={{ mb: 1 }}>우대</Typography>
+                <Typography variant="h4">
+                  <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
+                </Typography>
+              </Grid>
+            </Grid>
+          </>
+            : <Grid item xs={12}>
+              <Typography variant="h3" sx={{ mb: 1 }}>필수</Typography>
+              <Typography variant="h4">
+                <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
               </Typography>
-            </Grid></> : <Grid item xs={12}>
-            <Typography sx={{ fontSize: "1.75rem" }}>필수</Typography>
-            <Typography variant="h5">
-              <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
-            </Typography>
-          </Grid>}
+            </Grid>}
         </Grid>
 
         <Grid item xs={12} sm={6}>
           <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">
-              모인 사람 {gathered + approvedApplicants} / 최종 인원 {postItem.party}
+            <Typography variant="h3">
+              모인 사람 {postItem.gathered + approvedApplicants} / 최종 인원 {postItem.party}
             </Typography>
             {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
             {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
@@ -200,19 +229,21 @@ const RecruitDetails = () => {
                 <Button variant="outlined" startIcon={<AssignmentTurnedInIcon />} size="small" onClick={() => setModalOpen(true)}>
                   모집완료
                 </Button>
-                <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId} 
-                onModalOpenChange={handleModalOpenChange} />
-                <ApplicantList postingId={postingId} />
+                <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
+                  onModalOpenChange={handleModalOpenChange} />
+                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} />
               </>
               : <>
-                <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="small" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
-                  신청하기
-                </Button>
+                <Tooltip title="신청">
+                  <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="medium" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
+                    신청하기
+                  </Button>
+                </Tooltip>
                 <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId}
-                requireContext={postItem.require} optionalContext={postItem.optional}
-                onModalOpenChange={handleModalOpenChange} onApplicantChange={updateApplicant}/>
+                  requireContext={postItem.require} optionalContext={postItem.optional}
+                  onModalOpenChange={handleModalOpenChange} onApplicantsChange={handleApplicantsChange} onApplyButtonAvailable={handleApplyBtnAccessible} />
               </>}
-            <Typography variant="h4">신청인원 수: {applicants}</Typography>
+            <Typography variant="h4">지금까지 {applicants}명이 신청했어요!</Typography>
           </Grid>
         </Grid>
         {replyCount(postItem.reply)}

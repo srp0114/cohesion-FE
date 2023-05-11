@@ -29,6 +29,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import Profile from "../../../layout/Profile";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
+import { Application } from "./ApplyAcceptStuff";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -49,6 +51,8 @@ export interface RecruitBoardItems {
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
 
   isCompleted: boolean;
+  accessUserId: number; //접속한 유저의 아이디(학번)
+  authorizedUserIds: number[]; //권한있는 사용자들의 아이디(학번), 작성자와 승인된 사용자들
 }
 
 
@@ -60,6 +64,8 @@ const RecruitBoard: React.FC = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState<number>(0);
 
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+
   useEffect(() => {
     axios({
       method: "get",
@@ -69,7 +75,12 @@ const RecruitBoard: React.FC = () => {
         if (res.status === 200) {
           setTotal(res.data);
         }
-      })
+      });
+
+    getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
+
   }, [])
 
   useEffect(() => {
@@ -84,46 +95,48 @@ const RecruitBoard: React.FC = () => {
       .catch((err) => {
         console.log(err);
       });
+
   }, [page])
 
   const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
+      <Typography>{element.isCompleted}</Typography>
     </Grid>
   ));
 
-return (
-  <>
-    <Box>
-      <Typography
-        variant="h5"
-        sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-      >
-        모집게시판
-      </Typography>
-      <FilterPosting />
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid
-          container
-          rowSpacing={4}
-          columnSpacing={{ xs: 1, sm: 2, md: 4 }}
-          alignItems="stretch"
+  return (
+    <>
+      <Box>
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
-          {displayPosting}
-        </Grid>
+          모집게시판
+        </Typography>
+        <FilterPosting />
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            rowSpacing={4}
+            columnSpacing={{ xs: 1, sm: 2, md: 4 }}
+            alignItems="stretch"
+          >
+            {displayPosting}
+          </Grid>
+        </Box>
       </Box>
-    </Box>
-    <PaginationControl
-      page={page}
-      between={1}
-      total={total}
-      limit={6}
-      changePage={(page: React.SetStateAction<number>) => setPage(page)}
-      ellipsis={1}
-    />
-    <WritingButton />
-  </>
-);
+      <PaginationControl
+        page={page}
+        between={1}
+        total={total}
+        limit={6}
+        changePage={(page: React.SetStateAction<number>) => setPage(page)}
+        ellipsis={1}
+      />
+      <WritingButton />
+    </>
+  );
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
@@ -142,6 +155,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
       //모집인원이 0이 되어 모집이 마감되었을 때,
       console.log(`${props.id}의 모집 마감`);
     }
+
   }, [remain]);
 
   const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
@@ -221,7 +235,25 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             </div>
           }
         />
-        <CardActionArea onClick={() => goToPost(props.id)}>
+        <CardActionArea onClick={() => {//승인된 사용자 검증하려면...신청자목록 받아와야할텐데
+          // axios({
+          //   method: "get",
+          //   url: `/api/recruit/${props.id}/applicants`
+          // }).then((res) => {
+          //   if (res.status === 200) {
+          //     console.log(`구인 게시글에서 신청자 목록을 받아옵니다.: ${res.data}`);
+          //     const approvedApplicantsArray: Application[] = res.data.filter((app: Application) => app.isApproved); //신청자 목록 중 승인된 유저만 필터링
+          //     const foundApplicant = approvedApplicantsArray.find((app: Application) => app.studentId === props.accessUserId);
+          //     if ((foundApplicant && props.isCompleted) || (!props.isCompleted)) {
+          //       goToPost(props.id);
+          //     } else {
+          //       alert("작성자 혹은 승인된 유저만 해당 게시글에 접근 가능합니다.");
+          //     }
+          //   }
+          // }).catch((err) => { console.log(`구인 게시글에서 신청자 목록을 받아옵니다.: ${err}`) })
+          ((props.accessUserId === props.stuId && props.isCompleted) || (!props.isCompleted)) ? goToPost(props.id) :  alert("모집완료된 게시글은 작성자만 접근 가능합니다.")
+        }}>
+
           <CardHeader
             title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
               <Typography variant="h5">{props.title}</Typography>
@@ -230,7 +262,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             </Stack>}
             subheader={
               <Stack direction="row">
-                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30}/>
+                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
                 <Typography variant="overline">
                   {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
                 </Typography>
@@ -266,7 +298,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           </Box>
         </CardActions>
       </Card>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 
