@@ -114,13 +114,52 @@ export const theme = createTheme({
       defaultProps: {
         variant: "outlined",
         fullWidth: true,
-        sx: { mt: 2 },
       },
+      styleOverrides: {
+        root: {
+          //공부기록 필드 커스텀
+          '&.summaryField': {
+            '& .MuiOutlinedInput-root': {
+              '&:hover fieldset': {
+                borderColor: '#B5CC6C',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#B5CC6C',
+              },
+            },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#B5CC6C',
+            },
+          },
+        }
+      }
     },
     MuiTypography: {
       styleOverrides: {
         root: {
           wordWrap: "break-word"
+        }
+      }
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          //공부기록 추가 버튼 커스텀
+          '&.summaryButton': {
+            width: "3.5rem",
+            height: "3.5rem",
+            "&:hover, &.Mui-focusVisible": {
+              zIndex: 2,
+              backgroundColor: "#B5CC6C",
+              color: "#000"
+            },
+            "&:active": {
+              backgroundColor: "#B5CC6C",
+              color: "#000"
+            },
+              borderRadius: 15,
+              border: "1.5px solid #B5CC6C",
+          },
         }
       }
     },
@@ -174,7 +213,6 @@ export const theme = createTheme({
             },
             borderRadius: 20,
             border: '2px solid #777777'
-
           },
           '&.bookmark': {
             padding: 0,

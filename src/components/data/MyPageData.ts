@@ -15,8 +15,7 @@ export const myPageData_sopho:MyPageItems = {
     board: 8, //각 게시글들과 관련?,여기서 필요한건 게시글 아이디, 게시글 제목, 게시글 타입(어디게시판인지) 정도만 있어도...되지 않나?
     bookmark: 5, //게시글 아이디, 게시글 제목,게시글 타입(어디게시판인지) 정도만? 클릭하면 해당 게시글이 있는 곳으로 전환
     point: 410,
-    skill: [skillData[3].name],
-    language: [skillData[0].name, skillData[2].name],
+    skills: [skillData[3].name],
     selfIntroduction: `자기소개 예시 위 경우 Up 값은 0, Down 은 1 이 됩니다. 자동-증가하는 기능은 멤버 값 자체에는 신경 쓰지 않지만, 각 값이 같은 열거형의 다른 값과 구별돼야 하는 경우에 유용합니다.
 
     열거형을 사용하는 것은 간단합니다: 그냥 열거형 자체에서 프로퍼티로 모든 멤버에 접근하며, 열거형의 이름을 사용해 타입을 선언합니다.
@@ -36,6 +35,5 @@ export const myPageData_sopho:MyPageItems = {
     board: 2,
     bookmark: 1,
     point: 50,
-    language: [skillData[0].name],
     selfIntroduction: "올해 입학한 새내기입니다. C언어 배우고 있습니다."
   };

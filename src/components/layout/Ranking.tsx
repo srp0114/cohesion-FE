@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Divider } from "@mui/material";
+import { Grid, Box, Typography, Divider } from "@mui/material";
 import Profile from "../layout/Profile";
 import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
@@ -18,22 +18,6 @@ interface UserRakingItem {
     profileImg: string | null
 
 }
-
-// 인기게시글 테스트 데이터
-const userRank: UserRakingItem[] = [
-    {
-        adoptSize: 1,
-        nickname: "yoddddddung",
-        studentId: "182982",
-        profileImg: null
-    },
-    {
-        adoptSize: 2,
-        nickname: "dddd",
-        studentId: "18222982",
-        profileImg: null
-    }
-]
 
 // 인기게시글 컴포넌트
 export const PostRanking = () => {
@@ -93,7 +77,7 @@ export const PostRanking = () => {
 
 // 인기유저 컴포넌트
 export const UserRanking = () => {
-    const [userRanking, setUserRanking] = useState<UserRakingItem[]>(userRank);
+    const [userRanking, setUserRanking] = useState<UserRakingItem[]>([]);
 
     useEffect(() => {
         axios({
@@ -119,14 +103,14 @@ export const UserRanking = () => {
             const studentId = value.studentId.slice(0,2);
             return (
                 <>
-                <Box sx={{ display:"flex", mt:5 }}>
+                <Grid container direction="row" sx={{ display:"flex", mt:5, alignItems:"center" }}>
                 <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
                 <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
-                <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1rem", mr:"0.2rem"}}>
+                <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1.5rem", mr:"0.2rem"}}>
                     <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
                 </Box>
-                </Box>
+                </Grid>
                 </>
             )
         })}

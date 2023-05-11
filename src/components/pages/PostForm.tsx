@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Container,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-  SelectChangeEvent,
-  Select,
-  Snackbar,
-  MenuItem,
-} from "@mui/material";
+import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography } from "@mui/material";
 import axios from "axios";
 import Point from "../layout/Point";
 import Skill from "../layout/Skill";
@@ -23,6 +12,7 @@ import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
 import Loading from "../layout/Loading";
+import { useForm, Controller } from "react-hook-form";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -110,8 +100,7 @@ const PostForm = () => {
     });
   };
 
-  const submitHandler = async (event:React.MouseEvent) => {
-    event.preventDefault();
+  const onSubmit = async () => {
     setIsLoading(true);
     const request_data = {
       title: title,
@@ -163,7 +152,7 @@ const PostForm = () => {
         .catch((err) => console.log(err));
     } else if (boardType === BoardType.question) {
       // Q&A 게시판인 경우
-      if (hasUserPoint >= point) {
+      //if (hasUserPoint >= point) {
         if (fileList.length > 0) {
           axios({
             method: "post",
@@ -209,11 +198,11 @@ const PostForm = () => {
               }
             });
         }
-      } else {
+      } /*else {
         alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
         window.location.reload();
       }
-    } else if (boardType === BoardType.recruit) {
+    }*/ else if (boardType === BoardType.recruit) {
       // 구인 게시판인 경우
       axios({
         method: "post",
@@ -241,6 +230,8 @@ const PostForm = () => {
     );
   };
 
+  const {  formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
+
   const SelectSkill =
     boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
 
@@ -259,12 +250,11 @@ const PostForm = () => {
 
   return (
     <>
-      <Container>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container direction="column" spacing={2}>
-          <>
             <Grid item>
-              <FormControl style={{ minWidth: "120px" }}>
-                <Select value={boardType} onChange={boardHandler} size="small">
+              <FormControl style={{ minWidth: 150}}>
+                <Select value={boardType} onChange={boardHandler}>
                   <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
                   </MenuItem>
@@ -276,25 +266,51 @@ const PostForm = () => {
             </Grid>
             {SelectSkill}
             <Grid item>
-              <TextField
-                className="board title"
-                id="board_title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxRows={1}
-                placeholder={"제목"}
-                fullWidth
-              ></TextField>
+             <Controller
+                control={control}
+                name="title"
+                rules={{ required: true }}
+                render={({ fieldState: { error } }) => (
+                  <TextField
+                    fullWidth
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      setValue("title", e.target.value, { shouldValidate: true });
+                    }}
+                    value={title}
+                    placeholder="제목을 입력해주세요"
+                    error={error !== undefined}
+                    helperText={error ? "제목을 입력해주세요!" : ""}
+                  />
+                )}
+              /> 
             </Grid>
             <Grid item>
-              <div className="postQuill">
-                <EditorToolbar onAddQuill={getContent} content={content} />
-              </div>
-              {/* value: {content} */}
+              <Controller
+                control={control}
+                name="content"
+                rules={{ required: true }}
+                render={({ field: { value } }) => (
+                  <div className="postQuill">
+                    <EditorToolbar
+                      onAddQuill={(data) => {
+                        const modifiedData = data.replace(/<p><br><\/p>/gi, "");
+                        setValue("content", modifiedData, { shouldValidate: true });
+                        getContent(data);
+                      }}
+                      content={value}
+                    />
+                  </div>
+                )}
+              />
               <div>
                 <input type="file" multiple onChange={onSaveFiles} />
               </div>
+              <Box pl={"0.8rem"} pt={"0.2rem"}>
+                {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
+              </Box>
             </Grid>
+
 
             {SelectPoint}
 
@@ -303,18 +319,10 @@ const PostForm = () => {
             {DesignatePeople}
 
             <Grid item>
-              <Button
-                className="board button"
-                variant="outlined"
-                disableElevation
-                onClick={submitHandler}
-              >
-                게시
-              </Button>
+              <Button variant="outlined" type="submit">작성하기</Button>
             </Grid>
-          </>
         </Grid>
-      </Container>
+      </form>
     </>
   );
 };
