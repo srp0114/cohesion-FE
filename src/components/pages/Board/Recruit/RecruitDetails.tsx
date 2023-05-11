@@ -16,6 +16,7 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import { Application } from "./ApplyAcceptStuff";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -103,6 +104,16 @@ const RecruitDetails = () => {
         console.log(`useEffect 시행 후의 신청인원수 ${applicants}`);
       }
     }).catch((err) => console.log(err));
+
+    axios({ //서버로부터 신청자 목록 받아오기
+      method: "get",
+      url: `/api/recruit/${postingId}/applicants`,
+    }).then((res) => {
+      if(res.status === 200) {
+        const applicantIdArray: Application[] = res.data.map((resData: Application) => (resData.id));
+        applicantIdArray.find(appId => appId.id === accessUserId) ? setIsApplyBtnAvailale(true) : setIsApplyBtnAvailale(false);
+      }
+    }).catch((err) => console.log(`상세보기 최초 useEffect때 신청자 목록 받아오기 ${err}`)); // 권한이 없어서 못 받아 오는건가
 
   }, []);
 
@@ -220,7 +231,7 @@ const RecruitDetails = () => {
                 </Button>
                 <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                   onModalOpenChange={handleModalOpenChange} />
-                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut}/>
+                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} />
               </>
               : <>
                 <Tooltip title="신청">
@@ -230,7 +241,7 @@ const RecruitDetails = () => {
                 </Tooltip>
                 <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId}
                   requireContext={postItem.require} optionalContext={postItem.optional}
-                  onModalOpenChange={handleModalOpenChange} onApplicantsChange={handleApplicantsChange} />
+                  onModalOpenChange={handleModalOpenChange} onApplicantsChange={handleApplicantsChange} onApplyButtonAvailable={handleApplyBtnAccessible} />
               </>}
             <Typography variant="h4">지금까지 {applicants}명이 신청했어요!</Typography>
           </Grid>

@@ -31,6 +31,7 @@ interface DoubleCheckModalProps {
     optionalContext?: string;
     onModalOpenChange?: (open: boolean) => void;
     onApplicantsChange?: () => void; //신청 인원수가 바뀌었는지 감지
+    onApplyButtonAvailable?: () => void;
     //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
@@ -80,6 +81,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         }).then((res) => {
             if (res.status === 200) {
                 (props.onApplicantsChange) ? props.onApplicantsChange() : alert(`신청하는데 오류가 발생했습니다.`);
+                (props.onApplyButtonAvailable) ? props.onApplyButtonAvailable() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
                 alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
             }
         }).catch((err) => {
@@ -191,7 +193,7 @@ const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-interface Application {
+export interface Application {
     // 유저 ID, 유저 닉네임, 필수/우대 사항 충족 여부, 프로필 사진, 학번, 1트랙, 관심 기술
     id: number,
     nickname: string,
