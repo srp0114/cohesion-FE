@@ -6,31 +6,37 @@ import react from "../asset/image/react.png";
 interface skillItems {
     name: string,
     logo: string
-}
-//언어 - 이미지 처리 데이터
+    type: "language" | "framework";
+} 
 export const skillData : skillItems[] = [
     {
         name:"C",
-        logo: c
+        logo: c,
+        type: "language"
     }, 
     {
         name:"JavaScript",
-        logo: javascript
+        logo: javascript,
+        type: "language"
     },
     {
         name:"Java",
-        logo: java
+        logo: java,
+        type: "language"
     },
     {
         name:"React",
-        logo: react
+        logo: react,
+        type: "framework"
     },
     {
         name: "Flutter",
-        logo: react
+        logo: react,
+        type: "language"
     },
     {
         name: "C++",
-        logo: c
+        logo: c,
+        type: "language"
     },
 ]

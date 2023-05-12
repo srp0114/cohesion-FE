@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 import { logoutHandler } from "../logoutHandler";
 import Profile from "../layout/Profile";
 import { useForm, Controller } from "react-hook-form";
+import UserSkill from "../layout/UserSkill";
+import UserIntroduce from "../layout/UserIntroduce";
 
 interface UserInfoItems {
   sub: number;
@@ -79,11 +81,22 @@ const Welcome = () => {
     }
   };
   
+  const onChangeSkill = (userSkills: string[]) => {
+    setUserInfo({
+      ...userInfo,
+      skills: userSkills,
+    })
+  }
+
+  const onChangeIntroduce = (selfIntro: string) => {
+   setUserInfo({...userInfo, introduce: selfIntro}) 
+  }
+
   const onSubmit = (userAdd: UserAddItems) => {
     const addUserData = {
       nickname: userAdd.nickname,
-      introduce: userAdd.introduce ?? "",
-      skills: (userAdd.skills || []).map((s) => s.name),
+      introduce: userInfo.introduce,
+      skills: userInfo.skills
     };
 
     const userAccountInfo = {
@@ -225,8 +238,11 @@ const Welcome = () => {
                 control={control}
                 name="nickname"
                 rules={{
-                  required: true,
-                  maxLength: 8,
+                  required: "닉네임을 입력해주세요!",
+                  maxLength: {
+                    value: 8,
+                    message: "최대 8자까지 입력이 가능합니다",
+                  },
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
@@ -235,69 +251,16 @@ const Welcome = () => {
                     label="닉네임"
                     placeholder="닉네임을 입력해주세요"
                     error={error !== undefined}
-                    helperText={error ? "닉네임을 입력해주세요" : ""}
+                    helperText={error ? error.message : ""}
                   />
                 )}
               />
             </Box>
             <Box>
-              <Controller
-              control={control}
-              name="skills"
-              rules={{
-              validate: (data) => {
-                  if(data && data.length > 3) return false;
-                }
-              }}
-              render={({ field: { ref, onChange, ...field }, fieldState }) => (
-                <Autocomplete
-                  multiple
-                  options={skillData}
-                  getOptionLabel={(option) => option.name}
-                  onChange={(_, data) => onChange(data)}
-                  renderOption={(props, option) => (
-                    <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>
-                      <img src={option.logo} width={20} height={20}/>{option.name}
-                    </Box>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...field}
-                      {...params}
-                      fullWidth
-                      placeholder="관심기술을 선택해주세요!"
-                      inputRef={ref}
-                      variant="outlined"
-                      error={fieldState.error !== undefined}
-                      helperText={fieldState.error ? "관심기술은 5개까지만 선택할 수 있습니다. " : ""}
-                    />
-                  )}
-                />
-                )}
-              />
+              <UserSkill skills={userInfo.skills} setSkills={onChangeSkill}/>
             </Box>
             <Box>
-              <Controller
-                control={control}
-                name="introduce"
-                defaultValue={userInfo.introduce}
-                rules={{
-                  maxLength: 100,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                  multiline
-                  fullWidth
-                  variant="outlined"
-                  label="자기소개"
-                  placeholder="자기소개를 해주세요."
-                  {...field}
-                  rows={2}
-                  error={error !== undefined}
-                  helperText={error ? "글자 수를 초과했습니다." : ""}
-                  />
-                )}
-              />
+              <UserIntroduce introduce={userInfo.introduce} setIntroduce={onChangeIntroduce}/>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
               <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
