@@ -10,13 +10,11 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
     const [content, setContent] = useState<string>("");
     const [error, setError] = useState<boolean>(false);
 
-    const handleSummary = () => {
+    const handleSummary = () => (
         content.trim() === '' ? 
         setError(true) : 
-        setError(false);
-        onAddSummary(content);
-        setContent("")
-    }
+        (setError(false), onAddSummary(content), setContent(""))
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setError(false);
