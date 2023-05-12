@@ -38,7 +38,7 @@ export const theme = createTheme({
     recruitCompleted: '#cc00ff', //핑크
   },
   palette: {
-    primary: { 
+    primary: {
       main: "#008CFF", //파랑
       light: "#a9a9a9", //머쉬룸 베이지(?)
       dark: "#999999" //진한 머쉬룸 베이지(?)
@@ -62,6 +62,8 @@ export const theme = createTheme({
     },
     info: {
       main: "#2a46e4", //파랑
+      light: "#03a9f4",
+      dark: "#01579b",
     },
     neutral: {
       main: '#64748B', //회색
@@ -219,8 +221,36 @@ export const theme = createTheme({
             minWidth: 0,
             marginRight: "0.3rem",
           },
+          '&.modalConfirmButton': {
+            "&:hover": {
+              backgroundColor: "info.dark",
+            }
+          },
+          '&.modalCancelButton': {
+            "&:hover": {
+              backgroundColor: "info.light",
+            }
+          },
+          '&.applicantListIconButton': {
+            "&:hover": {
+              backgroundColor: "secondary.dark"
+            }
+          }
         }
       }
     },
-  },
-});
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          '&.applicantsListItem': {
+            "&:hover": {
+              backgroundColor: "#f2f2f2",
+              opacity: [1.0, 0.9, 0.9],
+            }
+          }
+        }
+      }
+    }
+  }
+},
+);
