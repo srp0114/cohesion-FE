@@ -235,24 +235,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             </div>
           }
         />
-        <CardActionArea onClick={() => {//승인된 사용자 검증하려면...신청자목록 받아와야할텐데
-          // axios({
-          //   method: "get",
-          //   url: `/api/recruit/${props.id}/applicants`
-          // }).then((res) => {
-          //   if (res.status === 200) {
-          //     console.log(`구인 게시글에서 신청자 목록을 받아옵니다.: ${res.data}`);
-          //     const approvedApplicantsArray: Application[] = res.data.filter((app: Application) => app.isApproved); //신청자 목록 중 승인된 유저만 필터링
-          //     const foundApplicant = approvedApplicantsArray.find((app: Application) => app.studentId === props.accessUserId);
-          //     if ((foundApplicant && props.isCompleted) || (!props.isCompleted)) {
-          //       goToPost(props.id);
-          //     } else {
-          //       alert("작성자 혹은 승인된 유저만 해당 게시글에 접근 가능합니다.");
-          //     }
-          //   }
-          // }).catch((err) => { console.log(`구인 게시글에서 신청자 목록을 받아옵니다.: ${err}`) })
-          ((props.accessUserId === props.stuId && props.isCompleted) || (!props.isCompleted)) ? goToPost(props.id) :  alert("모집완료된 게시글은 작성자만 접근 가능합니다.")
-        }}>
+        <CardActionArea onClick={() => goToPost(props.id)}>
 
           <CardHeader
             title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
