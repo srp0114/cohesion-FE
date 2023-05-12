@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Grid, Button, IconButton, Typography, Stack, Paper } from "@mui/material";
+import { Box, Grid, Chip, IconButton, Typography, Avatar, Paper } from "@mui/material";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import MySummaryField from "./MySummaryField";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import MySummaryEditField from "./MySummaryEditField";
 import Time from "../../layout/Time";
+import { skillData } from "../../data/SkillData";
 
 export interface MySummaryItems {
   summaryId: number;
   date: string;
   content: string;
-  //skills: Array<string>; //사용자가 작성시, 선택한 기술스택
+  skill: string | null; //사용자가 작성시, 선택한 기술스택
   //fixed: boolean; //사용자가 고정하고 싶은 공부기록
 }
 
@@ -33,11 +34,13 @@ const MySummary = () => {
       })
   }, []);
 
-  const onAddSummary = (content: string) => {
+  const onAddSummary = (content: string, skill?: string) => {
     const data = {
-      content: content
+      content: content,
+      skill: skill
     };
 
+    console.log(data);
     axios({
       method: "post",
       url: `/api/user/summary/mypage`,
@@ -105,6 +108,10 @@ const MySummary = () => {
       <Grid container direction="column" xs={12} md={12} mt={1}>
       <MySummaryField onAddSummary={onAddSummary}/>
       {summary.map((value) => {
+
+        const selectedSkill = skillData.find((skill) => skill.name === value.skill);
+        const color = selectedSkill?.type === "language" ? "default" : "success";
+
         return (
           <Grid item p={1.5}>
           <Paper
@@ -115,8 +122,13 @@ const MySummary = () => {
             elevation={3}
           >
             <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center", pl:"0.8rem"}}>
-              <Grid item >
-                <Typography variant="h5" color="primary.dark"><Time date={value.date} variant={"h5"}/></Typography>
+              <Grid item>
+                  <Box sx={{ display: "flex", justifyContent: "flex-start"}}>
+                  <Typography variant="h5" color="primary.dark"><Time date={value.date} variant={"h5"}/></Typography>
+                  { value.skill === undefined ? null 
+                    : <Chip sx={{ marginLeft: '0.5rem' }} avatar={<Avatar src={selectedSkill?.logo} />} label={value.skill} variant="outlined" color={color}/>
+                  }
+                </Box>
               </Grid>
               <Grid item>
                 <IconButton><MoreHorizOutlinedIcon /></IconButton>

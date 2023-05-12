@@ -3,11 +3,12 @@ import javascript from "../asset/image/javascript.svg";
 import java from "../asset/image/java.png";
 import react from "../asset/image/react.png";
 
-interface skillItems {
+export interface skillItems {
     name: string,
     logo: string
     type: "language" | "framework";
 } 
+
 export const skillData : skillItems[] = [
     {
         name:"C",

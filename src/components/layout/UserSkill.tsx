@@ -50,7 +50,7 @@ const UserSkill = ({ skills, changeSkills }: UserSkillProps) => {
                 inputRef={ref}
                 variant="outlined"
                 error={fieldState.error !== undefined}
-                helperText={fieldState.error ? "관심기술은 5개까지만 선택할 수 있습니다. " : ""}
+                helperText={fieldState.error ? "관심기술은 5개까지 선택할 수 있습니다." : ""}
               />
             )}
           />
