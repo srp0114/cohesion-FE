@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Autocomplete, TextField, Box } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { skillData } from "../data/SkillData";
 
 interface UserSkillProps {
-  setSkills: (skills: string[]) => void;
+  changeSkills: (skills: string[]) => void;
   skills?: string[];
 }
 
-const UserSkill = ({ skills, setSkills }: UserSkillProps) => {
-  const { formState: { errors }, control, handleSubmit } = useForm({ mode: "onChange" });
-  const [userSkill, setUserSkill] = useState<string[]>(skills || []);
+const UserSkill = ({ skills, changeSkills }: UserSkillProps) => {
+  const { control } = useForm({ mode: "onChange" });
 
-  useEffect(() => {
-    const matchedSkills = skillData.filter((skill) => skills?.includes(skill.name));
-    setUserSkill(matchedSkills.map((skill) => skill.name));
-  }, [skills]);
+  const selectedSkills = skillData.filter((skill) => skills?.includes(skill.name));
+  const [skill, setSkill] = useState(selectedSkills);
 
   return (
     <>
@@ -30,12 +27,13 @@ const UserSkill = ({ skills, setSkills }: UserSkillProps) => {
         render={({ field: { ref, onChange, ...field }, fieldState }) => (
           <Autocomplete
             multiple
+            value={skill}
             options={skillData}
             getOptionLabel={(option) => option.name}
             onChange={(_, data) => {
               onChange(data);
-              setUserSkill(data.map((s) => s.name));
-              setSkills(data.map((s) => s.name));
+              setSkill(data);
+              changeSkills(data.map((s) => s.name));
             }}
             renderOption={(props, option) => (
               <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>

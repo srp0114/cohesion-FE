@@ -1,75 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { Button, Box, Chip, Grid, IconButton, Typography, Stack, Paper, Avatar, Modal, TextField } from "@mui/material";
-import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
+import React, { useState } from "react";
+import { Button, Box, Chip, Grid, IconButton, Typography, Stack, Paper, Avatar, Modal } from "@mui/material";
 import { skillData } from "../../data/SkillData";
 import UserSkill from "../../layout/UserSkill";
 import UserIntroduce from "../../layout/UserIntroduce";
+import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
+
 interface MyIntroductionProps {
   nickname: string;
   skill?: Array<string>;
   selfIntroduction: string;
+  editUserInfo: (changeSkills:string[], changeIntroduce: string) => void
 }
 
 export const MyIntroduction = (props: MyIntroductionProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [userSkill, setUserSkill] = useState<string[]>(props.skill || []);
-  const [introduce, setIntroduce] = useState<string>(props.selfIntroduction);
+  const [userIntroduce, setUserIntroduce] = useState<string>(props.selfIntroduction);
 
   const onChangeSkills = (userSkill: string[]) => {
     setUserSkill(userSkill);
   }
 
   const onChangeIntroduce = (selfIntro: string) => {
-    setIntroduce(selfIntro);
+    setUserIntroduce(selfIntro);
   }
 
-  const changeUserInfo = () => {
-    setOpen(true);
+  const editMyIntroduce = () => {
+    setOpen(false);
+    props.editUserInfo(userSkill, userIntroduce);
   }
 
   return (
     <Paper
       sx={{
         borderRadius: "15px",
-        padding: "1.125rem",
+        p: "2.5rem",
       }}
-        elevation={3}
+      elevation={3}
     >
-      <Stack
-        direction="row"
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <Typography>{`Hello, ${props.nickname}!`}</Typography>
-        <IconButton  onClick={changeUserInfo}>
+      <Stack spacing={2} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h3">{`Hello, ${props.nickname}!`}</Typography>
+        <IconButton  onClick={()=>setOpen(true)}>
           <CreateOutlinedIcon/>
         </IconButton>
-          <Modal
-            open={open}
-          >
-          <Box sx={editUserinfoModal}>
-            <Typography variant="h3">회원정보 수정</Typography>
-            <UserSkill skills={props.skill} setSkills={onChangeSkills}/>
-            <UserIntroduce introduce={props.selfIntroduction} setIntroduce={onChangeIntroduce}/>
-            <Button onClick={()=>setOpen(false)}>취소</Button>
-          </Box>
-          </Modal>
+
+        <Modal open={open}>
+          <Stack sx={editUserinfoModal} direction={"column"} spacing={5}>
+            <Typography variant="h1" align="center">내 정보 수정</Typography>
+            <Box>
+              <Typography variant="h5" pb={"0.6rem"}>관심기술을 선택해주세요!</Typography>
+              <UserSkill skills={props.skill} changeSkills={onChangeSkills}/>
+            </Box>
+            <Box pt={"1rem"}>
+            <UserIntroduce introduce={props.selfIntroduction} changeIntroduce={onChangeIntroduce}/>
+            </Box>
+            <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+              <Button onClick={()=>setOpen(false)}>취소</Button>
+              <Button onClick={editMyIntroduce}>수정</Button>
+            </Stack>
+          </Stack>
+        </Modal>
       </Stack>
 
-      <Grid container rowSpacing={"1.125rem"} direction="column">
+      <Grid container rowSpacing={"2rem"} direction="column">
+        <Grid item>
+          <Typography variant="h5" mt={"1rem"}>{props.selfIntroduction}</Typography>
+        </Grid>
         <Grid item>
           <Box>
             {props.skill?.map((stack) => {
               const skills = skillData.find((skill) => skill.name === stack);
               const color = skills?.type === "language" ? "default" : "success";
               return (
-                <Chip avatar={<Avatar src={skills?.logo} />} label={stack} variant="outlined" color={color} sx={{mr: "1rem"}}/>
+                <Chip avatar={<Avatar src={skills?.logo} />} label={stack} variant="outlined" color={color} sx={{mr: "1rem", mb: "0.8rem"}}/>
               )
             })}
           </Box>
-        </Grid>
-
-        <Grid item>
-          <Typography>{props.selfIntroduction}</Typography>
         </Grid>
       </Grid>
     </Paper>
@@ -78,12 +84,13 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
 
 const editUserinfoModal = {
   position: 'absolute' as 'absolute',
-  top: '50%',
+  top: '40%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: 700,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '2px solid #B5CC6C',
   boxShadow: 20,
-  p: 4,
+  p: "4rem",
+  borderRadius: 6,
 };

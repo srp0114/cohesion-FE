@@ -2,12 +2,12 @@ import { TextField } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 
 interface UserIntroduceProps {
-    setIntroduce: (selfIntroduction: string) => void;
+    changeIntroduce: (selfIntroduction: string) => void;
     introduce?: string;
 }
 
-const UserIntroduce = ({ setIntroduce, introduce }: UserIntroduceProps) => {
-    const { formState: { errors }, control } = useForm({ mode: "onChange" });
+const UserIntroduce = ({ changeIntroduce, introduce }: UserIntroduceProps) => {
+    const { control } = useForm({ mode: "onChange" });
 
     return (
         <>
@@ -29,7 +29,7 @@ const UserIntroduce = ({ setIntroduce, introduce }: UserIntroduceProps) => {
                         rows={2}
                         error={error !== undefined}
                         helperText={error ? "글자 수를 초과했습니다." : ""}
-                        onChange={(e) => setIntroduce(e.target.value)}
+                        onChange={(e) => changeIntroduce(e.target.value)}
                     />
                 )}
             />

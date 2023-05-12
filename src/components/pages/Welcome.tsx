@@ -257,10 +257,10 @@ const Welcome = () => {
               />
             </Box>
             <Box>
-              <UserSkill skills={userInfo.skills} setSkills={onChangeSkill}/>
+              <UserSkill skills={userInfo.skills} changeSkills={onChangeSkill}/>
             </Box>
             <Box>
-              <UserIntroduce introduce={userInfo.introduce} setIntroduce={onChangeIntroduce}/>
+              <UserIntroduce introduce={userInfo.introduce} changeIntroduce={onChangeIntroduce}/>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
               <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
