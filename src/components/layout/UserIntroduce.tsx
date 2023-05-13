@@ -21,9 +21,6 @@ const UserIntroduce = ({ changeIntroduce, introduce }: UserIntroduceProps) => {
                     <TextField
                         defaultValue={introduce}
                         multiline
-                        fullWidth
-                        variant="outlined"
-                        label="자기소개"
                         placeholder="자기소개를 해주세요."
                         {...field}
                         rows={2}

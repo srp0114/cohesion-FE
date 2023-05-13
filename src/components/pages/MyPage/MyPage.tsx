@@ -16,7 +16,7 @@ export interface MyPageItems {
   bookmark: number; //북마크한 게시글 수, 기본값 0
   point: number; //사용자의 포인트
   skills?: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
-  selfIntroduction: string; //추가정보페이지에서 입력한 자기소개
+  introduce: string; //추가정보페이지에서 입력한 자기소개
 }
 
 const MyPage = () => {
@@ -31,7 +31,7 @@ const MyPage = () => {
     bookmark: 0,
     point: 0,
     skills: undefined,
-    selfIntroduction: ""
+    introduce: ""
   });
 
   useEffect(()=>{
@@ -49,33 +49,34 @@ const MyPage = () => {
   const onChangeUserInfo = (skills: string[], introduce: string) => {
     const data = {
       skills: skills,
-      selfIntroducation: introduce
+      introduce: introduce
     }
 
     setMyInfo({
       ...myInfo, 
       skills: skills, 
-      selfIntroduction: introduce});
+      introduce: introduce
+    });
       
     // TODO: api 주소
     axios({
       method: "put",
-      url: ``,
+      url: `/api/user/update`,
       headers: { "Content-Type": "application/json" },
       data: data,
     })
     .then((res) => {
       if (res.status === 200) {
-        /*setMyInfo({
-          ...myInfo, 
-          skills: skills, 
-          selfIntroduction: introduce});*/
+        const editInfo = res.data;
+        setMyInfo({...myInfo, ...editInfo});
       }
     })
     .catch((err) => {
       console.log(err);
     });
   }
+
+  console.log(myInfo);
 
   return (
     <>
@@ -92,7 +93,7 @@ const MyPage = () => {
             <MyProfile studentId={myInfo.studentId} nickname={myInfo.nickname} track1 = {myInfo.track1} track2 = {myInfo.track2} profileImg={myInfo.profileImg}/>
           </Grid>
           <Grid item xs={12}>
-          <MyIntroduction editUserInfo={onChangeUserInfo} nickname={myInfo.nickname} selfIntroduction = {myInfo.selfIntroduction} skill={myInfo.skills}/>
+          <MyIntroduction editUserInfo={onChangeUserInfo} nickname={myInfo.nickname} introduce={myInfo.introduce} skills={myInfo.skills}/>
           </Grid>
           </Grid>
         </Grid>

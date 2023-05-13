@@ -7,22 +7,22 @@ import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 
 interface MyIntroductionProps {
   nickname: string;
-  skill?: Array<string>;
-  selfIntroduction: string;
+  skills?: Array<string>;
+  introduce: string;
   editUserInfo: (changeSkills:string[], changeIntroduce: string) => void
 }
 
 export const MyIntroduction = (props: MyIntroductionProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [userSkill, setUserSkill] = useState<string[]>(props.skill || []);
-  const [userIntroduce, setUserIntroduce] = useState<string>(props.selfIntroduction);
+  const [userSkill, setUserSkill] = useState<string[]>(props.skills || []);
+  const [userIntroduce, setUserIntroduce] = useState<string>(props.introduce);
 
-  const onChangeSkills = (userSkill: string[]) => {
-    setUserSkill(userSkill);
+  const onChangeSkills = (changeSkills: string[]) => {
+    setUserSkill(changeSkills);
   }
 
-  const onChangeIntroduce = (selfIntro: string) => {
-    setUserIntroduce(selfIntro);
+  const onChangeIntroduce = (changeIntroduce: string) => {
+    setUserIntroduce(changeIntroduce);
   }
 
   const editMyIntroduce = () => {
@@ -49,10 +49,10 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
             <Typography variant="h1" align="center">내 정보 수정</Typography>
             <Box>
               <Typography variant="h5" pb={"0.6rem"}>관심기술을 선택해주세요!</Typography>
-              <UserSkill skills={props.skill} changeSkills={onChangeSkills}/>
+              <UserSkill skills={props.skills} changeSkills={onChangeSkills}/>
             </Box>
             <Box pt={"1rem"}>
-            <UserIntroduce introduce={props.selfIntroduction} changeIntroduce={onChangeIntroduce}/>
+            <UserIntroduce introduce={props.introduce} changeIntroduce={onChangeIntroduce}/>
             </Box>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
               <Button onClick={()=>setOpen(false)}>취소</Button>
@@ -64,11 +64,11 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
 
       <Grid container rowSpacing={"2rem"} direction="column">
         <Grid item>
-          <Typography variant="h5" mt={"1rem"}>{props.selfIntroduction}</Typography>
+          <Typography variant="h5" mt={"1rem"}>{props.introduce}</Typography>
         </Grid>
         <Grid item>
           <Box>
-            {props.skill?.map((stack) => {
+            {props.skills?.map((stack) => {
               const skills = skillData.find((skill) => skill.name === stack);
               const color = skills?.type === "language" ? "default" : "success";
               return (
