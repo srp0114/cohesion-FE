@@ -15,7 +15,7 @@ export interface MyPageItems {
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
   point: number; //사용자의 포인트
-  skills?: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
+  skills: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
   introduce: string; //추가정보페이지에서 입력한 자기소개
 }
 
@@ -30,20 +30,23 @@ const MyPage = () => {
     board: 0,
     bookmark: 0,
     point: 0,
-    skills: undefined,
+    skills: [],
     introduce: ""
   });
 
-  useEffect(()=>{
-    axios({
-      method : "get",
-      url : "/api/user-info"
-    }).then((res)=>{
-      setMyInfo(res.data);
-    }).catch((err)=>{
+  const getUserInfo = async () => {
+    try {
+      const res = await axios.get(`/api/user-info`);
+      if (res.status === 200) {
+        setMyInfo(res.data);
+      }
+    } catch (err) {
       console.log(err);
-    })
+    }
+  }
 
+  useEffect(()=>{
+    getUserInfo();
   },[])
 
   const onChangeUserInfo = (skills: string[], introduce: string) => {
@@ -58,7 +61,6 @@ const MyPage = () => {
       introduce: introduce
     });
       
-    // TODO: api 주소
     axios({
       method: "put",
       url: `/api/user/update`,
@@ -67,14 +69,16 @@ const MyPage = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        const editInfo = res.data;
-        setMyInfo({...myInfo, ...editInfo});
+        getUserInfo();
       }
     })
     .catch((err) => {
       console.log(err);
     });
   }
+
+  console.log(myInfo.skills)
+  console.log(myInfo.introduce)
 
   return (
     <>

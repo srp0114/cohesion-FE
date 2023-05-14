@@ -7,14 +7,14 @@ import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 
 interface MyIntroductionProps {
   nickname: string;
-  skills?: Array<string>;
+  skills: Array<string>;
   introduce: string;
   editUserInfo: (changeSkills:string[], changeIntroduce: string) => void
 }
 
 export const MyIntroduction = (props: MyIntroductionProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [userSkill, setUserSkill] = useState<string[]>(props.skills || []);
+  const [userSkill, setUserSkill] = useState<string[]>(props.skills);
   const [userIntroduce, setUserIntroduce] = useState<string>(props.introduce);
 
   const onChangeSkills = (changeSkills: string[]) => {
