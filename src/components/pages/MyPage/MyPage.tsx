@@ -76,8 +76,6 @@ const MyPage = () => {
     });
   }
 
-  console.log(myInfo);
-
   return (
     <>
       <Grid 

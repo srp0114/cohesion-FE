@@ -163,6 +163,32 @@ export const theme = createTheme({
         }
       }
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          '&.mySummaryPaper': {
+            borderRadius: "15px",
+            padding: "1.5rem 1.7rem 1.7rem 2.5rem",
+            transition: 'transform 0.3s ease',
+            '&:hover, &:active, &:focus': {
+              transform: 'scale(1.01)',
+              zIndex: 1,
+              /* '& .summaryMenuButton': {
+                opacity: 1,
+              },
+            },
+            '& .summaryMenuButton': {
+              opacity: 0,
+              transition: 'opacity 0.2s ease',
+
+            },
+            '&:hover .summaryMenuButton, &:active .summaryMenuButton, &:focus .summaryMenuButton': {
+              opacity: 1, */
+            },
+          },
+        },
+      },
+    },
     MuiButton: {
       defaultProps: {
         disableRipple: true,
