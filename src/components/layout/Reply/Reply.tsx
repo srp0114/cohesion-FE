@@ -50,7 +50,18 @@ const Reply = (props: ReplyProps) => {
   const id = props.postingId;
   const board = props.board;
   const writerId = props.writerId;
-   
+
+  const getReply = async () => {
+    try {
+      const res = await axios.get(`/api/${board}/${id}/replies`);
+      if (res.status === 200) {
+        setReplyData(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const getAdoptReply = useCallback(() => {
     if (board === "questions") {
       axios({
@@ -70,17 +81,6 @@ const Reply = (props: ReplyProps) => {
 
   useEffect(() => {
     axios({
-      method: "get",
-      url: `/api/${board}/${id}/replies`,
-    })
-      .then((res) => {
-        setReplyData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-      axios({
         method : "get",
         url : "/api/user-id"
     }).then((res)=>{
@@ -91,6 +91,7 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
     })
 
+    getReply();
     getAdoptReply();
   }, [board, id, getAdoptReply]);
 
@@ -119,8 +120,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
         if (res.status === 200) {
-          const newReply = res.data;
-          setReplyData([...replyData, newReply]);
+          getReply();
         }
       })
       .catch((err) => {
@@ -142,8 +142,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
         if (res.status === 200) {
-          const newReply = res.data;
-          setReplyData([...replyData, newReply]);
+          getReply();
         }
       })
       .catch((err) => {
@@ -170,14 +169,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
           if(res.status===200){
-            const editedReply = res.data;
-            const newReplyData = replyData.map((reply)=>{
-                if(reply.id === editedReply.id){
-                    return {...reply, ...editedReply, showEditForm:false};
-                }
-                return reply;
-            });
-              setReplyData(newReplyData);
+            getReply();
           }
       })
       .catch((err) => {
@@ -190,8 +182,7 @@ const Reply = (props: ReplyProps) => {
           method : "delete",
           url : `/api/${board}/delete/${replyId}/replies`
       }).then((res)=>{
-          console.log(res.data);
-          setReplyData(replyData.filter((reply) => reply.id !== replyId));
+          getReply();
       }).catch((err)=>{
           console.log(err);
       })
