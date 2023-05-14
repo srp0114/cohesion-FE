@@ -186,6 +186,16 @@ export const theme = createTheme({
               opacity: 1, */
             },
           },
+          '&.mySummaryFixedPaper': {
+            borderRadius: "15px",
+            //border: "2px solid #B5CC6C",
+            padding: "1.2rem 1.7rem 1.2rem 2.5rem",
+            transition: 'transform 0.3s ease',
+            '&:hover, &:active, &:focus': {
+              transform: 'scale(1.01)',
+              zIndex: 1,
+            }
+          },
         },
       },
     },
