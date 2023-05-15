@@ -67,14 +67,14 @@ const AdminPage = () => {
        }).catch((err)=>{
            if(err.response && err.response.status===403){
                alert("관리자 계정이 아닙니다!!!");
-               window.location.replace("/");
+                window.location.href="/";
            }
        })
 
 
        axios({
            method:"get",
-           url:`/api/free/admin`
+           url:`/api/admin/free`
        }).then((res)=>{
            setFree(res.data)
        }).catch((err)=>{
@@ -83,7 +83,7 @@ const AdminPage = () => {
 
        axios({
            method:"get",
-           url:`/api/questions/admin`
+           url:`/api/admin/questions`
        }).then((res)=>{
            setQna(res.data)
        }).catch((err)=>{
@@ -92,7 +92,7 @@ const AdminPage = () => {
 
        axios({
            method:"get",
-           url:`/api/recruit/admin`
+           url:`/api/admin/recruit`
        }).then((res)=>{
            setRecruit(res.data)
        }).catch((err)=>{
@@ -102,7 +102,7 @@ const AdminPage = () => {
        if (isShowingUser) {
         axios({
             method : "get",
-            url : `/api/user/admin`
+            url : `/api/admin/user`
         }).then((res)=>{
             setUser(res.data);
         }).catch((err)=>{
@@ -130,7 +130,7 @@ const AdminPage = () => {
     const handleDeleteUser = (userId: number) => {
         axios({
             method : "delete",
-            url :`/api/user/${userId}/admin`
+            url :`/api/admin/user/${userId}`
         }).then((res)=>{
             setUser((prevUsers) => prevUsers.filter((user) => user.id !== userId));
         }).catch((err) => {
@@ -141,7 +141,7 @@ const AdminPage = () => {
     const handleDeleteBoard = (postId: Number, boardType :String) => {
         axios({
             method : "delete",
-            url : `/api/${boardType}/${postId}/admin`
+            url : `/api/admin/${boardType}/${postId}`
         }).then((res)=>{
             if (boardType === 'FreeBoard') {
                 setFree((prevFree) => prevFree.filter((post) => post.id !== postId));
@@ -156,7 +156,7 @@ const AdminPage = () => {
     };
 
     const postBoard = () =>{
-        window.location.replace("/post")
+        window.location.replace("/postnotice")
         //TODO : 공지사항 페이지 분리, 작성폼도 관리자인지 check
     }
 
