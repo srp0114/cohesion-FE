@@ -290,15 +290,16 @@ const PostForm = () => {
                 control={control}
                 name="content"
                 rules={{ required: true }}
-                render={({ field: { value } }) => (
+                render={({ field }) => (
                   <div className="postQuill">
                     <EditorToolbar
                       onAddQuill={(data) => {
-                        const modifiedData = data.replace(/<p><br><\/p>/gi, "");
+                        const modifiedData = data.trim() === '<p><br></p>' ? "" : data;
                         setValue("content", modifiedData, { shouldValidate: true });
-                        getContent(data);
+                        console.log(modifiedData)
+                        getContent(modifiedData);
                       }}
-                      content={value}
+                      content={field.value}
                     />
                   </div>
                 )}
