@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import { Button, Grid, Menu, MenuItem } from "@mui/material";
 import Profile from "../layout/Profile";
-import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
 import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import SearchField from "./SearchField";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -91,12 +91,10 @@ const Navbar = () => {
   };
   
   return (
-    <div>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt:3, mb:4 }}>
-        <Box
-          sx={{ display: "flex", justifyContent: "flex-start"}}
-        >
-          <Box sx={{width:100, backgroundColor:'#ddd', mr: 3}}/>
+    <>
+      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} display={"flex"} justifyContent={"space-between"} sx={{mt:"1.5rem", mb:"2rem" }} >
+        <Grid item>
+          <Button sx={{height:30, backgroundColor:'#ddd', mr: 3}}/>
           <Button onClick={moveToHome} className="navButton">홈</Button>
           <Button
             className="navButton"
@@ -111,23 +109,24 @@ const Navbar = () => {
             <MenuItem onClick={moveToRecruit}>구인게시판</MenuItem>
           </Menu>
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
-        </Box>
-        <Box sx={{display:'flex', justifyContent: "space-between"}}>
+        </Grid>
+        
+        <Grid item direction="row">
           {isLogin ? (
           <>
+            <SearchField/>
             <Button className="profile" onClick={moveToMyPage}>
-              <Profile nickname={nickname} imgUrl={profileImg} size={25}/>
+            <Profile nickname={nickname} imgUrl={profileImg} size={28}/>
             </Button>
             <Button onClick={handleLogin} className="loginButton">
               로그아웃
             </Button>
-          </>
-          ) : (<Button onClick={handleLogin} className="loginButton">로그인</Button>
+          </>) : (
+            <Button onClick={handleLogin} className="loginButton">로그인</Button>
           )}
-          
-      </Box>
-      </Box>
-    </div>
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
