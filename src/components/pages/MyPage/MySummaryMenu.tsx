@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Grid, Menu, MenuItem, ListItemIcon, IconButton } from "@mui/material";
+import { Button, Paper, Typography, Stack, Grid, Menu, MenuItem, ListItemIcon, IconButton, Modal } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/EditOutlined';
@@ -25,6 +25,8 @@ const MySummaryMenu = (props: MySummaryMenuProps) => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
 
     const editHandler = (id: number) => {
         props.setIsEditing(true);
@@ -64,11 +66,26 @@ const MySummaryMenu = (props: MySummaryMenuProps) => {
                 <EditIcon fontSize="small" />
             </ListItemIcon>수정
             </MenuItem>
-            <MenuItem onClick={()=>deleteHandler(props.summaryId)}>
+            <MenuItem onClick={()=>setDeleteOpen(true)}>
             <ListItemIcon>
                 <DeleteIcon fontSize="small" />
             </ListItemIcon>삭제
             </MenuItem>
+            <Modal open={deleteOpen}>
+                <Paper sx={editUserinfoModal} elevation={4}>
+                <Stack direction={"column"} spacing={"2rem"}>
+                    <Typography variant="h3" p={"0.5rem"}>공부기록 삭제</Typography>
+                    <Typography variant="h4" align="center">공부기록을 삭제하시겠습니까?</Typography>
+                    <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+                        <Button onClick={()=>{ 
+                            setDeleteOpen(false); 
+                            handleClose();
+                        }}>취소</Button>
+                        <Button onClick={()=>deleteHandler(props.summaryId)}>삭제</Button>
+                    </Stack>
+                </Stack>
+                </Paper>
+            </Modal>
             <MenuItem onClick={()=>pinHandler(props.summaryId, props.isFixed)}>
             <ListItemIcon>
             <PushPinIcon fontSize="small"/>
@@ -80,5 +97,15 @@ const MySummaryMenu = (props: MySummaryMenuProps) => {
         </>
     )
 }
+const editUserinfoModal = {
+  position: 'absolute' as 'absolute',
+  top: '40%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 300,
+  bgcolor: 'background.paper',
+  p: "1.5rem",
+  borderRadius: 6,
+};
 
 export default MySummaryMenu;
