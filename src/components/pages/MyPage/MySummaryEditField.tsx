@@ -18,7 +18,7 @@ const MySummaryEditField = (props : EditMySummaryProps) => {
 
     return (
         <>
-        <Grid container direction="row" spacing={2} sx={{alignItems:"center", justifyContent:"space-between", p:"0 1.5rem 0.5rem 1rem", display:"flex"}}>
+        <Grid container direction="row" spacing={2} sx={{alignItems:"center", justifyContent:"space-between", display:"flex"}}>
         <Grid item xs={10} md={10}>
             <TextField 
                 variant="standard" 
