@@ -4,7 +4,7 @@ import { Stack, Typography, Button, Snackbar, SnackbarOrigin, Alert } from "@mui
 import BorderBookmark from "@mui/icons-material/BookmarkBorder";
 import FilledBookmark from '@mui/icons-material/Bookmark';
 
-interface State extends SnackbarOrigin {
+export interface State extends SnackbarOrigin {
   open: boolean;
 }
 
