@@ -92,8 +92,8 @@ const Navbar = () => {
   
   return (
     <>
-      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} display={"flex"} justifyContent={"space-between"} sx={{mt:"1.5rem", mb:"2rem" }} >
-        <Grid item>
+      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} sx={{mt:"1.5rem", mb:"2rem" }} >
+        <Grid item xs={12} md={6}>
           <Button sx={{height:30, backgroundColor:'#ddd', mr: 3}}/>
           <Button onClick={moveToHome} className="navButton">홈</Button>
           <Button
@@ -111,10 +111,10 @@ const Navbar = () => {
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Grid>
         
-        <Grid item direction="row">
+        <Grid item xs={12} md={6} container direction="row" alignItems="center" justifyContent={"flex-end"}>
           {isLogin ? (
           <>
-            <SearchField/>
+            <SearchField />       
             <Button className="profile" onClick={moveToMyPage}>
             <Profile nickname={nickname} imgUrl={profileImg} size={28}/>
             </Button>

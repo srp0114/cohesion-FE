@@ -47,7 +47,7 @@ const Search = () => {
   return (
     <>
       {postings.every((board) => board.data.length === 0) ? (
-          <Grid container spacing={"5rem"} p={"4rem"} alignItems={"center"}>
+          <Grid container p={"2rem 4rem 2rem"} alignItems={"center"}>
             <PriorityHighIcon sx={{fontSize: "2rem", color:"success.main"}}/>
             <Typography variant="h2">{search}에 대한 내용이 없습니다.</Typography>
           </Grid>

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, IconButton, TextField } from "@mui/material";
+import { Stack, IconButton, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import Search from "../pages/Search";
 
 const SearchField = () => {
     const [searchInput, setSearchInput] = useState<string>("");
     const [showField, setShowField] = useState<boolean>(false);
     const navigate = useNavigate();
 
+
     const handleSearch = () => {
-        if (showField) {
+        if (showField && searchInput.trim() !== "") {
             navigate(`/search?query=${searchInput}`);
             window.location.reload();
         } else {
@@ -19,16 +19,15 @@ const SearchField = () => {
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            navigate(`/search?query=${searchInput}`)
+        if (event.key === 'Enter' && searchInput.trim() !== "") {
+            navigate(`/search?query=${searchInput}`);
             window.location.reload();
         }
     };
 
     return (
         <>
-            <Grid container item direction={"row"}>
-                <Grid item>
+            <Stack direction={"row"} alignItems={"center"} mr={"1rem"}>
             { showField ? 
                 <TextField 
                     variant="standard" 
@@ -38,13 +37,10 @@ const SearchField = () => {
                     onKeyPress={handleKeyPress}
                 /> : (null)
             }
-            </Grid>
-            <Grid>
             <IconButton onClick={handleSearch}>
-                <SearchIcon/>
+            <SearchIcon/>
             </IconButton>
-            </Grid>
-            </Grid>
+            </Stack>
         </>
     )
 }
