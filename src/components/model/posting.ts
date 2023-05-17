@@ -8,7 +8,7 @@ export interface Posting {
   id: number;
   title: string;
   content: string;
-  imgUrl?: Array<string>;
+  profileImg: string | null;
   writer: string; //게시글 작성자 닉네임
   stuId: number
   createdDate: string;
