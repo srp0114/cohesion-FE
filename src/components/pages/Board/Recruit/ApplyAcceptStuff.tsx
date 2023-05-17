@@ -30,8 +30,9 @@ interface DoubleCheckModalProps {
     requireContext?: string;
     optionalContext?: string;
     onModalOpenChange?: (open: boolean) => void;
-    onApplicantsChange?: () => void; //신청 인원수가 바뀌었는지 감지
-    onApplyButtonAvailable?: () => void;
+    onNewApplicant?: () => void; //신청 인원 증가 감지
+    onApplicantOut?: () => void; //신청 인원 감소 감지
+    onApplicantStatus?: () => void; //신청하기인지 신청취소인지
     //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
@@ -43,11 +44,13 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
     const operators = [
         { who: false, callNode: "applyBtn" },
+        { who: false, callNode: "applyCancelBtn" },
         { who: true, callNode: "completeBtn" }
     ];
 
     const sentences = [
-        "신청하시겠습니까? (신청 후, 취소는 불가합니다.)",
+        "신청하시겠습니까?",
+        "신청을 취소하시겠습니까?",
         "모집을 완료하시겠습니까?"
     ]
 
@@ -80,14 +83,27 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             data: JSON.stringify(request_apply),
         }).then((res) => {
             if (res.status === 200) {
-                (props.onApplicantsChange) ? props.onApplicantsChange() : alert(`신청하는데 오류가 발생했습니다.`);
-                (props.onApplyButtonAvailable) ? props.onApplyButtonAvailable() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
+                (props.onNewApplicant) ? props.onNewApplicant() : alert(`신청하는데 오류가 발생했습니다.`);
+                (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
                 alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
             }
         }).catch((err) => {
             console.log(err);
         });
 
+    }
+
+    const deleteApplicationCancel = () => {
+        axios({
+            method: "delete",
+            url: `/api/recruit/${props.postingId}/application-cancel`,
+        }).then((res) => {
+            if (res.status === 200) {
+                alert(`${JSON.stringify(res.data)} 신청취소되었습니다.`);
+                (props.onApplicantOut) ? props.onApplicantOut() : alert(`신청하는데 오류가 발생했습니다.`);
+                (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청취소버튼 설정에 오류가 발생했습니다.`);
+            }
+        }).catch((err) => console.log(err));
     }
 
     const putRecruitComplete = (postingId: number) => {
@@ -136,6 +152,10 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                 (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
                 break;
             case 1:
+                deleteApplicationCancel(); //신청취소정보서버로
+                (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
+                break;
+            case 2:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
                 (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
                 break;
