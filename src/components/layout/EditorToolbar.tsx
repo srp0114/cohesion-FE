@@ -8,6 +8,7 @@ import "highlight.js/styles/atom-one-dark.css";
 import axios from 'axios';
 import "../style/Board.css";
 
+
 interface QuillProps  {
     onAddQuill: (content:string) => void
     content: string
@@ -67,20 +68,26 @@ const EditorToolbar = (props : QuillProps) => {
             const files: FileList | null = input.files;
             const fileArray = Array.prototype.slice.call(files);
 
+            //test용(이미지 이름 설정)
+            const min = 1; // 최소값
+            const max = 1000; // 최대값
+            const randomInt = Math.floor(Math.random() * (max - min + 1)) + min; // min 이상 max 이하의 정수 난수 생성
+
             fileArray.forEach((file) => {
                 fileList.push(file);
             })
             fileList.forEach((file) => {
-                formData.append('multipartFiles', file);
+                formData.append('file', file);
             })
+            formData.append("nameFile",randomInt.toString())
                 axios({
                     method: "post",
-                    url: "/api/questions/image",
+                    url: "/api/files",
                     headers: {"Content-Type": "multipart/form-data"},
                     data: formData,
                 }).then((response)=>{
                     console.log("###", response);
-                    const url = "http://localhost:8080"+response.data;
+                    const url = "http://localhost:8070"+response.data;
                     const range = QuillRef.current?.getEditor().getSelection()?.index;
                     if (range !== null && range !== undefined) {
                         let quill = QuillRef.current?.getEditor();
