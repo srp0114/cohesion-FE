@@ -28,7 +28,7 @@ const SearchField = () => {
 
     return (
         <>
-        <Stack direction="row" alignItems="center" mr={"0-.8rem"} ref={containerRef}>
+        <Stack direction="row" alignItems="center" mr={"0.8rem"} ref={containerRef}>
         <FormControlLabel control={    
         <IconButton onClick={handleSearch}>
             <SearchIcon />

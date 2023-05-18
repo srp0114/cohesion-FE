@@ -11,7 +11,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { BoardSkeleton } from "../../../layout/Skeletons";
-// BoardItems 인터페이스
+import SearchBoardField from "../../../layout/SearchBoardField";
+
 export interface BoardItems {
   id: number;
   title: string;
@@ -79,7 +80,6 @@ const QnABaord = () => {
     })
       .then((res) => {
         setBoardItems(res.data);
-        console.log(`get을 받아온 Q&A게시판: ${JSON.stringify(res.data)}`);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -109,6 +109,21 @@ const QnABaord = () => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
   }, [boardItems]);
 
+  const performSearch = (search : string) => {
+    axios({
+      method: "get",
+      url: `/api/questions/list?search=${search}&page=0&size=4`,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
   const displayPosting = boardItems.map((element, idx) => {
     return (
       <>
@@ -121,7 +136,8 @@ const QnABaord = () => {
     <>
       {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
         <Typography
-          variant="h5" >
+          variant="h2"
+          sx={{ fontWeight: 600 }}>
           Q&A게시판
         </Typography>
 
@@ -131,6 +147,9 @@ const QnABaord = () => {
         />
 
         {displayPosting}
+        <Box display={"flex"} justifyContent={"flex-end"}>
+          <SearchBoardField setSearchAPI={performSearch}/>
+        </Box>
         <PaginationControl
           page={page}
           between={1}

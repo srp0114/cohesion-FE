@@ -10,7 +10,7 @@ import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { shortenContent } from "../QnA/QnABoard";
 import { BoardSkeleton } from "../../../layout/Skeletons";
-import SearchField from "../../../layout/SearchField";
+import SearchBoardField from "../../../layout/SearchBoardField";
 
 //자유게시판 페이지 인터페이스
 export interface FreeBoardItems {
@@ -32,7 +32,7 @@ const FreeBoard = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
-
+  
   useEffect(() => {
     axios({
       method: "get",
@@ -70,6 +70,21 @@ const FreeBoard = () => {
     setLoading(true); //freeData 상태가 변할 때 게시글 목록
   }, [freeData]);
 
+  const performSearch = (search : string) => {
+    axios({
+      method: "get",
+      url: `/api/free/list?search=${search}&page=0&size=4`,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setFreeData(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
   const displayPosting = freeData.map((element, idx) => {
     return (
       <>
@@ -85,13 +100,14 @@ const FreeBoard = () => {
       loading ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Typography
-            variant="h5" >
+            variant="h2" 
+            sx={{ fontWeight: 600 }}>
             자유게시판
           </Typography>
 
           {displayPosting}
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchField/>
+            <SearchBoardField setSearchAPI={performSearch}/>
           </Box>
           <PaginationControl
             page={page}
@@ -123,7 +139,6 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
   };
 
   return (
-
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
       borderRadius: "50px",

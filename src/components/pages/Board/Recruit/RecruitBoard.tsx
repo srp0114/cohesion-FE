@@ -31,6 +31,7 @@ import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import Profile from "../../../layout/Profile";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import { Application } from "./ApplyAcceptStuff";
+import SearchBoardField from "../../../layout/SearchBoardField";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -98,6 +99,21 @@ const RecruitBoard: React.FC = () => {
 
   }, [page])
 
+  const performSearch = (search : string) => {
+    axios({
+      method: "get",
+      url: `/api/recruit/list?search=${search}&page=0&size=4`,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
   const displayPosting = boardItems.map((element, idx) => (
     <Grid lg={4}>
       <RecruitCard {...element} key={idx} />
@@ -109,7 +125,7 @@ const RecruitBoard: React.FC = () => {
     <>
       <Box>
         <Typography
-          variant="h5"
+          variant="h2"
           sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
         >
           모집게시판
@@ -125,6 +141,9 @@ const RecruitBoard: React.FC = () => {
             {displayPosting}
           </Grid>
         </Box>
+      </Box>
+      <Box display={"flex"} justifyContent={"flex-end"}>
+        <SearchBoardField setSearchAPI={performSearch}/>
       </Box>
       <PaginationControl
         page={page}
