@@ -22,16 +22,19 @@ import { propTypes } from "react-bootstrap/esm/Image";
 interface DoubleCheckModalProps {
     postingId: number;
     id?: number; //접속한 유저의 아이디
-    targetId?: number; //승인, 승인 취소 대상의 아이디
     who: boolean; //접속한 유저가 작성자인지 신청자인지
     callNode: string; //모달을 부른 곳이 어디인지
     isComplete?: boolean;
     open: boolean;
     requireContext?: string;
     optionalContext?: string;
-    onModalOpenChange?: (open: boolean) => void;
-    onApplicantsChange?: () => void; //신청 인원수가 바뀌었는지 감지
-    onApplyButtonAvailable?: () => void;
+    targetApplication?: Application; //승인할 신청서
+    onModalOpenChange?: (open: boolean, id?: string | undefined) => void;
+    onNewApplicant?: () => void; //신청 인원 증가 감지
+    onApplicantOut?: () => void; //신청 인원 감소 감지
+    onApplicantStatus?: () => void; //신청하기인지 신청취소인지
+    onApprovalStatus?: (updatedApplication: Application) => void //승인 상태와 관련
+    onDisapprovalStatus?: (updatedApplication: Application) => void //승인 상태와 관련
     //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
@@ -43,12 +46,18 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 
     const operators = [
         { who: false, callNode: "applyBtn" },
-        { who: true, callNode: "completeBtn" }
+        { who: false, callNode: "applyCancelBtn" },
+        { who: true, callNode: "completeBtn" },
+        { who: true, callNode: "approveConfirmBtn" },
+        { who: true, callNode: "approveCancelBtn" }
     ];
 
     const sentences = [
-        "신청하시겠습니까? (신청 후, 취소는 불가합니다.)",
-        "모집을 완료하시겠습니까?"
+        "신청하시겠습니까?",
+        "신청을 취소하시겠습니까?",
+        "모집을 완료하시겠습니까?",
+        "승인하시겠습니까?",
+        "승인을 취소하시겠습니까?"
     ]
 
     const designateOperator = () => {
@@ -80,14 +89,27 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             data: JSON.stringify(request_apply),
         }).then((res) => {
             if (res.status === 200) {
-                (props.onApplicantsChange) ? props.onApplicantsChange() : alert(`신청하는데 오류가 발생했습니다.`);
-                (props.onApplyButtonAvailable) ? props.onApplyButtonAvailable() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
+                (props.onNewApplicant) ? props.onNewApplicant() : alert(`신청하는데 오류가 발생했습니다.`);
+                (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
                 alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
             }
         }).catch((err) => {
             console.log(err);
         });
 
+    }
+
+    const deleteApplicationCancel = () => {
+        axios({
+            method: "delete",
+            url: `/api/recruit/${props.postingId}/application-cancel`,
+        }).then((res) => {
+            if (res.status === 200) {
+                alert(`${JSON.stringify(res.data)} 신청취소되었습니다.`);
+                (props.onApplicantOut) ? props.onApplicantOut() : alert(`신청하는데 오류가 발생했습니다.`);
+                (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청취소버튼 설정에 오류가 발생했습니다.`);
+            }
+        }).catch((err) => console.log(err));
     }
 
     const putRecruitComplete = (postingId: number) => {
@@ -102,6 +124,44 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             })
             .catch((err) => console.log(err));
     }
+
+    const putApprove = (targetApplication: Application) => {
+        const targetId: number = targetApplication.id;
+        console.log(`props.targetApplication.Id == ${props.targetApplication?.id}`);
+        axios({
+            method: "put",
+            url: `/api/recruit/${props.postingId}/approval/${targetId}`,
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    const updatedApplication: Application = { ...props.targetApplication!, isApproved: true };
+                    if (props.onApprovalStatus) {
+                        props.onApprovalStatus(updatedApplication);
+                    }
+                    console.log(`putApprove에서 updatedApplication 확인 ${JSON.stringify(updatedApplication)}`);
+                }
+            })
+            .catch((err) => console.log(err));
+    };
+
+    const putReject = (targetApplication: Application) => {
+        const targetId: number = targetApplication.id;
+        console.log(`props.targetApplication.Id == ${props.targetApplication?.id}`);
+        axios({
+            method: "put",
+            url: `/api/recruit/${props.postingId}/disapproval/${targetId}`,
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    const updatedApplication: Application = { ...props.targetApplication!, isApproved: false };
+                    if (props.onDisapprovalStatus) {
+                        props.onDisapprovalStatus(updatedApplication);
+                    }
+                    console.log(`putReject에서 updatedApplication 확인 ${JSON.stringify(updatedApplication)}`);
+                }
+            })
+            .catch((err) => console.log(err));
+    };
 
     const applicationCheckbox = () => {
         if (props.optionalContext ?? false)
@@ -133,21 +193,40 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         switch (operator) {
             case 0:
                 postApplicantInfo(); //신청정보서버로
-                (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
                 break;
             case 1:
+                deleteApplicationCancel(); //신청취소정보서버로
+                break;
+            case 2:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
-                (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
+                break;
+            case 3:
+                if (props.targetApplication !== undefined && props.targetApplication !== null) {
+                    console.log(`targetApplication:  ${JSON.stringify(props.targetApplication)}`);
+                    putApprove(props.targetApplication);
+                }
+                break;
+            case 4:
+                if (props.targetApplication !== undefined && props.targetApplication !== null) {
+                    console.log(`targetApplication: ${JSON.stringify(props.targetApplication)} `);
+                    putReject(props.targetApplication); // 승인 취소 정보 서버로
+                }
                 break;
             default:
                 alert("에러 발생");
                 setOpen(false);
         }
+        if (props.targetApplication !== undefined && props.targetApplication !== null) {
+            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setOpen(false);
+        }
+        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
     }
 
     const cancelClickHandler = () => {
-        (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
-        alert("취소되었습니다");
+        if (props.targetApplication !== undefined && props.targetApplication !== null) {
+            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setOpen(false);
+        }
+        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
     };
 
     return (
@@ -206,12 +285,13 @@ export interface Application {
 
     isApproved: boolean,
     collapseOpen?: boolean,
+    modalStates?: boolean,
 }
 
 interface ApplicantListProps {
     postingId: number,
-    onNewApprovedApplicants: () => void,
-    onApprovedApplicantsOut: () => void,
+    onNewApprovedApplicants: () => void, //승인된 인원 수에만 관계
+    onApprovedApplicantsOut: () => void, //승인된 인원 수에만 관계
 }
 
 export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원수가 바뀌었는지 감지{()=>void}) => { //UI 확인용 임시.
@@ -219,9 +299,49 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
         right: false,
     });
     const [dense, setDense] = React.useState(false);
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalStates, setModalStates] = React.useState<{ [key: string]: boolean }>({});
     const [applications, setApplications] = useState<Application[]>([]);
 
+    const handleModalOpenChange = (open: boolean, id?: string) => {
+        if (id) {
+            setModalStates((prevState) => ({
+                ...prevState,
+                [id]: open,
+            }));
+        }
+    }
+
+    const handleApprovalStatus = (updatedApplication: Application) => {
+        console.log(`승인 누른 유저의 아이디 ${JSON.stringify(updatedApplication.id)}`);
+        setApplications((prevApplications) =>
+            prevApplications.map((app) =>
+                app.id === updatedApplication.id ? updatedApplication : app
+            )
+        );
+        console.log(`handleApprovalStatus에서 applications 확인 ${JSON.stringify(applications)}`);
+        props.onNewApprovedApplicants();
+    };
+
+    const handleDisapprovalStatus = (updatedApplication: Application) => {
+        console.log(`승인취소 누른 유저의 아이디 ${JSON.stringify(updatedApplication.id)}`);
+        setApplications((prevApplications) =>
+            prevApplications.map((app) =>
+                app.id === updatedApplication.id ? updatedApplication : app
+            )
+        );
+        console.log(`handleDisapprovalStatus에서 applications 확인 ${JSON.stringify(applications)}`);
+        props.onApprovedApplicantsOut();
+    };
+
+    // applications 배열을 설정할 때, 각 요소의 초기 모달 상태를 설정
+    const handleSetApplications = (newApplications: Application[]) => {
+        const initialModalStates: { [key: string]: boolean } = {};
+        newApplications.forEach((app) => {
+            initialModalStates[app.id] = false;
+        });
+        setApplications(newApplications);
+        setModalStates(initialModalStates);
+    };
 
     React.useEffect(() => {
         const fetchApplicants = async () => {
@@ -269,42 +389,6 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                 setState({ ...state, [anchor]: open });
             };
 
-    const putApprove = (targetId: number) => {
-        axios({
-            method: "put",
-            url: `/api/recruit/${props.postingId}/approval/${targetId}`,
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    const updatedApplications = applications.map((app) =>
-                        app.id === targetId ? { ...app, isApproved: true } : app
-                    );
-                    setApplications(updatedApplications);
-                    props.onNewApprovedApplicants();
-                    alert(`승인되었습니다.`);
-                }
-            })
-            .catch((err) => console.log(err));
-    }
-
-    const putReject = (targetId: number) => {
-        axios({
-            method: "put",
-            url: `/api/recruit/${props.postingId}/disapproval/${targetId}`,
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    const updatedApplications = applications.map((app) =>
-                        app.id === targetId ? { ...app, isApproved: false } : app
-                    );
-                    setApplications(updatedApplications);
-                    props.onApprovedApplicantsOut();
-                    alert(`승인취소되었습니다.`);
-                }
-            })
-            .catch((err) => console.log(err));
-    }
-
     return (
         <div>
             {(["right"] as const).map((anchor) => (
@@ -344,17 +428,33 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                             </Grid>
 
                                             <Grid item xs={2}>
-                                                {(!app.isApproved) ? <Grid item xs={2}>
-                                                    <Tooltip title="승인대기">
-                                                        <IconButton edge="end" aria-label="approve" onClick={() => putApprove(app.id)} >
+                                                {(!app.isApproved) ? <>
+                                                    <Tooltip title={`${app.id} 승인대기`}>
+                                                        <IconButton edge="end" aria-label="approve" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                             <PersonAddOutlinedIcon />
                                                         </IconButton>
                                                     </Tooltip>
-                                                </Grid>
-                                                    : <Grid item><Tooltip title="승인완료"><IconButton edge="end" aria-label="reject" onClick={() => putReject(app.id)} >
+                                                    <DoubleCheckModal open={modalStates[app.id] || false}
+                                                        who={true}
+                                                        callNode={"approveConfirmBtn"}
+                                                        postingId={props.postingId}
+                                                        onModalOpenChange={handleModalOpenChange}
+                                                        targetApplication={app}
+                                                        onApprovalStatus={handleApprovalStatus}
+                                                    />
+                                                </>
+                                                    : <><Tooltip title={`${app.id} 승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                         <PersonAddDisabledOutlinedIcon />
                                                     </IconButton></Tooltip>
-                                                    </Grid>}
+                                                        <DoubleCheckModal open={modalStates[app.id] || false}
+                                                            who={true}
+                                                            callNode={"approveCancelBtn"}
+                                                            postingId={props.postingId}
+                                                            onModalOpenChange={handleModalOpenChange}
+                                                            targetApplication={app}
+                                                            onDisapprovalStatus={handleDisapprovalStatus}
+                                                        />
+                                                    </>}
                                             </Grid>
                                             <Grid item xs={12}>
                                                 <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>

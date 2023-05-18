@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTheme } from "@mui/material/styles"
 import Time from "../../../layout/Time";
 import { Box, Button, Chip, Divider, Grid, Stack, Typography, IconButton, Zoom, Tooltip } from "@mui/material";
 import axios from "axios";
@@ -16,6 +17,7 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Application } from "./ApplyAcceptStuff";
 
 //모집 상세보기 인터페이스
@@ -44,35 +46,45 @@ const RecruitDetails = () => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
 
-  const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
+  // const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
   const [modalOpen, setModalOpen] = useState<boolean>(false); //신청, 승인, 모집완료 모달 open 상태 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [applicantStatus, setApplicantStatus] = useState<boolean | null>(null); //유저의 신청 및 승인 여부
 
   const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
 
+  const _theme = useTheme();
   const postingId = Number(id);
 
   const handleModalOpenChange = () => {
     setModalOpen(false);
   }
 
-  const handleApplyBtnAccessible = () => {
-    setIsApplyBtnAvailale(true);
+  const handleApplicantStatus = () => {
+    //신청하는 경우
+    if (approvedApplicants === null) setApplicantStatus(false);
+    //false나 true면 (신청취소) null로
+    else if (typeof approvedApplicants === 'boolean')
+      setApplicantStatus(null);
   }
 
-  const handleApplicantsChange = () => {
-    console.log(`prevState ${applicants}`);
+  const handleNewApplicant = () => { //신청하기로 인한 신청자 인원 증가
     setApplicants(prevState => prevState + 1);
-    console.log(`applicants ${applicants}`);
+    setApplicantStatus(false);
   }
 
-  const handleNewApprovedApplicants = () => {
+  const handleApplicantOut = () => { //신청취소로 인한 신청자 인원 감소
+    setApplicants(prevState => prevState - 1);
+    setApplicantStatus(null);
+  }
+
+  const handleNewApprovedApplicants = () => { //승인하기로 인한 승인 인원 증가
     setApprovedApplicants(prevState => prevState + 1);
   }
 
-  const handleApprovedApplicantsOut = () => {
+  const handleApprovedApplicantsOut = () => { //승인취소로 인한 승인 인원 감소
     setApprovedApplicants(prevState => prevState - 1);
   }
 
@@ -105,16 +117,6 @@ const RecruitDetails = () => {
       }
     }).catch((err) => console.log(err));
 
-    axios({ //서버로부터 신청자 목록 받아오기
-      method: "get",
-      url: `/api/recruit/${postingId}/applicants`,
-    }).then((res) => {
-      if(res.status === 200) {
-        const applicantIdArray: Application[] = res.data.map((resData: Application) => (resData.id));
-        applicantIdArray.find(appId => appId.id === accessUserId) ? setIsApplyBtnAvailale(true) : setIsApplyBtnAvailale(false);
-      }
-    }).catch((err) => console.log(`상세보기 최초 useEffect때 신청자 목록 받아오기 ${err}`)); // 권한이 없어서 못 받아 오는건가
-
   }, []);
 
   useEffect(() => {
@@ -140,6 +142,37 @@ const RecruitDetails = () => {
       }
     }).catch((err) => console.log(err));
   }, [applicants]);
+
+  //신청 및 승인 여부확인
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: `/api/recruit/${postingId}/application-check`
+    }).then((res) => {
+      if (res.status === 200) {
+        setApplicantStatus(res.data);
+        console.log(`서버에서 받은 신청자 신청여부 ${res.data} ${JSON.stringify(res.data)}`);
+        const status: string = (res.data).toString();
+        switch (status) {
+          case "":
+            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)}신청하지 않은 사용자입니다. 나중에 지우기 어차ㅣ 글쓴이한테는 신청버튼 안뜰테니까`);
+            // setApplicantStatus(null);
+            break;
+          case "true":
+            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 신청서가 승인 되었습니다.`);
+            // setApplicantStatus(true);
+            break;
+          case "false":
+            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)}아직 신청 승인 대기 중입니다.`);
+            // setApplicantStatus(false);
+            break;
+          default:
+            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 무언가 오류...`);
+            break;
+        }
+      }
+    })
+  }, []);
 
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
@@ -234,15 +267,20 @@ const RecruitDetails = () => {
                 <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} />
               </>
               : <>
-                <Tooltip title="신청">
-                  <Button variant="outlined" startIcon={<HistoryEduOutlinedIcon />} size="medium" onClick={() => setModalOpen(true)} disabled={isApplyBtnAvailable}>
-                    신청하기
+                <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
+                  <Button variant="outlined" startIcon={((typeof applicantStatus !== 'boolean') ? <HistoryEduOutlinedIcon /> : <CancelOutlinedIcon />)}
+                    size="medium"
+                    onClick={() => setModalOpen(true)}
+                    color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
+                  >
+                    {((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}
                   </Button>
                 </Tooltip>
-                <DoubleCheckModal open={modalOpen} who={false} callNode="applyBtn" id={accessUserId} postingId={postingId}
+                <DoubleCheckModal open={modalOpen} who={false} callNode={((typeof applicantStatus !== 'boolean') ? "applyBtn" : "applyCancelBtn")} id={accessUserId} postingId={postingId}
                   requireContext={postItem.require} optionalContext={postItem.optional}
-                  onModalOpenChange={handleModalOpenChange} onApplicantsChange={handleApplicantsChange} onApplyButtonAvailable={handleApplyBtnAccessible} />
-              </>}
+                  onModalOpenChange={handleModalOpenChange} onApplicantOut={handleApplicantOut} onNewApplicant={handleNewApplicant} onApplicantStatus={handleApplicantStatus} />
+              </>
+            }
             <Typography variant="h4">지금까지 {applicants}명이 신청했어요!</Typography>
           </Grid>
         </Grid>
@@ -261,4 +299,5 @@ const RecruitDetails = () => {
     <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>
   );
 }
+
 export default RecruitDetails;
