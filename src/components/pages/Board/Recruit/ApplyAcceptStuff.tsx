@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControlLabel, FormGroup, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
+import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
@@ -166,25 +166,35 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const applicationCheckbox = () => {
         if (props.optionalContext ?? false)
             return (
-                <FormGroup sx={{ p: 2 }}>
-                    <Typography variant="subtitle1">
-                        {props.requireContext}
-                    </Typography>
-                    <FormControlLabel control={<Checkbox required onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" />} label="필수사항" labelPlacement="start" />
-                    <Typography variant="subtitle1">
-                        {props.optionalContext}
-                    </Typography>
-                    <FormControlLabel control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
-                </FormGroup>
+                <>
+                    <FormControl required error={!isMeetRequired}>
+                        <FormGroup sx={{ p: 2 }}>
+                            <Typography variant="subtitle1">
+                                {props.requireContext}
+                            </Typography>
+                            <FormControlLabel control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수사항" labelPlacement="start" />
+                            <Typography variant="subtitle1">
+                                {props.optionalContext}
+                            </Typography>
+                            <FormControlLabel control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
+                        </FormGroup>
+                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                    </FormControl >
+                </>
             );
         else
             return (
-                <FormGroup sx={{ p: 2 }}>
-                    <Typography variant="subtitle1">
-                        {props.requireContext}
-                    </Typography>
-                    <FormControlLabel control={<Checkbox required onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} size="small" />} label="필수사항" labelPlacement="start" />
-                </FormGroup>
+                <>
+                    <FormControl required error={!isMeetRequired}>
+                        <FormGroup sx={{ p: 2 }}>
+                            <Typography variant="subtitle1">
+                                {props.requireContext}
+                            </Typography>
+                            <FormControlLabel control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수사항" labelPlacement="start" />
+                        </FormGroup>
+                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                    </FormControl >
+                </>
             );
     }
 
