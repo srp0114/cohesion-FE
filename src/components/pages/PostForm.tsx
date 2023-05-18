@@ -31,6 +31,7 @@ const PostForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [selectedFiles, setSeletedFiles] = useState<File[]>([]);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -94,6 +95,7 @@ const PostForm = () => {
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
+    setSeletedFiles(fileArray);
 
     fileArray.forEach((file) => {
       fileList.push(file);
@@ -110,36 +112,47 @@ const PostForm = () => {
     const request_qna = {
       title: title,
       content: content,
-      point: point,
       language: skill,
     };
 
     const request_recruit = {
-      title,
-      content,
-      required,
-      optional,
-      party,
-      gathered
-    }
+      title : title,
+      content : content,
+      required : required,
+      optional : optional,
+      party : party,
+      gathered : gathered,
+    };
 
     const qna_formData = new FormData();
+    const free_formData = new FormData();
+    const recruit_formData = new FormData();
 
-    fileList.forEach((file) => {
-      qna_formData.append("multipartFiles", file);
+    selectedFiles.forEach((file)=>{
+      free_formData.append("file",file);
+    })
+
+    selectedFiles.forEach((file) => {
+      qna_formData.append("file", file);
     });
 
+    selectedFiles.forEach((file)=>{
+      recruit_formData.append("file",file);
+    })
+
+    free_formData.append("stringFree",JSON.stringify(request_data));
     qna_formData.append("stringQna", JSON.stringify(request_qna));
+    recruit_formData.append("stringRecruit",JSON.stringify(request_recruit));
 
     if (boardType === BoardType.free) {
       // 자유 게시판인 경우
-      axios({
-        method: "post",
-        url: `/api/${boardType}`,
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(request_data),
-      })
-        .then((res) => {
+      if(selectedFiles.length>0){
+        axios({
+          method : "post",
+          url : `/api/free`,
+          headers : {"Content-Type" : "multipart/form-data"},
+          data : free_formData,
+        }).then((res) => {
           if (res.status === 200) {
             <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
               <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
@@ -148,18 +161,19 @@ const PostForm = () => {
             </Snackbar>
             nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
+        }).catch((err) => {
+              console.log(err);
+              if(err.response.status==413){
+                alert("파일 용량이 큽니다!!");
+              }
+            });
+      }else{
+        axios({
+          method: "post",
+          url: `/api/${boardType}/no-file`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_data),
         })
-        .catch((err) => console.log(err));
-    } else if (boardType === BoardType.question) {
-      // Q&A 게시판인 경우
-      //if (hasUserPoint >= point) {
-        if (fileList.length > 0) {
-          axios({
-            method: "post",
-            url: "/api/questions",
-            headers: { "Content-Type": "multipart/form-data" },
-            data: JSON.stringify(qna_formData),
-          })
             .then((res) => {
               if (res.status === 200) {
                 <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
@@ -167,16 +181,40 @@ const PostForm = () => {
                     게시되었습니다.
                   </Alert>
                 </Snackbar>
-                window.location.href = `/${boardType}`;
+                nav(`/${boardType}/${res.data}`)
               } // 응답(401, 403 등) 핸들링 ...
             })
             .catch((err) => {
-              if (err.response.status === 401) {
-                console.log("로그인 x");
-              } else if (err.response.status === 403) {
-                console.log("권한 x");
-              }
+              console.log(err);
             });
+      }
+
+    } else if (boardType === BoardType.question) {
+      // Q&A 게시판인 경우
+        if (selectedFiles.length > 0) {
+          axios({
+            method : "post",
+            url : "/api/questions",
+            headers:{"Content-Type" : "multipart/form-data"},
+            data : qna_formData
+          }).then((res)=>{
+                if (res.status === 200) {
+                  <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                      게시되었습니다.
+                    </Alert>
+                  </Snackbar>
+                  nav(`/${boardType}/${res.data}`);
+                } // 응답(401, 403 등) 핸들링 ...
+          }) .catch((err) => {
+            if (err.response.status === 401) {
+              console.log("로그인 x");
+            } else if (err.response.status === 403) {
+              console.log("권한 x");
+            }else if(err.response.status === 413){
+              alert("파일 용량이 큽니다!!");
+            }
+          });
         } else {
           axios({
             method: "post",
@@ -198,29 +236,51 @@ const PostForm = () => {
               }
             });
         }
-      } /*else {
-        alert("보유하신 포인트가 제시한 포인트보다 적습니다.");
-        window.location.reload();
-      }
-    }*/ else if (boardType === BoardType.recruit) {
+      } else if (boardType === BoardType.recruit) {
       // 구인 게시판인 경우
-      axios({
-        method: "post",
-        url: `/api/${boardType}`,
-        headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(request_recruit),
-      })
-        .then((res) => {
+      if(selectedFiles.length>0){
+        axios({
+          method : "post",
+          url : `/api/recruit`,
+          headers : {"Content-Type" : "multipart/form-data"},
+          data : recruit_formData,
+        }).then((res)=>{
           if (res.status === 200) {
             <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
               <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
                 게시되었습니다.
               </Alert>
             </Snackbar>
-            nav(`/${boardType}/${res.data}`)
+            nav(`/${boardType}/${res.data}`);
           } // 응답(401, 403 등) 핸들링 ...
+        }) .catch((err) => {
+          if (err.response.status === 401) {
+            console.log("로그인 x");
+          } else if (err.response.status === 403) {
+            console.log("권한 x");
+          } else if(err.response.status===413){
+            alert("파일 용량이 큽니다!!!");
+          }
+        });
+      }else{
+        axios({
+          method: "post",
+          url: `/api/${boardType}/no-file`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_recruit),
         })
-        .catch((err) => console.log(err));
+            .then((res) => {
+              if (res.status === 200) {
+                <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    게시되었습니다.
+                  </Alert>
+                </Snackbar>
+                nav(`/${boardType}/${res.data}`)
+              } // 응답(401, 403 등) 핸들링 ...
+            })
+            .catch((err) => console.log(err));
+      }
     }
     setOpen(true);
     return (
