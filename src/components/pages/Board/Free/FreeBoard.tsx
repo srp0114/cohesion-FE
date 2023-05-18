@@ -10,6 +10,7 @@ import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { shortenContent } from "../QnA/QnABoard";
 import { BoardSkeleton } from "../../../layout/Skeletons";
+import SearchField from "../../../layout/SearchField";
 
 //자유게시판 페이지 인터페이스
 export interface FreeBoardItems {
@@ -89,6 +90,9 @@ const FreeBoard = () => {
           </Typography>
 
           {displayPosting}
+          <Box display={"flex"} justifyContent={"flex-end"}>
+            <SearchField/>
+          </Box>
           <PaginationControl
             page={page}
             between={1}
@@ -96,7 +100,9 @@ const FreeBoard = () => {
             limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
-          /><WritingButton /></Box>
+          />
+          <WritingButton />
+          </Box>
       )
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
