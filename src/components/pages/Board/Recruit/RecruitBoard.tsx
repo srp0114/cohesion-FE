@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterPosting from "../../../layout/FilterPosting";
 import Time from "../../../layout/Time";
 import {
@@ -32,6 +32,7 @@ import Profile from "../../../layout/Profile";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import { Application } from "./ApplyAcceptStuff";
 import SearchBoardField from "../../../layout/SearchBoardField";
+import SortBoard from "../../../layout/SortBoard";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -62,9 +63,10 @@ const RecruitBoard: React.FC = () => {
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
   const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
-  const [page, setPage] = useState(1);
   const [total, setTotal] = useState<number>(0);
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = searchParams.get('page');
+  const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
   useEffect(() => {
@@ -84,19 +86,32 @@ const RecruitBoard: React.FC = () => {
 
   }, [])
 
-  useEffect(() => {
+  const getBoardItems = (sort:string) => {
     const curPage = page - 1;
+    const params = { size: 4, sort: sort };
+
+    setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: "/api/recruit/list?page=" + curPage + "&size=6",
+      url: `/api/recruit/list?page=${curPage}`,
+      params: params
     })
-      .then((res) => {
+    .then((res) => {
+      if (res.status === 200) {
         setBoardItems(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      }
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
+        console.log("권한 x");
+      }
+    });
+  }
 
+  useEffect(() => {
+    getBoardItems("createdAt,desc");
   }, [page])
 
   const performSearch = (search : string) => {
@@ -124,12 +139,16 @@ const RecruitBoard: React.FC = () => {
   return (
     <>
       <Box>
+        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
         <Typography
           variant="h2"
-          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
+          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 800 }}
         >
           모집게시판
         </Typography>
+          <SortBoard setBoardSort={getBoardItems}/>
+        </Box>
+
         <FilterPosting />
         <Box sx={{ flexGrow: 1 }}>
           <Grid
