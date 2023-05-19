@@ -262,24 +262,6 @@ const PostForm = () => {
             alert("파일 용량이 큽니다!!!");
           }
         });
-      }else{
-        axios({
-          method: "post",
-          url: `/api/${boardType}/no-file`,
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_recruit),
-        })
-            .then((res) => {
-              if (res.status === 200) {
-                <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                    게시되었습니다.
-                  </Alert>
-                </Snackbar>
-                nav(`/${boardType}/${res.data}`)
-              } // 응답(401, 403 등) 핸들링 ...
-            })
-            .catch((err) => console.log(err));
       }
     }
     setOpen(true);
@@ -320,7 +302,6 @@ const PostForm = () => {
                   </MenuItem>
                   <MenuItem value={BoardType.question}>Q&A게시판</MenuItem>
                   <MenuItem value={BoardType.recruit}>구인게시판</MenuItem>
-                  <MenuItem value={BoardType.notice}>공지사항</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
