@@ -18,10 +18,10 @@ import NotFound from "./components/pages/NotFound";
 import Layout from "./components/layout/Layout";
 import AdminPage from "./components/pages/AdminPage";
 import PostNoticeForm from "./components/pages/PostNoticeForm";
+import Search from "./components/pages/Search";
 
 function App() {
   return (
-    // maxWidth 사이즈 조정
     <Container maxWidth="xl">
       <Routes>
         {/*레이아웃 미적용 컴포넌트*/}
@@ -43,6 +43,7 @@ function App() {
           <Route path="recruit/:id" element={<RecruitDetails />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="notice" element={<Notice />} />
+          <Route path="search" element={<Search />}/>
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
