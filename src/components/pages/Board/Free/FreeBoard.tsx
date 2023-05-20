@@ -115,7 +115,7 @@ const FreeBoard = () => {
           <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography
               variant="h2" 
-              sx={{ fontWeight: 800 }}>
+              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
               자유게시판
             </Typography>
             <SortBoard setBoardSort={getBoardItems}/>
@@ -157,7 +157,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
   return (
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
-      borderRadius: "50px",
+      borderRadius: "35px",
       border: "0.5px solid black",
       "&:hover": {
         boxShadow: 5,
@@ -209,5 +209,3 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
 };
 
 export default FreeBoard;
-
-

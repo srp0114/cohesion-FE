@@ -149,17 +149,12 @@ const QnABaord = () => {
       {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
         <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography
-              variant="h2" 
-              sx={{ fontWeight: 800 }}>
+              variant="h2"
+              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
               Q&A게시판
             </Typography>
             <SortBoard setBoardSort={getBoardItems}/>
           </Box>
-
-        {/* 조회수 높은 게시물 */}
-        <MostViewedPost
-          data={mostViewedItems} // mostViewedItems 를 props 로 전달
-        />
 
         {displayPosting}
         <Box display={"flex"} justifyContent={"flex-end"}>
@@ -206,7 +201,7 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
   return (
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
-      borderRadius: "50px",
+      borderRadius: "35px",
       border: "0.5px solid black",
       "&:hover": {
         boxShadow: 5,
