@@ -7,13 +7,14 @@ const SearchField = () => {
     const [searchInput, setSearchInput] = useState<string>("");
     const [showField, setShowField] = useState<boolean>(false);
     const containerRef = useRef(null);
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const handleSearch = () => {
         if (showField && searchInput.trim() !== "") {
-            searchParams.set("query", searchInput);
+            setSearchParams({query: searchInput});
             navigate(`/search?query=${searchInput}`);
+            window.location.reload();
         } else {
             setShowField(true);
         }
@@ -23,6 +24,7 @@ const SearchField = () => {
         if (event.key === 'Enter' && searchInput.trim() !== "") {
             searchParams.set("query", searchInput);
             navigate(`/search?query=${searchInput}`);
+            window.location.reload();
         }
     };
 

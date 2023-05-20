@@ -76,9 +76,6 @@ const Search = () => {
                       </Stack>
                     </Grid>
                     <Grid item>
-                      <div dangerouslySetInnerHTML={{ __html: shortenContent(posting.content, 15) }} />
-                    </Grid>
-                    <Grid item>
                       {userInfo(posting.writer, posting.stuId, posting.profileImg)}
                     </Grid>
                   </Grid>

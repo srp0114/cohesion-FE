@@ -88,7 +88,7 @@ const RecruitBoard: React.FC = () => {
 
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
-    const params = { size: 4, sort: sort };
+    const params = { size: 6, sort: sort };
 
     setSearchParams({page: page.toString()})
     axios({
