@@ -36,18 +36,6 @@ const FreeBoard = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/free/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      })
-  }, [])
-
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 4, sort: sort };
@@ -60,7 +48,8 @@ const FreeBoard = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setFreeData(res.data);
+        setFreeData(res.data.data);
+        setTotal(res.data.count);
       }
     })
     .catch((err) => {
@@ -90,7 +79,8 @@ const FreeBoard = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setFreeData(res.data);
+          setFreeData(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {

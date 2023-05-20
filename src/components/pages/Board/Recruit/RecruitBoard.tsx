@@ -70,20 +70,9 @@ const RecruitBoard: React.FC = () => {
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/recruit/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      });
-
     getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
-
   }, [])
 
   const getBoardItems = (sort:string) => {
@@ -98,7 +87,8 @@ const RecruitBoard: React.FC = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setBoardItems(res.data);
+        setBoardItems(res.data.data);
+        setTotal(res.data.count)
       }
     })
     .catch((err) => {
@@ -121,7 +111,8 @@ const RecruitBoard: React.FC = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setBoardItems(res.data);
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {

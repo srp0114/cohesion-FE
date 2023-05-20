@@ -60,19 +60,6 @@ const QnABaord = () => {
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/questions/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      })
-  }, [])
-
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 4, sort: sort };
@@ -85,7 +72,8 @@ const QnABaord = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setBoardItems(res.data);
+        setBoardItems(res.data.data);
+        setTotal(res.data.count);
       }
     })
     .catch((err) => {
@@ -128,7 +116,8 @@ const QnABaord = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setBoardItems(res.data);
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {
