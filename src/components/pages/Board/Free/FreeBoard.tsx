@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import Time from "../../../layout/Time";
 import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
@@ -10,6 +10,8 @@ import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { shortenContent } from "../QnA/QnABoard";
 import { BoardSkeleton } from "../../../layout/Skeletons";
+import SearchBoardField from "../../../layout/SearchBoardField";
+import SortBoard from "../../../layout/SortBoard";
 
 //자유게시판 페이지 인터페이스
 export interface FreeBoardItems {
@@ -28,9 +30,11 @@ export interface FreeBoardItems {
 }
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = searchParams.get('page');
+  const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
   useEffect(() => {
     axios({
@@ -44,12 +48,45 @@ const FreeBoard = () => {
       })
   }, [])
 
-  useEffect(() => {
-    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
+  const getBoardItems = (sort:string) => {
     const curPage = page - 1;
+    const params = { size: 4, sort: sort };
+
+    setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: "/api/free/list?page=" + curPage + "&size=4",
+      url: `/api/free/list?page=${curPage}`,
+      params: params
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        setFreeData(res.data);
+      }
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
+        console.log("권한 x");
+      }
+    });
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    getBoardItems("createdAt,desc");
+  }, [page]);
+
+
+  useEffect(() => {
+    setLoading(true); //freeData 상태가 변할 때 게시글 목록
+  }, [freeData]);
+
+  const performSearch = (search : string) => {
+    axios({
+      method: "get",
+      url: `/api/free/list?search=${search}&page=0&size=4`,
+
     })
       .then((res) => {
         if (res.status === 200) {
@@ -57,17 +94,9 @@ const FreeBoard = () => {
         }
       })
       .catch((err) => {
-        if (err.response.status === 401) {
-          console.log("로그인 x");
-        } else if (err.response.status === 403) {
-          console.log("권한 x");
-        }
-      });
-  }, [page]);
-
-  useEffect(() => {
-    setLoading(true); //freeData 상태가 변할 때 게시글 목록
-  }, [freeData]);
+        console.log(err);
+      })
+  }
 
   const displayPosting = freeData.map((element, idx) => {
     return (
@@ -83,12 +112,19 @@ const FreeBoard = () => {
     {
       loading ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-          <Typography
-            variant="h5" >
-            자유게시판
-          </Typography>
+          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+            <Typography
+              variant="h2" 
+              sx={{ fontWeight: 800 }}>
+              자유게시판
+            </Typography>
+            <SortBoard setBoardSort={getBoardItems}/>
+          </Box>
 
           {displayPosting}
+          <Box display={"flex"} justifyContent={"flex-end"}>
+            <SearchBoardField setSearchAPI={performSearch}/>
+          </Box>
           <PaginationControl
             page={page}
             between={1}
@@ -96,7 +132,9 @@ const FreeBoard = () => {
             limit={4}
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
-          /><WritingButton /></Box>
+          />
+          <WritingButton />
+          </Box>
       )
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
@@ -117,7 +155,6 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
   };
 
   return (
-
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
       borderRadius: "50px",

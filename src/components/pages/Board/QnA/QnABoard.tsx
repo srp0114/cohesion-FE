@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
 import MostViewedPost from "../../../layout/MostViewedPost";
@@ -11,7 +11,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { BoardSkeleton } from "../../../layout/Skeletons";
-// BoardItems 인터페이스
+import SearchBoardField from "../../../layout/SearchBoardField";
+import SortBoard from "../../../layout/SortBoard";
+
 export interface BoardItems {
   id: number;
   title: string;
@@ -52,8 +54,10 @@ const QnABaord = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
   const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
-  const [page, setPage] = useState(1);
   const [total, setTotal] = useState<number>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = searchParams.get('page');
+  const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
   const navigate = useNavigate();
 
@@ -69,25 +73,33 @@ const QnABaord = () => {
       })
   }, [])
 
-  useEffect(() => {
-    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
-    //목록 조회 부분
+  const getBoardItems = (sort:string) => {
     const curPage = page - 1;
+    const params = { size: 4, sort: sort };
+
+    setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: "/api/questions/list?page=" + curPage + "&size=4",
+      url: `/api/questions/list?page=${curPage}`,
+      params: params
     })
-      .then((res) => {
+    .then((res) => {
+      if (res.status === 200) {
         setBoardItems(res.data);
-        console.log(`get을 받아온 Q&A게시판: ${JSON.stringify(res.data)}`);
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          console.log("로그인 x");
-        } else if (err.response.status === 403) {
-          console.log("권한 x");
-        }
-      });
+      }
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
+        console.log("권한 x");
+      }
+    });
+  }
+
+  useEffect(() => {
+    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
+    getBoardItems("createdAt,desc");
   }, [page]);
 
   useEffect(() => {
@@ -109,6 +121,21 @@ const QnABaord = () => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
   }, [boardItems]);
 
+  const performSearch = (search : string) => {
+    axios({
+      method: "get",
+      url: `/api/questions/list?search=${search}&page=0&size=4`,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
   const displayPosting = boardItems.map((element, idx) => {
     return (
       <>
@@ -120,10 +147,14 @@ const QnABaord = () => {
   return (
     <>
       {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-        <Typography
-          variant="h5" >
-          Q&A게시판
-        </Typography>
+        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+            <Typography
+              variant="h2" 
+              sx={{ fontWeight: 800 }}>
+              Q&A게시판
+            </Typography>
+            <SortBoard setBoardSort={getBoardItems}/>
+          </Box>
 
         {/* 조회수 높은 게시물 */}
         <MostViewedPost
@@ -131,6 +162,9 @@ const QnABaord = () => {
         />
 
         {displayPosting}
+        <Box display={"flex"} justifyContent={"flex-end"}>
+          <SearchBoardField setSearchAPI={performSearch}/>
+        </Box>
         <PaginationControl
           page={page}
           between={1}
