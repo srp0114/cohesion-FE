@@ -262,6 +262,30 @@ const PostForm = () => {
             alert("파일 용량이 큽니다!!!");
           }
         });
+      }else{
+        axios({
+          method : "post",
+          url : `/api/recruit/no-file`,
+          headers : {"Content-Type" : "application/json"},
+          data : JSON.stringify(request_recruit)
+        }).then((res)=>{
+          if(res.status===200){
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
+            nav(`/${boardType}/${res.data}`);
+          }
+        }).catch((err)=>{
+          if (err.response.status === 401) {
+            console.log("로그인 x");
+          } else if (err.response.status === 403) {
+            console.log("권한 x");
+          } else if(err.response.status===413){
+            alert("파일 용량이 큽니다!!!");
+          }
+        })
       }
     }
     setOpen(true);
