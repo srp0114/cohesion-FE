@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FilterPosting from "../../../layout/FilterPosting";
 import Time from "../../../layout/Time";
 import {
   Avatar,
@@ -21,18 +20,18 @@ import {
   createTheme,
   useTheme,
 } from "@mui/material/styles";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import Profile from "../../../layout/Profile";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
-import { Application } from "./ApplyAcceptStuff";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
+import { shortenContent } from "../QnA/QnABoard";
+
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -75,36 +74,36 @@ const RecruitBoard: React.FC = () => {
       .catch(err => console.log(err));
   }, [])
 
-  const getBoardItems = (sort:string) => {
+  const getBoardItems = (sort: string) => {
     const curPage = page - 1;
     const params = { size: 9, sort: sort };
 
-    setSearchParams({page: page.toString()})
+    setSearchParams({ page: page.toString() })
     axios({
       method: "get",
       url: `/api/recruit/list?page=${curPage}`,
       params: params
     })
-    .then((res) => {
-      if (res.status === 200) {
-        setBoardItems(res.data.data);
-        setTotal(res.data.count)
-      }
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
-        console.log("권한 x");
-      }
-    });
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data.data);
+          setTotal(res.data.count)
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
   }
 
   useEffect(() => {
     getBoardItems("createdAt,desc");
   }, [page])
 
-  const performSearch = (search : string) => {
+  const performSearch = (search: string) => {
     axios({
       method: "get",
       url: `/api/recruit/list?search=${search}&page=0&size=4`,
@@ -121,7 +120,7 @@ const RecruitBoard: React.FC = () => {
   }
 
   const displayPosting = boardItems.map((element, idx) => (
-    <Grid lg={4}>
+    <Grid xs={12} md={6} lg={4}>
       <RecruitCard {...element} key={idx} />
       <Typography>{element.isCompleted}</Typography>
     </Grid>
@@ -130,17 +129,15 @@ const RecruitBoard: React.FC = () => {
   return (
     <>
       <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-        <Typography
-          variant="h2"
-          sx={{ mb: 5, pl: 3, fontWeight: 800 }}
-        >
-          모집게시판
-        </Typography>
-          <SortBoard setBoardSort={getBoardItems}/>
+        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
+          <Typography
+            variant="h2"
+            sx={{ mb: 5, pl: 3, fontWeight: 800 }}
+          >
+            모집게시판
+          </Typography>
+          <SortBoard setBoardSort={getBoardItems} />
         </Box>
-
-        <FilterPosting />
         <Box sx={{ flexGrow: 1 }}>
           <Grid
             container
@@ -151,18 +148,18 @@ const RecruitBoard: React.FC = () => {
             {displayPosting}
           </Grid>
         </Box>
+        <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
+          <SearchBoardField setSearchAPI={performSearch} />
+        </Box>
+        <PaginationControl
+          page={page}
+          between={1}
+          total={total}
+          limit={9}
+          changePage={(page: React.SetStateAction<number>) => setPage(page)}
+          ellipsis={1}
+        />
       </Box>
-      <Box display={"flex"} justifyContent={"flex-end"}>
-        <SearchBoardField setSearchAPI={performSearch}/>
-      </Box>
-      <PaginationControl
-        page={page}
-        between={1}
-        total={total}
-        limit={9}
-        changePage={(page: React.SetStateAction<number>) => setPage(page)}
-        ellipsis={1}
-      />
       <WritingButton />
     </>
   );
@@ -198,11 +195,11 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         styleOverrides: {
           //css 설정, rule네임에 따라
           root: { //모집 완료된 게시글은 배경색이 palette.neutral(회색)
-            backgroundColor: (!props.isCompleted) ? _theme.palette.background : _theme.palette.neutral,
+            backgroundColor: (!props.isCompleted) ? _theme.palette.background : "#dddddd",
             boxShadow: "none",
-            border: (!props.isCompleted) ? `1px solid ${_theme.palette.info.main}` : `1px solid ${_theme.palette.warning.main}`,
+            border: (!props.isCompleted) ? `1px solid black` : `1px solid ${_theme.palette.neutral.main}`,
             borderRadius: "35px",
-            padding: "0 10px 10px",
+            padding: "2rem",
             height: "100%",
           },
         },
@@ -211,15 +208,15 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         styleOverrides: {
           root: {
             margin: 0,
-            paddingBottom: 0,
+            padding: 0,
           },
           title: {
             fontSize: "1.25rem",
             fontWeight: 500,
-            color: (!props.isCompleted) ? _theme.palette.primary.main : _theme.palette.warning.main,
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
           },
           subheader: {
-            color: (!props.isCompleted) ? _theme.palette.secondary.main : _theme.palette.warning.main,
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
           },
         },
       },
@@ -227,7 +224,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         styleOverrides: {
           root: {
             fontSize: "1rem",
-            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.warning.main,
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
             paddingTop: 0,
           },
         },
@@ -238,7 +235,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         },
         styleOverrides: {
           root: {
-            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.warning.main,
+            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.neutral.main,
           },
           spacing: {
             disableSpacing: true,
@@ -250,65 +247,69 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         defaultProps: {
           disableRipple: true, //버튼 누를 때의 효과 잔물결 효과 사라짐.
         },
+        styleOverrides: {
+          focusHighlight: {
+            background: _theme.palette.background,
+          },
+        },
       },
-    },
+    }
   });
 
   return (
     <ThemeProvider theme={_recruitTheme}>
-      <Card>
+      <Card onClick={() => goToPost(props.id)} sx={{
+        '&:hover': {
+          boxShadow: 5,
+          pointer: "cursor"
+        },
+      }}>
+
         <CardHeader
+          /*제목(20자까지)이랑 수정 표시*/
+          title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>{props.title}</Typography>
+            {/* 몇 명 모집 중인지 */}
+
+          </Stack>}
+          /* 작성 시간 */
           subheader={
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Time date={props.createdDate} variant="h6" />
             </div>
           }
         />
-        <CardActionArea onClick={() => goToPost(props.id)}>
 
-          <CardHeader
-            title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-              <Typography variant="h5">{props.title}</Typography>
+        <Box sx={{ height: "10rem", alignContent: "flex-start", justifyContent: "center" }}>
+          {/* 필수, 우대 조건 */}
+          <CardHeader subheader="필수 조건" titleTypographyProps="h6" sx={{ color: _theme.palette.primary.main }} />
+          <CardContent sx={{ fontSize: "1rem", color: _theme.palette.primary.main }}>{shortenContent(`${props.require}`, 30)}</CardContent>
+
+          {props.optional ? <><CardHeader subheader="우대 조건" titleTypographyProps="h5" />
+            <CardContent sx={{ fontSize: "1rem" }}>{shortenContent(`${props.optional}`, 30)}</CardContent></> : null}
+        </Box>
+
+        {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          {(remain === 0 || props.isCompleted) ?
+            <Typography variant="h6" sx={{ color: _theme.palette.neutral.main }}>"모집 마감"</Typography>
+            : <Typography variant="h6" sx={{ color: _theme.palette.primary.main }}>{remain}명 모집 중</Typography>}
+          {reply_bookmark_views_recruit(props)}
+        </Box>
+
+        <CardHeader
+          /* 작성자 프로필, 닉네임, 학번, 수정됌 표시 */
+          subheader={
+            <Stack direction="row">
+              <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
+              <Typography variant="overline">
+                {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
+              </Typography>
               {(typeof props.modifiedDate === 'object') ?
-                null : <Chip label="modified" size="small" variant="outlined" color="error" />}
-            </Stack>}
-            subheader={
-              <Stack direction="row">
-                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
-                <Typography variant="overline">
-                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
-                </Typography>
-              </Stack>
-            }
-          />
-          <CardHeader subheader="필수 조건" />
-          <CardContent>{props.require}</CardContent>
-          {props.optional && <CardHeader subheader="우대 조건" />}
-          <CardContent>{props.optional}</CardContent>
-        </CardActionArea>
+                null : <Chip label="modified" size="small" variant="outlined" sx={{ marginLeft: "1rem" }} />}
+            </Stack>
+          } />
 
-        <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack direction="row">
-            <IconButton
-              size="small"
-              disableFocusRipple={true}
-              disableRipple={true}
-            >
-              <Person2OutlinedIcon /> {props.views}
-            </IconButton>
-            <IconButton size="small">
-              <BookmarkIcon /> {props.bookmark}
-            </IconButton>
-            <IconButton size="small">
-              <ChatIcon /> {props.reply}
-            </IconButton>
-          </Stack>
-          <Box>
-            <Typography variant="h5">
-              {(remain === 0 || props.isCompleted) ? "모집 마감" : `${remain}명 모집 중`}
-            </Typography>
-          </Box>
-        </CardActions>
       </Card>
     </ThemeProvider >
   );
