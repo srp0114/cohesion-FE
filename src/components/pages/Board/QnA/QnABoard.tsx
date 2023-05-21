@@ -60,19 +60,6 @@ const QnABaord = () => {
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/questions/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      })
-  }, [])
-
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 4, sort: sort };
@@ -85,7 +72,8 @@ const QnABaord = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setBoardItems(res.data);
+        setBoardItems(res.data.data);
+        setTotal(res.data.count);
       }
     })
     .catch((err) => {
@@ -128,7 +116,8 @@ const QnABaord = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setBoardItems(res.data);
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {
@@ -149,17 +138,12 @@ const QnABaord = () => {
       {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
         <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography
-              variant="h2" 
-              sx={{ fontWeight: 800 }}>
+              variant="h2"
+              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
               Q&A게시판
             </Typography>
             <SortBoard setBoardSort={getBoardItems}/>
           </Box>
-
-        {/* 조회수 높은 게시물 */}
-        <MostViewedPost
-          data={mostViewedItems} // mostViewedItems 를 props 로 전달
-        />
 
         {displayPosting}
         <Box display={"flex"} justifyContent={"flex-end"}>
@@ -206,7 +190,7 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (
   return (
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
-      borderRadius: "50px",
+      borderRadius: "35px",
       border: "0.5px solid black",
       "&:hover": {
         boxShadow: 5,

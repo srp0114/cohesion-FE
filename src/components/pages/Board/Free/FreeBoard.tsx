@@ -36,18 +36,6 @@ const FreeBoard = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/free/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      })
-  }, [])
-
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 4, sort: sort };
@@ -60,7 +48,8 @@ const FreeBoard = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setFreeData(res.data);
+        setFreeData(res.data.data);
+        setTotal(res.data.count);
       }
     })
     .catch((err) => {
@@ -90,7 +79,8 @@ const FreeBoard = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setFreeData(res.data);
+          setFreeData(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {
@@ -115,7 +105,7 @@ const FreeBoard = () => {
           <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography
               variant="h2" 
-              sx={{ fontWeight: 800 }}>
+              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
               자유게시판
             </Typography>
             <SortBoard setBoardSort={getBoardItems}/>
@@ -157,7 +147,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
   return (
     <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
       bgcolor: "background.paper",
-      borderRadius: "50px",
+      borderRadius: "35px",
       border: "0.5px solid black",
       "&:hover": {
         boxShadow: 5,
@@ -209,5 +199,3 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
 };
 
 export default FreeBoard;
-
-

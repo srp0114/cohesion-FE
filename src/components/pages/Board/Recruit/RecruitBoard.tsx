@@ -70,25 +70,14 @@ const RecruitBoard: React.FC = () => {
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/recruit/total"
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotal(res.data);
-        }
-      });
-
     getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
-
   }, [])
 
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
-    const params = { size: 6, sort: sort };
+    const params = { size: 9, sort: sort };
 
     setSearchParams({page: page.toString()})
     axios({
@@ -98,7 +87,8 @@ const RecruitBoard: React.FC = () => {
     })
     .then((res) => {
       if (res.status === 200) {
-        setBoardItems(res.data);
+        setBoardItems(res.data.data);
+        setTotal(res.data.count)
       }
     })
     .catch((err) => {
@@ -121,7 +111,8 @@ const RecruitBoard: React.FC = () => {
     })
       .then((res) => {
         if (res.status === 200) {
-          setBoardItems(res.data);
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
         }
       })
       .catch((err) => {
@@ -138,11 +129,11 @@ const RecruitBoard: React.FC = () => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
         <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
         <Typography
           variant="h2"
-          sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 800 }}
+          sx={{ mb: 5, pl: 3, fontWeight: 800 }}
         >
           모집게시판
         </Typography>
@@ -168,7 +159,7 @@ const RecruitBoard: React.FC = () => {
         page={page}
         between={1}
         total={total}
-        limit={6}
+        limit={9}
         changePage={(page: React.SetStateAction<number>) => setPage(page)}
         ellipsis={1}
       />
@@ -210,7 +201,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             backgroundColor: (!props.isCompleted) ? _theme.palette.background : _theme.palette.neutral,
             boxShadow: "none",
             border: (!props.isCompleted) ? `1px solid ${_theme.palette.info.main}` : `1px solid ${_theme.palette.warning.main}`,
-            borderRadius: "20px",
+            borderRadius: "35px",
             padding: "0 10px 10px",
             height: "100%",
           },
