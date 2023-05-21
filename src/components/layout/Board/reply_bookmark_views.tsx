@@ -10,15 +10,9 @@ import { BoardItems } from "../../pages/Board/QnA/QnABoard";
 export function reply_bookmark_views(props: FreeBoardItems| BoardItems | RecruitBoardItems) {
   return <Stack direction="row"
     spacing={"0.75rem"}
-    sx={{ display: "flex", justifyContent: "flex-end" }}>
-    <IconButton size="small">
+    sx={{ display: "flex", justifyContent: "flex-end" }} alignItems={"center"}>
       <ChatIcon /> {props.reply}
-    </IconButton>
-    <IconButton size="small">
       <BookmarkIcon /> {props.bookmark}
-    </IconButton>
-    <IconButton size="small">
       <Visibility /> {props.views}
-    </IconButton>
   </Stack>;
 }

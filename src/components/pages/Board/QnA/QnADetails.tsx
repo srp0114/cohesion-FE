@@ -65,7 +65,6 @@ const QnADetails = () => {
       url: `/api/questions/return/user-id/${id}`
     }).then((res) => {
       if (res.status === 200) {
-        console.log(res)
         setWriterId(res.data);
       }
     }).catch((err) => {
@@ -140,13 +139,6 @@ const QnADetails = () => {
             dangerouslySetInnerHTML={{ __html: postItem.content }}
           />
         </div>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Stack direction="row" spacing={0.5} sx={{ display: "flex", justifyContent: "start", alignItems:"center", ml:"1rem"}}>
-            <Typography variant="h4">채택 시</Typography>
-            <Money sx={{ color: "#ffcf40" }}/>
-            <Typography variant="h4">{postItem.point}</Typography>
-          </Stack>
         </Grid>
       </Grid>
       <Reply board={"questions"} writerId={writerId} postingId={id} />

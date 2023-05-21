@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
-import MostViewedPost from "../../../layout/MostViewedPost";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -28,15 +27,7 @@ export interface BoardItems {
   views: number; //조회수
   profileImg: string | null; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
-}
-
-// MostViewedItems 인터페이스
-export interface MostViewedItems {
-  id: number;
-  title: string;
-  writer: string;
-  language?: string;
-  point: number;
+  image: {imageUrl: string}[];
 }
 
 export const shortenContent = (str: string, length = 200) => {
@@ -50,19 +41,17 @@ export const shortenContent = (str: string, length = 200) => {
   return content;
 };
 
-const QnABaord = () => {
+const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
-  const [mostViewedItems, setMostViewedItems] = useState<MostViewedItems[]>([]); // 인터페이스로 state 타입 지정
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  const navigate = useNavigate();
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
-    const params = { size: 4, sort: sort };
+    const params = { size: 5, sort: sort };
 
     setSearchParams({page: page.toString()})
     axios({
@@ -84,26 +73,10 @@ const QnABaord = () => {
       }
     });
   }
-
   useEffect(() => {
     setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
     getBoardItems("createdAt,desc");
   }, [page]);
-
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: "/api/questions/most",
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setMostViewedItems(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   useEffect(() => {
     setLoading(true); //boardItems 상태가 변할 때 게시글 목록
@@ -135,29 +108,26 @@ const QnABaord = () => {
 
   return (
     <>
-      {loading ? (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-            <Typography
-              variant="h2"
-              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
-              Q&A게시판
-            </Typography>
+      {loading ? (
+      <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
+            <Typography variant="h2" sx={{ fontWeight: 800 }}>Q&A게시판</Typography>
             <SortBoard setBoardSort={getBoardItems}/>
+          </Stack>
+          {displayPosting}
+          <Box display={"flex"} justifyContent={"flex-end"}>
+            <SearchBoardField setSearchAPI={performSearch}/>
           </Box>
-
-        {displayPosting}
-        <Box display={"flex"} justifyContent={"flex-end"}>
-          <SearchBoardField setSearchAPI={performSearch}/>
-        </Box>
-        <PaginationControl
-          page={page}
-          between={1}
-          total={total}
-          limit={4}
-          changePage={(page: React.SetStateAction<number>) => setPage(page)}
-          ellipsis={1}
-        /><WritingButton /></Box>)
-
+          <PaginationControl
+            page={page}
+            between={1}
+            total={total}
+            limit={5}
+            changePage={(page: React.SetStateAction<number>) => setPage(page)}
+            ellipsis={1}
+          />
+          <WritingButton />
+        </Stack>)
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
           <WritingButton />
@@ -167,78 +137,95 @@ const QnABaord = () => {
 
 }
 
-const PreviewPosting: React.FunctionComponent<BoardItems> = (
-  props: BoardItems
-) => {
+const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) => {
   const navigate = useNavigate();
 
   const goToPost = (postId: number) => {
     navigate(`/questions/${postId}`);
   };
 
-  // 선택한 언어에 따른 해당 언어의 로고 이미지 출력
-  const Skill = props.language
+  const SkillIcon = props.language
     ? skillData.map((data) => {
       if (props.language === data.name) {
         return <img src={data.logo} width="25" height="25" />;
       }
     })
     : null;
-  const regex = /<pre[^>]*>(.*?)<\/pre>/gs;
-  const noPreTagContent = props.content.replace(regex, "");
+
+  const preRegex = /<pre[^>]*>(.*?)<\/pre>/gs;
+  const imgRegex = /<img\b[^>]*>/gs;
+  const noPreTag = props.content.replace(preRegex, "");
+  const deleteTag = noPreTag.replace(imgRegex, "");
 
   return (
-    <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
+    <Grid container direction="column" item xs={12} sx={{
       bgcolor: "background.paper",
-      borderRadius: "35px",
-      border: "0.5px solid black",
+      borderRadius: "40px",
+      boxShadow: 3,
+      margin: "2.25rem 0",
+      padding: "2rem 2.5rem 2rem",
+      justifyContent: "space-between",
+      height: "15rem",
       "&:hover": {
         boxShadow: 5,
         pointer: "cursor"
-      },
-      margin: "2.25rem 0",
-      padding: "0.75rem 2rem 1.25rem",
-      height: "16rem", //게시글 박스 높이
-      justifyContent: "space-between",
-      alignItems: "stretch"
-    }}
-      onClick={() => goToPost(props.id)}>
-      <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+      }
+    }} onClick={() => goToPost(props.id)}>
+    {props.image.length === 0 ? (
+      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
+        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-          <Typography variant="h5">{props.title}</Typography>
+          <Typography variant="h3">{props.title}</Typography>
           {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
-        <Time date={props.createdDate} variant="h6" />
+        <Stack direction="row" spacing={"1rem"}>
+          <Time date={props.createdDate} variant="h5" />
+          {SkillIcon}
+        </Stack>
+        </Grid>
+        <Grid item className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+        </Grid>
+        <Grid item>
+          <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Stack>
+        </Grid>
       </Grid>
-
-      <Grid item sx={{
-        whiteSpace: "pre-line",
-        wordWrap: "break-word",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        alignItems: "stretch",
-        maxHeight: "6.5rem"
-      }}>
-        <Typography variant="body1">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: shortenContent(noPreTagContent, 50)
-            }}
-          />
-        </Typography>
-        {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-      </Grid>
-
-      <Grid item>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {userInfo(props.writer, props.stuId, props.profileImg)}
-          {reply_bookmark_views(props)}
+    ) : (
+    <Grid item container spacing={4} > 
+      <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box position="relative" width="22rem" height="11rem">
+          <span style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, 
+            backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
+      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
+        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <Typography variant="h3">{props.title}</Typography>
+            {(typeof props.modifiedDate === 'object') ?
+              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+          </Stack>
+          <Time date={props.createdDate} variant="h5" />
+          {SkillIcon}
+        </Grid>
+        <Grid item sx={{width: "100%"}} className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+        </Grid>
+        <Grid item>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Box>
+        </Grid>
+      </Grid>
     </Grid>
+  )}
+  </Grid>
   );
 }
 
-
-export default QnABaord;
+export default QnABoard;
