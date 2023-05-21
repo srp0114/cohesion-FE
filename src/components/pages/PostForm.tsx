@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
 import axios from "axios";
-import File from "../layout/File";
+import AddFile from "../layout/AddFile";
 import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
@@ -29,7 +29,7 @@ const PostForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [selectedFiles, setSeletedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -77,18 +77,18 @@ const PostForm = () => {
     setBoardType(event.target.value as string);
   };
 
+
   const fileList: File[] = [];
 
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
-    setSeletedFiles(fileArray);
+    setSelectedFiles(fileArray);
 
     fileArray.forEach((file) => {
       fileList.push(file);
     });
   };
-
   const onSubmit = async () => {
     setIsLoading(true);
     const request_data = {
@@ -287,7 +287,7 @@ const PostForm = () => {
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
-
+    
   const DesignateConditionRequired =
     boardType === BoardType.recruit ? (
       <ConditionRequired getRequired={getRequired} />
@@ -357,10 +357,7 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
-            {/*<File handleFile={onSaveFiles}/>*/}
-            <div>
-              <input type="file" multiple onChange={onSaveFiles} />
-            </div>
+            <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles}/>
             {DesignateConditionRequired}
             {DesignateConditionOptional}
             {DesignatePeople}
