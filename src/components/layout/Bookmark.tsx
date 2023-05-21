@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Stack, Typography, Button, Snackbar, SnackbarOrigin, Alert } from "@mui/material";
 import BorderBookmark from "@mui/icons-material/BookmarkBorder";
 import FilledBookmark from '@mui/icons-material/Bookmark';
+import { debounce } from "lodash";
 
 export interface State extends SnackbarOrigin {
   open: boolean;
@@ -28,37 +29,22 @@ const Bookmark = (props: BookmarkProps) => {
   const { vertical, horizontal, open } = state;
   const [message, setMessage] = useState<string>("");
 
-
-  // 기존 상세보기의 북마크 api get, post, delete - 분리
-  // boardType, 게시글 번호를 상세보기로부터 받아와 api 주소 설정
   useEffect(() => {
-    //해당 게시글의 북마크 수
-    axios({
-      method: "get",
-      url: `/api/${board}/${id}/bookmark-count`,
-    })
-    .then((res) => {
-      setBookmarkCount(res.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-    //접속 유저가 해당 게시글의 북마크를 설정하였는지 아닌지 체크
-    axios({
-      method: "get",
-      url: `/api/${board}/${id}/bookmark-check`,
-    })
-    .then((res) => {
-      isBookmarked(res.data);
+    axios.all([
+      axios.get(`/api/${board}/${id}/bookmark-count`),
+      axios.get(`/api/${board}/${id}/bookmark-check`),
+    ])
+    .then(axios.spread((countRes, checkRes) => {
+      setBookmarkCount(countRes.data);
+      isBookmarked(checkRes.data);
       setBookmark(bookmarkCheck);
-    })
+    }))
     .catch((err) => {
       console.log(err);
     });
   }, [id, board, bookmarkCheck])
 
-  //북마크 등록
-  const onClickBookmark = () => {
+  const onClickBookmark = debounce(() => {
       bookmark ? 
       axios({
         method: "post",
@@ -88,7 +74,7 @@ const Bookmark = (props: BookmarkProps) => {
       .catch((err) => {
         console.log(err);
       });
-  };
+  }, 1000);
 
   const handleMouseOver = () => {
     bookmarkCheck ? setBookmark(false) : setBookmark(true);
