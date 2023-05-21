@@ -47,7 +47,6 @@ const RecruitDetails = () => {
   const { id } = useParams() as { id: string };
   const [postItem, setPostItem] = useState<RecruitDetailItems | undefined>();
 
-  // const [isApplyBtnAvailable, setIsApplyBtnAvailale] = useState<boolean>(false); //신청하기 버튼 상태 관리
   const [modalOpen, setModalOpen] = useState<boolean>(false); //신청, 승인, 모집완료 모달 open 상태 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const [applicantStatus, setApplicantStatus] = useState<boolean | null>(null); //유저의 신청 및 승인 여부
@@ -156,16 +155,12 @@ const RecruitDetails = () => {
         const status: string = (res.data).toString();
         switch (status) {
           case "":
-            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)}신청하지 않은 사용자입니다. 나중에 지우기 어차ㅣ 글쓴이한테는 신청버튼 안뜰테니까`);
-            // setApplicantStatus(null);
             break;
           case "true":
             alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 신청서가 승인 되었습니다.`);
-            // setApplicantStatus(true);
             break;
           case "false":
             alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)}아직 신청 승인 대기 중입니다.`);
-            // setApplicantStatus(false);
             break;
           default:
             alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 무언가 오류...`);
