@@ -357,7 +357,10 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
-            <File handleFile={onSaveFiles}/>
+            {/*<File handleFile={onSaveFiles}/>*/}
+            <div>
+              <input type="file" multiple onChange={onSaveFiles} />
+            </div>
             {DesignateConditionRequired}
             {DesignateConditionOptional}
             {DesignatePeople}

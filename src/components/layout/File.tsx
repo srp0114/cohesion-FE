@@ -1,26 +1,23 @@
-import { Grid, Box, Button } from "@mui/material";
+import { Typography } from "@mui/material";
+import { FileItem } from "../pages/Board/Free/FreeDetails";
 
 interface FileProps {
-  handleFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    fileList: FileItem[]
 }
 
-const File = ({ handleFile }: FileProps) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFile(e);
-  };
-
-  return (
-    <>
-      <Grid item>
-        <Box component="span" sx={{ p: 2, border: '1px dashed grey' }}>
-            <Button variant="contained" component="label">
-                파일 첨부하기
-                <input type="file" hidden onChange={handleChange} />
-            </Button>
-        </Box>
-      </Grid>
-    </>
-  );
-};
+const File = ({fileList} : FileProps) => {
+    
+    return (
+        <>
+        {fileList.map ((value) => {
+            return (
+                <>
+                <Typography variant="h5">{value.originalName}</Typography>
+                </>
+            )
+        })}
+        </>
+    )
+}
 
 export default File;
