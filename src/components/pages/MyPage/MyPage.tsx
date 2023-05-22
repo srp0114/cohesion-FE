@@ -50,33 +50,29 @@ const MyPage = () => {
   }, [])
 
   const onChangeUserInfo = (nickname: string, skills: string[], introduce: string) => {
-    const data = {
-      nickname: nickname,
-      skills: skills,
-      introduce: introduce
-    }
+    return new Promise<void>((resolve, reject) => {
+      const data = {
+        nickname: nickname,
+        skills: skills,
+        introduce: introduce
+      }
 
-    setMyInfo({
-      ...myInfo,
-      nickname: nickname,
-      skills: skills,
-      introduce: introduce
-    });
-
-    axios({
-      method: "put",
-      url: `/api/user/update`,
-      headers: { "Content-Type": "application/json" },
-      data: data,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          getUserInfo();
-        }
+      axios({
+        method: "put",
+        url: `/api/user/update`,
+        headers: { "Content-Type": "application/json" },
+        data: data,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((res) => {
+          if (res.status === 200) { // 수정이 성공하고
+            getUserInfo()
+              .then(() => resolve()); // 정보 요청이 성공하면 resolve
+          }
+        })
+        .catch((err) => {
+          reject(err); // 수정 실패 시, error reject
+        });
+    })
   }
 
   console.log(myInfo.nickname)
