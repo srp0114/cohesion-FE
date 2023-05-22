@@ -14,6 +14,8 @@ import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
+import File from "../../../layout/File";
+import { FileItem } from "../Free/FreeDetails";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -38,6 +40,7 @@ const QnADetails = () => {
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
   const [writerId, setWriterId] = useState<number>(0)
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [fileList, setFileList] = useState<FileItem[]>([]);
   const { id } = useParams() as { id: string };
   const postingId = Number(id);
 
@@ -65,7 +68,6 @@ const QnADetails = () => {
       url: `/api/questions/return/user-id/${id}`
     }).then((res) => {
       if (res.status === 200) {
-        console.log(res)
         setWriterId(res.data);
       }
     }).catch((err) => {
@@ -76,6 +78,17 @@ const QnADetails = () => {
     getCurrentUserInfo()
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
+
+    axios({
+      method: "get",
+      url: `/api/questions/${id}/file-list`
+    })
+    .then((res) => {
+        setFileList(res.data);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
   }, []);
 
   //입력된 언어 맞게 이미지 출력
@@ -133,6 +146,9 @@ const QnADetails = () => {
           </Stack>
            <Bookmark boardType={"questions"} id={id} />
         </Grid>
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
         <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
         <div className="ql-snow">
           <div
@@ -140,13 +156,6 @@ const QnADetails = () => {
             dangerouslySetInnerHTML={{ __html: postItem.content }}
           />
         </div>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Stack direction="row" spacing={0.5} sx={{ display: "flex", justifyContent: "start", alignItems:"center", ml:"1rem"}}>
-            <Typography variant="h4">채택 시</Typography>
-            <Money sx={{ color: "#ffcf40" }}/>
-            <Typography variant="h4">{postItem.point}</Typography>
-          </Stack>
         </Grid>
       </Grid>
       <Reply board={"questions"} writerId={writerId} postingId={id} />
