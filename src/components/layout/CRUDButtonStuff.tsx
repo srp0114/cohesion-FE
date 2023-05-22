@@ -99,7 +99,7 @@ export const UpdateSpeedDial = (props: UpdateSpeedDialProps) => {
   ];
 
   return (
-    <Box sx={{ "& > :not(style)": { ml: 120 }, position: "fixed", bottom: "2.5rem", right: "10rem", transform: 'translateZ(0px)', flexGrow: 1 }}>
+    <Box sx={{position: "fixed", bottom: "2.5rem", right: "10rem", transform: 'translateZ(0px)', flexGrow: 1 }}>
       <SpeedDial
         ariaLabel="게시글 수정 삭제 스피드 다이얼"
         icon={<SpeedDialIcon />}

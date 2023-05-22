@@ -12,12 +12,24 @@ import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
 import {getCurrentUserInfo} from "../getCurrentUserInfo";
 
-const Home: React.FC = () => {
+export interface UserInfoItems {
+  nickname: string;
+  studentId: number;
+  track1: string;
+  track2?: string;
+  profileImg: string | null;
+}
+
+const Home = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
-  const [nickname, setNickname] = useState<string>("");
-  const [studentId, setStudentId] = useState<number>(0);
-  const [track1, setTrack1] = useState<string>("");
+  const [user, setUser] = useState<UserInfoItems>({
+    nickname: "",
+    studentId: 0,
+    track1: "",
+    profileImg: null,
+  });
+
   const handleClose = () => setOpen(false);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
@@ -28,11 +40,8 @@ const Home: React.FC = () => {
       if (res) {
         setIsLogin(true);
         getCurrentUserInfo()
-          // .then(userInfo => setNickname(userInfo.nickname))
             .then(userInfo =>{
-              setNickname(userInfo.nickname);
-              setStudentId(userInfo.studentId);
-              setTrack1(userInfo.track1);
+              setUser(userInfo)
             })
           .catch(err => console.log(err));
       } else {
@@ -115,7 +124,7 @@ const Home: React.FC = () => {
       </Grid>
 
       <Grid item xs>
-        <SideBar nickname={nickname} studentId={studentId} track1={track1}/>
+        <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg}/>
       </Grid>
 
       </Grid>

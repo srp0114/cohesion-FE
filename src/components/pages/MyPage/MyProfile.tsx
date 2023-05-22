@@ -11,7 +11,7 @@ interface MyProfileProps {
   studentId: string;
   track1: string;
   track2: string;
-  profileImg: string;
+  profileImg: string | null;
 }
 
 export const MyProfile = (props: MyProfileProps) => {
@@ -20,31 +20,25 @@ export const MyProfile = (props: MyProfileProps) => {
       <Paper
         sx={{
           borderRadius: "15px",
-          pt: "2.5rem", pl:"5rem", pr:"2rem", pb:"2.5rem"
+          p: "2.5rem 1rem 5rem", 
         }}
         elevation={3}
       >
-        <Grid
-          container
-          rowSpacing={{ xs: "2.5rem" }}
-          direction="column"
-        >
-          <Grid item>
-            <Grid container spacing={2}>
-              <Grid item xs={6} md={5}>
-                <Profile nickname={props.nickname} size={100}/>
+            <Grid container spacing={2} direction="row" sx={{ display:"flex", justifyContent:"center", alignItems:"center"}} >
+              <Grid item sx={{p:"2rem"}}>
+                <Profile nickname={props.nickname} imgUrl={props.profileImg} size={100}/>
               </Grid>
-              <Grid item xs={4} md={7} sx={{mt:"1.5rem"}}>
+              <Grid item sx={{mt:"2rem"}}>
                 <Typography variant="subtitle1">{props.nickname}</Typography>
-                <Grid container spacing={2} sx={{mt:"2rem"}}>
+                <Grid container spacing={2} sx={{mt:"1rem"}}>
                   <Grid item>
-                  <Typography variant="subtitle2" color="secondary.dark">학번</Typography>
+                    <Typography variant="subtitle2" color="secondary.dark">학번</Typography>
                   </Grid>
                   <Grid item>
-                  <Typography variant="subtitle2">{props.studentId}</Typography>
+                    <Typography variant="subtitle2">{props.studentId}</Typography>
                   </Grid>
                 </Grid>
-                <Grid container spacing={2} sx={{mt:"1rem"}}>
+                <Grid container spacing={2} sx={{mt:"0.5rem"}}>
                   <Grid item>
                     <Typography variant="subtitle2" color="secondary.dark">전공</Typography>
                   </Grid>
@@ -55,8 +49,6 @@ export const MyProfile = (props: MyProfileProps) => {
                 </Grid>
                 </Grid>
             </Grid>
-          </Grid>
-        </Grid>
         </Paper>
         
     </>

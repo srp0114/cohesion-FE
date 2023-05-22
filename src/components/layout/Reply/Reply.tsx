@@ -5,12 +5,13 @@ import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
 import AdoptReply from "./AdoptReply";
 import Time from "../Time";
-import Profile from "@mui/icons-material/AccountCircle";
+import Profile from "../Profile";
 import EditReplyField from "./EditReplyField";
 
 interface User {
   id: number;
   nickname: string;
+  profileImg: string | null;
 }
 
 interface ReplyItems {
@@ -49,7 +50,18 @@ const Reply = (props: ReplyProps) => {
   const id = props.postingId;
   const board = props.board;
   const writerId = props.writerId;
-   
+
+  const getReply = async () => {
+    try {
+      const res = await axios.get(`/api/${board}/${id}/replies`);
+      if (res.status === 200) {
+        setReplyData(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const getAdoptReply = useCallback(() => {
     if (board === "questions") {
       axios({
@@ -69,18 +81,6 @@ const Reply = (props: ReplyProps) => {
 
   useEffect(() => {
     axios({
-      method: "get",
-      url: `/api/${board}/${id}/replies`,
-    })
-      .then((res) => {
-        setReplyData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-      axios({
         method : "get",
         url : "/api/user-id"
     }).then((res)=>{
@@ -91,6 +91,7 @@ const Reply = (props: ReplyProps) => {
         console.log(err);
     })
 
+    getReply();
     getAdoptReply();
   }, [board, id, getAdoptReply]);
 
@@ -119,8 +120,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
         if (res.status === 200) {
-          const newReply = res.data;
-          setReplyData([...replyData, newReply]);
+          getReply();
         }
       })
       .catch((err) => {
@@ -142,8 +142,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
         if (res.status === 200) {
-          const newReply = res.data;
-          setReplyData([...replyData, newReply]);
+          getReply();
         }
       })
       .catch((err) => {
@@ -170,14 +169,7 @@ const Reply = (props: ReplyProps) => {
     })
       .then((res) => {
           if(res.status===200){
-            const editedReply = res.data;
-            const newReplyData = replyData.map((reply)=>{
-                if(reply.id === editedReply.id){
-                    return {...reply, ...editedReply, showEditForm:false};
-                }
-                return reply;
-            });
-              setReplyData(newReplyData);
+            getReply();
           }
       })
       .catch((err) => {
@@ -190,8 +182,7 @@ const Reply = (props: ReplyProps) => {
           method : "delete",
           url : `/api/${board}/delete/${replyId}/replies`
       }).then((res)=>{
-          console.log(res.data);
-          setReplyData(replyData.filter((reply) => reply.id !== replyId));
+          getReply();
       }).catch((err)=>{
           console.log(err);
       })
@@ -268,20 +259,16 @@ const Reply = (props: ReplyProps) => {
                 }}
               >
                 <Box
-                  sx={{
-                    display: "flex",
-                  }}
+                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
                 >
-                  <Profile fontSize="large" />
-                  <Box sx={{ mt: 0.3 }}>
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                      {reply.user.nickname}
-                    </Typography>
-                    <Typography variant="subtitle2" sx={{ ml: 1 }}>
-                      <Time date={reply.createdAt} />
-                    </Typography>
-                  </Box>
-                </Box>
+                <Profile nickname={reply.user.nickname} imgUrl={reply.user.profileImg} size={20} />
+                <Typography variant="h5" sx={{ ml: 1 }}>
+                  {reply.user.nickname}
+                </Typography>
+                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
+                  <Time date={reply.createdAt} />
+                </Typography>
+              </Box>
                 <Box>
                   {reply.user.id === userId ? (
                     <>
@@ -327,19 +314,15 @@ const Reply = (props: ReplyProps) => {
               }}
             >
               <Box
-                sx={{
-                  display: "flex",
-                }}
+                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
               >
-                <Profile fontSize="large" />
-                <Box sx={{ mt: 0.3 }}>
-                  <Typography variant="h6" sx={{ ml: 1 }}>
-                    {value.user.nickname}
-                  </Typography>
-                  <Typography variant="subtitle2" sx={{ ml: 1 }}>
-                    <Time date={value.createdAt} />
-                  </Typography>
-                </Box>
+                <Profile nickname={value.user.nickname} imgUrl={value.user.profileImg} size={20} />
+                <Typography variant="h5" sx={{ ml: 1 }}>
+                  {value.user.nickname}
+                </Typography>
+                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
+                  <Time date={value.createdAt} />
+                </Typography>
               </Box>
               <Box>
                 {value.user.id === userId ? (
@@ -371,7 +354,7 @@ const Reply = (props: ReplyProps) => {
         );
       })
   ) : (
-    <Typography variant="h6" sx={{ color: "grey", m: 2 }}>
+    <Typography variant="h3" sx={{ color: "primary.dark", m: 2 }}>
       아직 댓글이 없습니다.
     </Typography>
   );

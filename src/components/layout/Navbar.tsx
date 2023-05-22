@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Button, Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import { Button, Grid, Menu, MenuItem } from "@mui/material";
 import Profile from "../layout/Profile";
-import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import {logoutHandler} from "../logoutHandler";
+import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import SearchField from "./SearchField";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Navbar = () => {
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
+  const [profileImg, setProfileImg] = useState<string | null>(null);
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
@@ -31,14 +33,12 @@ const Navbar = () => {
         .then((res) => {
           if (res) {
             setIsLogin(true);
-            axios({
-              method: "get",
-              url: "/api/user-info"
-            }).then((res) => {
-              setNickname(res.data.nickname);
-            }).catch((err) => {
-              console.log(err);
-            });
+            getCurrentUserInfo()
+              .then((userInfo) => {
+                setNickname(userInfo.nickname);
+                setProfileImg(userInfo.profileImg);
+              })
+              .catch((err) => console.log(err));
           } else {
             setIsLogin(false);
           }
@@ -91,12 +91,10 @@ const Navbar = () => {
   };
   
   return (
-    <div>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt:3, mb:4 }}>
-        <Box
-          sx={{ display: "flex", justifyContent: "flex-start"}}
-        >
-          <Box sx={{width:100, backgroundColor:'#ddd', mr: 3}}/>
+    <>
+      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} sx={{mt:"1.5rem", mb:"2rem" }} >
+        <Grid item xs={12} md={6}>
+          <Button sx={{height:30, backgroundColor:'#ddd', mr: 3}}/>
           <Button onClick={moveToHome} className="navButton">홈</Button>
           <Button
             className="navButton"
@@ -111,23 +109,24 @@ const Navbar = () => {
             <MenuItem onClick={moveToRecruit}>구인게시판</MenuItem>
           </Menu>
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
-        </Box>
-        <Box sx={{display:'flex', justifyContent: "space-between"}}>
+        </Grid>
+        
+        <Grid item xs={12} md={6} container direction="row" alignItems="center" justifyContent={"flex-end"}>
           {isLogin ? (
           <>
+            <SearchField />       
             <Button className="profile" onClick={moveToMyPage}>
-              <Profile nickname={nickname} size={25}/>
+            <Profile nickname={nickname} imgUrl={profileImg} size={28}/>
             </Button>
             <Button onClick={handleLogin} className="loginButton">
               로그아웃
             </Button>
-          </>
-          ) : (<Button onClick={handleLogin} className="loginButton">로그인</Button>
+          </>) : (
+            <Button onClick={handleLogin} className="loginButton">로그인</Button>
           )}
-          
-      </Box>
-      </Box>
-    </div>
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
