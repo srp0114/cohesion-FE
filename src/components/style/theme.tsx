@@ -67,6 +67,8 @@ export const theme = createTheme({
     },
     neutral: {
       main: '#64748B', //회색
+      light: '#758396',
+      dark: '#536278',
       contrastText: '#fff',
     },
   },
@@ -298,6 +300,13 @@ export const theme = createTheme({
               opacity: [1.0, 0.9, 0.9],
             }
           }
+        }
+      }
+    },
+    MuiDivider:{
+      styleOverrides: {
+        root:{
+          color: "#777777",
         }
       }
     }

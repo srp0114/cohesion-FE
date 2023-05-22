@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabledOutlined';
 import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
@@ -403,9 +402,9 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
         <div>
             {(["right"] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
-                    <Tooltip title="신청자 목록">
+                    <Tooltip title="신청자 목록 확인하러 가기">
                         <IconButton className="applicantListIconButton" onClick={toggleDrawer(anchor, true)} size="large">
-                            <FolderSharedOutlinedIcon />
+                            <FolderSharedOutlinedIcon color="primary"/>
                         </IconButton>
                     </Tooltip>
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
@@ -439,7 +438,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
 
                                             <Grid item xs={2}>
                                                 {(!app.isApproved) ? <>
-                                                    <Tooltip title={`${app.id} 승인대기`}>
+                                                    <Tooltip title={`승인대기`}>
                                                         <IconButton edge="end" aria-label="approve" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                             <PersonAddOutlinedIcon />
                                                         </IconButton>
@@ -453,7 +452,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                         onApprovalStatus={handleApprovalStatus}
                                                     />
                                                 </>
-                                                    : <><Tooltip title={`${app.id} 승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
+                                                    : <><Tooltip title={`승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                         <PersonAddDisabledOutlinedIcon />
                                                     </IconButton></Tooltip>
                                                         <DoubleCheckModal open={modalStates[app.id] || false}
