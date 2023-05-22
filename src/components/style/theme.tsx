@@ -103,6 +103,20 @@ export const theme = createTheme({
 
   //MUI 컴포넌트 커스텀
   components: {
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          '&.boardContent': {
+            whiteSpace: "pre-line",
+            wordWrap: "break-word",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            alignItems: "stretch",
+            height: "6rem",
+          }
+        }
+      }
+    },
     MuiLink: {
       styleOverrides: {
         root: {

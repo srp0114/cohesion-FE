@@ -1,18 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Container,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-  SelectChangeEvent,
-  Select,
-  Snackbar,
-  MenuItem,
-} from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
 import axios from "axios";
-import Point from "../layout/Point";
 import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
@@ -23,7 +11,8 @@ import "../style/Board.css";
 import { BoardType } from "../model/board";
 import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
-
+import { FileItem } from "./Board/Free/FreeDetails";
+import AddFile from "../layout/AddFile";
 /*
  * 기본 게시글 작성 UI폼
  */
@@ -31,20 +20,20 @@ const EditForm = () => {
   const [boardType, setBoardType] = useState<BoardType>(BoardType.free);
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-  const [point, setPoint] = useState<number>(0);
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const nav = useNavigate();
   const { state } = useLocation();
   const pathArray = window.location.href.split("/");
   const postingId = [...pathArray].pop();
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = React.useState(false);
-
+  const [postedFile, setPostedFile] = useState<FileItem[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -59,12 +48,6 @@ const EditForm = () => {
         nav("/"); // 비로그인인 경우
       }
     });
-  }, []);
-
-  useEffect(() => {
-    getCurrentUserInfo()
-      .then(userInfo => setHasUserPoint(userInfo.point))
-      .catch(err => console.log(err))
   }, []);
 
   useEffect(() => {
@@ -88,15 +71,23 @@ const EditForm = () => {
         }
       }
     ).catch((err) => console.log(err));
+
+    axios({
+        method: "get",
+        url: `/api/free/${postingId}/file-list`
+    })
+    .then((res) => {
+        setPostedFile(res.data);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+      
   }, []);
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
     setContent(value);
-  };
-
-  const getPoint = (point: number): void => {
-    setPoint(point * 10);
   };
 
   const getSkill = (value: string) => {
@@ -129,7 +120,7 @@ const EditForm = () => {
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
-
+    setSelectedFiles(fileArray);
     fileArray.forEach((file) => {
       fileList.push(file);
     });
@@ -137,6 +128,30 @@ const EditForm = () => {
 
   const submitHandler = async (event: React.MouseEvent) => {
     setIsLoading(true);
+    const formData = new FormData();
+
+    selectedFiles.forEach((file) => {
+      formData.append("file", file);
+    });
+
+    axios({
+      method: "post",
+      url: "/api/files",
+      headers: { "Content-Type": "multipart/form-data" },
+      data: formData,
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        console.log(res);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      if (err.response.status === 413) {
+        alert("파일 용량이 큽니다!!");
+      }
+    });
+
     const request_data = {
       title: title,
       content: content,
@@ -146,7 +161,6 @@ const EditForm = () => {
     const request_qna = {
       title: title,
       content: content,
-      point: point,
       language: skill,
     };
 
@@ -273,11 +287,22 @@ const EditForm = () => {
 
   }
 
+  const deleteFile = (filename: string) => {
+    axios({
+        method: "delete",
+        url: `/api/files/delete/${filename}`
+    })
+    .then((res) => {
+        console.log(res);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+  } 
+  
+
   const SelectSkill =
     boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
-
-  const SelectPoint =
-    boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
 
   const DesignateConditionRequired =
     boardType === BoardType.recruit ? (
@@ -288,6 +313,15 @@ const EditForm = () => {
       <ConditionOptional value={optional} getOptional={getOptional} />
     ) : null;
   const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
+  
+  const PostedFile = postedFile.length > 0 ? (
+    <Grid item>
+      {postedFile.map((value) => {
+        return (<Typography variant="h4">{value.originalName}</Typography>)
+      })
+    }
+    </Grid>
+  ) : (null)
 
   return (
     <>
@@ -322,12 +356,10 @@ const EditForm = () => {
               <div className="postQuill">
                 <EditorToolbar content={content} onAddQuill={getContent} />
               </div>
-              <div>
-                <input type="file" multiple onChange={onSaveFiles} />
-              </div>
             </Grid>
-
-            {SelectPoint}
+            
+            {PostedFile}
+            <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
 
             {DesignateConditionRequired}
             {DesignateConditionOptional}

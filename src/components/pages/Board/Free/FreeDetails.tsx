@@ -14,8 +14,8 @@ import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
+import File from "../../../layout/File";
 
-//자유 상세보기 인터페이스
 interface FreeDetailItems {
   id: number;
   title: string;
@@ -30,11 +30,17 @@ interface FreeDetailItems {
   views: number; //조회수
 }
 
+export interface FileItem {
+  originalName: string;
+}
+
 const FreeDetails = () => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id: string };
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [isFile, setIsFile] = useState<boolean>(false);
+  const [fileList, setFileList] = useState<FileItem[]>([]);
 
   const postingId = Number(id);
 
@@ -56,6 +62,17 @@ const FreeDetails = () => {
     getCurrentUserInfo()
       .then(userInfo => setAccessUserId(userInfo.studentId))
       .catch(err => console.log(err));
+
+    axios({
+          method: "get",
+          url: `/api/free/${id}/file-list`
+      })
+      .then((res) => {
+          setFileList(res.data);
+      })
+      .catch((err) => {
+          console.log(err);
+      });
   }, []);
 
   /**
@@ -99,6 +116,9 @@ const FreeDetails = () => {
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
            <Bookmark boardType={"free"} id={id} />
+        </Grid>
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
         </Grid>
         <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
