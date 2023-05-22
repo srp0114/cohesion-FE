@@ -17,7 +17,7 @@ const icons = [
     { name: "recruitPeople", component: <Visibility /> },//모집인원
     { name: "approveComplete", component: <Visibility /> },//승인한 상태
     { name: "approveReject", component: <Visibility /> },//승인취소 상태,
-    { name: "close", component: <Visibility /> },//신청자목록닫기
+    { name: "close", component: <CloseIcon /> },//신청자목록닫기
     { name: "recruitComplete", component: <Visibility /> },//모집완료
 
     { name: "edit", component: <Visibility /> },//게시글 혹은 정보 수정

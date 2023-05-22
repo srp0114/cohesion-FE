@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
+import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, IconButton, Stack } from "@mui/material";
 import axios from "axios";
 import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
@@ -13,6 +13,8 @@ import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
+import { FindIcon } from "../data/IconData";
+
 /*
  * 기본 게시글 작성 UI폼
  */
@@ -72,6 +74,7 @@ const EditForm = () => {
       }
     ).catch((err) => console.log(err));
 
+    // 첨부한 파일 리스트 출력을 위한 api 연동
     axios({
         method: "get",
         url: `/api/free/${postingId}/file-list`
@@ -126,7 +129,7 @@ const EditForm = () => {
     });
   };
 
-  const submitHandler = async (event: React.MouseEvent) => {
+  const submitHandler = async (event:React.MouseEvent) => {
     setIsLoading(true);
     const formData = new FormData();
 
@@ -151,7 +154,7 @@ const EditForm = () => {
         alert("파일 용량이 큽니다!!");
       }
     });
-
+  
     const request_data = {
       title: title,
       content: content,
@@ -184,82 +187,33 @@ const EditForm = () => {
     /**
      * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update) 수정 기능
      */
-    // axios({
-    //   method: "put",
-    //   url: `/api/${boardType}/update/${postingId}`,
-    //   headers: { "Content-Type": "application/json" },
-    //   data: JSON.stringify(request_data),
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-    //         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-    //           수정되었습니다.
-    //         </Alert>
-    //       </Snackbar>
-    //       nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-    //     } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-    //   })
-    //   .catch((err) => console.log(err));
-    // setOpen(true);
-    // return (
-    //   <>
-    //     {isLoading && <Loading delayTime={1500} />}
-    //   </>
-    // );
-    switch (boardType) {
-      case BoardType.free:
-        axios({
-          method: "put",
-          url: `/api/free/update/${postingId}`,
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_data),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-            } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-          })
-          .catch((err) => console.log(err));
-        break;
-      case BoardType.question:
-        axios({
-          method: "put",
-          url: `/api/questions/update/${postingId}`,
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_qna),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => console.log(err));
-        break;
-      case BoardType.recruit:
-        axios({
-          method: "put",
-          url: `/api/recruit/update/${postingId}`,
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify(request_recruit),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-            } // 응답(401, 403 등) 핸들링 ...
-          })
-          .catch((err) => console.log(err));
-        break;
-      /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
-      default:
-        break;
-    }
+    axios({
+      method: "put",
+      url: `/api/${boardType}/update/${postingId}`,
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(request_data),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+              수정되었습니다.
+            </Alert>
+          </Snackbar>
+          nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+        } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+      })
+      .catch((err) => console.log(err));
+    setOpen(true);
+    return (
+      <>
+        {isLoading && <Loading delayTime={1500} />}
+      </>
+    );
+
   };
 
-  const deleteHandler = (event: React.MouseEvent) => {
+  const deleteHandler = (event:React.MouseEvent) => {
     event.preventDefault();
     setIsLoading(true);
     axios({
@@ -287,19 +241,38 @@ const EditForm = () => {
 
   }
 
-  const deleteFile = (filename: string) => {
+  // 파일 삭제 api 
+  const deletePostedFile = (filename: string) => {
     axios({
         method: "delete",
         url: `/api/files/delete/${filename}`
     })
     .then((res) => {
-        console.log(res);
+        setPostedFile(postedFile.filter((value) => value.originalName !== filename));
     })
     .catch((err) => {
         console.log(err);
     });
   } 
-  
+
+  // 첨부파일 리스트 길이가 0 이상인 경우 해당 파일 이름과 버튼 
+  const PostedFile = postedFile.length > 0 ? (
+    <Grid item>
+      {postedFile.map((value) => {
+        return (
+          <>
+          <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+            <Typography variant="h4">{value.originalName}</Typography>
+            <IconButton onClick={()=>deletePostedFile(value.originalName)}>
+              <FindIcon name="close"/>
+            </IconButton>
+          </Stack>
+          </>
+        )
+      })
+    }
+    </Grid>
+  ) : (null)
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
@@ -314,15 +287,6 @@ const EditForm = () => {
     ) : null;
   const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
   
-  const PostedFile = postedFile.length > 0 ? (
-    <Grid item>
-      {postedFile.map((value) => {
-        return (<Typography variant="h4">{value.originalName}</Typography>)
-      })
-    }
-    </Grid>
-  ) : (null)
-
   return (
     <>
       <Container>
