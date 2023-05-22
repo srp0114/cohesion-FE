@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
 import axios from "axios";
-import Point from "../layout/Point";
+import AddFile from "../layout/AddFile";
 import Skill from "../layout/Skill";
 import EditorToolbar from "../layout/EditorToolbar";
 import People from "../layout/People";
@@ -21,17 +21,15 @@ const PostForm = () => {
   const [boardType, setBoardType] = React.useState("free");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [point, setPoint] = useState<number>(0);
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [hasUserPoint, setHasUserPoint] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [selectedFiles, setSeletedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -49,20 +47,9 @@ const PostForm = () => {
     });
   }, []);
 
-  useEffect(() => {
-    getCurrentUserInfo()
-      .then(userInfo => setHasUserPoint(userInfo.point))
-      .catch(err => console.log(err));
-  }, [])
-
-
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
     setContent(value);
-  };
-
-  const getPoint = (point: number): void => {
-    setPoint(point * 10);
   };
 
   const getSkill = (value: string) => {
@@ -90,18 +77,18 @@ const PostForm = () => {
     setBoardType(event.target.value as string);
   };
 
+
   const fileList: File[] = [];
 
   const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files: FileList | null = e.target.files;
     const fileArray = Array.prototype.slice.call(files);
-    setSeletedFiles(fileArray);
+    setSelectedFiles(fileArray);
 
     fileArray.forEach((file) => {
       fileList.push(file);
     });
   };
-
   const onSubmit = async () => {
     setIsLoading(true);
     const request_data = {
@@ -206,7 +193,7 @@ const PostForm = () => {
                   </Snackbar>
                   nav(`/${boardType}/${res.data}`);
                 } // 응답(401, 403 등) 핸들링 ...
-          }) .catch((err) => {
+          }).catch((err) => {
             if (err.response.status === 401) {
               console.log("로그인 x");
             } else if (err.response.status === 403) {
@@ -253,7 +240,7 @@ const PostForm = () => {
             </Snackbar>
             nav(`/${boardType}/${res.data}`);
           } // 응답(401, 403 등) 핸들링 ...
-        }) .catch((err) => {
+        }).catch((err) => {
           if (err.response.status === 401) {
             console.log("로그인 x");
           } else if (err.response.status === 403) {
@@ -300,10 +287,7 @@ const PostForm = () => {
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
-
-  const SelectPoint =
-    boardType === BoardType.question ? <Point getPoint={getPoint} /> : null;
-
+    
   const DesignateConditionRequired =
     boardType === BoardType.recruit ? (
       <ConditionRequired getRequired={getRequired} />
@@ -369,21 +353,14 @@ const PostForm = () => {
                   </div>
                 )}
               />
-              <div>
-                <input type="file" multiple onChange={onSaveFiles} />
-              </div>
               <Box pl={"0.8rem"} pt={"0.2rem"}>
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
-
-
-            {SelectPoint}
-
+            <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles}/>
             {DesignateConditionRequired}
             {DesignateConditionOptional}
             {DesignatePeople}
-
             <Grid item>
               <Button variant="outlined" type="submit">작성하기</Button>
             </Grid>

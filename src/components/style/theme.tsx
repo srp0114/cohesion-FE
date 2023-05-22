@@ -67,6 +67,8 @@ export const theme = createTheme({
     },
     neutral: {
       main: '#64748B', //회색
+      light: '#758396',
+      dark: '#536278',
       contrastText: '#fff',
     },
   },
@@ -101,6 +103,20 @@ export const theme = createTheme({
 
   //MUI 컴포넌트 커스텀
   components: {
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          '&.boardContent': {
+            whiteSpace: "pre-line",
+            wordWrap: "break-word",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            alignItems: "stretch",
+            height: "6rem",
+          }
+        }
+      }
+    },
     MuiLink: {
       styleOverrides: {
         root: {
@@ -284,6 +300,13 @@ export const theme = createTheme({
               opacity: [1.0, 0.9, 0.9],
             }
           }
+        }
+      }
+    },
+    MuiDivider:{
+      styleOverrides: {
+        root:{
+          color: "#777777",
         }
       }
     }
