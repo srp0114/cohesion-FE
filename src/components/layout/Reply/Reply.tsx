@@ -61,7 +61,7 @@ const Reply = (props: ReplyProps) => {
       console.log(err);
     }
   }
-
+  
   const getAdoptReply = useCallback(() => {
     if (board === "questions") {
       axios({
@@ -195,39 +195,43 @@ const Reply = (props: ReplyProps) => {
   };
 
   // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 userId와 로그인한 사용자의 userId 비교 후 동일한 경우 채택버튼 출력
-  const Article = (article: string, id:number) => {
-    return (
-      <>
-        {board === "questions" ? (
-          // Q&A 게시판인 경우
-          <Grid container direction="row" spacing={2}>
-            <Grid item xs={9} md={10}>
-              <div className="ql-snow">
-                <div
-                  className="ql-editor"
-                  dangerouslySetInnerHTML={{ __html: article }}
-                />
-              </div>
-            </Grid>
-            {userId === writerId ? (
-              <Grid item xs={3} md={2}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <AdoptReply replyId={id} onReplyAdopt={handleAdoptReply} check={isChosen.check} checkId={isChosen.id} />
-                </Box>
-              </Grid>
-              ) : (null)
-            }
+  const Article = (writerUserId: number, article: string, id: number) => {
+  return (
+    <>
+      {board === "questions" ? (
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={9} md={10}>
+            <div className="ql-snow">
+              <div
+                className="ql-editor"
+                dangerouslySetInnerHTML={{ __html: article }}
+              />
+            </div>
           </Grid>
-        ) : (
-          // 그 외 나머지 게시판이 경우
-          <Typography>{article}</Typography>
-        )}
-      </>
-    );
-  };
+          {userId === writerId ? (
+            <Grid item xs={3} md={2}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <AdoptReply
+                  userId={userId}
+                  writerUserId={writerUserId}
+                  replyId={id}
+                  onReplyAdopt={handleAdoptReply}
+                  check={isChosen.check}
+                  checkId={isChosen.id}
+                />
+              </Box>
+            </Grid>
+          ) : null}
+        </Grid>
+      ) : (
+        <Typography>{article}</Typography>
+      )}
+    </>
+  );
+};
 
   // 수정 버튼 클릭에 따른 컴포넌트 전환
-  const Edit = (article: string, id: number, parentId?: number) => {
+  const Edit = (writerUserId: number, article: string, id: number, parentId?: number) => {
     return editReplyId === id && isEditing ? (
       <EditReplyField
         id={id}
@@ -237,7 +241,7 @@ const Reply = (props: ReplyProps) => {
         onChangeReply={editReply}
       />
     ) : (
-      <>{Article(article, id)}</>
+      <>{Article(writerUserId, article, id)}</>
     );
   };
 
@@ -284,7 +288,7 @@ const Reply = (props: ReplyProps) => {
               </Box>
               <Box>
                 <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap" }}>
-                  {Edit(reply.article, reply.id, reply.parentId)}
+                  {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
                 </Typography>
               </Box>
               <NestedReplyField
@@ -343,7 +347,7 @@ const Reply = (props: ReplyProps) => {
                 whiteSpace: "pre-wrap",
               }}
             >
-              {Edit(value.article, value.id)}
+              {Edit(value.user.id, value.article, value.id,)}
             </Box>
             <NestedReplyField
               onAddNested={handleAddNested}

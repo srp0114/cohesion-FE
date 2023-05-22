@@ -6,13 +6,15 @@ export interface State extends SnackbarOrigin {
 }
 
 interface AdoptReplyProps {
-  replyId: number;
-  check: boolean;
-  checkId: number | null
+  replyId: number; // 댓글 id
+  check: boolean; // 채택 여부
+  checkId: number | null // 채택한 댓글 id
+  userId: number; // user.id
+  writerUserId: number; // 댓글 작성자 user.id
   onReplyAdopt: (replyId: number) => void;
 }
 
-const AdoptReply = ({ onReplyAdopt, check, checkId, replyId }: AdoptReplyProps) => {
+const AdoptReply = ({ userId, writerUserId, onReplyAdopt, check, checkId, replyId }: AdoptReplyProps) => {
   const [state, setState] = useState<State>({
     open: false,
     vertical: 'top',
@@ -35,11 +37,11 @@ const AdoptReply = ({ onReplyAdopt, check, checkId, replyId }: AdoptReplyProps) 
 
   return (
     <>
-      {check ? 
-        replyId === checkId ? <Button 
-        onClick={handleCheckReply}>채택취소</Button> : null 
-        : <Button onClick={handleCheckReply}>채택하기</Button>
-      } 
+      { userId === writerUserId ? 
+        null : check ? replyId === checkId ? 
+        <Button onClick={handleCheckReply}>채택취소</Button> : null 
+          : <Button onClick={handleCheckReply}>채택하기</Button>
+      }
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={2000}
