@@ -32,7 +32,7 @@ const File = ({ fileList }: FileProps) => {
         <>
         {fileList.map((value) => (
             <Stack direction="row" gap={6} ml={"2rem"} >
-            <Typography variant="h5">{value.originalName}</Typography>
+            {/*<Typography variant="h5">{value.originalName}</Typography>*/}
             <a href={`/api/files/download/${value.originalName}`}>{value.originalName}</a>
             <Button onClick={() => downloadFile(value.originalName)} size="small">다운로드</Button>
             </Stack>
