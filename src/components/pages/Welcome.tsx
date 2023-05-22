@@ -11,8 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 import UserSkill from "../layout/UserSkill";
 import UserIntroduce from "../layout/UserIntroduce";
 import { useTheme } from "@mui/material/styles"
-import DoneIcon from '@mui/icons-material/Done';
-import CloseIcon from '@mui/icons-material/Close';
+import { FindIcon } from "../data/IconData";
 
 interface UserInfoItems {
   sub: number;
@@ -320,7 +319,7 @@ const Welcome = () => {
                     <Chip
                       label={!(isOnlyNickName ?? true) ? "중복검사를 통과했습니다" : "중복검사를 통과하지 못했습니다."}
                       color={!(isOnlyNickName ?? true) ? "success" : "error"}
-                      icon={!(isOnlyNickName ?? true) ? <DoneIcon /> : <CloseIcon />}
+                      icon={!(isOnlyNickName ?? true) ? <FindIcon name="done" /> : <FindIcon name="close" />}
                       size="medium"
                       variant="outlined"
                     />

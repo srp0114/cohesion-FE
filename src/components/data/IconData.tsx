@@ -2,6 +2,8 @@ import React from "react";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
 import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
 import { SvgIcon } from "@mui/joy";
 
 const icons = [
@@ -24,6 +26,9 @@ const icons = [
     { name: "myPost", component: <Visibility /> },//작성한 게시글
     { name: "myRecord", component: <Visibility /> },//공부기록
     { name: "fix", component: <Visibility /> },//고정
+
+    { name: "done", component: <DoneIcon /> }, // V
+    { name: "close", component: <CloseIcon /> } // X
 ];
 
 const iconList = [
@@ -42,6 +47,8 @@ const iconList = [
     "myPost",
     "myRecord",
     "fix",
+    "done",
+    "close",
 ]
 
 /**
