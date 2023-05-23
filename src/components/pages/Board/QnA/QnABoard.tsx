@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
@@ -73,14 +73,22 @@ const QnABoard = () => {
       }
     });
   }
-  useEffect(() => {
-    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
-    getBoardItems("createdAt,desc");
-  }, [page]);
+
+/* 1.5초간 스켈레톤 표시 */
+useLayoutEffect(() => {
+  const timer = setTimeout(() => {
+    setLoading(true);
+  }, 1500);
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [boardItems]);
+
 
   useEffect(() => {
-    setLoading(true); //boardItems 상태가 변할 때 게시글 목록
-  }, [boardItems]);
+    getBoardItems("createdAt,desc");
+  }, [page]);
 
   const performSearch = (search : string) => {
     axios({

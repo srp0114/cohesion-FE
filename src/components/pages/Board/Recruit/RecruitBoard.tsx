@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Time from "../../../layout/Time";
 import {
@@ -31,6 +31,7 @@ import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
 import { shortenContent } from "../QnA/QnABoard";
+import { RecruitBoardSkeleton } from "../../../layout/Skeletons";
 
 
 //모집게시판 페이지 인터페이스
@@ -67,6 +68,7 @@ const RecruitBoard: React.FC = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
 
   useEffect(() => {
     getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
@@ -99,6 +101,17 @@ const RecruitBoard: React.FC = () => {
       });
   }
 
+/* 1.5초간 스켈레톤 표시 */
+useLayoutEffect(() => {
+  const timer = setTimeout(() => {
+    setLoading(true);
+  }, 1500);
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [boardItems]);  
+
   useEffect(() => {
     getBoardItems("createdAt,desc");
   }, [page])
@@ -128,41 +141,41 @@ const RecruitBoard: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
-          <Typography
-            variant="h2"
-            sx={{ mb: 5, pl: 3, fontWeight: 800 }}
-          >
-            모집게시판
-          </Typography>
-          <SortBoard setBoardSort={getBoardItems} />
+      {loading ? (
+        <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
+            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
+              모집게시판
+            </Typography>
+            <SortBoard setBoardSort={getBoardItems} />
+          </Box>
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
+              {displayPosting}
+            </Grid>
+          </Box>
+          <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
+            <SearchBoardField setSearchAPI={performSearch} />
+          </Box>
+          <PaginationControl
+            page={page}
+            between={1}
+            total={total}
+            limit={9}
+            changePage={(page: React.SetStateAction<number>) => setPage(page)}
+            ellipsis={1}
+          />
+          <WritingButton />
         </Box>
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid
-            container
-            rowSpacing={4}
-            columnSpacing={{ xs: 1, sm: 2, md: 4 }}
-            alignItems="stretch"
-          >
-            {displayPosting}
-          </Grid>
+      ) : (
+        <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <RecruitBoardSkeleton />
+          <WritingButton />
         </Box>
-        <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
-          <SearchBoardField setSearchAPI={performSearch} />
-        </Box>
-        <PaginationControl
-          page={page}
-          between={1}
-          total={total}
-          limit={9}
-          changePage={(page: React.SetStateAction<number>) => setPage(page)}
-          ellipsis={1}
-        />
-      </Box>
-      <WritingButton />
+      )}
     </>
   );
+  
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
