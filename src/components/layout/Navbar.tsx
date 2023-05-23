@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Button, Grid, Menu, MenuItem } from "@mui/material";
+import { Button, Box, Grid, Menu, MenuItem } from "@mui/material";
 import Profile from "../layout/Profile";
-import {checkLogin} from "../checkLogin";
-import {logoutHandler} from "../logoutHandler";
-import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { checkLogin } from "../checkLogin";
+import { logoutHandler } from "../logoutHandler";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import SearchField from "./SearchField";
+import pingpong from "../asset/logo/pingpong.png";
+import pingpong_hover from "../asset/logo/pingpong_hover.png";
+
+const logo = [pingpong, pingpong_hover];
 
 const Navbar = () => {
   const navigate = useNavigate();
-
+  const [logoHover, setLogoHover] = React.useState<number | 0 | 1>(0);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,6 +25,10 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleLogoHover = () => {
+    setLogoHover(Math.abs(logoHover - 1));
+  }
+
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
   const [profileImg, setProfileImg] = useState<string | null>(null);
@@ -30,19 +38,19 @@ const Navbar = () => {
   // 로그아웃 기능 추가 필요!!
   useEffect(() => {
     checkLogin()
-        .then((res) => {
-          if (res) {
-            setIsLogin(true);
-            getCurrentUserInfo()
-              .then((userInfo) => {
-                setNickname(userInfo.nickname);
-                setProfileImg(userInfo.profileImg);
-              })
-              .catch((err) => console.log(err));
-          } else {
-            setIsLogin(false);
-          }
-        })
+      .then((res) => {
+        if (res) {
+          setIsLogin(true);
+          getCurrentUserInfo()
+            .then((userInfo) => {
+              setNickname(userInfo.nickname);
+              setProfileImg(userInfo.profileImg);
+            })
+            .catch((err) => console.log(err));
+        } else {
+          setIsLogin(false);
+        }
+      })
   }, []);
 
   // 백에서 Home페이지에 추가해둔 로그인 핸들러 그대로 가져왔습니다
@@ -89,13 +97,30 @@ const Navbar = () => {
     navigate("/mypage");
     handleClose();
   };
-  
+
   return (
     <>
-      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} sx={{mt:"1.5rem", mb:"2rem" }} >
-        <Grid item xs={12} md={6}>
-          <Button sx={{height:30, backgroundColor:'#ddd', mr: 3}}/>
-          <Button onClick={moveToHome} className="navButton">홈</Button>
+      <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} sx={{ mt: "1.5rem", mb: "2rem" }} >
+        <Grid item container xs={12} md={6}>
+          <img
+            src={`${logo[logoHover]}`}
+            onClick={moveToHome}
+            style={{
+              width: "16rem",
+              cursor: "default",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={(e) => {
+              handleLogoHover();
+              e.currentTarget.style.cursor = "pointer";
+              e.currentTarget.style.filter = "drop-shadow(5px 5px 5px #555)";
+            }}
+            onMouseOut={(e) => {
+              handleLogoHover();
+              e.currentTarget.style.cursor = "default";
+              e.currentTarget.style.filter = "none";
+            }}
+          />
           <Button
             className="navButton"
             aria-controls={open ? "basic-menu" : undefined}
@@ -110,18 +135,18 @@ const Navbar = () => {
           </Menu>
           <Button onClick={moveToNotice} className="navButton">공지사항</Button>
         </Grid>
-        
+
         <Grid item xs={12} md={6} container direction="row" alignItems="center" justifyContent={"flex-end"}>
           {isLogin ? (
-          <>
-            <SearchField />       
-            <Button className="profile" onClick={moveToMyPage}>
-            <Profile nickname={nickname} imgUrl={profileImg} size={28}/>
-            </Button>
-            <Button onClick={handleLogin} className="loginButton">
-              로그아웃
-            </Button>
-          </>) : (
+            <>
+              <SearchField />
+              <Button className="profile" onClick={moveToMyPage}>
+                <Profile nickname={nickname} imgUrl={profileImg} size={28} />
+              </Button>
+              <Button onClick={handleLogin} className="loginButton">
+                로그아웃
+              </Button>
+            </>) : (
             <Button onClick={handleLogin} className="loginButton">로그인</Button>
           )}
         </Grid>
