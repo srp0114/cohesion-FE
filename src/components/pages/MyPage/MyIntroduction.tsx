@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Button, Box, Chip, Grid, IconButton, TextField, Typography, Stack, Paper, Avatar, Modal } from "@mui/material";
 import { skillData } from "../../data/SkillData";
 import UserSkill from "../../layout/UserSkill";
@@ -13,7 +13,7 @@ interface MyIntroductionProps {
   nickname: string;
   skills: Array<string>;
   introduce: string;
-  editUserInfo: (changeNickname: string, changeSkills: string[], changeIntroduce: string) => void
+  editUserInfo: (changeNickname: string, changeSkills: string[], changeIntroduce: string) => Promise<void>;
 }
 
 export const MyIntroduction = (props: MyIntroductionProps) => {
@@ -21,6 +21,14 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
   const [userNickname, setUserNickname] = useState<string>(props.nickname);
   const [userSkill, setUserSkill] = useState<string[]>(props.skills);
   const [userIntroduce, setUserIntroduce] = useState<string>(props.introduce);
+  const [error, setError] = useState<string>("");
+
+  // props.nickname, ... 변동 시 setUserNickname(...), ... 재호출
+  useEffect(() => {
+    setUserNickname(props.nickname);
+    setUserSkill(props.skills);
+    setUserIntroduce(props.introduce);
+  }, [props.nickname, props.skills, props.introduce])
 
   const onChangeNickname = (changeNickname: string) => {
     setUserNickname(changeNickname);
@@ -35,8 +43,12 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
   }
 
   const editMyIntroduce = () => {
-    setOpen(false);
-    props.editUserInfo(userNickname, userSkill, userIntroduce);
+    props.editUserInfo(userNickname, userSkill, userIntroduce)
+      .then(() => {
+        setOpen(false); // 수정 성공, 정보 요청 성공 시 모달 닫기
+        setError(""); // 에러 메시지 초기화
+      })
+      .catch((err) => setError(err.response.data.message)); // 수정 실패 시, 에러 메시지 출력
   }
 
   return (
@@ -58,17 +70,22 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
             <Typography variant="h1" align="center">내 정보 수정</Typography>
             <Box>
               {/*닉네임 수정*/}
-              <UserNickname nickname={props.nickname} changeNickname={onChangeNickname} isOnlyNickName={false} />
+              <Typography variant="h5" pb={"0.6rem"}>닉네임</Typography>
+              <UserNickname nickname={props.nickname} changeNickname={onChangeNickname} err={error} />
             </Box>
             <Box>
               <Typography variant="h5" pb={"0.6rem"}>관심기술을 선택해주세요!</Typography>
               <UserSkill skills={props.skills} changeSkills={onChangeSkills} />
             </Box>
             <Box pt={"1rem"}>
+              <Typography variant="h5" pb={"0.6rem"}>자기소개</Typography>
               <UserIntroduce introduce={props.introduce} changeIntroduce={onChangeIntroduce} />
             </Box>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-              <Button onClick={() => setOpen(false)}>취소</Button>
+              <Button onClick={() => {
+                setOpen(false);
+                setError("");
+              }}>취소</Button>
               <Button onClick={editMyIntroduce}>수정</Button>
             </Stack>
           </Stack>
@@ -112,46 +129,14 @@ const editUserinfoModal = {
 interface UserNicknameProps {
   changeNickname: (nickname: string) => void;
   nickname?: string;
-  isOnlyNickName?: boolean;
+  err?: string;
 }
 
-const UserNickname = ({ changeNickname, nickname, isOnlyNickName }: UserNicknameProps) => {
-  const [isChecking, setIsChecking] = useState<boolean | null>(null);
-
+const UserNickname = ({ changeNickname, nickname, err }: UserNicknameProps) => {
   const { control, setError, clearErrors, watch } = useForm({
     mode: "onChange",
-    defaultValues: { nickname: nickname, isOnlyNickName: isOnlyNickName },
+    defaultValues: { nickname: nickname },
   });
-
-  //닉네임 중복 검사 함수
-  const postOnlyNickname = (nickname: string | undefined) => {
-    const nicknameValue = nickname || ""; // nickname이 undefined일 경우 기본값으로 빈 문자열 사용
-    const request_nickname = {
-      nickname: nicknameValue
-    };
-
-    axios({
-      method: "post",
-      url: "/api/user/check-nickname",
-      headers: { "Content-Type": "application/json" },
-      data: request_nickname,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data) {
-            setError("nickname", {
-              type: "manual",
-              message: "이미 누군가가 사용 중인 닉네임입니다.",
-            });
-          } else {
-            clearErrors("nickname");
-          }
-          setIsChecking(res.data)
-        }
-      })
-      .catch((err) => { console.log(`postOnlyNickname에서 error catch ${err}`) });
-
-  }
 
   return (
     <>
@@ -176,7 +161,7 @@ const UserNickname = ({ changeNickname, nickname, isOnlyNickName }: UserNickname
             placeholder="새로운 닉네임을 알려주세요!"
             rows={1}
             error={error !== undefined}
-            helperText={error ? "글자 수를 초과했습니다." : ""}
+            helperText={error ? error.message : ""}
             onChange={(e) => {
               field.onChange(e);
               changeNickname(e.target.value);
@@ -184,32 +169,7 @@ const UserNickname = ({ changeNickname, nickname, isOnlyNickName }: UserNickname
           />
         )}
       />
-      <Controller
-        control={control}
-        name="isOnlyNickName"
-        defaultValue={isOnlyNickName ?? true}
-        render={({ field }) => (
-          <Button
-            type="button"
-            onClick={() => {
-              postOnlyNickname(nickname)
-            }}
-            variant="outlined"
-            color="info"
-            size="small"
-          >
-            중복검사
-          </Button>
-        )}
-      />
-
-      <Chip
-        label={!(isOnlyNickName ?? true) ? "중복검사를 통과했습니다" : "중복검사를 통과하지 못했습니다."}
-        color={!(isOnlyNickName ?? true) ? "success" : "error"}
-        icon={!(isOnlyNickName ?? true) ? <DoneIcon /> : <CloseIcon />}
-        size="medium"
-        variant="outlined"
-      />
+      {err && <p>{err}</p>} {/* 에러 발생 시 출력 TODO 적절하게 커스터마이징 필요 */}
     </>
   );
 };
