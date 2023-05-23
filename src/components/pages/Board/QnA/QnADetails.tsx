@@ -158,7 +158,7 @@ const QnADetails = () => {
         </div>
         </Grid>
       </Grid>
-      <Reply board={"questions"} writerId={writerId} postingId={id} />
+      <Reply board={BoardType.question} writerId={writerId} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>

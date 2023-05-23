@@ -3,7 +3,7 @@ import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Se
 import axios from "axios";
 import AddFile from "../layout/AddFile";
 import Skill from "../layout/Skill";
-import EditorToolbar from "../layout/EditorToolbar";
+import QuillEditor from "../layout/QuillEditor";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
@@ -341,7 +341,7 @@ const PostForm = () => {
                 rules={{ required: true }}
                 render={({ field }) => (
                   <div className="postQuill">
-                    <EditorToolbar
+                    <QuillEditor
                       onAddQuill={(data) => {
                         const modifiedData = data.trim() === '<p><br></p>' ? "" : data;
                         setValue("content", modifiedData, { shouldValidate: true });

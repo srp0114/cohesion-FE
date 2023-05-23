@@ -124,7 +124,7 @@ const FreeDetails = () => {
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
         </Grid>
       </Grid>
-      <Reply board={"free"} postingId={id} />
+      <Reply board={BoardType.free} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>

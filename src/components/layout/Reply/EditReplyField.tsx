@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Grid, TextField, Button } from "@mui/material";
+import React, { useState, ChangeEvent } from "react";
+import { Grid, TextField, Button } from "@mui/material"
 
-interface EditReplyProps {
+export interface EditReplyProps {
   article: string;
   id : number;
   parentId?: number;
@@ -13,7 +13,7 @@ interface EditReplyProps {
 const EditReplyField = (props: EditReplyProps) => {
   const [editArticle, setEditArticle] = useState(props.article);
 
-  const handleEditArticleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditArticleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEditArticle(event.target.value);
   };
 

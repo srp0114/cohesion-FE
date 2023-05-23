@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Grid, TextField, Button, Box } from "@mui/material";
-import EditorToolbar from "../EditorToolbar";
+import QuillEditor from "../QuillEditor";
 import "../../style/Board.css";
 
 interface ReplyProps{
@@ -30,7 +30,7 @@ const ReplyField = (props : ReplyProps) => {
       <Grid item xs={9} md={10.5}>
       {props.board === "questions" ? 
         <div className="replyQuill">
-          <EditorToolbar onAddQuill={onQuillChange} content={article} />
+          <QuillEditor onAddQuill={onQuillChange} content={article} />
         </div> : 
         <TextField
           fullWidth

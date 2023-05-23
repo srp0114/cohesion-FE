@@ -7,6 +7,8 @@ import AdoptReply from "./AdoptReply";
 import Time from "../Time";
 import Profile from "../Profile";
 import EditReplyField from "./EditReplyField";
+import EditQuillReply from "./EditQuillReply";
+import { BoardType } from "../../model/board";
 
 interface User {
   id: number;
@@ -27,7 +29,7 @@ interface ReplyItems {
 
 interface ReplyProps {
   postingId: string, // 게시글 번호
-  board: string; // 게시판 유형
+  board: BoardType; // 게시판 유형
   writerId?: number; // Q&A 채택을 위한 게시글 작성자 학번
 }
 
@@ -95,19 +97,17 @@ const Reply = (props: ReplyProps) => {
     getAdoptReply();
   }, [board, id, getAdoptReply]);
 
-  // 채택하기 변경되는 경우 값 넘어올 핸들러
   const handleAdoptReply = async (replyId: number) => {
     try {
       isChosen.check ?
         await axios.put(`/api/questions/${replyId}/adopt-cancel`) :
         await axios.post(`/api/questions/${replyId}/adopt-replies`)
-      await getAdoptReply()
+        getAdoptReply()
     } catch (err) {
       console.error(err)
     }
   };
 
-  // 댓글 추가 핸들러
   const handleAddReply = (article: string) => {
     const data = {
       article: article,
@@ -150,7 +150,6 @@ const Reply = (props: ReplyProps) => {
       });
   };
 
-  // 수정 버튼 클릭한 경우 - 기존 댓글 내용이 수정창으로 변경
   const editReply = (id: number, article: string, parentId?: number) => {
     setIsEditing(false);
 
@@ -188,13 +187,11 @@ const Reply = (props: ReplyProps) => {
       })
   };
 
-  // 수정 버튼 클릭 시, 적용될 핸들러
   const editHandler = (id: number) => {
     setReplyId(id);
     setIsEditing(true);
   };
 
-  // Q&A 게시판인 경우 상세보기로부터 받아온 작성자의 userId와 로그인한 사용자의 userId 비교 후 동일한 경우 채택버튼 출력
   const Article = (writerUserId: number, article: string, id: number) => {
   return (
     <>
@@ -223,24 +220,26 @@ const Reply = (props: ReplyProps) => {
             </Grid>
           ) : null}
         </Grid>
-      ) : (
+        ) : (
         <Typography>{article}</Typography>
       )}
     </>
-  );
-};
+    );
+  };
 
   // 수정 버튼 클릭에 따른 컴포넌트 전환
   const Edit = (writerUserId: number, article: string, id: number, parentId?: number) => {
-    return editReplyId === id && isEditing ? (
-      <EditReplyField
+    return editReplyId === id && isEditing ? 
+      board === BoardType.question ? 
+      (<EditQuillReply id={id} article={article} parentId={parentId} isEditing={isEditing} onChangeReply={editReply}/>) : 
+      (<EditReplyField
         id={id}
         article={article}
         parentId={parentId}
         isEditing={isEditing}
         onChangeReply={editReply}
-      />
-    ) : (
+      />)
+     : (
       <>{Article(writerUserId, article, id)}</>
     );
   };
@@ -276,12 +275,8 @@ const Reply = (props: ReplyProps) => {
                 <Box>
                   {reply.user.id === userId ? (
                     <>
-                      <Button onClick={() => editHandler(reply.id)}>
-                        수정
-                      </Button>
-                      <Button onClick={() => deleteReply(reply.id)}>
-                        삭제
-                      </Button>
+                      <Button onClick={() => editHandler(reply.id)}>수정</Button>
+                      <Button onClick={() => deleteReply(reply.id)}>삭제</Button>
                     </>
                   ) : null}
                 </Box>
