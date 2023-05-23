@@ -20,6 +20,8 @@ import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { Application } from "./ApplyAcceptStuff";
+import File from "../../../layout/File";
+import { FileItem } from "../Free/FreeDetails";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -54,6 +56,7 @@ const RecruitDetails = () => {
   const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
+  const [fileList, setFileList] = useState<FileItem[]>([]);
 
   const _theme = useTheme();
   const postingId = Number(id);
@@ -117,6 +120,16 @@ const RecruitDetails = () => {
       }
     }).catch((err) => console.log(err));
 
+    axios({
+      method: "get",
+      url: `/api/recruit/${id}/file-list`
+    })
+    .then((res) => {
+        setFileList(res.data);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
   }, []);
 
   useEffect(() => {
@@ -249,6 +262,9 @@ const RecruitDetails = () => {
             }
           </Grid>
 
+        </Grid>
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
         </Grid>
 
         {/*게시글 내용 */}

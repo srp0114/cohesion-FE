@@ -187,30 +187,79 @@ const EditForm = () => {
     /**
      * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update) 수정 기능
      */
-    axios({
-      method: "put",
-      url: `/api/${boardType}/update/${postingId}`,
-      headers: { "Content-Type": "application/json" },
-      data: JSON.stringify(request_data),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-              수정되었습니다.
-            </Alert>
-          </Snackbar>
-          nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-        } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-      })
-      .catch((err) => console.log(err));
-    setOpen(true);
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
-
+    // axios({
+    //   method: "put",
+    //   url: `/api/${boardType}/update/${postingId}`,
+    //   headers: { "Content-Type": "application/json" },
+    //   data: JSON.stringify(request_data),
+    // })
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+    //         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+    //           수정되었습니다.
+    //         </Alert>
+    //       </Snackbar>
+    //       nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+    //     } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+    //   })
+    //   .catch((err) => console.log(err));
+    // setOpen(true);
+    // return (
+    //   <>
+    //     {isLoading && <Loading delayTime={1500} />}
+    //   </>
+    // );
+    switch (boardType) {
+      case BoardType.free:
+        axios({
+          method: "put",
+          url: `/api/free/update/${postingId}`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_data),
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+            } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+          })
+          .catch((err) => console.log(err));
+        break;
+      case BoardType.question:
+        axios({
+          method: "put",
+          url: `/api/questions/update/${postingId}`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_qna),
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+            } // 응답(401, 403 등) 핸들링 ...
+          })
+          .catch((err) => console.log(err));
+        break;
+      case BoardType.recruit:
+        axios({
+          method: "put",
+          url: `/api/recruit/update/${postingId}`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_recruit),
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+              nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+            } // 응답(401, 403 등) 핸들링 ...
+          })
+          .catch((err) => console.log(err));
+        break;
+      /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
+      default:
+        break;
+    }
   };
 
   const deleteHandler = (event:React.MouseEvent) => {
