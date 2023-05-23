@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios"; 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Grid } from "@mui/material";
 import { MyProfile } from "./MyProfile";
 import { MyHistory } from "./MyHistory";
@@ -45,45 +45,44 @@ const MyPage = () => {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getUserInfo();
-  },[])
+  }, [])
 
-  const onChangeUserInfo = (skills: string[], introduce: string) => {
-    const data = {
-      skills: skills,
-      introduce: introduce
-    }
-
-    setMyInfo({
-      ...myInfo, 
-      skills: skills, 
-      introduce: introduce
-    });
-      
-    axios({
-      method: "put",
-      url: `/api/user/update`,
-      headers: { "Content-Type": "application/json" },
-      data: data,
-    })
-    .then((res) => {
-      if (res.status === 200) {
-        getUserInfo();
+  const onChangeUserInfo = (nickname: string, skills: string[], introduce: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const data = {
+        nickname: nickname,
+        skills: skills,
+        introduce: introduce
       }
+
+      axios({
+        method: "put",
+        url: `/api/user/update`,
+        headers: { "Content-Type": "application/json" },
+        data: data,
+      })
+        .then((res) => {
+          if (res.status === 200) { // 수정이 성공하고
+            getUserInfo()
+              .then(() => resolve()); // 정보 요청이 성공하면 resolve
+          }
+        })
+        .catch((err) => {
+          reject(err); // 수정 실패 시, error reject
+        });
     })
-    .catch((err) => {
-      console.log(err);
-    });
   }
 
+  console.log(myInfo.nickname)
   console.log(myInfo.skills)
   console.log(myInfo.introduce)
 
   return (
     <>
-      <Grid 
-        container 
+      <Grid
+        container
         direction="row"
         gap={4}
         mt={"4rem"}
@@ -91,17 +90,17 @@ const MyPage = () => {
       >
         <Grid item xs={12} md={4.5} rowSpacing={{ xs: "1.5rem" }} pl={"2rem"} pr={"2rem"} >
           <Grid container item direction="column" gap={4}>
-          <Grid item xs={12}>
-            <MyProfile studentId={myInfo.studentId} nickname={myInfo.nickname} track1 = {myInfo.track1} track2 = {myInfo.track2} profileImg={myInfo.profileImg}/>
-          </Grid>
-          <Grid item xs={12}>
-          <MyIntroduction editUserInfo={onChangeUserInfo} nickname={myInfo.nickname} introduce={myInfo.introduce} skills={myInfo.skills}/>
-          </Grid>
+            <Grid item xs={12}>
+              <MyProfile studentId={myInfo.studentId} nickname={myInfo.nickname} track1={myInfo.track1} track2={myInfo.track2} profileImg={myInfo.profileImg} />
+            </Grid>
+            <Grid item xs={12}>
+              <MyIntroduction editUserInfo={onChangeUserInfo} nickname={myInfo.nickname} introduce={myInfo.introduce} skills={myInfo.skills} />
+            </Grid>
           </Grid>
         </Grid>
 
         <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
-          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} point={myInfo.point}/>
+          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} point={myInfo.point} />
         </Grid>
       </Grid>
     </>

@@ -26,7 +26,7 @@ export interface FreeBoardItems {
   bookmark: number;
   reply: number;
   views: number;
-  //imgUrl?: Array<string>; //이미지
+  image: {imageUrl: string}[];
 }
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
@@ -99,38 +99,33 @@ const FreeBoard = () => {
   );
 
   return (<>
-    {
-      loading ? (
-        <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-            <Typography
-              variant="h2" 
-              sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
-              자유게시판
-            </Typography>
-            <SortBoard setBoardSort={getBoardItems}/>
-          </Box>
-
-          {displayPosting}
-          <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchBoardField setSearchAPI={performSearch}/>
-          </Box>
-          <PaginationControl
-            page={page}
-            between={1}
-            total={total}
-            limit={4}
-            changePage={(page: React.SetStateAction<number>) => setPage(page)}
-            ellipsis={1}
-          />
-          <WritingButton />
-          </Box>
-      )
+      {
+        loading ? (
+          <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+            <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
+              <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
+              <SortBoard setBoardSort={getBoardItems}/>
+            </Stack>
+            {displayPosting}
+            <Box display={"flex"} justifyContent={"flex-end"}>
+              <SearchBoardField setSearchAPI={performSearch}/>
+            </Box>
+            <PaginationControl
+              page={page}
+              between={1}
+              total={total}
+              limit={5}
+              changePage={(page: React.SetStateAction<number>) => setPage(page)}
+              ellipsis={1}
+            />
+            <WritingButton />
+          </Stack>
+        )
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
           <WritingButton />
         </Box>)
-    }
+      }
   </>);
 
 }
@@ -144,58 +139,77 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
     navigate(`/free/${postId}`);
   };
 
+  const preRegex = /<pre[^>]*>(.*?)<\/pre>/gs;
+  const imgRegex = /<img\b[^>]*>/gs;
+  const noPreTag = props.content.replace(preRegex, "");
+  const deleteTag = noPreTag.replace(imgRegex, "");
+
+
   return (
-    <Grid container direction="column" item xs={12} rowSpacing="1rem" sx={{
+    <Grid container direction="column" item xs={12} sx={{
       bgcolor: "background.paper",
-      borderRadius: "35px",
-      border: "0.5px solid black",
+      borderRadius: "40px",
+      boxShadow: 3,
+      margin: "2.25rem 0",
+      padding: "2rem 2.5rem 2rem",
+      justifyContent: "space-between",
+      height: "15rem",
       "&:hover": {
         boxShadow: 5,
         pointer: "cursor"
-      },
-      margin: "2.25rem 0",
-      padding: "0.75rem 2rem 1.25rem",
-      height: "16rem", //게시글 박스 높이
-      justifyContent: "space-between",
-      alignItems: "stretch"
-    }}
-      onClick={() => goToPost(props.id)}>
-      <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+      }
+    }} onClick={() => goToPost(props.id)}>
+    {props.image.length === 0 ? (
+      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
+        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-          <Typography variant="h5">{props.title}</Typography>
+          <Typography variant="h3">{props.title}</Typography>
           {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
-
-        <Time date={props.createdDate} variant="h6" />
+        <Time date={props.createdDate} variant="h5" />
+        </Grid>
+        <Grid item className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+        </Grid>
+        <Grid item>
+          <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Stack>
+        </Grid>
       </Grid>
-
-      <Grid item sx={{
-        whiteSpace: "pre-line",
-        wordWrap: "break-word",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        alignItems: "stretch",
-        maxHeight: "6.5rem"
-      }}>
-        <Typography variant="body1">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: shortenContent(props.content, 50),
-            }}
-          />
-        </Typography>
-        {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-      </Grid>
-
-      <Grid item>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {userInfo(props.writer, props.stuId, props.profileImg)}
-          {reply_bookmark_views(props)} {/*북마크 onClick 추가 필요*/}
+    ) : (
+    <Grid item container spacing={4} > 
+      <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box position="relative" width="22rem" height="11rem">
+          <span style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, 
+            backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
-    </Grid >
+      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
+        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <Typography variant="h3">{props.title}</Typography>
+            {(typeof props.modifiedDate === 'object') ?
+              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+          </Stack>
+          <Time date={props.createdDate} variant="h5" />
+        </Grid>
+        <Grid item sx={{width: "100%"}} className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+        </Grid>
+        <Grid item>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Box>
+        </Grid>
+      </Grid>
+    </Grid>
+  )}
+  </Grid>
   );
-};
+}
 
 export default FreeBoard;
