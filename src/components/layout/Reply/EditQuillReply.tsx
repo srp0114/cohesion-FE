@@ -1,19 +1,20 @@
 import { useState } from "react";
 import QuillEditor from "../QuillEditor";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { EditReplyProps } from "./EditReplyField";
 import { Modal, Paper, Stack } from "@mui/material";
 import "../../style/Board.css";
 
-const QuillModal = {
+export const QuillModal = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '70rem',
+  width: '65rem',
   hegiht: '50rem',
+  maxHeight: "50rem",
   bgcolor: 'background.paper',
-  p: "10rem",
+  p: "5rem",
   borderRadius: 6,
 };
 
@@ -37,6 +38,7 @@ const EditQuillReply = (props: EditReplyProps) => {
                 <Modal open={open}>
                 <Paper sx={QuillModal} elevation={4}>
                 <Stack direction={"column"} spacing={"2rem"}>
+                    <Typography variant="h3" p={"0.5rem"}>댓글 수정</Typography>
                     <div className="replyModalQuill">
                         <QuillEditor onAddQuill={onQuillChange} content={editArticle} />
                     </div>

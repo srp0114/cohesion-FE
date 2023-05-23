@@ -19,15 +19,14 @@ const EditReplyField = (props: EditReplyProps) => {
 
   const handleSubmit = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    // 변경된 article 내용 전달
     props.onChangeReply(props.id, editArticle, props.parentId);
   };
 
   return (
     <>
     {props.isEditing && 
-      <Grid container spacing={2} direction="row" sx={{display:"flex", justifyContent:"space-evenly", alignItems:"center", mr:"1rem"}}>
-        <Grid item xs={9} md={10}>
+      <Grid container direction="row" sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}  pl={"3rem"} pr={"3rem"}>
+        <Grid item xs={8} md={11}>
           <TextField 
             variant="standard" 
             multiline 

@@ -10,6 +10,7 @@ import EditReplyField from "./EditReplyField";
 import EditQuillReply from "./EditQuillReply";
 import { BoardType } from "../../model/board";
 import { replyCount } from "../postingDetail/replyCount";
+import { FindIcon } from "../../data/IconData";
 
 interface User {
   id: number;
@@ -48,6 +49,7 @@ const Reply = (props: ReplyProps) => {
   });
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [showReplies, setShowReplies] = useState(false);
 
   const id = props.postingId;
   const board = props.board;
@@ -197,7 +199,7 @@ const Reply = (props: ReplyProps) => {
     <>
       {board === BoardType.question ? (
         //채택하기
-        <Grid container direction="row">
+        <Grid item container direction="row">
           <Grid item xs={9} md={10}>
             <div className="ql-snow">
               <div
@@ -222,8 +224,8 @@ const Reply = (props: ReplyProps) => {
           ) : null}
         </Grid>
         ) : (
-        <Grid item p={"1rem"}>
-        <Typography variant={"h4"}>{article}</Typography>
+        <Grid item p={"0rem 3rem 0rem"}>
+          <Typography variant={"h4"}>{article}</Typography>
         </Grid>
       )}
     </>
@@ -257,12 +259,12 @@ const Reply = (props: ReplyProps) => {
       Article(writerUserId, article, id)
     );
   };
-
   
   const generateReply = (reply: ReplyItems) => (
     <>
+      <Grid item container direction={"column"} spacing={"0.8rem"} mt={"1rem"} mb={"0.1rem"}>
         <Grid item container direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-          <Stack direction={"row"} alignItems={"center"} spacing={"0.5rem"}>
+          <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
             <Profile nickname={reply.user.nickname} imgUrl={reply.user.profileImg} size={30}/>
             <Typography variant="h4" sx={{ ml: 1 }}>
               {reply.user.nickname}
@@ -272,7 +274,7 @@ const Reply = (props: ReplyProps) => {
             </Typography>
           </Stack>
           <Stack direction={"row"}>
-            {reply.user.id === userId ? (
+            {reply.user.id === userId && !isEditing? (
               <>
                 <Button onClick={() => editHandler(reply.id)}>수정</Button>
                 <Button onClick={() => deleteReply(reply.id)}>삭제</Button>
@@ -284,49 +286,56 @@ const Reply = (props: ReplyProps) => {
           {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
         </Grid>
         <Grid item>
-        <NestedReplyField
+          <NestedReplyField
           board={board}
           onAddNested={handleAddNested}
           parentId={reply.id}
         />
         {replyContainer(replyData, reply.id)}
         </Grid>
+        </Grid>
     </>
   );
 
-  const [showReplies, setShowReplies] = useState(false);
-
-const replyContainer = (replies: ReplyItems[], parentId?: number) => {
-  const filteredReplies = parentId
-      ? replies.filter((reply) => reply.parentId === parentId)
-      : replies;
-
-    const toggleShowReplies = () => {
-      setShowReplies(!showReplies);
-    };
+  const replyContainer = (replies: ReplyItems[], parentId?: number) => {
+    const filteredReplies = parentId
+        ? replies.filter((reply) => reply.parentId === parentId)
+        : replies;
 
     return (
       filteredReplies.length > 0 && (
+        <>
+        <Button onClick={()=>setShowReplies(!showReplies)}>
+          {showReplies ? (
+          <>
+          <FindIcon name="up" />숨기기
+          </>
+          ) : (
+            <>
+            <FindIcon name="down" />{`답글 ${filteredReplies.length}개`}
+            </>
+          )}
+        </Button>
+        
         <Grid item container direction="column" pl="2rem">
           {showReplies && filteredReplies.map((reply) => generateReply(reply))}
-          <Button onClick={toggleShowReplies}>
-            {showReplies ? '답글 숨기기' : '답글 보기'}
-          </Button>
         </Grid>
+        </>
       )
     );
   };
 
   const reply = replyData
-    .filter((reply) => !reply.parentId)
-    .map((value) => generateReply(value));
+  .filter((reply) => !reply.parentId)
+  .map((value) => generateReply(value));
+
 
   return (
     <>
         {replyCount(replyData.length)}
         <ReplyField onAddReply={handleAddReply} board={props.board} />
-        <Grid container direction={"column"} spacing={"0.5rem"} p={"1rem"}>
-          {reply}
+        <Grid container direction="column">
+        {reply}
         </Grid>
     </>
   );

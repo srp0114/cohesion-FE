@@ -4,7 +4,6 @@ import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack, Zoom } from "@mui/material";
 import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
-import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
@@ -146,9 +145,11 @@ const QnADetails = () => {
           </Stack>
            <Bookmark boardType={"questions"} id={id} />
         </Grid>
+        {fileList.length > 0 && 
         <Grid item xs={12}>
           <File fileList={fileList}/>
         </Grid>
+        }
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
             <div className="ql-editor"
@@ -156,7 +157,6 @@ const QnADetails = () => {
           </div>
         </Grid>
         <Grid item>
-          {replyCount(postItem.reply)}
           <Reply board={BoardType.question} writerId={writerId} postingId={id} />
         </Grid>
       </Grid>

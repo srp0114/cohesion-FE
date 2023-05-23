@@ -4,7 +4,7 @@ import { Breadcrumbs, Typography, Link } from "@mui/material";
 export enum PageName {
   free= "자유게시판",
   questions= "Q&A게시판",
-  recruit= "모집게시판",
+  recruit= "구인게시판",
   notice= "공지사항",
   mypage= "마이페이지",
   post= "게시글 작성"
@@ -26,7 +26,7 @@ export const PostingCrumbs = ({ title, board }: PostingCrumbsProps) => {
         href="/"
         sx={{ fontSize: "1rem" }}
       >
-        Home
+        홈
       </Link>
       <Link
         underline="none"

@@ -5,6 +5,8 @@ import Visibility from "@mui/icons-material/VisibilityOutlined";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import MediaIcon from '@mui/icons-material/PermMediaOutlined';
+import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
+import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 import { SvgIcon } from "@mui/joy";
 
 const icons = [
@@ -30,7 +32,9 @@ const icons = [
 
     { name: "done", component: <DoneIcon /> }, // V
     { name: "close", component: <CloseIcon /> }, // X
-    { name: "file", component: <MediaIcon/> }
+    { name: "file", component: <MediaIcon/> },
+    { name: "up", component: <ArrowUp/>},
+    { name: "down", component: <ArrowDown/>}
 ];
 
 const iconList = [
@@ -51,6 +55,8 @@ const iconList = [
     "fix",
     "done",
     "close",
+    "up",
+    "down"
 ]
 
 /**

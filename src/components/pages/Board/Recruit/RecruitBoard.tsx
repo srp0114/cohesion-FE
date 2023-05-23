@@ -134,7 +134,7 @@ const RecruitBoard: React.FC = () => {
             variant="h2"
             sx={{ mb: 5, pl: 3, fontWeight: 800 }}
           >
-            모집게시판
+            구인게시판
           </Typography>
           <SortBoard setBoardSort={getBoardItems} />
         </Box>

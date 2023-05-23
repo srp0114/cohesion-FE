@@ -2,20 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, Chip, Grid, Typography, Zoom, Stack } from "@mui/material";
-import Time from "../../../layout/Time";
-import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
-import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { PageName } from "../../../layout/postingDetail/postingCrumbs";
 import { PostingSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
+import Reply from "../../../layout/Reply/Reply";
 import File from "../../../layout/File";
-import Profile from "../../../layout/Profile";
 
 interface FreeDetailItems {
   id: number;
