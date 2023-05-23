@@ -4,7 +4,7 @@ import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack, Zoom } from "@mui/material";
 import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
-import Money from "@mui/icons-material/MonetizationOn";
+import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
@@ -39,7 +39,7 @@ const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
   const [writerId, setWriterId] = useState<number>(0)
-  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [accessUserId, setAccessUserId] = useState<number>(0);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const { id } = useParams() as { id: string };
   const postingId = Number(id);
@@ -130,9 +130,9 @@ const QnADetails = () => {
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}>
-            <Typography variant="h1">{postItem.title}</Typography>
+            <Typography variant="h1" sx={{fontWeight:"600"}}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
-              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
         </Grid>
         <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
@@ -149,16 +149,17 @@ const QnADetails = () => {
         <Grid item xs={12}>
           <File fileList={fileList}/>
         </Grid>
-        <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
-        <div className="ql-snow">
-          <div
-            className="ql-editor"
-            dangerouslySetInnerHTML={{ __html: postItem.content }}
-          />
-        </div>
+        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
+          <div className="ql-snow">
+            <div className="ql-editor"
+              dangerouslySetInnerHTML={{ __html: postItem.content }}/>
+          </div>
+        </Grid>
+        <Grid item>
+          {replyCount(postItem.reply)}
+          <Reply board={BoardType.question} writerId={writerId} postingId={id} />
         </Grid>
       </Grid>
-      <Reply board={BoardType.question} writerId={writerId} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>
@@ -169,7 +170,7 @@ const QnADetails = () => {
 
   return (
     <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      <Box sx={{ p: "2rem 10rem 4rem" }}>
         {PostDetails}</Box>
     </>
   );

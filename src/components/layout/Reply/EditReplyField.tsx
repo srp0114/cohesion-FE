@@ -3,7 +3,7 @@ import { Grid, TextField, Button } from "@mui/material"
 
 export interface EditReplyProps {
   article: string;
-  id : number;
+  id: number;
   parentId?: number;
   isEditing: boolean;
   onChangeReply: (id:number, article:string, parentId?: number) => void;

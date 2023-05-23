@@ -1,51 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Grid, Stack, Box, Typography, Chip } from "@mui/material";
 import Time from "../../../layout/Time";
-import { skillData } from "../../../data/SkillData";
-import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
+import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { BoardSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import { shortenContent } from "../QnA/QnABoard";
 
-export interface BoardItems {
+export interface NoticeItems {
   id: number;
   title: string;
   content: string;
   writer: string;
   createdDate: string;
   modifiedDate?: string;
-  language?: string;
   bookmark: number;
   reply: number;
-  point: number;
-  views: number; //조회수
-  profileImg: string | null; //사용자 이미지 img
-  stuId: number; //사용자 아이디, 학번
+  views: number; 
+  profileImg: string | null; 
+  stuId: number;
   image: {imageUrl: string}[];
 }
 
-export const shortenContent = (str: string, length = 200) => {
-  let content: string = "";
-  if (str.length > length) {
-    content = str.substring(0, length - 2);
-    content = content + "...";
-  } else {
-    content = str;
+const testData : NoticeItems[] = [
+  {
+    id: 1,
+    title: "title",
+    content: "content",
+    writer: "admin",
+    createdDate: "now",
+    bookmark: 2,
+    reply: 0,
+    views: 1,
+    profileImg: null,
+    stuId: 120,
+    image: []
+  }, 
+  {
+    id: 2,
+    title: "tiddtle",
+    content: "contddddddent",
+    writer: "admiddddn",
+    createdDate: "now",
+    bookmark: 2,
+    reply: 0,
+    views: 1,
+    profileImg: null,
+    stuId: 13120,
+    image: []
   }
-  return content;
-};
+]
 
-const QnABoard = () => {
-  const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+const Notice = () => {
+  const [boardItems, setBoardItems] = useState<NoticeItems[]>(testData);
   const [total, setTotal] = useState<number>(0);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams(); 
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
@@ -54,9 +69,11 @@ const QnABoard = () => {
     const params = { size: 5, sort: sort };
 
     setSearchParams({page: page.toString()})
+    // 공지사항 게시글, 게시글 개수 연듕
+    // TODO:  url 수정 필요
     axios({
       method: "get",
-      url: `/api/questions/list?page=${curPage}`,
+      url: `/api/notice/list?page=${curPage}`,
       params: params
     })
     .then((res) => {
@@ -66,27 +83,14 @@ const QnABoard = () => {
       }
     })
     .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
-        console.log("권한 x");
-      }
-    });
+      console.log(err);
+    })
   }
-
-  useEffect(() => {
-    setLoading(false); //마운트될 때, api 요청 보내기 전 skeleton
-    getBoardItems("createdAt,desc");
-  }, [page]);
-
-  useEffect(() => {
-    setLoading(true); //boardItems 상태가 변할 때 게시글 목록
-  }, [boardItems]);
 
   const performSearch = (search : string) => {
     axios({
       method: "get",
-      url: `/api/questions/list?search=${search}&page=0&size=5`,
+      url: `/api/notice/list?search=${search}&page=0&size=5`,
     })
       .then((res) => {
         if (res.status === 200) {
@@ -112,7 +116,7 @@ const QnABoard = () => {
       {loading ? (
       <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
-            <Typography variant="h2" sx={{ fontWeight: 800 }}>Q&A게시판</Typography>
+            <Typography variant="h2" sx={{ fontWeight: 800 }}>공지사항</Typography>
             <SortBoard setBoardSort={getBoardItems}/>
           </Stack>
           {displayPosting}
@@ -127,36 +131,21 @@ const QnABoard = () => {
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
-          <WritingButton />
         </Stack>)
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
-          <WritingButton />
         </Box>)}
     </>
   );
 
 }
 
-const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) => {
+const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems) => {
   const navigate = useNavigate();
 
   const goToPost = (postId: number) => {
-    navigate(`/questions/${postId}`);
+    navigate(`/notice/${postId}`);
   };
-
-  const SkillIcon = props.language
-    ? skillData.map((data) => {
-      if (props.language === data.name) {
-        return <img src={data.logo} width="25" height="25" />;
-      }
-    })
-    : null;
-
-  const preRegex = /<pre[^>]*>(.*?)<\/pre>/gs;
-  const imgRegex = /<img\b[^>]*>/gs;
-  const noPreTag = props.content.replace(preRegex, "");
-  const deleteTag = noPreTag.replace(imgRegex, "");
 
   return (
     <Grid container direction="column" item xs={12} sx={{
@@ -182,11 +171,10 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
         </Stack>
         <Stack direction="row" spacing={"1rem"}>
           <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
         </Stack>
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -211,10 +199,9 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
               null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
           <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -229,4 +216,4 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
   );
 }
 
-export default QnABoard;
+export default Notice;

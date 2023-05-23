@@ -1,5 +1,19 @@
-.MuiInputBase-root{
-    border-radius: 15px !important;
+.replyModalQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background: #ffffff;
+}
+
+.replyModalQuill .ql-snow .ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+}
+
+.replyModalQuill .ql-editor {
+    min-height: 10rem;
+    white-space: pre-wrap;
 }
 
 .replyQuill .ql-container {
@@ -38,4 +52,3 @@
     min-height: 20rem;
     white-space: pre-wrap;
 }
-

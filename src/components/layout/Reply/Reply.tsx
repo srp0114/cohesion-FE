@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { Typography, Box, Button, Grid } from "@mui/material";
+import { Typography, Box, Button, Grid, Divider, Stack } from "@mui/material";
 import ReplyField from "./ReplyField";
 import NestedReplyField from "./NestedReplyField";
 import AdoptReply from "./AdoptReply";
@@ -9,6 +9,7 @@ import Profile from "../Profile";
 import EditReplyField from "./EditReplyField";
 import EditQuillReply from "./EditQuillReply";
 import { BoardType } from "../../model/board";
+import { replyCount } from "../postingDetail/replyCount";
 
 interface User {
   id: number;
@@ -45,7 +46,6 @@ const Reply = (props: ReplyProps) => {
     check: false,
     id: null
   });
-
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -195,8 +195,9 @@ const Reply = (props: ReplyProps) => {
   const Article = (writerUserId: number, article: string, id: number) => {
   return (
     <>
-      {board === "questions" ? (
-        <Grid container direction="row" spacing={2}>
+      {board === BoardType.question ? (
+        //채택하기
+        <Grid container direction="row">
           <Grid item xs={9} md={10}>
             <div className="ql-snow">
               <div
@@ -221,7 +222,9 @@ const Reply = (props: ReplyProps) => {
           ) : null}
         </Grid>
         ) : (
-        <Typography>{article}</Typography>
+        <Grid item p={"1rem"}>
+        <Typography variant={"h4"}>{article}</Typography>
+        </Grid>
       )}
     </>
     );
@@ -229,141 +232,105 @@ const Reply = (props: ReplyProps) => {
 
   // 수정 버튼 클릭에 따른 컴포넌트 전환
   const Edit = (writerUserId: number, article: string, id: number, parentId?: number) => {
-    return editReplyId === id && isEditing ? 
-      board === BoardType.question ? 
-      (<EditQuillReply id={id} article={article} parentId={parentId} isEditing={isEditing} onChangeReply={editReply}/>) : 
-      (<EditReplyField
-        id={id}
-        article={article}
-        parentId={parentId}
-        isEditing={isEditing}
-        onChangeReply={editReply}
-      />)
-     : (
-      <>{Article(writerUserId, article, id)}</>
+    return (
+      (editReplyId === id && isEditing) ?
+        (board === BoardType.question ? 
+          <>
+            {Article(writerUserId, article, id)}
+            <EditQuillReply 
+              id={id} 
+              article={article} 
+              parentId={parentId} 
+              isEditing={isEditing} 
+              onChangeReply={editReply}
+            /> 
+          </> :
+          <EditReplyField
+            id={id}
+            article={article}
+            parentId={parentId}
+            isEditing={isEditing}
+            onChangeReply={editReply}
+          />
+        )
+      :
+      Article(writerUserId, article, id)
     );
   };
 
-  const replyContainer = (replies: ReplyItems[], parentId?: number) => {
-    const filteredReplies = parentId
+  
+  const generateReply = (reply: ReplyItems) => (
+    <>
+        <Grid item container direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+          <Stack direction={"row"} alignItems={"center"} spacing={"0.5rem"}>
+            <Profile nickname={reply.user.nickname} imgUrl={reply.user.profileImg} size={30}/>
+            <Typography variant="h4" sx={{ ml: 1 }}>
+              {reply.user.nickname}
+            </Typography>
+            <Typography variant="h5" color="primary.dark" sx={{ ml: 1 }}>
+              <Time date={reply.createdAt} />
+            </Typography>
+          </Stack>
+          <Stack direction={"row"}>
+            {reply.user.id === userId ? (
+              <>
+                <Button onClick={() => editHandler(reply.id)}>수정</Button>
+                <Button onClick={() => deleteReply(reply.id)}>삭제</Button>
+              </>
+            ) : null}
+          </Stack>
+        </Grid>
+        <Grid item>
+          {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
+        </Grid>
+        <Grid item>
+        <NestedReplyField
+          board={board}
+          onAddNested={handleAddNested}
+          parentId={reply.id}
+        />
+        {replyContainer(replyData, reply.id)}
+        </Grid>
+    </>
+  );
+
+  const [showReplies, setShowReplies] = useState(false);
+
+const replyContainer = (replies: ReplyItems[], parentId?: number) => {
+  const filteredReplies = parentId
       ? replies.filter((reply) => reply.parentId === parentId)
       : replies;
 
+    const toggleShowReplies = () => {
+      setShowReplies(!showReplies);
+    };
+
     return (
       filteredReplies.length > 0 && (
-        <Box sx={{ ml: 6 }}>
-          {filteredReplies.map((reply) => (
-            <div key={reply.id}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mt: 5,
-                }}
-              >
-                <Box
-                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
-                >
-                <Profile nickname={reply.user.nickname} imgUrl={reply.user.profileImg} size={20} />
-                <Typography variant="h5" sx={{ ml: 1 }}>
-                  {reply.user.nickname}
-                </Typography>
-                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
-                  <Time date={reply.createdAt} />
-                </Typography>
-              </Box>
-                <Box>
-                  {reply.user.id === userId ? (
-                    <>
-                      <Button onClick={() => editHandler(reply.id)}>수정</Button>
-                      <Button onClick={() => deleteReply(reply.id)}>삭제</Button>
-                    </>
-                  ) : null}
-                </Box>
-              </Box>
-              <Box>
-                <Typography sx={{ ml: 5, mt: 1, whiteSpace: "pre-wrap" }}>
-                  {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
-                </Typography>
-              </Box>
-              <NestedReplyField
-                onAddNested={handleAddNested}
-                parentId={reply.id}
-              />
-
-              {replyContainer(replies, reply.id)}
-            </div>
-          ))}
-        </Box>
+        <Grid item container direction="column" pl="2rem">
+          {showReplies && filteredReplies.map((reply) => generateReply(reply))}
+          <Button onClick={toggleShowReplies}>
+            {showReplies ? '답글 숨기기' : '답글 보기'}
+          </Button>
+        </Grid>
       )
     );
   };
 
-  const reply = replyData.filter((reply) => !reply.parentId).length ? (
-    replyData
-      .filter((reply) => !reply.parentId)
-      .map((value) => {
-        return (
-          <div key={value.id}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 5,
-              }}
-            >
-              <Box
-                sx={{ display: "flex", alignItems: "center", justifyContent:"start"}}
-              >
-                <Profile nickname={value.user.nickname} imgUrl={value.user.profileImg} size={20} />
-                <Typography variant="h5" sx={{ ml: 1 }}>
-                  {value.user.nickname}
-                </Typography>
-                <Typography variant="subtitle2" color="primary.dark" sx={{ ml: 1 }}>
-                  <Time date={value.createdAt} />
-                </Typography>
-              </Box>
-              <Box>
-                {value.user.id === userId ? (
-                  <>
-                    <Button onClick={() => editHandler(value.id)}>수정</Button>
-                    <Button onClick={() => deleteReply(value.id)}>삭제</Button>
-                  </>
-                ) : null}
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                ml: 3,
-                mt: 2,
-                mr: 3,
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {Edit(value.user.id, value.article, value.id,)}
-            </Box>
-            <NestedReplyField
-              onAddNested={handleAddNested}
-              parentId={value.id}
-            />
-            {replyContainer(replyData, value.id)}
-          </div>
-        );
-      })
-  ) : (
-    <Typography variant="h3" sx={{ color: "primary.dark", m: 2 }}>
-      아직 댓글이 없습니다.
-    </Typography>
-  );
+  const reply = replyData
+    .filter((reply) => !reply.parentId)
+    .map((value) => generateReply(value));
 
   return (
     <>
-      <ReplyField onAddReply={handleAddReply} board={props.board} />
-      {reply}
+        {replyCount(replyData.length)}
+        <ReplyField onAddReply={handleAddReply} board={props.board} />
+        <Grid container direction={"column"} spacing={"0.5rem"} p={"1rem"}>
+          {reply}
+        </Grid>
     </>
   );
+
 };
 
 export default Reply;

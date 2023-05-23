@@ -4,6 +4,7 @@ import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import MediaIcon from '@mui/icons-material/PermMediaOutlined';
 import { SvgIcon } from "@mui/joy";
 
 const icons = [
@@ -28,7 +29,8 @@ const icons = [
     { name: "fix", component: <Visibility /> },//고정
 
     { name: "done", component: <DoneIcon /> }, // V
-    { name: "close", component: <CloseIcon /> } // X
+    { name: "close", component: <CloseIcon /> }, // X
+    { name: "file", component: <MediaIcon/> }
 ];
 
 const iconList = [
