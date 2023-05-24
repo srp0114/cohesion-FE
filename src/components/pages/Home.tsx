@@ -78,6 +78,22 @@ const Home = () => {
       setOpen(!open);
   };
 
+  //로그인 모달
+  const LoginModal = () => (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={loginModalstyle}>
+        <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
+        <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+        <Button className="startButton" onClick={handleLogin}>
+          <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
+        </Button>
+      </Box>
+    </Modal>
+  );
+
   return (
     <>{loading ? (
       <Grid container spacing={2} gap={3.5}>
