@@ -11,7 +11,8 @@ import QnADetail from "./components/pages/Board/QnA/QnADetails";
 import RecruitBoard from "./components/pages/Board/Recruit/RecruitBoard";
 import RecruitDetails from "./components/pages/Board/Recruit/RecruitDetails";
 import MyPage from "./components/pages/MyPage/MyPage";
-import Notice from "./components/pages/Notice";
+import Notice from "./components/pages/Board/Notice/Notice";
+import NoticeDetails from "./components/pages/Board/Notice/NoticeDetails";
 import OAuth2 from "./components/pages/OAuth2";
 import Welcome from "./components/pages/Welcome";
 import NotFound from "./components/pages/NotFound";
@@ -43,6 +44,7 @@ function App() {
           <Route path="recruit/:id" element={<RecruitDetails />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="notice" element={<Notice />} />
+          <Route path="notice/:id" element={<NoticeDetails />} />
           <Route path="search" element={<Search />}/>
           <Route path="*" element={<NotFound />} />
         </Route>

@@ -4,10 +4,12 @@ import axios from "axios";
 // 로그인 여부 판단 함수
 
 export async function checkLogin() {
+    const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
+
     const verifier = new IdTokenVerifier({
-        issuer: "http://localhost:8081", // issuer 가 같은지
+        issuer: `${asUrl}`, // issuer 가 같은지
         audience: "client", // audience 가 같은지
-        jwksURI: "http://localhost:8081/oauth2/jwks", // get public key
+        jwksURI: `${asUrl}/oauth2/jwks`, // get public key
     });
 
     const id_token = sessionStorage.getItem("id_token");

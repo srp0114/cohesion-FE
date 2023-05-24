@@ -316,9 +316,10 @@ const RecruitDetails = () => {
           </Grid>
 
         </Grid>
-        {replyCount(postItem.reply)}
+        <Grid item xs={12}>
+          <Reply board={BoardType.recruit} postingId={id} />
+        </Grid>
       </Grid>
-      <Reply board={"recruit"} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>
