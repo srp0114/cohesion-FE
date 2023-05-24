@@ -4,6 +4,9 @@ import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
 import { SvgIcon } from "@mui/joy";
 
 const icons = [
@@ -28,7 +31,10 @@ const icons = [
     { name: "fix", component: <Visibility /> },//고정
 
     { name: "done", component: <DoneIcon /> }, // V
-    { name: "close", component: <CloseIcon /> } // X
+    { name: "close", component: <CloseIcon /> }, // X
+
+    { name: "next", component: <ArrowForwardIosIcon /> }, // > 다음
+    { name: "previous", component: <ArrowBackIosNewIcon /> }, // < 이전
 ];
 
 const iconList = [
@@ -49,6 +55,8 @@ const iconList = [
     "fix",
     "done",
     "close",
+    "next",
+    "previous",
 ]
 
 /**
@@ -58,6 +66,7 @@ const iconList = [
 interface FindIconProps {
     name: string | typeof iconList;
     iconProps?: { fontSize?: string | "small" | "medium" | "large"; color?: string };
+    onClick?: () => void;
 }
 
 export const FindIcon = (props: FindIconProps) => {
