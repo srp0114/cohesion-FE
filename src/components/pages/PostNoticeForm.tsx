@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography } from "@mui/material";
 import axios from "axios";
-import EditorToolbar from "../layout/EditorToolbar";
+import EditorToolbar from "../layout/QuillEditor";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
