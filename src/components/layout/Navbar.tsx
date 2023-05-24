@@ -8,13 +8,9 @@ import { logoutHandler } from "../logoutHandler";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import SearchField from "./SearchField";
 import pingpong from "../asset/logo/pingpong.png";
-import pingpong_hover from "../asset/logo/pingpong_hover.png";
-
-const logo = [pingpong, pingpong_hover];
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [logoHover, setLogoHover] = React.useState<number | 0 | 1>(0);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,10 +20,6 @@ const Navbar = () => {
     //onClose가 true면 메뉴가 보이고, false면 메뉴가 숨겨진다.
     setAnchorEl(null);
   };
-
-  const handleLogoHover = () => {
-    setLogoHover(Math.abs(logoHover - 1));
-  }
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
@@ -103,24 +95,25 @@ const Navbar = () => {
       <Grid container direction={"row"} spacing={"1rem"} alignItems={"center"} sx={{ mt: "1.5rem", mb: "2rem" }} >
         <Grid item container xs={12} md={6}>
           <img
-            src={`${logo[logoHover]}`}
+            src={`${pingpong}`}
             onClick={moveToHome}
             style={{
-              width: "16rem",
+              width: "10rem",
               cursor: "default",
               transition: "all 0.3s",
             }}
             onMouseOver={(e) => {
-              handleLogoHover();
               e.currentTarget.style.cursor = "pointer";
-              e.currentTarget.style.filter = "drop-shadow(5px 5px 5px #555)";
+              e.currentTarget.style.filter = "drop-shadow(1.5px 1.5px 1.5px #555)";
             }}
             onMouseOut={(e) => {
-              handleLogoHover();
               e.currentTarget.style.cursor = "default";
               e.currentTarget.style.filter = "none";
             }}
           />
+          <Button className="navButton"
+          onClick={moveToHome}
+          >홈</Button>
           <Button
             className="navButton"
             aria-controls={open ? "basic-menu" : undefined}
