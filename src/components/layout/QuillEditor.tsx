@@ -23,6 +23,7 @@ function redoChange() {
 
 }
 
+
 // Add sizes to whitelist and register them
 const Size = Quill.import("formats/size");
 Size.whitelist = ["extra-small", "small", "medium", "large"];
@@ -52,7 +53,7 @@ const EditorToolbar = (props : QuillProps) => {
     useEffect(() => {
         setContent(props.content);
     }, [props.content])
-
+    
     // 이미지를 업로드 하기 위한 함수
     const imageHandler = () => {
 

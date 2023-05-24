@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, IconButton, Stack } from "@mui/material";
 import axios from "axios";
 import Skill from "../layout/Skill";
-import EditorToolbar from "../layout/EditorToolbar";
+import QuillEditor from "../layout/QuillEditor";
 import People from "../layout/People";
 import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
@@ -367,7 +367,7 @@ const EditForm = () => {
             </Grid>
             <Grid item>
               <div className="postQuill">
-                <EditorToolbar content={content} onAddQuill={getContent} />
+                <QuillEditor content={content} onAddQuill={getContent} />
               </div>
             </Grid>
             

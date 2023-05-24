@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Typography, Stack, Button } from "@mui/material";
 import { FileItem } from "../pages/Board/Free/FreeDetails";
+import { FindIcon } from "../data/IconData";
 
 interface FileProps {
   fileList: FileItem[];
@@ -28,15 +29,23 @@ const File = ({ fileList }: FileProps) => {
         }
     };
 
+    //<a href={`/api/files/download/${value.originalName}`}>{value.originalName}</a>
+
     return (
         <>
-        {fileList.map((value) => (
-            <Stack direction="row" gap={6} ml={"2rem"} >
-            {/*<Typography variant="h5">{value.originalName}</Typography>*/}
-            <a href={`/api/files/download/${value.originalName}`}>{value.originalName}</a>
-            <Button onClick={() => downloadFile(value.originalName)} size="small">다운로드</Button>
+            <Stack direction={"row"} ml={"3rem"} gap={3} alignItems={"center"}>
+                <FindIcon name={"file"} iconProps={{ fontSize: "1rem" }} />
+                <Stack direction={"column"}>
+                {fileList.map((value) => (
+                    <Stack direction={"row"} gap={1} alignItems={"center"}>
+                    <Typography variant="h6">{value.originalName}</Typography>
+                    <Button onClick={() => downloadFile(value.originalName)} size="small">
+                        다운로드
+                    </Button>
+                    </Stack>
+                ))}
+                </Stack>
             </Stack>
-        ))}
         </>
     );
 };
