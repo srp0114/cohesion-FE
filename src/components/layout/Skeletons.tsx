@@ -54,7 +54,7 @@ export const PostingSkeleton = () => (
 
 export const MyPageSkeleton = () => (
     <>
-        <Stack direction="row" spacing="2.25rem" sx={{ display: "flex", justifyContent: "space=between" }}>
+        <Stack direction="row" spacing="2.25rem" sx={{ marginTop: "4rem", padding: 2 }}>
             <Box sx={{ width: '40%' }}>
                 <Skeleton variant="rectangular" height={"16rem"} width={"100%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
                 <Skeleton variant="rectangular" height={"12rem"} width={"100%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
@@ -77,4 +77,62 @@ export const MyPageSkeleton = () => (
             </Stack>
         </Stack>
     </>
+);
+
+export const HomeSkeleton = () => (
+    <Grid container xs={12} columnSpacing={2} rowSpacing={3.5}>
+        {/* 배너 */}
+        <Grid item xs={12} md={9} columnSpacing={2}>
+            <Skeleton variant="rectangular" height="340px" />
+        </Grid>
+        {/* 사용자 정보 */}
+        <Grid item xs={12} md={3}>
+            <Skeleton variant="rectangular" height="4rem" sx={{ borderRadius: "50px" }} />
+        </Grid>
+
+        {/* 로그인 모달 적용 시킨 각 게시판들 */}
+        <Grid item container xs={12} md={9} spacing={2}>
+            <Grid item xs={12} md={6}>
+                <Skeleton variant="text" sx={{ fontSize: "2rem" }} width="6.25rem" />
+                <Box>
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+                <Skeleton variant="text" sx={{ fontSize: "2rem" }} width="6.25rem" />
+                <Box>
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                </Box>
+            </Grid>
+        </Grid>
+
+
+        {/* 로그인 모달 적용 시킨 각 게시판들 */}
+        <Grid item container xs={12} md={9} spacing={2}>
+            <Grid item xs={12} md={6}>
+                <Skeleton variant="text" sx={{ fontSize: "2rem" }} width="6.25rem" />
+                <Box>
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem" }} height="9rem" />
+                </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+                <Skeleton variant="text" sx={{ fontSize: "2rem" }} width="6.25rem" />
+                <Box>
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                    <Skeleton variant="rectangular" sx={{ borderRadius: "20px", margin: "1rem 0" }} height="9rem" />
+                </Box>
+            </Grid>
+        </Grid>
+    </Grid>
 );
