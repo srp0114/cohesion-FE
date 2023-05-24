@@ -6,6 +6,7 @@ export interface EditReplyProps {
   id: number;
   parentId?: number;
   isEditing: boolean;
+  setIsEditing : (isEditing: boolean) => void;
   onChangeReply: (id:number, article:string, parentId?: number) => void;
 }
 
@@ -24,7 +25,6 @@ const EditReplyField = (props: EditReplyProps) => {
 
   return (
     <>
-    {props.isEditing && 
       <Grid container direction="row" sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}  pl={"3rem"} pr={"3rem"}>
         <Grid item xs={8} md={11}>
           <TextField 
@@ -39,7 +39,6 @@ const EditReplyField = (props: EditReplyProps) => {
         <Button onClick={handleSubmit}>수정하기</Button>
       </Grid>
       </Grid>
-    }
     </>
   );
 };
