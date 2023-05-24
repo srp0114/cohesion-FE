@@ -157,13 +157,13 @@ const RecruitDetails = () => {
           case "":
             break;
           case "true":
-            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 신청서가 승인 되었습니다.`);
+            alert(`신청서가 승인 되었습니다.`);
             break;
           case "false":
-            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)}아직 신청 승인 대기 중입니다.`);
+            alert(`아직 신청 승인 대기 중입니다.`);
             break;
           default:
-            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 무언가 오류...`);
+            alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 오류 발생`);
             break;
         }
       }
