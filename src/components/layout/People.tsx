@@ -76,7 +76,7 @@ const People: React.FC<PeopleProps> = ({
                 <MenuItem value={10}>10</MenuItem>
               </Select>
               <FormHelperText>
-                예) 캡스톤 디자인은 4명팀이므로, 총 인원은 4명
+                `{`예) 캡스톤 디자인은 4명팀이므로, 총 인원은 4명`}`
               </FormHelperText>
               {errors.party && (
                 <FormHelperText>총 인원 수는 필수로 선택되어야 합니다.</FormHelperText>
@@ -100,7 +100,7 @@ const People: React.FC<PeopleProps> = ({
                 {...field}
                 value={gatheredValue}
                 onChange={handleGatheredChange}
-                disabled={!partyValue}
+                /* partyValue에 따라 disabled true false */
                 error={!!errors.gathered}
               >
                 <MenuItem value={0}>0</MenuItem>
@@ -115,7 +115,7 @@ const People: React.FC<PeopleProps> = ({
                 <MenuItem value={9}>9</MenuItem>
               </Select>
               <FormHelperText>
-                예) 4명팀에서 작성자 본인만 있다면, 현재까지 1명이 모임.
+                `{`예) 4명팀에서 작성자 본인만 있다면, 현재까지 1명이 모임.`}`
               </FormHelperText>
               {errors.gathered && (
                 <FormHelperText>
