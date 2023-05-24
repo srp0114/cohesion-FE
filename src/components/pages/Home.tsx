@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Box, Modal, Typography, Button } from "@mui/material";
+import { Box, Modal, Typography, Button, Paper, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
@@ -11,6 +11,7 @@ import axios from "axios";
 import {checkLogin} from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
 import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { BoardType } from "../model/board";
 
 export interface UserInfoItems {
   nickname: string;
@@ -69,59 +70,46 @@ const Home = () => {
   return (
     <>
       <Grid container spacing={2} gap={3.5}>
-      <Grid item xs={8.5}>
-        <Banner/>
-        <Grid container spacing={2} onClick={openModal}>
+        <Grid item xs={8.5}>
+          <Banner/>
+          <Grid item container spacing={3} onClick={openModal} direction={"column"}>
           <Modal
             open={open}
             onClose={handleClose}
             sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
-            <Box sx={loginModalstyle}>
+            <Paper sx={loginModalstyle}>
+              <Stack direction={"column"} spacing={"1rem"} alignItems={"center"}>
               <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
               <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
               <Button className="startButton" onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
+                <img src={hansung} width="30"/>한성대학교로 시작하기
               </Button>
-            </Box>
+              </Stack>
+            </Paper>
           </Modal>
 
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
-            <HomeBoard board="free" loginState={isLogin} />
-          </Grid>
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
-            {/* qna -> questions로 수정*/}
-            <HomeBoard board="questions" loginState={isLogin} />
-          </Grid>
+            <Grid xs
+              sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+              <HomeBoard board={BoardType.free} loginState={isLogin} />
+            </Grid>
+            <Grid xs
+              sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+              {/* qna -> questions로 수정*/}
+              <HomeBoard board={BoardType.question} loginState={isLogin} />
+            </Grid>
+            <Grid xs
+              sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+              {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
+              <HomeBoard board={BoardType.recruit} loginState={isLogin} />
+            </Grid>
+            <Grid xs
+              sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+              {/* TODO: 공지사항 main api 작업 후 board 수정*/}
+              <HomeBoard board={BoardType.free} loginState={isLogin} />
+            </Grid>
+        </Grid>
         </Grid>
 
-        <Grid container spacing={2} onClick={openModal}>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
-            <Box sx={loginModalstyle}>
-              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <Button className="startButton" onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-              </Button>
-            </Box>
-          </Modal>
-
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
-            {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
-            <HomeBoard board="recruit" loginState={isLogin} />
-          </Grid>
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
-            {/* TODO: 공지사항 main api 작업 후 board 수정*/}
-            <HomeBoard board="free" loginState={isLogin} />
-          </Grid>
-        </Grid>
-      </Grid>
 
       <Grid item xs>
         <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg}/>
