@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
+import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, IconButton, Stack } from "@mui/material";
 import axios from "axios";
 import Skill from "../layout/Skill";
 import QuillEditor from "../layout/QuillEditor";
@@ -13,6 +13,8 @@ import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
+import { FindIcon } from "../data/IconData";
+
 /*
  * 기본 게시글 작성 UI폼
  */
@@ -72,6 +74,7 @@ const EditForm = () => {
       }
     ).catch((err) => console.log(err));
 
+    // 첨부한 파일 리스트 출력을 위한 api 연동
     axios({
         method: "get",
         url: `/api/free/${postingId}/file-list`
@@ -126,7 +129,7 @@ const EditForm = () => {
     });
   };
 
-  const submitHandler = async (event: React.MouseEvent) => {
+  const submitHandler = async (event:React.MouseEvent) => {
     setIsLoading(true);
     const formData = new FormData();
 
@@ -151,7 +154,7 @@ const EditForm = () => {
         alert("파일 용량이 큽니다!!");
       }
     });
-
+  
     const request_data = {
       title: title,
       content: content,
@@ -259,7 +262,7 @@ const EditForm = () => {
     }
   };
 
-  const deleteHandler = (event: React.MouseEvent) => {
+  const deleteHandler = (event:React.MouseEvent) => {
     event.preventDefault();
     setIsLoading(true);
     axios({
@@ -287,19 +290,38 @@ const EditForm = () => {
 
   }
 
-  const deleteFile = (filename: string) => {
+  // 파일 삭제 api 
+  const deletePostedFile = (filename: string) => {
     axios({
         method: "delete",
         url: `/api/files/delete/${filename}`
     })
     .then((res) => {
-        console.log(res);
+        setPostedFile(postedFile.filter((value) => value.originalName !== filename));
     })
     .catch((err) => {
         console.log(err);
     });
   } 
-  
+
+  // 첨부파일 리스트 길이가 0 이상인 경우 해당 파일 이름과 버튼 
+  const PostedFile = postedFile.length > 0 ? (
+    <Grid item>
+      {postedFile.map((value) => {
+        return (
+          <>
+          <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+            <Typography variant="h4">{value.originalName}</Typography>
+            <IconButton onClick={()=>deletePostedFile(value.originalName)}>
+              <FindIcon name="close"/>
+            </IconButton>
+          </Stack>
+          </>
+        )
+      })
+    }
+    </Grid>
+  ) : (null)
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
@@ -314,15 +336,6 @@ const EditForm = () => {
     ) : null;
   const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
   
-  const PostedFile = postedFile.length > 0 ? (
-    <Grid item>
-      {postedFile.map((value) => {
-        return (<Typography variant="h4">{value.originalName}</Typography>)
-      })
-    }
-    </Grid>
-  ) : (null)
-
   return (
     <>
       <Container>

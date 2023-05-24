@@ -48,6 +48,7 @@ hljs.configure({
 const EditorToolbar = (props : QuillProps) => {
     const QuillRef = useRef<ReactQuill>();
     const [content, setContent] = useState<string>("");
+    const feUrl = process.env.REACT_APP_FRONT_URL;
 
     useEffect(() => {
         setContent(props.content);
@@ -88,7 +89,7 @@ const EditorToolbar = (props : QuillProps) => {
                     data: formData,
                 }).then((response)=>{
                     console.log("###", response);
-                    const url = "http://localhost:8070"+response.data;
+                    const url = `${feUrl}`+response.data;
                     const range = QuillRef.current?.getEditor().getSelection()?.index;
                     if (range !== null && range !== undefined) {
                         let quill = QuillRef.current?.getEditor();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, Chip, Grid, Typography, Zoom, Stack } from "@mui/material";
@@ -61,15 +61,26 @@ const FreeDetails = () => {
       .catch(err => console.log(err));
 
     axios({
-          method: "get",
-          url: `/api/free/${id}/file-list`
-      })
+      method: "get",
+      url: `/api/free/${id}/file-list`
+    })
       .then((res) => {
-          setFileList(res.data);
+        setFileList(res.data);
       })
       .catch((err) => {
-          console.log(err);
+        console.log(err);
       });
+  }, []);
+
+  /* 1.5초간 스켈레톤 표시 */
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   /**
@@ -103,20 +114,20 @@ const FreeDetails = () => {
               null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
         </Grid>
-        <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
+        <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack
             direction="row"
             spacing={1}
-            sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
-            {TimeAndViews (postItem.createdDate, postItem.views)}
+            {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"free"} id={id} />
+          <Bookmark boardType={"free"} id={id} />
         </Grid>
         {fileList.length > 0 && 
         <Grid item xs={12}>
-          <File fileList={fileList}/>
+          <File fileList={fileList} />
         </Grid>
         }
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
@@ -134,9 +145,14 @@ const FreeDetails = () => {
       </Zoom>
     </>
   ) : (
-    <PostingSkeleton />
+    null
   );
-  return <Box sx={{ p: "2rem 10rem 4rem" }}>{PostDetails}</Box>
+
+  return <Box sx={{ padding: "2rem 10rem 4rem" }}>
+    {
+      loading ? PostDetails : <PostingSkeleton />
+    }
+  </Box>;
 };
 
 export default FreeDetails;

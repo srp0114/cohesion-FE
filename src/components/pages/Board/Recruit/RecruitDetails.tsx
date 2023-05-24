@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material/styles"
 import Time from "../../../layout/Time";
@@ -8,7 +8,6 @@ import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
@@ -20,6 +19,9 @@ import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { Application } from "./ApplyAcceptStuff";
+import File from "../../../layout/File";
+import { FileItem } from "../Free/FreeDetails";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -54,6 +56,9 @@ const RecruitDetails = () => {
   const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
+  const [fileList, setFileList] = useState<FileItem[]>([]);
+
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
 
   const _theme = useTheme();
   const postingId = Number(id);
@@ -117,6 +122,16 @@ const RecruitDetails = () => {
       }
     }).catch((err) => console.log(err));
 
+    axios({
+      method: "get",
+      url: `/api/recruit/${id}/file-list`
+    })
+    .then((res) => {
+        setFileList(res.data);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
   }, []);
 
   useEffect(() => {
@@ -168,6 +183,17 @@ const RecruitDetails = () => {
         }
       }
     })
+  }, []);
+
+  /* 1.5초간 스켈레톤 표시 */
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   /**
@@ -250,6 +276,9 @@ const RecruitDetails = () => {
           </Grid>
 
         </Grid>
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
 
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
@@ -296,12 +325,14 @@ const RecruitDetails = () => {
       </Zoom>
     </>
   ) : (
-    <Loading />
+    null
   );
 
-  return (
-    <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>
-  );
+  return <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+    {
+      loading ? detailPosting : <PostingSkeleton />
+    }
+  </Box>;
 }
 
 export default RecruitDetails;

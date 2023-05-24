@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack, Zoom } from "@mui/material";
@@ -7,7 +7,6 @@ import { skillData } from "../../../data/SkillData";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
-import Loading from "../../../layout/Loading";
 import { BoardType } from "../../../model/board";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
@@ -15,6 +14,7 @@ import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -41,6 +41,7 @@ const QnADetails = () => {
   const [accessUserId, setAccessUserId] = useState<number>(0);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const { id } = useParams() as { id: string };
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const postingId = Number(id);
 
   useEffect(() => {
@@ -60,6 +61,8 @@ const QnADetails = () => {
           console.log("권한 x");
         }
       });
+
+
 
     // 해당 게시글 작성자의 userId 받아오기
     axios({
@@ -89,6 +92,17 @@ const QnADetails = () => {
         console.log(err);
     });
   }, []);
+
+    /* 1.5초간 스켈레톤 표시 */
+    useLayoutEffect(() => {
+      const timer = setTimeout(() => {
+        setLoading(true);
+      }, 1500);
+  
+      return () => {
+        clearTimeout(timer);
+      };
+    }, []);    
 
   //입력된 언어 맞게 이미지 출력
   const Skill = postItem?.language ? 
@@ -165,15 +179,14 @@ const QnADetails = () => {
       </Zoom>
     </>
   ) : (
-    <Loading />
+    null
   );
 
-  return (
-    <>
-      <Box sx={{ p: "2rem 10rem 4rem" }}>
-        {PostDetails}</Box>
-    </>
-  );
+  return <Box sx={{ padding: "2rem 10rem 4rem" }}>
+  {
+    loading ? PostDetails : <PostingSkeleton />
+  }
+</Box>;
 };
 
 export default QnADetails;
