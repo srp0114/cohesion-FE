@@ -22,12 +22,13 @@ const tokenIsExpired = () => {
 
 function issueToken() {
   const refresh_token = sessionStorage.getItem("refresh_token");
+  const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
 
   return new Promise((resolve, reject) => {
     const axiosInstance = axios.create();
     console.log("Reissue Token");
     return axiosInstance({
-      url: "http://localhost:8081/oauth2/token",
+      url: `${asUrl}/oauth2/token`,
       method: "post",
       params: {
         grant_type: "refresh_token",
@@ -55,7 +56,7 @@ function issueToken() {
       .catch((err) => {
         console.log(err);
         alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
-        fetch("http://localhost:8081/logout", { // 토큰 재 발급 실패 시, 로그아웃 처리
+        fetch(`${asUrl}/logout`, { // 토큰 재 발급 실패 시, 로그아웃 처리
           method: "get",
           credentials: "include"
         }).then((res) => {

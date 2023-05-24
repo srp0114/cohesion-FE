@@ -23,6 +23,7 @@ function redoChange() {
 
 }
 
+
 // Add sizes to whitelist and register them
 const Size = Quill.import("formats/size");
 Size.whitelist = ["extra-small", "small", "medium", "large"];
@@ -47,11 +48,12 @@ hljs.configure({
 const EditorToolbar = (props : QuillProps) => {
     const QuillRef = useRef<ReactQuill>();
     const [content, setContent] = useState<string>("");
+    const feUrl = process.env.REACT_APP_FRONT_URL;
 
     useEffect(() => {
         setContent(props.content);
     }, [props.content])
-
+    
     // 이미지를 업로드 하기 위한 함수
     const imageHandler = () => {
 
@@ -87,7 +89,7 @@ const EditorToolbar = (props : QuillProps) => {
                     data: formData,
                 }).then((response)=>{
                     console.log("###", response);
-                    const url = "http://localhost:8070"+response.data;
+                    const url = `${feUrl}`+response.data;
                     const range = QuillRef.current?.getEditor().getSelection()?.index;
                     if (range !== null && range !== undefined) {
                         let quill = QuillRef.current?.getEditor();

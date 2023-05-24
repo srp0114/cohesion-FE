@@ -3,9 +3,10 @@ import { Stack } from "@mui/material";
 import { FreeBoardItems } from "../../pages/Board/Free/FreeBoard";
 import { RecruitBoardItems } from "../../pages/Board/Recruit/RecruitBoard";
 import { BoardItems } from "../../pages/Board/QnA/QnABoard";
+import { NoticeItems } from "../../pages/Board/Notice/Notice";
 import { FindIcon } from "../../data/IconData";
 
-export function reply_bookmark_views(props: FreeBoardItems | BoardItems | RecruitBoardItems) {
+export function reply_bookmark_views(props: FreeBoardItems | BoardItems | RecruitBoardItems | NoticeItems) {
   return <Stack direction="row"
     spacing={"0.75rem"}
     sx={{ display: "flex", justifyContent: "flex-end", textAlign: "center" }}>
@@ -15,7 +16,7 @@ export function reply_bookmark_views(props: FreeBoardItems | BoardItems | Recrui
   </Stack>;
 }
 
-export function reply_bookmark_views_recruit(props: FreeBoardItems | BoardItems | RecruitBoardItems) {
+export function reply_bookmark_views_recruit(props: FreeBoardItems | BoardItems | RecruitBoardItems| NoticeItems) {
   return <Stack direction="row"
     spacing={"0.25rem"}
     sx={{ display: "flex", justifyContent: "flex-end", textAlign: "center" }}>

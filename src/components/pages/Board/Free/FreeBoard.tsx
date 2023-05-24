@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import Time from "../../../layout/Time";
 import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
@@ -61,15 +61,20 @@ const FreeBoard = () => {
     });
   }
 
+  /* 1.5초간 스켈레톤 표시 */
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [freeData]);
+
   useEffect(() => {
-    setLoading(true);
     getBoardItems("createdAt,desc");
   }, [page]);
-
-
-  useEffect(() => {
-    setLoading(true); //freeData 상태가 변할 때 게시글 목록
-  }, [freeData]);
 
   const performSearch = (search : string) => {
     axios({

@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box, Chip, Grid, Stack, Zoom } from "@mui/material";
 import Reply from "../../../layout/Reply/Reply";
 import { skillData } from "../../../data/SkillData";
-import Money from "@mui/icons-material/MonetizationOn";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { PageName } from "../../../layout/postingDetail/postingCrumbs";
-import Loading from "../../../layout/Loading";
 import { BoardType } from "../../../model/board";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
@@ -16,6 +14,7 @@ import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -39,9 +38,10 @@ const QnADetails = () => {
   //postItem은 상세보기에 들어갈 데이터 - DetailItems에 데이터 타입 지정
   const [postItem, setPostItem] = useState<DetailItems | undefined>();
   const [writerId, setWriterId] = useState<number>(0)
-  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [accessUserId, setAccessUserId] = useState<number>(0);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const { id } = useParams() as { id: string };
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const postingId = Number(id);
 
   useEffect(() => {
@@ -61,6 +61,8 @@ const QnADetails = () => {
           console.log("권한 x");
         }
       });
+
+
 
     // 해당 게시글 작성자의 userId 받아오기
     axios({
@@ -90,6 +92,17 @@ const QnADetails = () => {
         console.log(err);
     });
   }, []);
+
+    /* 1.5초간 스켈레톤 표시 */
+    useLayoutEffect(() => {
+      const timer = setTimeout(() => {
+        setLoading(true);
+      }, 1500);
+  
+      return () => {
+        clearTimeout(timer);
+      };
+    }, []);    
 
   //입력된 언어 맞게 이미지 출력
   const Skill = postItem?.language ? 
@@ -130,9 +143,9 @@ const QnADetails = () => {
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}>
-            <Typography variant="h1">{postItem.title}</Typography>
+            <Typography variant="h1" sx={{fontWeight:"600"}}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
-              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
         </Grid>
         <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
@@ -146,33 +159,34 @@ const QnADetails = () => {
           </Stack>
            <Bookmark boardType={"questions"} id={id} />
         </Grid>
+        {fileList.length > 0 && 
         <Grid item xs={12}>
           <File fileList={fileList}/>
         </Grid>
-        <Grid item xs={12} sx={{ m: "4rem 2rem 5rem 2rem" }}>
-        <div className="ql-snow">
-          <div
-            className="ql-editor"
-            dangerouslySetInnerHTML={{ __html: postItem.content }}
-          />
-        </div>
+        }
+        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
+          <div className="ql-snow">
+            <div className="ql-editor"
+              dangerouslySetInnerHTML={{ __html: postItem.content }}/>
+          </div>
+        </Grid>
+        <Grid item>
+          <Reply board={BoardType.question} writerId={writerId} postingId={id} />
         </Grid>
       </Grid>
-      <Reply board={"questions"} writerId={writerId} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>
     </>
   ) : (
-    <Loading />
+    null
   );
 
-  return (
-    <>
-      <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-        {PostDetails}</Box>
-    </>
-  );
+  return <Box sx={{ padding: "2rem 10rem 4rem" }}>
+  {
+    loading ? PostDetails : <PostingSkeleton />
+  }
+</Box>;
 };
 
 export default QnADetails;

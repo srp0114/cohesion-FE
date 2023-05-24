@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material/styles"
 import Time from "../../../layout/Time";
@@ -8,7 +8,6 @@ import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import Loading from "../../../layout/Loading";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
@@ -22,6 +21,7 @@ import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { Application } from "./ApplyAcceptStuff";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
+import { PostingSkeleton } from "../../../layout/Skeletons";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -57,6 +57,8 @@ const RecruitDetails = () => {
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
   const [fileList, setFileList] = useState<FileItem[]>([]);
+
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
 
   const _theme = useTheme();
   const postingId = Number(id);
@@ -183,6 +185,17 @@ const RecruitDetails = () => {
     })
   }, []);
 
+  /* 1.5초간 스켈레톤 표시 */
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
  * @param studentId 
@@ -303,20 +316,23 @@ const RecruitDetails = () => {
           </Grid>
 
         </Grid>
-        {replyCount(postItem.reply)}
+        <Grid item xs={12}>
+          <Reply board={BoardType.recruit} postingId={id} />
+        </Grid>
       </Grid>
-      <Reply board={"recruit"} postingId={id} />
       <Zoom in={true}>
         <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
       </Zoom>
     </>
   ) : (
-    <Loading />
+    null
   );
 
-  return (
-    <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>{detailPosting}</Box>
-  );
+  return <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+    {
+      loading ? detailPosting : <PostingSkeleton />
+    }
+  </Box>;
 }
 
 export default RecruitDetails;
