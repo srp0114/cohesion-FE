@@ -6,11 +6,11 @@ import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
 import HomeBoard from "../layout/HomeBoard";
-import hansung from  "../asset/image/hansung.png";
+import hansung from "../asset/image/hansung.png";
 import axios from "axios";
-import {checkLogin} from "../checkLogin";
+import { checkLogin } from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
-import {getCurrentUserInfo} from "../getCurrentUserInfo";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
 
 export interface UserInfoItems {
   nickname: string;
@@ -40,9 +40,9 @@ const Home = () => {
       if (res) {
         setIsLogin(true);
         getCurrentUserInfo()
-            .then(userInfo =>{
-              setUser(userInfo)
-            })
+          .then(userInfo => {
+            setUser(userInfo)
+          })
           .catch(err => console.log(err));
       } else {
         setIsLogin(false);
@@ -60,75 +60,70 @@ const Home = () => {
 
     navigate(`/redirect`);
   };
-  
+
   const openModal = () => {
-    if(!isLogin) 
+    if (!isLogin)
       setOpen(!open);
   };
 
+  //로그인 모달
+  const LoginModal = () => (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={loginModalstyle}>
+        <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
+        <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+        <Button className="startButton" onClick={handleLogin}>
+          <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
+        </Button>
+      </Box>
+    </Modal>
+  );
+
   return (
     <>
-      <Grid container spacing={2} gap={3.5}>
-      <Grid item xs={8.5}>
-        <Banner/>
-        <Grid container spacing={2} onClick={openModal}>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
-            <Box sx={loginModalstyle}>
-              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <Button className="startButton" onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-              </Button>
-            </Box>
-          </Modal>
-
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+      <Grid container xs={12} columnSpacing={2} rowSpacing={3.5}>
+        {/* 배너 */}
+        <Grid item xs={12} md={9} columnSpacing={2}>
+          <Banner />
+        </Grid>
+        {/* 사용자 정보 */}
+        <Grid item xs={12} md={3}>
+          <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg} />
+        </Grid>
+        {/* 로그인 모달 적용 시킨 각 게시판들 */}
+        <Grid item container xs={12} md={9} spacing={2} onClick={openModal}>
+          {/* 로그인 모달 */}
+          <LoginModal />
+          {/* 자유게시판 */}
+          <Grid xs={12} md={6}
+            sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
             <HomeBoard board="free" loginState={isLogin} />
           </Grid>
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+          {/* Q&A게시판 */}
+          <Grid xs={12} md={6}
+            sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
             {/* qna -> questions로 수정*/}
             <HomeBoard board="questions" loginState={isLogin} />
           </Grid>
-        </Grid>
-
-        <Grid container spacing={2} onClick={openModal}>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
-            <Box sx={loginModalstyle}>
-              <Typography align="center" variant="h5" sx={{mt:2}}>Cohesion에 오신 것을 환영합니다!</Typography>
-              <Typography align="center" variant="subtitle1" sx={{mt:2, mb:2}}>한성대학교 로그인 페이지로 이동합니다</Typography>
-              <Button className="startButton" onClick={handleLogin}>
-                <img src={hansung} width="30" style={{marginRight:10}}/>한성대학교로 시작하기
-              </Button>
-            </Box>
-          </Modal>
-
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+          {/* 구인게시판 */}
+          <Grid xs={12} md={6}
+            sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
             {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
             <HomeBoard board="recruit" loginState={isLogin} />
           </Grid>
-          <Grid xs
-            sx={{ filter: isLogin? null : "blur(1.5px)"}}>
+          {/* 공지사항 */}
+          <Grid xs={12} md={6}
+            sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
             {/* TODO: 공지사항 main api 작업 후 board 수정*/}
             <HomeBoard board="free" loginState={isLogin} />
           </Grid>
         </Grid>
-      </Grid>
-
-      <Grid item xs>
-        <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg}/>
-      </Grid>
 
       </Grid>
-      {isLogin ? <WritingButton/> : null}
+      {isLogin ? <WritingButton /> : null}
     </>
   );
 };
