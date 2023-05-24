@@ -86,15 +86,15 @@ const Home = () => {
     <>
       <Grid container xs={12} columnSpacing={2} rowSpacing={3.5}>
         {/* 배너 */}
-        <Grid item xs={12} md={8.5} columnSpacing={3.5}>
+        <Grid item xs={12} md={9} columnSpacing={2}>
           <Banner />
         </Grid>
         {/* 사용자 정보 */}
-        <Grid item xs={12} md={3.5}>
+        <Grid item xs={12} md={3}>
           <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg} />
         </Grid>
         {/* 로그인 모달 적용 시킨 각 게시판들 */}
-        <Grid item container xs={12} md={8.5} spacing={2} onClick={openModal}>
+        <Grid item container xs={12} md={9} spacing={2} onClick={openModal}>
           {/* 로그인 모달 */}
           <LoginModal />
           {/* 자유게시판 */}

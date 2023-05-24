@@ -309,6 +309,13 @@ export const theme = createTheme({
           color: "#777777",
         }
       }
+    },
+    MuiInputBase:{
+      styleOverrides: {
+        root: {
+          borderRadius: "15px !important",
+        }
+      }
     }
   }
 },

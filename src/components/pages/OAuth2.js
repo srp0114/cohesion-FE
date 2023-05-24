@@ -7,6 +7,8 @@ import Loading from "../layout/Loading";
 const OAuth2 = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
+  const feUrl = process.env.REACT_APP_FRONT_URL;
 
   useEffect(() => {
     if (searchParams?.get("code")) {
@@ -23,7 +25,7 @@ const OAuth2 = () => {
       const verifier = sessionStorage.getItem("codeVerifier");
 
       const initialUrl =
-        "http://localhost:8081/oauth2/token?client_id=client&redirect_uri=http://localhost:8070/authorized&grant_type=authorization_code";
+        `${asUrl}/oauth2/token?client_id=client&redirect_uri=${feUrl}/authorized&grant_type=authorization_code`;
       const url = `${initialUrl}&code=${code}&code_verifier=${verifier}`;
 
       console.log(verifier);
@@ -75,7 +77,7 @@ const OAuth2 = () => {
   useEffect(() => {
     if (!searchParams?.get("code")) {
       const codeChallenge = sessionStorage.getItem("codeChallenge");
-      const link = `http://localhost:8081/oauth2/authorize?response_type=code&client_id=client&scope=openid&redirect_uri=http://localhost:8070/authorized&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+      const link = `${asUrl}/oauth2/authorize?response_type=code&client_id=client&scope=openid&redirect_uri=${feUrl}/authorized&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
       window.location.href = link;
     }

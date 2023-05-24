@@ -6,8 +6,9 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-
-import { SvgIcon } from "@mui/joy";
+import MediaIcon from '@mui/icons-material/PermMediaOutlined';
+import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
+import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 
 const icons = [
     { name: "reply", component: < ChatIcon /> }, //댓글,
@@ -35,6 +36,10 @@ const icons = [
 
     { name: "next", component: <ArrowForwardIosIcon /> }, // > 다음
     { name: "previous", component: <ArrowBackIosNewIcon /> }, // < 이전
+
+    { name: "file", component: <MediaIcon/> },
+    { name: "up", component: <ArrowUp/>},
+    { name: "down", component: <ArrowDown/>}
 ];
 
 const iconList = [
@@ -57,6 +62,8 @@ const iconList = [
     "close",
     "next",
     "previous",
+    "up",
+    "down"
 ]
 
 /**

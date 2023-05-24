@@ -45,6 +45,7 @@ const Welcome = () => {
     skills: [],
   });
   const [flag, setFlag] = useState<number>(-1);
+  const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
 
   const { formState: { errors }, register, control, handleSubmit, setError, clearErrors, watch } = useForm<UserAddItems>({ mode: "onChange" });
 
@@ -64,9 +65,9 @@ const Welcome = () => {
 
   const idTokenVerifier = () => {
     const verifier = new IdTokenVerifier({
-      issuer: "http://localhost:8081", // issuer 가 같은지
+      issuer: `${asUrl}`, // issuer 가 같은지
       audience: "client", // audience 가 같은지
-      jwksURI: "http://localhost:8081/oauth2/jwks", // get public key
+      jwksURI: `${asUrl}/oauth2/jwks`, // get public key
     });
 
     const id_token = sessionStorage.getItem("id_token");
