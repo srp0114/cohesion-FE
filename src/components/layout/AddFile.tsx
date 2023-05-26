@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"; 
-import { Grid, Stack, Typography, Button } from "@mui/material";
+import { Grid, Stack, Typography, Button, Paper } from "@mui/material";
 
 interface FileProps {
   handleFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -31,19 +31,20 @@ const AddFile = ({handleFile, setSelectedFiles} : FileProps) => {
 
   return (
     <Grid item>
-      <Button variant="contained" component="label"> 파일 첨부하기
-        <input ref={inputRef} hidden type="file" multiple onChange={handleChange} />
-      </Button>
-      {file.map((file, index) => (
-        <Stack direction="row" spacing={6}>
-        <Typography key={`${file.name}_${index}`}>
-          {file.name}
-          <Button onClick={() => handleDelete(index)}>삭제</Button>
-        </Typography>
+      <Stack direction={"row"} alignItems={"flex-start"}>
+        <Button variant="outlined" size="large" component="label"> 파일 첨부하기
+          <input ref={inputRef} hidden type="file" multiple onChange={handleChange}/>
+        </Button>
+        <Stack direction={"column"} pt={"0.2rem"} pl={"2rem"} spacing={"0.5rem"}>
+          {file.map((file, index) => (
+            <Stack direction="row" spacing={"1rem"} alignItems={"center"}>
+              <Typography key={index}>{file.name}</Typography>
+              <Button onClick={() => handleDelete(index)}>삭제</Button>
+            </Stack>
+          ))}
         </Stack>
-      ))}
+      </Stack>
     </Grid>
   );
 };
-
 export default AddFile;

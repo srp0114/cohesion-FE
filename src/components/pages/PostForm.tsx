@@ -313,9 +313,11 @@ const PostForm = () => {
                 </Select>
               </FormControl>
             </Grid>
-            {SelectSkill}
-            <Grid item>
-             <Controller
+
+            <Grid item container direction={"row"} spacing={"1.5rem"}>
+              {SelectSkill}
+              <Grid item xs>
+              <Controller
                 control={control}
                 name="title"
                 rules={{ required: true }}
@@ -333,7 +335,9 @@ const PostForm = () => {
                   />
                 )}
               /> 
+              </Grid>
             </Grid>
+
             <Grid item>
               <Controller
                 control={control}

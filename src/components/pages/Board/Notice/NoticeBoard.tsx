@@ -64,6 +64,12 @@ const Notice = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
+  const navigate = useNavigate();
+
+  const goToBoard = () => {
+    navigate(`/notice`);
+  };
+
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
@@ -117,7 +123,7 @@ const Notice = () => {
       <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Link underline="none" href="/notice">
-            <Typography variant="h2" sx={{ fontWeight: 800 }}>공지사항</Typography>
+            <Typography variant="h2" sx={{ fontWeight: 800 }} onClick={goToBoard}>공지사항</Typography>
             </Link>
             <SortBoard setBoardSort={getBoardItems}/>
           </Stack>

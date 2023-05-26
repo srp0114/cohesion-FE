@@ -227,10 +227,11 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '&.navButton': {
-            width: '6rem',
+            width: '6.3rem',
             padding: '0.2rem',
             color: 'black',
             fontSize: '0.9rem',
+            fontWeight: '700',
             outline: 'none',
             backgroundColor: 'transparent',
             '&:hover': {

@@ -41,9 +41,7 @@ const QnABoard = () => {
 
   const navigate = useNavigate();
   const goToBoard = () => {
-    navigate("questions");
-    setSearchParams({page: "1"});
-    getBoardItems("createdAt,desc");
+    navigate("/questions");
   };
 
   const getBoardItems = (sort:string) => {
