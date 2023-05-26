@@ -153,7 +153,9 @@ export const theme = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: {
-          wordWrap: "break-word"
+          wordWrap: "break-word",
+          wordBreak: "break-word",
+          whiteSpace: "pre-line",
         }
       }
     },

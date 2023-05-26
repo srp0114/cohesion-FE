@@ -14,7 +14,6 @@ interface MyHistoryProps {
   reply: number;
   board: number;
   bookmark: number;
-  point: number;
 }
 
 export const MyHistory = (props: MyHistoryProps) => {
@@ -75,12 +74,6 @@ export const MyHistory = (props: MyHistoryProps) => {
           </Box>
         </Stack>
         <Divider orientation="vertical" variant="middle" flexItem />
-        <Stack direction="row">
-          <Typography>누적포인트</Typography>
-          <IconButton disabled color="primary" size="large">
-            <Money /> <Typography sx={{ fontSize: "2rem" }}>{props.point}</Typography>
-          </IconButton>
-        </Stack>
       </Stack>
       {MyPage}
     </>
