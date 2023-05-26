@@ -56,7 +56,7 @@ const NestedReplyField = (props: NestedReplyProps) => {
                 </Paper>
               </Modal>
           ) : (
-              <Grid container direction="row" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} pl={"1rem"} pr={"1rem"}>
+              <Grid container direction="row" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} p={"1rem"}>
                 <Grid item xs={8} md={11}>
                   <TextField
                     placeholder="답글달기.."

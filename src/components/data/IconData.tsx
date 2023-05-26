@@ -11,6 +11,7 @@ import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 import ThumbUp from '@mui/icons-material/ThumbUp';
 import { FaCrown } from 'react-icons/fa';
+import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 
 const icons = [
     { name: "reply", component: < ChatIcon /> }, //댓글,

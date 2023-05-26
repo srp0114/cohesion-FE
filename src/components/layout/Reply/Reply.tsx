@@ -49,8 +49,6 @@ const Reply = (props: ReplyProps) => {
   });
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showReplies, setShowReplies] = useState(false);
-
   const id = props.postingId;
   const board = props.board;
   const writerId = props.writerId;
@@ -161,7 +159,6 @@ const Reply = (props: ReplyProps) => {
       parentId: parentId,
     };
 
-    // 변경 api
     axios({
       method: "put",
       url: `/api/${board}/update/replies`,
@@ -288,12 +285,14 @@ const Reply = (props: ReplyProps) => {
           {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
         </Grid>
         <Grid item>
-          <NestedReplyField
-          board={board}
-          onAddNested={handleAddNested}
-          parentId={reply.id}
-        />
-        {replyContainer(replyData, reply.id)}
+          {!isEditing && 
+            <NestedReplyField
+            board={board}
+            onAddNested={handleAddNested}
+            parentId={reply.id}
+            />
+          }
+          {replyContainer(replyData, reply.id)}
         </Grid>
         </Grid>
     </>
@@ -307,20 +306,8 @@ const Reply = (props: ReplyProps) => {
     return (
       filteredReplies.length > 0 && (
         <>
-        <Button onClick={()=>setShowReplies(!showReplies)}>
-          {showReplies ? (
-          <>
-          <FindIcon name="up" />숨기기
-          </>
-          ) : (
-            <>
-            <FindIcon name="down" />{`답글 ${filteredReplies.length}개`}
-            </>
-          )}
-        </Button>
-        
         <Grid item container direction="column" pl="2rem">
-          {showReplies && filteredReplies.map((reply) => generateReply(reply))}
+          {filteredReplies.map((reply) => generateReply(reply))}
         </Grid>
         </>
       )
