@@ -90,7 +90,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             if (res.status === 200) {
                 (props.onNewApplicant) ? props.onNewApplicant() : alert(`신청하는데 오류가 발생했습니다.`);
                 (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
-                alert(`partyId : ${res.data} ${JSON.stringify(res.data)} 신청이 완료되었습니다.`);
+                alert(`신청이 완료되었습니다.`);
             }
         }).catch((err) => {
             console.log(err);
@@ -104,7 +104,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             url: `/api/recruit/${props.postingId}/application-cancel`,
         }).then((res) => {
             if (res.status === 200) {
-                alert(`${JSON.stringify(res.data)} 신청취소되었습니다.`);
+                alert(`신청취소되었습니다.`);
                 (props.onApplicantOut) ? props.onApplicantOut() : alert(`신청하는데 오류가 발생했습니다.`);
                 (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청취소버튼 설정에 오류가 발생했습니다.`);
             }
@@ -118,7 +118,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         })
             .then((res) => {
                 if (res.status === 200) {
-                    alert(`${JSON.stringify(res.data)} 모집이 완료되었습니다.`);
+                    alert(`모집이 완료되었습니다.`);
                 }
             })
             .catch((err) => console.log(err));
@@ -171,11 +171,11 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수사항" labelPlacement="start" />
                             <Typography variant="subtitle1">
                                 {props.optionalContext}
                             </Typography>
-                            <FormControlLabel control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
                         </FormGroup>
                         <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
@@ -189,7 +189,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수사항" labelPlacement="start" />
                         </FormGroup>
                         <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
@@ -243,7 +243,8 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             <Modal
                 open={props.open}
                 onClose={cancelClickHandler}
-                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', justifyItems: 'center', alignItems: 'center' }}
+            >
 
                 <Grid container xs={4} sx={doubleCheckModalstyle} spacing={'1.5rem'}>
                     <Grid item xs={12}>
@@ -252,7 +253,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                         </Typography>
                         <Divider variant="middle" />
                     </Grid>
-                    {((props.who === false) && (props.callNode === 'applyBtn')) ? <Grid item xs={12} >{applicationCheckbox()}</Grid> : null}
+                    {((props.who === false) && (props.callNode === 'applyBtn')) ? <Grid item xs={12} sx={{ padding: 0, display: "flex", justifyContent: "center" }} >{applicationCheckbox()}</Grid> : null}
                     <Divider variant="fullWidth" />
                     <Grid item xs={12}>
                         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -262,7 +263,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                     </Grid>
                 </Grid>
 
-            </Modal>
+            </Modal >
         </>
     );
 }
@@ -270,7 +271,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
 const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
     borderRadius: 5,
     p: 2,
-    bgcolor: 'background.paper',
+    bgcolor: '#ffffff',
     boxShadow: 20,
 };
 
@@ -404,7 +405,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                 <React.Fragment key={anchor}>
                     <Tooltip title="신청자 목록 확인하러 가기">
                         <IconButton className="applicantListIconButton" onClick={toggleDrawer(anchor, true)} size="large">
-                            <FolderSharedOutlinedIcon color="primary"/>
+                            <FolderSharedOutlinedIcon color="primary" />
                         </IconButton>
                     </Tooltip>
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
@@ -469,33 +470,38 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
                                                 <Collapse in={app.collapseOpen} timeout="auto" unmountOnExit>
                                                     {/* 신청자 정보 */}
-                                                    {/* 1트랙 */}
-                                                    <Typography variant="h5">1트랙: {app.track1}</Typography>
-                                                    {/* 선택한 기술 */}
-                                                    {(app.skills.length > 0) ? app.skills.map(skill => {
-                                                        const matchingSkill = skillData.find(data => data.name === skill); // 일치하는 기술 데이터를 찾음
-                                                        if (matchingSkill) {
-                                                            return (
-                                                                <Chip
-                                                                    avatar={<Avatar src={matchingSkill.logo} />} // 일치하는 기술의 로고를 사용
-                                                                    label={skill}
-                                                                    sx={{ ml: 1 }}
-                                                                    variant="outlined"
-                                                                    color="info"
-                                                                />
-                                                            );
-                                                        }
-                                                    }) : <Chip avatar={<Avatar />} label="선택한 기술이 없습니다." sx={{ ml: 1 }} />}
+                                                    <Stack direction="column" spacing={"0.5rem"}>
+                                                        {/* 1트랙 */}
+                                                        <Typography variant="h5">1트랙: {app.track1} </Typography>
+                                                        <Divider variant="middle" />
+                                                        {/* 선택한 기술 */}
+                                                        <Box>
+                                                            {(app.skills.length > 0) ? app.skills.map(skill => {
+                                                                const matchingSkill = skillData.find(data => data.name === skill); // 일치하는 기술 데이터를 찾음
+                                                                if (matchingSkill) {
+                                                                    return (
+                                                                        <Chip
+                                                                            avatar={<Avatar src={matchingSkill.logo} />} // 일치하는 기술의 로고를 사용
+                                                                            label={skill}
+                                                                            sx={{ margin: "0.25rem" }}
+                                                                            variant="outlined"
+                                                                            color="info"
+                                                                        />
+                                                                    );
+                                                                }
+                                                            }) : <Chip avatar={<Avatar />} label="선택한 기술이 없습니다." sx={{ ml: 1 }} />}
+                                                        </Box>
+                                                    </Stack>
                                                 </Collapse>
                                             </Grid>
                                         </Grid>
                                     </ListItem>
-                                        <Divider />
+                                        <Divider variant="middle" />
                                     </>
                                 ))}
                             </List>
-                            <Divider />
-                            <Tooltip title="닫기" sx={{ display: 'flex', flexStart: "flex-end" }}>
+                            <Divider variant="fullWidth" />
+                            <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
                                 <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
                                     < DisabledByDefaultOutlinedIcon />
                                 </IconButton>

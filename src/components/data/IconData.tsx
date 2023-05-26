@@ -4,12 +4,13 @@ import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
 import Visibility from "@mui/icons-material/VisibilityOutlined";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import MediaIcon from '@mui/icons-material/PermMediaOutlined';
 import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 import ThumbUp from '@mui/icons-material/ThumbUp';
 import { FaCrown } from 'react-icons/fa';
-import { SvgIcon } from "@mui/joy";
 
 const icons = [
     { name: "reply", component: < ChatIcon /> }, //댓글,
@@ -34,6 +35,10 @@ const icons = [
 
     { name: "done", component: <DoneIcon /> }, // V
     { name: "close", component: <CloseIcon /> }, // X
+
+    { name: "next", component: <ArrowForwardIosIcon /> }, // > 다음
+    { name: "previous", component: <ArrowBackIosNewIcon /> }, // < 이전
+
     { name: "file", component: <MediaIcon/> },
     { name: "up", component: <ArrowUp/>},
     { name: "down", component: <ArrowDown/>},
@@ -59,6 +64,8 @@ const iconList = [
     "fix",
     "done",
     "close",
+    "next",
+    "previous",
     "up",
     "down",
     "thumbUp",
@@ -72,6 +79,7 @@ const iconList = [
 interface FindIconProps {
     name: string | typeof iconList;
     iconProps?: { fontSize?: string | "small" | "medium" | "large"; color?: string };
+    onClick?: () => void;
 }
 
 export const FindIcon = (props: FindIconProps) => {
