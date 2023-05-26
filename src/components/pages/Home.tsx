@@ -1,69 +1,173 @@
-import React from 'react';
-import Grid from '@mui/material/Unstable_Grid2';
-import Header from '../layout/Header';
-import Banner from '../layout/Banner';
-import LeftSidebar from '../layout/LeftSidebar';
-import RightSidebar from '../layout/RightSidebar';
-import Board from "../layout/Board";
-import Board2 from "../layout/Board2";
-import { Fab, Box } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
-import {generateCodeChallenge, generateCodeVerifier} from "../pkce/pkce";
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
+import { Box, Modal, Typography, Button, Paper, Stack } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import Banner from "../layout/Banner";
+import SideBar from "../layout/SideBar";
+import HomeBoard from "../layout/HomeBoard";
+import hansung from "../asset/image/hansung.png";
+import axios from "axios";
+import { checkLogin } from "../checkLogin";
+import { WritingButton } from "../layout/CRUDButtonStuff";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
+import { HomeSkeleton } from "../layout/Skeletons";
+import { BoardType } from "../model/board";
 
-const WritingButton = () => {
-  const navigate = useNavigate();
-
-  const goToWriting = () => {
-    navigate('/post')
-}
-  return (
-  <Box sx={{ '& > :not(style)': { ml: 120 } }}>
-    <Fab size="medium" color="primary" aria-label="edit" onClick={goToWriting}>
-    <AddIcon/>
-    </Fab>
-  </Box>
-  )
+export interface UserInfoItems {
+  nickname: string;
+  studentId: number;
+  track1: string;
+  track2?: string;
+  profileImg: string | null;
 }
 
-const Home: React.FC = () => {
+const Home = () => {
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [open, setOpen] = React.useState(false);
+  const [user, setUser] = useState<UserInfoItems>({
+    nickname: "",
+    studentId: 0,
+    track1: "",
+    profileImg: null,
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleClose = () => setOpen(false);
+
+  // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
+  // 토큰있으면 - 게시판 보이도록
+  // 토큰없으면 - 게시판 블러 처리
+  useEffect(() => {
+    checkLogin().then((res) => {
+      if (res) {
+        setIsLogin(true);
+        getCurrentUserInfo()
+          .then(userInfo => {
+            setUser(userInfo)
+          })
+          .catch(err => console.log(err));
+      } else {
+        setIsLogin(false);
+      }
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 800);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   const navigate = useNavigate();
+
   const handleLogin = () => {
     const verifier = generateCodeVerifier();
-    sessionStorage.setItem('codeVerifier', verifier);
+    sessionStorage.setItem("codeVerifier", verifier);
     const codeChallenge = generateCodeChallenge();
-    sessionStorage.setItem('codeChallenge', codeChallenge);
+    sessionStorage.setItem("codeChallenge", codeChallenge);
 
-    navigate(`/redirect`)
+    navigate(`/redirect`);
   };
-    return (
-      <>
-        <button onClick={handleLogin}>로그인</button>
-        <Header/>
-        <Grid container spacing={2} style={{margin:0}}>   
-          <Grid xs>
-            <LeftSidebar/>
-          </Grid>       
-          <Grid xs={7}>
-          <Banner/>
-            <Grid container spacing={2} style={{margin:0}}>
-              <Grid xs>
-              <Board/>
-              <Board2/>
-              </Grid>
-              <Grid xs>
-              <Board2/>
-              <Board/>
-              </Grid>
+
+  const openModal = () => {
+    if (!isLogin)
+      setOpen(!open);
+  };
+
+  //로그인 모달
+  const LoginModal = () => (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={loginModalstyle}>
+        <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
+        <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+        <Button className="startButton" onClick={handleLogin}>
+          <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
+        </Button>
+      </Box>
+    </Modal>
+  );
+
+  return (
+    <>{loading ? (
+      <Grid container spacing={2} gap={3.5}>
+        <Grid item xs={8.5}>
+          <Banner />
+          <Grid container spacing={2} onClick={openModal}>
+            <Modal
+              open={open}
+              onClose={handleClose}
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Box sx={loginModalstyle}>
+                <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
+                <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+                <Button className="startButton" onClick={handleLogin}>
+                  <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
+                </Button>
+              </Box>
+            </Modal>
+
+            <Grid xs
+              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
+              <HomeBoard board="free" loginState={isLogin} />
             </Grid>
-            <WritingButton/>
+            <Grid xs
+              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
+              {/* qna -> questions로 수정*/}
+              <HomeBoard board="questions" loginState={isLogin} />
+            </Grid>
           </Grid>
-          <Grid xs>
-          <RightSidebar/>
+
+          <Grid container spacing={2} onClick={openModal}>
+            <Modal
+              open={open}
+              onClose={handleClose}
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Box sx={loginModalstyle}>
+                <Typography align="center" variant="h5" sx={{ mt: 2 }}>Cohesion에 오신 것을 환영합니다!</Typography>
+                <Typography align="center" variant="subtitle1" sx={{ mt: 2, mb: 2 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+                <Button className="startButton" onClick={handleLogin}>
+                  <img src={hansung} width="30" style={{ marginRight: 10 }} />한성대학교로 시작하기
+                </Button>
+              </Box>
+            </Modal>
+
+            <Grid xs
+              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
+              {/* TODO: 구인게시판 main api 작업 후 board 수정*/}
+              <HomeBoard board="recruit" loginState={isLogin} />
+            </Grid>
+            <Grid xs
+              sx={{ filter: isLogin ? null : "blur(1.5px)" }}>
+              {/* TODO: 공지사항 main api 작업 후 board 수정*/}
+              <HomeBoard board="free" loginState={isLogin} />
+            </Grid>
           </Grid>
         </Grid>
-      </>
-    );
-  }
-  
-  export default Home;
+        <Grid item xs>
+          <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg} />
+        </Grid>
+
+      </Grid> ) : (
+      <HomeSkeleton />
+      )}
+      {isLogin ? <WritingButton /> : null}
+    </>
+  );
+};
+
+const loginModalstyle = {
+  borderRadius: 5,
+  p: 4,
+  bgcolor: 'background.paper',
+  boxShadow: 20,
+};
+
+export default Home;

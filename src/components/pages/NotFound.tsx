@@ -24,7 +24,9 @@ const NotFound = () => {
       <Box>
         <Typography variant="h6">404 NOT FOUND</Typography>
         <Typography variant="body1">Oops! 잘못된 접근이에요!</Typography>
-        <Typography variant="body1">5초 후에 이전에 있던 페이지로 돌아갑니다.</Typography>
+        <Typography variant="body1">
+          5초 후에 이전에 있던 페이지로 돌아갑니다.
+        </Typography>
       </Box>
     </Box>
   );

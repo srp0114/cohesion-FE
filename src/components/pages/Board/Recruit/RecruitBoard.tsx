@@ -1,12 +1,10 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../../layout/Header";
-import FilterPosting from "../../../layout/FilterPosting";
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Time from "../../../layout/Time";
 import {
   Avatar,
   Box,
-  Container,
+  Chip,
   Card,
   CardHeader,
   CardContent,
@@ -17,20 +15,31 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
-import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
-//import { User } from "../../../model/user";
+import {
+  ThemeProvider,
+  createTheme,
+  useTheme,
+} from "@mui/material/styles";
+import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { data } from "../../../data/RecruitData";
+import axios from "axios";
+import { WritingButton } from "../../../layout/CRUDButtonStuff";
+import Profile from "../../../layout/Profile";
+import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
+import SearchBoardField from "../../../layout/SearchBoardField";
+import SortBoard from "../../../layout/SortBoard";
+import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
+import { shortenContent } from "../QnA/QnABoard";
+import { RecruitBoardSkeleton } from "../../../layout/Skeletons";
+
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
   id: number;
   title: string;
   writer: string;
-  profileImg: string; //사용자 프로필 사진 img 링크. 현재는 <Avartar />의 기본 이미지가 들어감
+  profileImg: string | null;
   createdDate: string;
   modifiedDate?: string;
   bookmark: number;
@@ -38,56 +47,135 @@ export interface RecruitBoardItems {
   views: number; //조회수
   stuId: number; //사용자 학번
   imgUrl?: Array<string>; //이미지
-  require: string; //필수조건: 분반명 등
-  optional?: string; //기타, 우대조건: 학점, 기술스택 등
-  party: number; //모집할 인원수
+  require: string;
+  optional?: string;
+  party: number;
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
+
+  isCompleted: boolean;
+  accessUserId: number; //접속한 유저의 아이디(학번)
+  authorizedUserIds: number[]; //권한있는 사용자들의 아이디(학번), 작성자와 승인된 사용자들
 }
 
-const test = data; //목업데이터
 
 const RecruitBoard: React.FC = () => {
   /**
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
-  const displayPosting = test.map((element, idx) => (
-    <Grid xs={4}>
+  const [boardItems, setBoardItems] = useState<RecruitBoardItems[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = searchParams.get('page');
+  const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
+  const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
+  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+
+  useEffect(() => {
+    getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
+      .then(userInfo => setAccessUserId(userInfo.studentId))
+      .catch(err => console.log(err));
+  }, [])
+
+  const getBoardItems = (sort: string) => {
+    const curPage = page - 1;
+    const params = { size: 9, sort: sort };
+
+    setSearchParams({ page: page.toString() })
+    axios({
+      method: "get",
+      url: `/api/recruit/list?page=${curPage}`,
+      params: params
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data.data);
+          setTotal(res.data.count)
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
+  }
+
+/* 1.5초간 스켈레톤 표시 */
+useLayoutEffect(() => {
+  const timer = setTimeout(() => {
+    setLoading(true);
+  }, 1500);
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [boardItems]);  
+
+  useEffect(() => {
+    getBoardItems("createdAt,desc");
+  }, [page])
+
+  const performSearch = (search: string) => {
+    axios({
+      method: "get",
+      url: `/api/recruit/list?search=${search}&page=0&size=4`,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
+  const displayPosting = boardItems.map((element, idx) => (
+    <Grid xs={12} md={6} lg={4}>
       <RecruitCard {...element} key={idx} />
+      <Typography>{element.isCompleted}</Typography>
     </Grid>
   ));
 
   return (
     <>
-      <Container>
-        <Header />
-        <Box
-          sx={{
-
-          }}
-        >
-          <Typography
-            variant="h5"
-            sx={{ marginBottom: 5, paddingLeft: 3, fontWeight: 600 }}
-          >
-            모집게시판
-          </Typography>
-          <FilterPosting />
+      {loading ? (
+        <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
+            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
+              모집게시판
+            </Typography>
+            <SortBoard setBoardSort={getBoardItems} />
+          </Box>
           <Box sx={{ flexGrow: 1 }}>
-            <Grid
-              container
-              rowSpacing={1}
-              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            >
+            <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
               {displayPosting}
             </Grid>
           </Box>
-        </Box>{" "}
-        {/*추후에 이 부분 컴포넌트 분리하기*/}
-        <p></p>
-        {/*space for paginationControl*/}
-      </Container>
+          <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
+            <SearchBoardField setSearchAPI={performSearch} />
+          </Box>
+          <PaginationControl
+            page={page}
+            between={1}
+            total={total}
+            limit={9}
+            changePage={(page: React.SetStateAction<number>) => setPage(page)}
+            ellipsis={1}
+          />
+          <WritingButton />
+        </Box>
+      ) : (
+        <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+          <RecruitBoardSkeleton />
+          <WritingButton />
+        </Box>
+      )}
     </>
   );
+  
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
@@ -99,55 +187,144 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
     navigate(`/recruit/${postId}`);
   };
 
+  const [remain, setRemain] = useState<number>(props.party - props.gathered); //모집 인원 계산
+
+  useEffect(() => {
+    if (remain === 0) {
+      //모집인원이 0이 되어 모집이 마감되었을 때,
+      console.log(`${props.id}의 모집 마감`);
+    }
+
+  }, [remain]);
+
+  const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
+  const _recruitTheme = createTheme(_theme, {
+    components: {
+      MuiCard: {
+        defaultProps: {
+          //기본 props 설정
+          raised: false, //양각 스타일 사용안함
+        },
+        styleOverrides: {
+          //css 설정, rule네임에 따라
+          root: { //모집 완료된 게시글은 배경색이 palette.neutral(회색)
+            backgroundColor: (!props.isCompleted) ? _theme.palette.background : "#dddddd",
+            boxShadow: "none",
+            border: (!props.isCompleted) ? `1px solid black` : `1px solid ${_theme.palette.neutral.main}`,
+            borderRadius: "35px",
+            padding: "2rem",
+            height: "100%",
+          },
+        },
+      },
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            margin: 0,
+            padding: 0,
+          },
+          title: {
+            fontSize: "1.25rem",
+            fontWeight: 500,
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
+          },
+          subheader: {
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
+          },
+        },
+      },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            fontSize: "1rem",
+            color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
+            paddingTop: 0,
+          },
+        },
+      },
+      MuiCardActions: {
+        defaultProps: {
+          disableSpacing: true,
+        },
+        styleOverrides: {
+          root: {
+            color: (!props.isCompleted) ? _theme.palette.info.main : _theme.palette.neutral.main,
+          },
+          spacing: {
+            disableSpacing: true,
+          },
+        },
+      },
+      MuiCardActionArea: {
+        //CardActionArea는 ButtonBase의 props도 사용가능하기때문에
+        defaultProps: {
+          disableRipple: true, //버튼 누를 때의 효과 잔물결 효과 사라짐.
+        },
+        styleOverrides: {
+          focusHighlight: {
+            background: _theme.palette.background,
+          },
+        },
+      },
+    }
+  });
+
   return (
-    <Card>
-      <CardActionArea onClick={() => goToPost(props.id)}>
+    <ThemeProvider theme={_recruitTheme}>
+      <Card onClick={() => goToPost(props.id)} sx={{
+        '&:hover': {
+          boxShadow: 5,
+          pointer: "cursor"
+        },
+      }}>
+
         <CardHeader
-          title={props.title}
-          subheader={<Time date={props.createdDate} />}
+          /*제목(20자까지)이랑 수정 표시*/
+          title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>{props.title}</Typography>
+            {/* 몇 명 모집 중인지 */}
+
+          </Stack>}
+          /* 작성 시간 */
+          subheader={
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Time date={props.createdDate} variant="h6" />
+            </div>
+          }
         />
 
-        <CardContent>
-          <Stack direction="row">
-            <Avatar
-              srcSet={props.profileImg as string}
-              sx={{ width: "20px", height: "20px", marginRight: "5px" }}
-            />
-            <Typography variant="overline">
-              {`${props.writer} (사용자 학번)`}
-            </Typography>
-          </Stack>
+        <Box sx={{ height: "10rem", alignContent: "flex-start", justifyContent: "center" }}>
+          {/* 필수, 우대 조건 */}
+          <CardHeader subheader="필수 조건" titleTypographyProps="h6" sx={{ color: _theme.palette.primary.main }} />
+          <CardContent sx={{ fontSize: "1rem", color: _theme.palette.primary.main }}>{shortenContent(`${props.require}`, 30)}</CardContent>
 
-          <Box sx={{ marginBottom: 1 }}>
-            <Typography>Requirement</Typography>
-            <Typography variant="body1">{props.require}</Typography>
-            <Typography>Optional</Typography>
-            <Typography variant="body1">{props.optional}</Typography>
-            {/* 이미지에 대해서는 추후 논의 후 추가)*/}
-          </Box>
-        </CardContent>
+          {props.optional ? <><CardHeader subheader="우대 조건" titleTypographyProps="h5" />
+            <CardContent sx={{ fontSize: "1rem" }}>{shortenContent(`${props.optional}`, 30)}</CardContent></> : null}
+        </Box>
 
-        <CardContent>
-          <Typography>
-            {props.gathered} / {props.party}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+        {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          {(remain === 0 || props.isCompleted) ?
+            <Typography variant="h6" sx={{ color: _theme.palette.neutral.main }}>"모집 마감"</Typography>
+            : <Typography variant="h6" sx={{ color: _theme.palette.primary.main }}>{remain}명 모집 중</Typography>}
+          {reply_bookmark_views_recruit(props)}
+        </Box>
 
-      <CardActions>
-        <Stack direction="row">
-          <IconButton size="small">
-            <Person2OutlinedIcon /> {props.views}
-          </IconButton>
-          <IconButton size="small">
-            <BookmarkIcon /> {props.bookmark}
-          </IconButton>
-          <IconButton size="small">
-            <ChatIcon /> {props.reply}
-          </IconButton>
-        </Stack>
-      </CardActions>
-    </Card>
+        <CardHeader
+          /* 작성자 프로필, 닉네임, 학번, 수정됌 표시 */
+          subheader={
+            <Stack direction="row">
+              <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
+              <Typography variant="overline">
+                {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
+              </Typography>
+              {(typeof props.modifiedDate === 'object') ?
+                null : <Chip label="modified" size="small" variant="outlined" sx={{ marginLeft: "1rem" }} />}
+            </Stack>
+          } />
+
+      </Card>
+    </ThemeProvider >
   );
 };
 

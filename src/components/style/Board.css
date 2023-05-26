@@ -1,43 +1,56 @@
-.board {
-    margin-bottom: 100px;
+.replyModalQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    height: 15rem;
+    background: #ffffff;
 }
 
-.boardTitle {
-    padding-bottom: 20px;
+.replyModalQuill .ql-snow .ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    height: 15rem;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
 }
 
-.box {
-    margin-bottom: 10px;
-    border-bottom : 1px solid gainsboro;
+.replyModalQuill .ql-editor {
+    height: 15rem;
+    white-space: pre-wrap;
 }
 
-.name {
-    margin-left:10%;
-    padding-top:2px;
+.replyQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background: #ffffff;
 }
 
-.icon {
-   float: left; 
+.replyQuill .ql-snow .ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
 }
 
-.title {
-    margin-left:40px;
-    margin-bottom:0;
+.replyQuill .ql-editor {
+    min-height: 4rem;
+    white-space: pre-wrap;
 }
 
-.bookmark {
-    float:right;
-    margin-right: 7px;
 
+.postQuill .ql-container {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    background: #ffffff;
 }
 
-.comment {
-    float:right;
-    margin-right: 5px;
+.ql-snow.ql-toolbar {
+    display: block;
+    background: #dfe6ba;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
 }
 
-.language {
-    width:30px;
-    height:30px;
-    float: right
+.postQuill .ql-editor {
+    min-height: 20rem;
+    white-space: pre-wrap;
 }
