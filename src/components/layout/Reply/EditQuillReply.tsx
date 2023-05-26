@@ -32,9 +32,12 @@ const EditQuillReply = (props: EditReplyProps) => {
         setOpen(false);
     };
 
-    return (
+    const handleCancel = (event: React.MouseEvent<HTMLElement>) => {
+        setOpen(false);
+        props.setIsEditing(!props.isEditing);
+    }
+     return (
         <>
-           {props.isEditing &&
                 <Modal open={open}>
                 <Paper sx={QuillModal} elevation={4}>
                 <Stack direction={"column"} spacing={"2rem"}>
@@ -43,13 +46,12 @@ const EditQuillReply = (props: EditReplyProps) => {
                         <QuillEditor onAddQuill={onQuillChange} content={editArticle} />
                     </div>
                     <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-                        <Button onClick={()=>setOpen(false)}>취소</Button>
+                        <Button onClick={handleCancel}>취소</Button>
                         <Button onClick={handleSubmit}>수정</Button>
                     </Stack>
                 </Stack>
                 </Paper>
                 </Modal>
-            }
         </>
     )
 }

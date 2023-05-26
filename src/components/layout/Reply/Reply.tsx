@@ -245,6 +245,7 @@ const Reply = (props: ReplyProps) => {
               parentId={parentId} 
               isEditing={isEditing} 
               onChangeReply={editReply}
+              setIsEditing={setIsEditing}
             /> 
           </> :
           <EditReplyField
@@ -253,6 +254,7 @@ const Reply = (props: ReplyProps) => {
             parentId={parentId}
             isEditing={isEditing}
             onChangeReply={editReply}
+            setIsEditing={setIsEditing}
           />
         )
       :
@@ -305,8 +307,20 @@ const Reply = (props: ReplyProps) => {
     return (
       filteredReplies.length > 0 && (
         <>
+        <Button onClick={()=>setShowReplies(!showReplies)}>
+          {showReplies ? (
+          <>
+          <FindIcon name="up" />숨기기
+          </>
+          ) : (
+            <>
+            <FindIcon name="down" />{`답글 ${filteredReplies.length}개`}
+            </>
+          )}
+        </Button>
+        
         <Grid item container direction="column" pl="2rem">
-          {filteredReplies.map((reply) => generateReply(reply))}
+          {showReplies && filteredReplies.map((reply) => generateReply(reply))}
         </Grid>
         </>
       )

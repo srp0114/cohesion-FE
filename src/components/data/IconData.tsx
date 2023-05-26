@@ -9,6 +9,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import MediaIcon from '@mui/icons-material/PermMediaOutlined';
 import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
+import ThumbUp from '@mui/icons-material/ThumbUp';
+import { FaCrown } from 'react-icons/fa';
 
 const icons = [
     { name: "reply", component: < ChatIcon /> }, //댓글,
@@ -39,7 +41,9 @@ const icons = [
 
     { name: "file", component: <MediaIcon/> },
     { name: "up", component: <ArrowUp/>},
-    { name: "down", component: <ArrowDown/>}
+    { name: "down", component: <ArrowDown/>},
+    { name: "thumbUp", component: <ThumbUp/> },
+    { name: "crown", component: <FaCrown fontSize={"1.8rem"}/> }
 ];
 
 const iconList = [
@@ -63,7 +67,9 @@ const iconList = [
     "next",
     "previous",
     "up",
-    "down"
+    "down",
+    "thumbUp",
+    "crown"
 ]
 
 /**

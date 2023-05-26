@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Box, Typography, Divider } from "@mui/material";
+import { Grid, Box, Typography, Divider, Stack } from "@mui/material";
 import Profile from "../layout/Profile";
 import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
 import { useNavigate } from "react-router";
-
+import { FindIcon } from "../data/IconData";
 interface PostRankingItem {
     id: number,
     boardType: string,
@@ -41,7 +41,10 @@ export const PostRanking = () => {
 
     return (
         <Box sx={{ p:2 }}>
-        <Typography variant="h3" sx={{mt:20, ml:2, mb:2}}>Top Posting</Typography>
+        <Stack direction={"row"} alignItems={"center"}>
+            <FindIcon name="thumbUp"/>
+            <Typography variant="h3">Top Posting</Typography>
+        </Stack>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {postRanking.map((value, index) => {
@@ -62,7 +65,10 @@ export const PostRanking = () => {
                 <>
                 <Box sx={{ display:"flex", mt:3.5 }} onClick={goToDetails}>
                 <Typography variant="h4" sx={{mt:"0.5rem", mr:5, ml:1}}>{index+1}위</Typography>
-                <Box>
+                <Box sx={{'&:hover': {
+                            backgroundColor: '#f2f2f2',
+                            opacity: [1.0, 0.9, 0.9],
+                        }}}>
                     <Typography variant="h6" color="secondary.dark">{boardName}</Typography>
                     <Typography variant="h5">{shortenContent(value.title, 10)}</Typography>
                 </Box>
@@ -96,7 +102,10 @@ export const UserRanking = () => {
 
     return (
         <Box sx={{ p:2 }}>
-        <Typography variant="h3" sx={{mt:10, ml:2, mb:2}}>Top User</Typography>
+        <Stack direction={"row"} alignItems={"center"}>
+        <FindIcon name="crown"/>
+        <Typography variant="h3">Top User</Typography>
+        </Stack>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {userRanking.map((value, index) => {
@@ -106,7 +115,13 @@ export const UserRanking = () => {
                 <Grid container direction="row" sx={{ display:"flex", mt:5, alignItems:"center" }}>
                 <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
                 <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
-                <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1.5rem", mr:"0.2rem"}}>
+                <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1.5rem", mr:"0.2rem",
+            
+            '&:hover': {
+                            backgroundColor: '#f2f2f2',
+                            opacity: [1.0, 0.9, 0.9],
+                        },
+                        }}>
                     <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
                 </Box>
