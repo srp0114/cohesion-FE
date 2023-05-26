@@ -58,10 +58,10 @@ export const PostingSkeleton = () => (
 
 export const MyPageSkeleton = () => (
     <>
-        <Stack direction="row" spacing="2.25rem" sx={{ marginTop: "4rem", padding: 2 }}>
+        <Stack direction="row" sx={{ marginTop: "4rem", padding: 2 }}>
             <Box sx={{ width: '40%' }}>
-                <Skeleton variant="rectangular" height={"16rem"} width={"100%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
-                <Skeleton variant="rectangular" height={"12rem"} width={"100%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
+                <Skeleton variant="rectangular" height={"18rem"} width={"80%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
+                <Skeleton variant="rectangular" height={"15rem"} width={"80%"} sx={{ borderRadius: "20px", marginBottom: "1.5rem" }} />
             </Box>
             <Stack direction="column" sx={{ display: "flex", justifyContent: "flex-start", alignItems: "stretch" }}>
                 <Stack direction="row" spacing={"2.5rem"}>
@@ -71,12 +71,13 @@ export const MyPageSkeleton = () => (
                     <Skeleton variant="rectangular" height={"4rem"} width={"4rem"} sx={{ borderRadius: "20px" }} />
                 </Stack>
                 <Box sx={{ width: "250%" }}>
-                    <Skeleton variant="text" sx={{ fontSize: "2rem", marginBottom: "1.5rem" }} animation="wave" width={"6rem"} />
+                    <Skeleton variant="text" sx={{ fontSize: "2rem", margin: "2rem 0" }} animation="wave" width={"6rem"} />
                     <Stack direction="row" spacing="1rem">
                         <Skeleton variant="rectangular" width={'20%'} height={"4rem"} sx={{ borderRadius: "50px" }} />
                         <Skeleton variant="rectangular" width={'60%'} height={"4rem"} sx={{ borderRadius: "50px" }} />
                         <Skeleton variant="rectangular" width={'10%'} height={"4rem"} sx={{ borderRadius: "50px" }} />
                     </Stack>
+                    <Skeleton variant="rectangular" width={'100%'} height={"18rem"} sx={{ borderRadius: "20px", marginTop: "2rem" }} />
                 </Box>
             </Stack>
         </Stack>
