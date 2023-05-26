@@ -11,7 +11,7 @@ import axios from "axios";
 import { checkLogin } from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
-import { HomeSkeleton } from "../layout/Skeletons";
+import { HomeSkeleton, useSkeleton } from "../layout/Skeletons";
 import { BoardType } from "../model/board";
 
 export interface UserInfoItems {
@@ -31,7 +31,6 @@ const Home = () => {
     track1: "",
     profileImg: null,
   });
-  const [loading, setLoading] = useState<boolean>(false);
 
   const handleClose = () => setOpen(false);
 
@@ -53,15 +52,7 @@ const Home = () => {
     });
   }, []);
 
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 800);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
+  const loadingStatus: boolean = useSkeleton(800);
 
   const navigate = useNavigate();
 
@@ -96,7 +87,7 @@ const Home = () => {
   );
 
   return (
-    <>{loading ? (
+    <>{loadingStatus ? (
       <Grid container spacing={2} gap={3.5}>
         <Grid item xs={8.5}>
           <Banner />
@@ -155,9 +146,9 @@ const Home = () => {
           <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg} />
         </Grid>
 
-      </Grid> ) : (
+      </Grid>) : (
       <HomeSkeleton />
-      )}
+    )}
       {isLogin ? <WritingButton /> : null}
     </>
   );

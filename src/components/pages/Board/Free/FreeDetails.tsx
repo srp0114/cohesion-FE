@@ -4,7 +4,7 @@ import axios from "axios";
 import { Box, Chip, Grid, Typography, Zoom, Stack } from "@mui/material";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { PostingSkeleton } from "../../../layout/Skeletons";
+import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
@@ -34,7 +34,6 @@ export interface FileItem {
 const FreeDetails = () => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id: string };
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const [isFile, setIsFile] = useState<boolean>(false);
   const [fileList, setFileList] = useState<FileItem[]>([]);
@@ -72,16 +71,7 @@ const FreeDetails = () => {
       });
   }, []);
 
-  /* 1.5초간 스켈레톤 표시 */
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
+const loadingStatus: boolean = useSkeleton(800);
 
   /**
   * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
@@ -150,7 +140,7 @@ const FreeDetails = () => {
 
   return <Box sx={{ padding: "2rem 10rem 4rem" }}>
     {
-      loading ? PostDetails : <PostingSkeleton />
+      loadingStatus ? PostDetails : <PostingSkeleton />
     }
   </Box>;
 };

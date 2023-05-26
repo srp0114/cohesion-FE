@@ -9,7 +9,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 
@@ -27,7 +27,7 @@ export interface BoardItems {
   views: number; //조회수
   profileImg: string | null; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
-  image: {imageUrl: string}[];
+  image: { imageUrl: string }[];
 }
 
 export const shortenContent = (str: string, length = 200) => {
@@ -43,54 +43,43 @@ export const shortenContent = (str: string, length = 200) => {
 
 const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  const getBoardItems = (sort:string) => {
+  const getBoardItems = (sort: string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
 
-    setSearchParams({page: page.toString()})
+    setSearchParams({ page: page.toString() })
     axios({
       method: "get",
       url: `/api/questions/list?page=${curPage}`,
       params: params
     })
-    .then((res) => {
-      if (res.status === 200) {
-        setBoardItems(res.data.data);
-        setTotal(res.data.count);
-      }
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
-        console.log("권한 x");
-      }
-    });
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
   }
 
-
-/* 1.5초간 스켈레톤 표시 */
-useLayoutEffect(() => {
-  const timer = setTimeout(() => {
-    setLoading(true);
-  }, 1500);
-
-  return () => {
-    clearTimeout(timer);
-  };
-}, [boardItems]);
+  const loadingStatus: boolean = useSkeleton(800, boardItems);
 
   useEffect(() => {
     getBoardItems("createdAt,desc");
   }, [page]);
 
-  const performSearch = (search : string) => {
+  const performSearch = (search: string) => {
     axios({
       method: "get",
       url: `/api/questions/list?search=${search}&page=0&size=5`,
@@ -116,15 +105,15 @@ useLayoutEffect(() => {
 
   return (
     <>
-      {loading ? (
-      <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      {loadingStatus ? (
+        <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Typography variant="h2" sx={{ fontWeight: 800 }}>Q&A게시판</Typography>
-            <SortBoard setBoardSort={getBoardItems}/>
+            <SortBoard setBoardSort={getBoardItems} />
           </Stack>
           {displayPosting}
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchBoardField setSearchAPI={performSearch}/>
+            <SearchBoardField setSearchAPI={performSearch} />
           </Box>
           <PaginationControl
             page={page}
@@ -134,12 +123,11 @@ useLayoutEffect(() => {
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
-          <WritingButton />
         </Stack>)
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
-          <WritingButton />
         </Box>)}
+      <WritingButton />
     </>
   );
 
@@ -179,60 +167,62 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
         pointer: "cursor"
       }
     }} onClick={() => goToPost(props.id)}>
-    {props.image.length === 0 ? (
-      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-          <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-        </Stack>
-        <Stack direction="row" spacing={"1rem"}>
-          <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
-        </Stack>
+      {props.image.length === 0 ? (
+        <Grid item container direction={"column"} sx={{ p: "0.5rem" }} spacing={"1rem"}>
+          <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+              <Typography variant="h3">{props.title}</Typography>
+              {(typeof props.modifiedDate === 'object') ?
+                null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+            </Stack>
+            <Stack direction="row" spacing={"1rem"}>
+              <Time date={props.createdDate} variant="h5" />
+              {SkillIcon}
+            </Stack>
+          </Grid>
+          <Grid item className="boardContent">
+            <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }} />
+          </Grid>
+          <Grid item>
+            <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              {userInfo(props.writer, props.stuId, props.profileImg)}
+              {reply_bookmark_views(props)}
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+      ) : (
+        <Grid item container spacing={4} >
+          <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Box position="relative" width="22rem" height="11rem">
+              <span style={{
+                position: 'absolute', top: 0, right: 0, bottom: 0, left: 0,
+                backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})`
+              }} />
+            </Box>
+          </Grid>
+          <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
+            <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+                <Typography variant="h3">{props.title}</Typography>
+                {(typeof props.modifiedDate === 'object') ?
+                  null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+              </Stack>
+              <Time date={props.createdDate} variant="h5" />
+              {SkillIcon}
+            </Grid>
+            <Grid item sx={{ width: "100%" }} className="boardContent">
+              <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }} />
+            </Grid>
+            <Grid item>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {userInfo(props.writer, props.stuId, props.profileImg)}
+                {reply_bookmark_views(props)}
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item>
-          <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
-            {reply_bookmark_views(props)}
-          </Stack>
-        </Grid>
-      </Grid>
-    ) : (
-    <Grid item container spacing={4} > 
-      <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Box position="relative" width="22rem" height="11rem">
-          <span style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, 
-            backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
-        </Box>
-      </Grid>
-      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-            <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-          </Stack>
-          <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
-        </Grid>
-        <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
-        </Grid>
-        <Grid item>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
-            {reply_bookmark_views(props)}
-          </Box>
-        </Grid>
-      </Grid>
+      )}
     </Grid>
-  )}
-  </Grid>
   );
 }
 
