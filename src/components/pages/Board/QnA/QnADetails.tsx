@@ -30,7 +30,6 @@ interface DetailItems {
   bookmark: number;
   views: number; //조회수
   reply: number;
-  point: number;
 }
 
 //Q&A 상세보기

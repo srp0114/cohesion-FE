@@ -15,7 +15,6 @@ export interface MyPageItems {
   reply: number; //자신이 작성한 댓글 수, 기본값 0
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
-  point: number; //사용자의 포인트
   skills: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
   introduce: string; //추가정보페이지에서 입력한 자기소개
 }
@@ -31,7 +30,6 @@ const MyPage = () => {
     reply: 0,
     board: 0,
     bookmark: 0,
-    point: 0,
     skills: [],
     introduce: ""
   });
@@ -112,7 +110,7 @@ const MyPage = () => {
         </Grid>
 
         <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
-          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} point={myInfo.point} />
+          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} />
         </Grid>
       </Grid> ) : (
         <MyPageSkeleton />

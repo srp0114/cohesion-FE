@@ -14,7 +14,6 @@ export interface User {
   name: String;
   nickname: String;
   profileImg: String | null;
-  point: number;
   track1: Track;
   track2: Track;
   showOff?: Array<String>;
