@@ -108,7 +108,12 @@ const QnADetails = () => {
     skillData.map((value) => {
       if (postItem.language === value.name) {
         return (
-          <img src={value.logo} width="35" height="35" />
+          <>
+          <Stack direction="row" alignItems={"center"} spacing={"1rem"}>
+            <img src={value.logo} width="30" height="30"/>
+            <Typography variant="h5">{value.name}에 관한 질문입니다</Typography>
+          </Stack>
+          </>
         )
       }
     }) : null

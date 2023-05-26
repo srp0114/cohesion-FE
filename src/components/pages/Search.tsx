@@ -7,7 +7,6 @@ import { userInfo } from "../layout/postingDetail/userInfo";
 import { BoardType } from "../model/board";
 import Time from "../layout/Time";
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import { shortenContent } from "./Board/QnA/QnABoard";
 
 const Search = () => {
   const [postings, setPostings] = useState<{ boardType: BoardType; data: Posting[] }[]>([]);

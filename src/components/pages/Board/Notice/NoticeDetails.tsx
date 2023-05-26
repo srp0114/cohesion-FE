@@ -13,7 +13,7 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import File from "../../../layout/File";
 import Bookmark from "../../../layout/Bookmark";
-import { NoticeItems } from "./Notice";
+import { NoticeItems } from "./NoticeBoard";
 
 const testData: NoticeItems = {
   id: 1,

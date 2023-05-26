@@ -345,7 +345,6 @@ const PostForm = () => {
                       onAddQuill={(data) => {
                         const modifiedData = data.trim() === '<p><br></p>' ? "" : data;
                         setValue("content", modifiedData, { shouldValidate: true });
-                        console.log(modifiedData)
                         getContent(modifiedData);
                       }}
                       content={field.value}

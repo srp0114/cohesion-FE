@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import { FreeBoardItems } from "../../pages/Board/Free/FreeBoard";
 import { RecruitBoardItems } from "../../pages/Board/Recruit/RecruitBoard";
 import { BoardItems } from "../../pages/Board/QnA/QnABoard";
-import { NoticeItems } from "../../pages/Board/Notice/Notice";
+import { NoticeItems } from "../../pages/Board/Notice/NoticeBoard";
 import { FindIcon } from "../../data/IconData";
 
 export function reply_bookmark_views(props: FreeBoardItems | BoardItems | RecruitBoardItems | NoticeItems) {

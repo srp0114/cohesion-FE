@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
+import { Typography, Box, Link, Grid, Stack } from "@mui/material";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -12,6 +12,7 @@ import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { BoardSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import Shorten from "../../../layout/Shorten";
 
 export interface BoardItems {
   id: number;
@@ -24,22 +25,11 @@ export interface BoardItems {
   bookmark: number;
   reply: number;
   point: number;
-  views: number; //조회수
-  profileImg: string | null; //사용자 이미지 img
-  stuId: number; //사용자 아이디, 학번
+  views: number; 
+  profileImg: string | null; 
+  stuId: number;
   image: {imageUrl: string}[];
 }
-
-export const shortenContent = (str: string, length = 200) => {
-  let content: string = "";
-  if (str.length > length) {
-    content = str.substring(0, length - 2);
-    content = content + "...";
-  } else {
-    content = str;
-  }
-  return content;
-};
 
 const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
@@ -48,6 +38,13 @@ const QnABoard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
+
+  const navigate = useNavigate();
+  const goToBoard = () => {
+    navigate("questions");
+    setSearchParams({page: "1"});
+    getBoardItems("createdAt,desc");
+  };
 
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
@@ -75,16 +72,16 @@ const QnABoard = () => {
   }
 
 
-/* 1.5초간 스켈레톤 표시 */
-useLayoutEffect(() => {
-  const timer = setTimeout(() => {
-    setLoading(true);
-  }, 1500);
+  /* 1.5초간 스켈레톤 표시 */
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 1500);
 
-  return () => {
-    clearTimeout(timer);
-  };
-}, [boardItems]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [boardItems]);
 
   useEffect(() => {
     getBoardItems("createdAt,desc");
@@ -181,19 +178,15 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
     }} onClick={() => goToPost(props.id)}>
     {props.image.length === 0 ? (
       <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-        </Stack>
         <Stack direction="row" spacing={"1rem"}>
           <Time date={props.createdDate} variant="h5" />
           {SkillIcon}
         </Stack>
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -210,18 +203,16 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
             backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
-      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+      <Grid item container direction="column" p={"0.5rem"} xs={8} md={8} spacing={"1.2rem"}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+          <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+            <Time date={props.createdDate} variant="h5" />
+            {SkillIcon}
           </Stack>
-          <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
