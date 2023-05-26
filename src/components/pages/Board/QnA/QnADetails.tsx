@@ -14,7 +14,7 @@ import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
-import { PostingSkeleton } from "../../../layout/Skeletons";
+import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -40,7 +40,6 @@ const QnADetails = () => {
   const [accessUserId, setAccessUserId] = useState<number>(0);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const { id } = useParams() as { id: string };
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const postingId = Number(id);
 
   useEffect(() => {
@@ -84,27 +83,18 @@ const QnADetails = () => {
       method: "get",
       url: `/api/questions/${id}/file-list`
     })
-    .then((res) => {
+      .then((res) => {
         setFileList(res.data);
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
-    });
+      });
   }, []);
 
-    /* 1.5초간 스켈레톤 표시 */
-    useLayoutEffect(() => {
-      const timer = setTimeout(() => {
-        setLoading(true);
-      }, 1500);
-  
-      return () => {
-        clearTimeout(timer);
-      };
-    }, []);    
+  const loadingStatus: boolean = useSkeleton(800);
 
   //입력된 언어 맞게 이미지 출력
-  const Skill = postItem?.language ? 
+  const Skill = postItem?.language ?
     skillData.map((value) => {
       if (postItem.language === value.name) {
         return (
@@ -141,32 +131,32 @@ const QnADetails = () => {
           {Skill}
         </Grid>
         <Grid item xs={12}>
-          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}>
-            <Typography variant="h1" sx={{fontWeight:"600"}}>{postItem.title}</Typography>
+          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <Typography variant="h1" sx={{ fontWeight: "600" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
               null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
         </Grid>
-        <Grid item xs={12} sx={{display: "flex", justifyContent: "space-between"}}>
+        <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack
             direction="row"
             spacing={1}
-            sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
+            sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
-            {TimeAndViews (postItem.createdDate, postItem.views)}
+            {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"questions"} id={id} />
+          <Bookmark boardType={"questions"} id={id} />
         </Grid>
-        {fileList.length > 0 && 
-        <Grid item xs={12}>
-          <File fileList={fileList}/>
-        </Grid>
+        {fileList.length > 0 &&
+          <Grid item xs={12}>
+            <File fileList={fileList} />
+          </Grid>
         }
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
             <div className="ql-editor"
-              dangerouslySetInnerHTML={{ __html: postItem.content }}/>
+              dangerouslySetInnerHTML={{ __html: postItem.content }} />
           </div>
         </Grid>
         <Grid item>
@@ -182,10 +172,10 @@ const QnADetails = () => {
   );
 
   return <Box sx={{ padding: "2rem 10rem 4rem" }}>
-  {
-    loading ? PostDetails : <PostingSkeleton />
-  }
-</Box>;
+    {
+      loadingStatus ? PostDetails : <PostingSkeleton />
+    }
+  </Box>;
 };
 
 export default QnADetails;

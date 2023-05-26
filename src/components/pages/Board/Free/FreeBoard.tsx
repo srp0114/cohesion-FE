@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { shortenContent } from "../QnA/QnABoard";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 
@@ -30,7 +30,6 @@ export interface FreeBoardItems {
 }
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
@@ -61,16 +60,7 @@ const FreeBoard = () => {
     });
   }
 
-  /* 1.5초간 스켈레톤 표시 */
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [freeData]);
+  const loadingStatus: boolean =  useSkeleton(800, freeData);
 
   useEffect(() => {
     getBoardItems("createdAt,desc");
@@ -105,7 +95,7 @@ const FreeBoard = () => {
 
   return (<>
       {
-        loading ? (
+        loadingStatus ? (
           <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
             <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
               <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
@@ -128,9 +118,9 @@ const FreeBoard = () => {
         )
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
-          <WritingButton />
         </Box>)
       }
+      <WritingButton />
   </>);
 
 }
