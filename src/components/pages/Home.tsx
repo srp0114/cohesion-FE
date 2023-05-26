@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateCodeChallenge, generateCodeVerifier } from "../pkce/pkce";
-import { Box, Modal, Typography, Button } from "@mui/material";
+import { Box, Modal, Typography, Button, Paper, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Banner from "../layout/Banner";
 import SideBar from "../layout/SideBar";
@@ -12,6 +12,7 @@ import { checkLogin } from "../checkLogin";
 import { WritingButton } from "../layout/CRUDButtonStuff";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { HomeSkeleton } from "../layout/Skeletons";
+import { BoardType } from "../model/board";
 
 export interface UserInfoItems {
   nickname: string;
@@ -150,7 +151,6 @@ const Home = () => {
             </Grid>
           </Grid>
         </Grid>
-
         <Grid item xs>
           <SideBar nickname={user.nickname} studentId={user.studentId} track1={user.track1} profileImg={user.profileImg} />
         </Grid>

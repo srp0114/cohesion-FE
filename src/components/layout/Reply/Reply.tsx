@@ -49,8 +49,6 @@ const Reply = (props: ReplyProps) => {
   });
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showReplies, setShowReplies] = useState(false);
-
   const id = props.postingId;
   const board = props.board;
   const writerId = props.writerId;
@@ -161,7 +159,6 @@ const Reply = (props: ReplyProps) => {
       parentId: parentId,
     };
 
-    // 변경 api
     axios({
       method: "put",
       url: `/api/${board}/update/replies`,
@@ -199,13 +196,10 @@ const Reply = (props: ReplyProps) => {
     <>
       {board === BoardType.question ? (
         //채택하기
-        <Grid item container direction="row">
+        <Grid item container direction={"row"}>
           <Grid item xs={9} md={10}>
             <div className="ql-snow">
-              <div
-                className="ql-editor"
-                dangerouslySetInnerHTML={{ __html: article }}
-              />
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: article }}/>
             </div>
           </Grid>
           {userId === writerId ? (
@@ -224,7 +218,7 @@ const Reply = (props: ReplyProps) => {
           ) : null}
         </Grid>
         ) : (
-        <Grid item p={"0rem 3rem 0rem"}>
+        <Grid item ml={"1rem"} mr={"1rem"}>
           <Typography variant={"h4"}>{article}</Typography>
         </Grid>
       )}
@@ -245,6 +239,7 @@ const Reply = (props: ReplyProps) => {
               parentId={parentId} 
               isEditing={isEditing} 
               onChangeReply={editReply}
+              setIsEditing={setIsEditing}
             /> 
           </> :
           <EditReplyField
@@ -253,6 +248,7 @@ const Reply = (props: ReplyProps) => {
             parentId={parentId}
             isEditing={isEditing}
             onChangeReply={editReply}
+            setIsEditing={setIsEditing}
           />
         )
       :
@@ -282,16 +278,16 @@ const Reply = (props: ReplyProps) => {
             ) : null}
           </Stack>
         </Grid>
+        {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
         <Grid item>
-          {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
-        </Grid>
-        <Grid item>
-          <NestedReplyField
-          board={board}
-          onAddNested={handleAddNested}
-          parentId={reply.id}
-        />
-        {replyContainer(replyData, reply.id)}
+          {!isEditing && 
+            <NestedReplyField
+            board={board}
+            onAddNested={handleAddNested}
+            parentId={reply.id}
+            />
+          }
+          {replyContainer(replyData, reply.id)}
         </Grid>
         </Grid>
     </>

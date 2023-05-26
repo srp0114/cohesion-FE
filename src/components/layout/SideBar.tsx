@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Divider } from "@mui/material"
+import { Box, Typography, Grid } from "@mui/material"
 import { UserInfoItems } from "../pages/Home";
 import Ranking from "./Ranking";
 import Profile from "./Profile";
@@ -18,6 +18,7 @@ const SideBar = (props: UserInfoItems) => {
         </>
     ) : (
         <>
+        <Grid container item direction={"column"} spacing={"1rem"}>
         <Box sx={{ ml:3, mt:3, mb:5, border: "2px solid rgba(169, 169, 169, 0.5)", borderRadius: 6, p:"2.5rem 3rem 2.5rem"}}>
             <Box sx={{
                 display: "flex",
@@ -39,6 +40,7 @@ const SideBar = (props: UserInfoItems) => {
             </Box>
         </Box>
         <Ranking/>
+        </Grid>
         </>
     )
 

@@ -7,6 +7,7 @@ import UserIcon from '@mui/icons-material/AccountCircleOutlined';
 import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
 import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
 import Profile from "../layout/Profile";
+import { BoardType } from "../model/board";
 
 interface HomeBoardItems {
     id: number;
@@ -49,8 +50,6 @@ const HomeBoard = (props: HomeBoardProps) => {
         }
     };
 
-    // HomeFreeBaord, HomeQnaBoard -> HomeBoard 통합
-    // home에서 board에 따라 api 설정하도록 변경
     useEffect(() => {
         axios({
             method : "get",
@@ -70,10 +69,10 @@ const HomeBoard = (props: HomeBoardProps) => {
 
     }, []);
 
-    const boardName: string = board === "free" ? "자유게시판"
-        : board === "questions" ? "Q&A게시판"
-        : board === "recruit" ? "구인게시판"
-        : board === "notice" ? "공지사항" : "";
+    const boardName: string = board === BoardType.free ? "자유게시판"
+        : board === BoardType.question ? "Q&A게시판"
+        : board === BoardType.recruit ? "구인게시판"
+        : board === BoardType.notice ? "공지사항" : "";
 
     return (
         <>
