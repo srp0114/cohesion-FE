@@ -1,13 +1,17 @@
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Avatar, Box, Grid, Skeleton, Stack } from "@mui/material";
 
 export const BoardSkeleton = () => (
-    <Stack spacing={"2.25rem"}>
-        <Skeleton variant="text" sx={{ fontSize: "2rem" }} animation="wave" width={"12rem"} />
-        <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
-        <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
-        <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
-        <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
-    </Stack>
+
+    <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        <Stack spacing={"2.25rem"}>
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} animation="wave" width={"12rem"} />
+            <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
+            <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
+            <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
+            <Skeleton variant="rounded" width={"100%"} height={"16rem"} animation={"pulse"} sx={{ borderRadius: "50px" }} />
+        </Stack>
+    </Box>
 );
 
 export const RecruitBoardSkeleton = () => (
@@ -136,3 +140,20 @@ export const HomeSkeleton = () => (
         </Grid>
     </Grid>
 );
+
+export const useSkeleton = (time: number, relatedData? : Array<any> | Object) => {
+    const [loading, setLoading] = useState<boolean>(false);
+
+    useLayoutEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(true);
+        }, time);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [relatedData]);
+
+    return loading;
+
+}
