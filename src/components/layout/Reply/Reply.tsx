@@ -196,13 +196,10 @@ const Reply = (props: ReplyProps) => {
     <>
       {board === BoardType.question ? (
         //채택하기
-        <Grid item container direction="row">
+        <Grid item container direction={"row"}>
           <Grid item xs={9} md={10}>
             <div className="ql-snow">
-              <div
-                className="ql-editor"
-                dangerouslySetInnerHTML={{ __html: article }}
-              />
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: article }}/>
             </div>
           </Grid>
           {userId === writerId ? (
@@ -221,7 +218,7 @@ const Reply = (props: ReplyProps) => {
           ) : null}
         </Grid>
         ) : (
-        <Grid item p={"0rem 3rem 0rem"}>
+        <Grid item ml={"1rem"} mr={"1rem"}>
           <Typography variant={"h4"}>{article}</Typography>
         </Grid>
       )}
@@ -281,9 +278,7 @@ const Reply = (props: ReplyProps) => {
             ) : null}
           </Stack>
         </Grid>
-        <Grid item>
-          {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
-        </Grid>
+        {Edit(reply.user.id, reply.article, reply.id, reply.parentId)}
         <Grid item>
           {!isEditing && 
             <NestedReplyField
