@@ -210,7 +210,7 @@ const RecruitDetails = () => {
           <Grid item xs={8}>
             <Typography variant="h1" sx={{ textWrap: "balance" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
-              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+              null : <Chip label="수정됨" size="small" variant="outlined" />}
           </Grid>
 
           <Grid item xs={4} sx={{ display: "flex", flexDirection: "row-reverse" }}>
