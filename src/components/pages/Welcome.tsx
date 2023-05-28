@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Chip, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Autocomplete, Grid } from "@mui/material";
+import { Box, Chip, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Container, Grid } from "@mui/material";
 import { skillData } from "../data/SkillData";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
@@ -168,15 +168,21 @@ const Welcome = () => {
 
   return (
     <>
-      <Grid container direction="column" justifyContent="center" alignItems="center" md={12} mt={"5rem"} mb={"4rem"}>
-        <Grid item md={12}>
-          <Box mb={"4rem"}>
-            <Typography variant="h2" align="center">추가 정보를 입력해주세요</Typography>
-          </Box>
+      <Container maxWidth="md">
+      <Grid container direction="column" display={"flex"} justifyContent={"center"} spacing={"2rem"} mt={"5rem"} mb={"5rem"}>
+        <Grid item>
+            <Stack alignItems={"center"} justifyContent={"center"} display={"flex"}>
+            <Typography variant="h2" sx={{fontWeight:600}} >부가 정보를 입력해주세요</Typography>
+            </Stack>
         </Grid>
-        <Grid item md={12}>
+        <Grid item>
+          <Stack alignItems={"flex-end"} justifyContent={"flex-end"} display={"flex"}>
+          <Typography variant="h5">* 필수항목은 꼭 입력해주세요!</Typography>
+          </Stack>
+        </Grid>
+        <Grid item spacing={"1rem"} alignItems={"center"}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={5}>
+            <Stack spacing={5} justifyContent={"center"} display={"flex"}>
               <Box>
                 <Controller
                   control={control}
@@ -186,8 +192,8 @@ const Welcome = () => {
                   }}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
+                      <Grid container direction="row" spacing={5} alignItems={"center"}>
+                        <Grid item xs={12} md={6}>
                           <ImageButton
                             style={flag === 1 ? clickBorder : defaultBorder}
                             onClick={() => {
@@ -197,14 +203,11 @@ const Welcome = () => {
                             }}
                           >
                             <ListItemAvatar>
-                              <Avatar src={profileImg} />
+                              <Avatar src={profileImg} sx={{ width: 100, height: 100 }}/>
                             </ListItemAvatar>
-                            <Typography variant="subtitle1" sx={{ p: 4 }}>
-                              {userInfo.name}
-                            </Typography>
                           </ImageButton>
                         </Grid>
-                        <Grid item>
+                        <Grid item xs={12} md={6}>
                           <ImageButton
                             style={flag === 2 ? clickBorder : defaultBorder}
                             onClick={() => {
@@ -213,10 +216,7 @@ const Welcome = () => {
                               onProfileChange(2);
                             }}
                           >
-                            <Profile nickname={userInfo.nickname} imgUrl={null} size={40} />
-                            <Typography variant="subtitle1" sx={{ p: 4 }}>
-                              {userInfo.nickname}
-                            </Typography>
+                            <Profile nickname={userInfo.nickname} imgUrl={null} size={75} />
                           </ImageButton>
                         </Grid>
                       </Grid>
@@ -227,26 +227,28 @@ const Welcome = () => {
                   )}
                 />
               </Box>
-              <Box>
-                <TextField
-                  disabled
-                  variant="outlined"
-                  label="이름"
-                  value={userInfo.name}
-                  fullWidth
-                  //InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
-                  sx={{ mt: 2 }}
-                />
-              </Box>
-              <Box>
-                <TextField
-                  disabled
-                  fullWidth
-                  variant="outlined"
-                  label="학번"
-                  value={userInfo.sub}
-                  sx={{ mt: 2 }}
-                />
+              <Box sx={{width: "100%"}}>
+                <Grid container direction="row" spacing={2}>
+                  <Grid item xs={6}>
+                    <TextField
+                      disabled
+                      variant="outlined"
+                      label="이름"
+                      value={userInfo.name}
+                      fullWidth
+                      //InputProps={{ sx: { backgroundColor: "#e0e0e0" } }}
+                    />
+                  </Grid>
+                  <Grid item xs>
+                   <TextField
+                      disabled
+                      fullWidth
+                      variant="outlined"
+                      label="학번"
+                      value={userInfo.sub}
+                    />
+                  </Grid>
+                </Grid>
               </Box>
               <Box sx={{ width: '100%' }}>
                 <Grid container direction="row" spacing={2}>
@@ -342,13 +344,14 @@ const Welcome = () => {
           </form>
         </Grid>
       </Grid>
+      </Container>
     </>
   );
 };
 
 //프로필 선택 버튼
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  width: 350,
+  width: 410,
   height: 150,
   [theme.breakpoints.down("sm")]: {
     width: "100% !important", // Overrides inline-style
