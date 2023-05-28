@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Box, Typography, Divider, Stack } from "@mui/material";
+import { Typography, Divider, Stack } from "@mui/material";
 import Profile from "../layout/Profile";
 import axios from "axios";
 import { useNavigate } from "react-router";
@@ -17,7 +17,6 @@ interface UserRakingItem {
     nickname: string,
     studentId: string,
     profileImg: string | null
-
 }
 
 // 인기게시글 컴포넌트
@@ -41,18 +40,16 @@ export const PostRanking = () => {
     }, []);
 
     return (
-        <Box sx={{ p:2 }}>
-        <Stack direction={"row"} alignItems={"center"}>
+        <Stack p={"1rem"} mb={"1rem"}>
+        <Stack direction={"row"} alignItems={"center"} p={"1rem 1.5rem 1rem 1rem"} spacing={"0.5rem"}>
             <FindIcon name="thumbUp"/>
-            <Typography variant="h3">Top Posting</Typography>
+            <Typography variant="h3" sx={{fontWeight:500}}>Top Posting</Typography>
         </Stack>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {postRanking.map((value, index) => {
             const board = value.boardType;
-
             const id = value.id;
-
             const boardName: string = board === "free" ? "자유게시판"
             : board === "questions" ? "Q&A게시판"
             : board === "recruit" ? "구인게시판"
@@ -64,21 +61,30 @@ export const PostRanking = () => {
 
             return (
                 <>
-                <Box sx={{ display:"flex", mt:3.5 }} onClick={goToDetails}>
-                <Typography variant="h4" sx={{mt:"0.5rem", mr:5, ml:1}}>{index+1}위</Typography>
-                <Box sx={{'&:hover': {
+                <Stack sx={{ '&:hover': {
                             backgroundColor: '#f2f2f2',
                             opacity: [1.0, 0.9, 0.9],
-                        }}}>
+                            transform: "scale(1.02)",
+                        },
+                        borderRadius:2
+                        }} 
+                        m={"1rem 1rem 0.5rem 1.5rem"}
+                        onClick={goToDetails}
+                        direction={"row"}
+                        alignItems={"center"}
+                        p={"0.5rem"}
+                    >
+                    <Typography variant="h4" sx={{fontWeight:500}} mr={"3.5rem"}>{index+1}위</Typography>
+                    <Stack direction={"column"} alignItems={"flex"}>
                     <Typography variant="h6" color="secondary.dark">{boardName}</Typography>
                     <Typography variant="h5">{Shorten(value.title, 10)}</Typography>
-                </Box>
-                </Box>
+                    </Stack>
+                </Stack>
                 </>
             )
         })}
         </>
-        </Box>
+        </Stack>
     )
 }
 
@@ -102,36 +108,28 @@ export const UserRanking = () => {
     }, []);
 
     return (
-        <Box sx={{ p:2 }}>
-        <Stack direction={"row"} alignItems={"center"}>
-        <FindIcon name="crown"/>
-        <Typography variant="h3">Top User</Typography>
-        </Stack>
+         <Stack p={"1rem"}>
+            <Stack direction={"row"} alignItems={"center"} p={"1rem"} spacing={"0.5rem"}>
+            <FindIcon name="crown" iconProps={{color: "#ffcf40"}}/>
+            <Typography variant="h3" sx={{fontWeight:500}}>Top User</Typography>
+            </Stack>
         <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
         <>
         {userRanking.map((value, index) => {
             const studentId = value.studentId.slice(0,2);
             return (
                 <>
-                <Grid container direction="row" sx={{ display:"flex", mt:5, alignItems:"center" }}>
-                <Typography variant="h4" sx={{mr:4, ml:1}}>{index+1}위</Typography>
-                <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
-                <Box sx={{ display:"flex", justifyContent: "flex-end", ml: "1.5rem", mr:"0.2rem",
-            
-            '&:hover': {
-                            backgroundColor: '#f2f2f2',
-                            opacity: [1.0, 0.9, 0.9],
-                        },
-                        }}>
-                    <Typography variant="h5" sx={{ width:85 }}>{Shorten(value.nickname, 8)}</Typography>
-                    <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
-                </Box>
-                </Grid>
+                <Stack m={"1.5rem 1rem 0.5rem 1.5rem"} direction={"row"} p={"0.5rem"} alignItems={"center"} spacing={"2rem"}>
+                    <Typography variant="h4" sx={{fontWeight: 500}} mr={"2rem"}>{index+1}위</Typography>
+                    <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
+                    <Typography variant="h5">{Shorten(value.nickname, 8)}</Typography>
+                    <Typography variant="h6" color="secondary.dark">{studentId}학번</Typography>
+                </Stack>
                 </>
             )
         })}
         </>
-        </Box>
+        </Stack>
     )
 }
 

@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
-import { Typography, Box, Modal, Divider } from "@mui/material";
+import { Typography, Box, Modal, Divider, Stack } from "@mui/material";
 import Time from "./Time";
-import UserIcon from '@mui/icons-material/AccountCircleOutlined';
-import BookmarkIcon from '@mui/icons-material/BookmarkBorder';
-import ChatIcon from '@mui/icons-material/ChatBubbleOutline';
-import Profile from "../layout/Profile";
 import { BoardType } from "../model/board";
+import { FindIcon } from "../data/IconData";
+import { userInfo } from "./postingDetail/userInfo";
+import Shorten from "./Shorten";
 
 interface HomeBoardItems {
     id: number;
@@ -76,68 +75,54 @@ const HomeBoard = (props: HomeBoardProps) => {
 
     return (
         <>
-            <Box onClick={openInfoModal} sx={{m:3, mb:10}}>
-                {/* 403에러 true인 경우 모달창 출력*/}
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-                > 
-                    <Box sx={addInfoModalStyle}>
-                    <Typography align="center" variant="h6" sx={{mt:2}}>추가정보를 입력해주세요!</Typography>
-                    <Typography align="center" variant="subtitle1" sx={{mt:1.5, mb:2}} >cohesion 추가정보 페이지로 이동합니다</Typography>
-                    </Box>
-                </Modal>
-                
-                <Typography variant="h3" sx={{mt:6, mb:2}}>{boardName}</Typography>
+            <Stack direction={"column"} sx={{m:3, mb:10}}>                 
+                <Typography variant="h3" sx={{fontWeight: 550}} mb={"1rem"}>{boardName}</Typography>
                 {boardItems && boardItems.map((posting) => {
                     return (
                     <>
-                    <Box sx={{ 
+                    <Stack direction={"column"} 
+                        spacing={"1rem"}
+                        sx={{ 
                         p: '1rem',
                         m: '0.5rem',
-                        height:'9rem',
+                        height:'8.5rem',
                         '&:hover': {
                             backgroundColor: '#f2f2f2',
                             opacity: [1.0, 0.9, 0.9],
                         },
-                        borderRadius:5
+                        borderRadius:4
                     }} 
                     onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
-                        <Box sx={{display:'flex', justifyContent:'space-between'}}>
-                            <Box sx={{display:'flex'}}>
-                                 <Profile nickname={posting.writer} imgUrl={posting.profileImg} size={30}/>
-                                <Typography sx={{pt:0.5, pl:1.5}}>{posting.writer}</Typography>
-                            </Box>
-                            <Box sx={{display:'flex', justifyContent:'flex-end'}}>
-                                <Time date={posting.createdDate}/> 
-                            </Box>
-                        </Box>
-                        <Box sx={{justifyContent:'flex-start', ml:5, mt:1}}>
-                            <Typography variant="subtitle1">{posting.title}</Typography>
-                        </Box>
-                        <Box sx={{display:'flex', justifyContent:'flex-end', m:0.8}}>
-                            <ChatIcon/><Typography sx={{pl:0.7, pr:1}}>{posting.reply}</Typography>
-                            <BookmarkIcon/><Typography sx={{pl:0.7}}>{posting.bookmark}</Typography>
-                        </Box>
-                    </Box>
+                        <Stack display={"flex"} justifyContent={"space-between"} direction={"row"} alignItems={"center"}>
+                            {userInfo (posting.writer, posting.id, posting.profileImg)}
+                            <Time date={posting.createdDate}/> 
+                        </Stack>
+
+                        <Stack display={"flex"} justifyContent={"flex-start"} pl={"2.2rem"}>
+                            <Typography variant="h4">{Shorten(posting.title, 25)}</Typography>
+                        </Stack>
+
+                        <Stack display={"flex"} justifyContent={"flex-end"} spacing={"0.5rem"} direction={"row"} alignItems={"center"}>
+                            <Stack direction={"row"} spacing={"0.2rem"}>
+                            <FindIcon name="reply"/>
+                            <Typography variant="h5">{posting.reply}</Typography>
+                            </Stack>
+                            <Stack direction={"row"} spacing={"0.2rem"}>
+                            <FindIcon name="bookmark"/>
+                            <Typography variant="h5">{posting.bookmark}</Typography>
+                            </Stack>
+                        </Stack>
+
+
+                    </Stack>
+
                     <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />
                 </>
                 );
                 })}
-            </Box>
+            </Stack>
         </>
     );
-};
-  
-// 추가정보입력 안내 모달 style
-const addInfoModalStyle = {
-    borderRadius: 5,
-    width: 450,
-    p: 3,
-    bgcolor: 'background.paper',
-    boxShadow: 20,
-    transform: 'translate(0%, -100%)',
 };
 
 export default HomeBoard;
