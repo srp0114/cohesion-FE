@@ -39,11 +39,6 @@ const QnABoard = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  const navigate = useNavigate();
-  const goToBoard = () => {
-    navigate("/questions");
-  };
-
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };

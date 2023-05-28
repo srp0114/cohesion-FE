@@ -69,12 +69,6 @@ const RecruitBoard: React.FC = () => {
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
-
-  const navigate = useNavigate();
-
-  const goToBoard = () => {
-    navigate(`/recruit`);
-  };
     
   useEffect(() => {
     getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.

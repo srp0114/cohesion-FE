@@ -35,12 +35,6 @@ const FreeBoard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
-  
-  const navigate = useNavigate();
-
-  const goToBoard = () => {
-    navigate(`/free`);
-  };
 
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
@@ -113,7 +107,7 @@ const FreeBoard = () => {
         loading ? (
           <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
             <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
-              <Typography variant="h2" sx={{ fontWeight: 800 }} onClick={goToBoard}>자유게시판</Typography>
+              <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
               <SortBoard setBoardSort={getBoardItems}/>
             </Stack>
             {displayPosting}
