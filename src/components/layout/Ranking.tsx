@@ -5,7 +5,6 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { FindIcon } from "../data/IconData";
 import Shorten from "./Shorten";
-import ThumbUp from '@mui/icons-material/ThumbUp';
 
 interface PostRankingItem {
     id: number,
@@ -18,7 +17,6 @@ interface UserRakingItem {
     nickname: string,
     studentId: string,
     profileImg: string | null
-
 }
 
 // 인기게시글 컴포넌트
@@ -43,7 +41,7 @@ export const PostRanking = () => {
 
     return (
         <Stack p={"1rem"} mb={"1rem"}>
-        <Stack direction={"row"} alignItems={"center"} p={"1rem"} spacing={"0.5rem"}>
+        <Stack direction={"row"} alignItems={"center"} p={"1rem 1.5rem 1rem 1rem"} spacing={"0.5rem"}>
             <FindIcon name="thumbUp"/>
             <Typography variant="h3" sx={{fontWeight:500}}>Top Posting</Typography>
         </Stack>
@@ -66,17 +64,17 @@ export const PostRanking = () => {
                 <Stack sx={{ '&:hover': {
                             backgroundColor: '#f2f2f2',
                             opacity: [1.0, 0.9, 0.9],
-                            transform: "scale(1.02)"
+                            transform: "scale(1.02)",
                         },
                         borderRadius:2
                         }} 
-                        m={"1.5rem 1rem 1rem 1.5rem"}
+                        m={"1rem 1rem 0.5rem 1.5rem"}
                         onClick={goToDetails}
                         direction={"row"}
                         alignItems={"center"}
-                        spacing={"1.5rem"}
+                        p={"0.5rem"}
                     >
-                    <Typography variant="h4" sx={{fontWeight:500}} mr={"2rem"}>{index+1}위</Typography>
+                    <Typography variant="h4" sx={{fontWeight:500}} mr={"3.5rem"}>{index+1}위</Typography>
                     <Stack direction={"column"} alignItems={"flex"}>
                     <Typography variant="h6" color="secondary.dark">{boardName}</Typography>
                     <Typography variant="h5">{Shorten(value.title, 10)}</Typography>
@@ -121,7 +119,7 @@ export const UserRanking = () => {
             const studentId = value.studentId.slice(0,2);
             return (
                 <>
-                <Stack m={"1.5rem 1rem 1rem 1.5rem"} direction={"row"} alignItems={"center"} spacing={"2rem"}>
+                <Stack m={"1.5rem 1rem 0.5rem 1.5rem"} direction={"row"} p={"0.5rem"} alignItems={"center"} spacing={"2rem"}>
                     <Typography variant="h4" sx={{fontWeight: 500}} mr={"2rem"}>{index+1}위</Typography>
                     <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
                     <Typography variant="h5">{Shorten(value.nickname, 8)}</Typography>

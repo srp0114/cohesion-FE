@@ -9,7 +9,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import MediaIcon from '@mui/icons-material/PermMediaOutlined';
 import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
-import ThumbUp from '@mui/icons-material/ThumbUp';
+import ThumbUp from '@mui/icons-material/ThumbUpOffAlt';
 import { TbCrown } from 'react-icons/tb';
 import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import Search from '@mui/icons-material/Search';
