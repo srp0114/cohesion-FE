@@ -8,20 +8,17 @@ import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
+import { UpdateRecruitSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { Application } from "./ApplyAcceptStuff";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
 import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
+import { FindIcon } from "../../../data/IconData";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -187,15 +184,13 @@ const RecruitDetails = () => {
 
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
- * @param studentId 
- * @param title 
- * @param content 
- * @returns 게시글 정보를 포함하고있는 speedDial
  */
-  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+  const displayUpdateRecruitSpeedDial = (studentId: number, title: string, content: string, handleNewApprovedApplicants: () => void, handleApprovedApplicantsOut: () => void) => {
     if (typeof postItem !== undefined) {
       if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
-        return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
+        return (<UpdateRecruitSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content}
+          onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut}
+          />);
       }
       else
         return null;
@@ -219,8 +214,8 @@ const RecruitDetails = () => {
           </Grid>
 
           <Grid item xs={4} sx={{ display: "flex", flexDirection: "row-reverse" }}>
-            <SportsKabaddiIcon fontSize="small" color="info" sx={{ ml: 1 }} />
-            <Typography variant="h3" color="info">
+            <FindIcon name="recruitPeople" iconProps={{ fontSize: "small", color: "primary" }} />
+            <Typography variant="h3" color="info" sx={{ margin: 1 }}>
               {postItem.gathered + approvedApplicants}/{postItem.party}
             </Typography>
           </Grid>
@@ -243,15 +238,16 @@ const RecruitDetails = () => {
             <Bookmark boardType={"recruit"} id={id} />
             {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
               ? <>
-                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} />
-                <Chip label="모집완료" variant="outlined" icon={<AssignmentTurnedInIcon />} size="small" onClick={() => setModalOpen(true)} />
+                <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} size="small" onClick={() => setModalOpen(true)} />
                 <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                   onModalOpenChange={handleModalOpenChange} />
               </>
               : <>
                 <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
                   <Chip label={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}
-                    variant="outlined" icon={((typeof applicantStatus !== 'boolean') ? <HistoryEduOutlinedIcon /> : <CancelOutlinedIcon />)}
+                    variant="outlined" icon={<FindIcon name={
+                      ((typeof applicantStatus !== 'boolean') ? `apply` : `applyCancel`)
+                    } />}
                     size="medium"
                     onClick={() => setModalOpen(true)}
                     color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
@@ -311,7 +307,7 @@ const RecruitDetails = () => {
         </Grid>
       </Grid>
       <Zoom in={true}>
-        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+        <Box>{displayUpdateRecruitSpeedDial(postItem.stuId, postItem.title, postItem.content, handleNewApprovedApplicants, handleApprovedApplicantsOut)}</Box>
       </Zoom>
     </>
   ) : (

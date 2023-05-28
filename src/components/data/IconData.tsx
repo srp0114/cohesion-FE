@@ -11,31 +11,46 @@ import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
 import ThumbUp from '@mui/icons-material/ThumbUpOffAlt';
 import { TbCrown } from 'react-icons/tb';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from "@mui/icons-material/Add";
+import SettingsIcon from '@mui/icons-material/Settings';
+import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabledOutlined';
+import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import Search from '@mui/icons-material/Search';
 
 const icons = [
-    { name: "reply", component: < ChatIcon /> }, //댓글,
+    { name: "reply", component: <ChatIcon /> }, //댓글,
     { name: "bookmark", component: <BookmarkIcon /> }, //북마크
     { name: "views", component: <Visibility /> }, //조회수
 
-    { name: "apply", component: <Visibility /> },//신청하기
-    { name: "applyCancel", component: <Visibility /> },//신청취소
+    { name: "apply", component: <HistoryEduOutlinedIcon /> },//신청하기
+    { name: "applyCancel", component: <CancelOutlinedIcon /> },//신청취소
 
-    { name: "recruitPeople", component: <Visibility /> },//모집인원
-    { name: "approveComplete", component: <Visibility /> },//승인한 상태
-    { name: "approveReject", component: <Visibility /> },//승인취소 상태,
-    { name: "close", component: <CloseIcon /> },//신청자목록닫기
-    { name: "recruitComplete", component: <Visibility /> },//모집완료
+    { name: "recruitPeople", component: <PeopleAltOutlinedIcon /> },//모집인원
+    { name: "approveComplete", component: <PersonAddDisabledOutlinedIcon /> },//승인한 상태
+    { name: "approveReject", component: <PersonAddOutlinedIcon /> },//승인취소 상태,
+    { name: "applicantList", component: <FolderSharedOutlinedIcon /> }, //신청자목록
+    { name: "recruitComplete", component: <AssignmentTurnedInIcon /> },//모집완료
 
-    { name: "edit", component: <Visibility /> },//게시글 혹은 정보 수정
-    { name: "delete", component: <Visibility /> },//게시글 혹은 정보 삭제
+    { name: "write", component: <AddIcon /> },
+    { name: "edit", component: <EditOutlinedIcon /> },//게시글 혹은 정보 수정
+    { name: "delete", component: <DeleteIcon /> },//게시글 혹은 정보 삭제
+    { name: "settings", component: <SettingsIcon /> }, //설정
 
     { name: "myPost", component: <Visibility /> },//작성한 게시글
     { name: "myRecord", component: <Visibility /> },//공부기록
     { name: "fix", component: <Visibility /> },//고정
 
-    { name: "done", component: <DoneIcon /> }, // V
+    { name: "done", component: <DoneIcon /> }, // V (체크 표시)
     { name: "close", component: <CloseIcon /> }, // X
 
     { name: "next", component: <ArrowForwardIosIcon /> }, // > 다음
@@ -48,6 +63,10 @@ const icons = [
     { name: "crown", component: <TbCrown fontSize={"1.8rem"}/> },
     { name: "high", component: <PriorityHigh/>},
     { name: "search", component: <Search/>},
+
+    { name: "collapseClose", component: <ExpandLess /> }, // V
+    { name: "collapseOpen", comonent: <ExpandMore /> }, //^
+
 ];
 
 const iconList = [
@@ -59,8 +78,11 @@ const iconList = [
     "recruitPeople",
     "approveComplete",
     "approveReject",
-    "close",
+    "applicantList",
     "recruitComplete",
+    "collapseClose",
+    "collapseOpen",
+    "write",
     "edit",
     "delete",
     "myPost",
@@ -75,6 +97,7 @@ const iconList = [
     "thumbUp",
     "crown",
     "high",
+    "settings",
 ]
 
 /**
@@ -89,7 +112,7 @@ interface FindIconProps {
 
 export const FindIcon = (props: FindIconProps) => {
     const _icon = icons.find((icon) => props.name === icon.name);
-    if (_icon) {
+    if (_icon && _icon.component) {
         return React.cloneElement(_icon.component, { ...props.iconProps });
     }
     return null;

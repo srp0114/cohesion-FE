@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabledOutlined';
-import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import axios from "axios";
 import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
 import { propTypes } from "react-bootstrap/esm/Image";
+import { FindIcon } from "../../../data/IconData";
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -280,8 +273,6 @@ const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
  *신청자 리스트 //신청을 완료 (더블체킹까지 완료한 신청자들의 목록)
  */
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
 export interface Application {
     // 유저 ID, 유저 닉네임, 필수/우대 사항 충족 여부, 프로필 사진, 학번, 1트랙, 관심 기술
     id: number,
@@ -302,11 +293,12 @@ interface ApplicantListProps {
     postingId: number,
     onNewApprovedApplicants: () => void, //승인된 인원 수에만 관계
     onApprovedApplicantsOut: () => void, //승인된 인원 수에만 관계
+    toggleDrawerStatus: boolean //신청자목록 drawer 
 }
 
 export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원수가 바뀌었는지 감지{()=>void}) => { //UI 확인용 임시.
     const [state, setState] = React.useState({
-        right: false,
+        right: props.toggleDrawerStatus,
     });
     const [dense, setDense] = React.useState(false);
     const [modalStates, setModalStates] = React.useState<{ [key: string]: boolean }>({});
@@ -386,7 +378,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
     };
 
     const toggleDrawer =
-        (anchor: Anchor, open: boolean) =>
+        (anchor: 'right', open: boolean) =>
             (event: React.KeyboardEvent | React.MouseEvent) => {
                 if (
                     event.type === 'keydown' &&
@@ -398,16 +390,10 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
 
                 setState({ ...state, [anchor]: open });
             };
-
     return (
         <div>
             {(["right"] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
-                    <Tooltip title="신청자 목록 확인하러 가기">
-                        <IconButton className="applicantListIconButton" onClick={toggleDrawer(anchor, true)} size="large">
-                            <FolderSharedOutlinedIcon color="primary" />
-                        </IconButton>
-                    </Tooltip>
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
                         <Box>
                             <List dense={dense} >
@@ -441,7 +427,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 {(!app.isApproved) ? <>
                                                     <Tooltip title={`승인대기`}>
                                                         <IconButton edge="end" aria-label="approve" onClick={() => handleModalOpenChange(true, app.id.toString())} >
-                                                            <PersonAddOutlinedIcon />
+                                                            <FindIcon name="approveReject" />
                                                         </IconButton>
                                                     </Tooltip>
                                                     <DoubleCheckModal open={modalStates[app.id] || false}
@@ -454,7 +440,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                     />
                                                 </>
                                                     : <><Tooltip title={`승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
-                                                        <PersonAddDisabledOutlinedIcon />
+                                                        <FindIcon name="approveComplete" />
                                                     </IconButton></Tooltip>
                                                         <DoubleCheckModal open={modalStates[app.id] || false}
                                                             who={true}
@@ -467,7 +453,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                     </>}
                                             </Grid>
                                             <Grid item xs={12}>
-                                                <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
+                                                <ListItemButton onClick={() => toggleCollapse(idx)}><FindIcon name={app.collapseOpen ? "collapseOpen" : "collapseClose"} /></ListItemButton>
                                                 <Collapse in={app.collapseOpen} timeout="auto" unmountOnExit>
                                                     {/* 신청자 정보 */}
                                                     <Stack direction="column" spacing={"0.5rem"}>
@@ -503,7 +489,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                             <Divider variant="fullWidth" />
                             <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
                                 <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
-                                    < DisabledByDefaultOutlinedIcon />
+                                    <FindIcon name="close" iconProps={{ fontSize: "large" }} />
                                 </IconButton>
                             </Tooltip>
                         </Box>
