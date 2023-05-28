@@ -18,19 +18,20 @@ const MySummaryEditField = (props : EditMySummaryProps) => {
 
     return (
         <>
-        <Grid container direction="row" spacing={2} sx={{alignItems:"center", justifyContent:"space-between", display:"flex"}}>
-        <Grid item xs={10} md={10}>
-            <TextField 
-                variant="standard" 
-                className="summaryField"
-                multiline
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
-        </Grid>
-        <Grid item xs={1} md={1}>
-            <Button onClick={handleEditSummary}>수정</Button>
-        </Grid>
+        <Grid container direction="row" spacing={2} p={"1rem"} alignItems={"center"}>
+            <Grid item xs={10} md={10}>
+                <TextField  
+                    variant="standard" 
+                    className="summaryField"
+                    multiline
+                    fullWidth
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                />
+            </Grid>
+            <Grid item xs>
+                <Button onClick={handleEditSummary}>수정</Button>
+            </Grid>
         </Grid>
         </>
     )

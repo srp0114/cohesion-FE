@@ -32,30 +32,32 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
     return (
         <>
         <Grid container item spacing={2} direction="row" sx={{ p:"0 1rem 1.5rem", mt:"0.3rem", display:"flex", justifyContent:"space-between"}} >
-            <Grid item xs={3} md={3}>
+            <Grid item xs={2.6} md={2.6}>
                 <Autocomplete
-                 options={skillData}
-                 getOptionLabel={(option) => option.name}
-                 renderOption={(props, option) => (
-                   <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>               
+                options={skillData}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => (
+                    <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>               
                     <img src={option.logo} width={20} height={20} />
                     {option.name}
-                   </Box>
-                 )}
-                 renderInput={(params) => (
-                   <TextField
-                     {...params}
-                     inputProps={{
-                       ...params.inputProps,
-                     }}
-                   />
-                 )}
+                    </Box>
+                )}
+                renderInput={(params) => (
+                    <TextField
+                        placeholder="언어를 선택해주세요!"
+                        {...params}
+                        inputProps={{
+                        ...params.inputProps,
+                        }}
+                    />
+                )}
                  value={summarySkill}
                  onChange={handleSummarySkill}
                />
             </Grid>
-            <Grid item xs={8} md={8}>
+            <Grid item xs>
                 <TextField 
+                    maxRows={2}
                     className="summaryField"
                     placeholder="오늘의 공부기록을 남겨주세요!"
                     multiline

@@ -54,7 +54,7 @@ const MyActivity = (props: MyDataProps) => {
 
     return (
         <>
-        <Typography variant="h4" sx={{mt:"3rem"}}>{activityTitle}</Typography>
+        <Typography variant="h4" mt={"3rem"} ml={"1rem"}>{activityTitle}</Typography>
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
                 {activityType === "summary" ? <MySummary/> :
                 activity.length === 0 ? 

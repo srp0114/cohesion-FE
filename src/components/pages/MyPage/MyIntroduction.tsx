@@ -59,15 +59,17 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
       }}
       elevation={3}
     >
-      <Stack spacing={2} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-        <Typography variant="h3">{`Hello, ${props.nickname}!`}</Typography>
+    <Grid container spacing={"2rem"} direction="column">
+      <Grid item>
+      <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h3" sx={{fontWeight:"600"}}>{`Hello, ${props.nickname}!`}</Typography>
         <IconButton onClick={() => setOpen(true)}>
           <CreateOutlinedIcon />
         </IconButton>
 
         <Modal open={open}>
           <Stack sx={editUserinfoModal} direction={"column"} spacing={5}>
-            <Typography variant="h1" align="center">내 정보 수정</Typography>
+            <Typography variant="h1" align="center" sx={{fontWeight:"600"}}>내 정보 수정</Typography>
             <Box>
               {/*닉네임 수정*/}
               <Typography variant="h5" pb={"0.6rem"}>닉네임</Typography>
@@ -91,22 +93,24 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
           </Stack>
         </Modal>
       </Stack>
+      </Grid>
 
-      <Grid container rowSpacing={"2rem"} direction="column">
-        <Grid item>
-          <Typography variant="h5" mt={"1rem"}>{props.introduce}</Typography>
-        </Grid>
-        <Grid item>
-          <Box>
-            {props.skills?.map((stack) => {
-              const skills = skillData.find((skill) => skill.name === stack);
-              const color = skills?.type === "language" ? "default" : "success";
-              return (
-                <Chip avatar={<Avatar src={skills?.logo} />} label={stack} variant="outlined" color={color} sx={{ mr: "1rem", mb: "0.8rem" }} />
-              )
-            })}
-          </Box>
-        </Grid>
+      <Grid item>
+        <Stack direction={"column"} spacing={"0.3rem"}>
+        <Typography variant="h5" color="secondary.dark">자기소개</Typography>
+        <Typography variant="h5" mt={"1rem"}>{props.introduce}</Typography>
+        </Stack>
+      </Grid>
+      <Grid item>
+          <Typography variant="h5" color="secondary.dark" mb={"0.4rem"}>관심기술</Typography>
+          {props.skills?.map((stack) => {
+            const skills = skillData.find((skill) => skill.name === stack);
+            const color = skills?.type === "language" ? "default" : "success";
+            return (
+              <Chip avatar={<Avatar src={skills?.logo} />} label={stack} variant="outlined" color={color} sx={{ mr: "1rem", mb: "0.8rem" }} />
+            )
+          })}
+      </Grid>
       </Grid>
     </Paper>
   );
@@ -114,7 +118,7 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
 
 const editUserinfoModal = {
   position: 'absolute' as 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 700,

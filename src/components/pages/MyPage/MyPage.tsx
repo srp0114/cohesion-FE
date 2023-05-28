@@ -76,10 +76,6 @@ const MyPage = () => {
     })
   }
 
-  console.log(myInfo.nickname)
-  console.log(myInfo.skills)
-  console.log(myInfo.introduce)
-
   return (
     <>{loadingStatus ? (
       <Grid

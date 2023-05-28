@@ -29,22 +29,22 @@ export const MyProfile = (props: MyProfileProps) => {
                 <Profile nickname={props.nickname} imgUrl={props.profileImg} size={100}/>
               </Grid>
               <Grid item sx={{mt:"2rem"}}>
-                <Typography variant="subtitle1">{props.nickname}</Typography>
+                <Typography variant="h3" sx={{fontWeight:"600"}}>{props.nickname}</Typography>
                 <Grid container spacing={2} sx={{mt:"1rem"}}>
                   <Grid item>
-                    <Typography variant="subtitle2" color="secondary.dark">학번</Typography>
+                    <Typography variant="h5" color="secondary.dark">학번</Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="subtitle2">{props.studentId}</Typography>
+                    <Typography variant="h5">{props.studentId}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={2} sx={{mt:"0.5rem"}}>
                   <Grid item>
-                    <Typography variant="subtitle2" color="secondary.dark">전공</Typography>
+                    <Typography variant="h5" color="secondary.dark">전공</Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="subtitle2">{props.track1}</Typography>
-                    <Typography variant="subtitle2">{props.track2}</Typography>
+                    <Typography variant="h5">{props.track1}</Typography>
+                    <Typography variant="h5">{props.track2}</Typography>
                   </Grid>
                 </Grid>
                 </Grid>
