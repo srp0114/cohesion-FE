@@ -16,7 +16,7 @@ export const ConditionRequired : React.FC<RerquiredProps>= ({value, getRequired}
 
   return (
     <>
-      <Grid item>
+      <Grid item xs={6}>
         <TextField
           disabled={!!value}
           required
@@ -27,9 +27,9 @@ export const ConditionRequired : React.FC<RerquiredProps>= ({value, getRequired}
             setRequired(event.target.value);
             getRequired(event.target.value);
           }}
-        >
-            
-        </TextField>
+          rows={3}
+          multiline
+        />
       </Grid>
     </>
   );
@@ -39,7 +39,7 @@ export const ConditionOptional : React.FC<OptionalProps>= ({getOptional, value})
   const [optional, setOptional] = React.useState<string | null>("");
   return (
     <>
-      <Grid item>
+      <Grid item xs={6}>
         <TextField
           label="선택 조건"
           placeholder="선택 조건 예시) 깃허브 사용경험이 있으시면 좋습니다."
@@ -48,7 +48,9 @@ export const ConditionOptional : React.FC<OptionalProps>= ({getOptional, value})
             setOptional(event.target.value);
             getOptional(event.target.value);
           }}
-        ></TextField>
+          rows={3}
+          multiline
+        />
       </Grid>
     </>
   );
