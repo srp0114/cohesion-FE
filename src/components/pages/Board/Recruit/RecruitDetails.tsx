@@ -265,10 +265,6 @@ const RecruitDetails = () => {
           </Grid>
 
         </Grid>
-        <Grid item xs={12}>
-          <File fileList={fileList} />
-        </Grid>
-
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
@@ -305,6 +301,11 @@ const RecruitDetails = () => {
           </Grid>
 
         </Grid>
+        {fileList.length > 0 && 
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
+        }
         <Grid item xs={12}>
           <Reply board={BoardType.recruit} postingId={id} />
         </Grid>

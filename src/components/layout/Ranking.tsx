@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Box, Typography, Divider, Stack } from "@mui/material";
 import Profile from "../layout/Profile";
-import { shortenContent } from "../pages/Board/QnA/QnABoard";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { FindIcon } from "../data/IconData";
+import Shorten from "./Shorten";
+
 interface PostRankingItem {
     id: number,
     boardType: string,
@@ -70,7 +71,7 @@ export const PostRanking = () => {
                             opacity: [1.0, 0.9, 0.9],
                         }}}>
                     <Typography variant="h6" color="secondary.dark">{boardName}</Typography>
-                    <Typography variant="h5">{shortenContent(value.title, 10)}</Typography>
+                    <Typography variant="h5">{Shorten(value.title, 10)}</Typography>
                 </Box>
                 </Box>
                 </>
@@ -122,7 +123,7 @@ export const UserRanking = () => {
                             opacity: [1.0, 0.9, 0.9],
                         },
                         }}>
-                    <Typography variant="h5" sx={{ width:85 }}>{shortenContent(value.nickname, 8)}</Typography>
+                    <Typography variant="h5" sx={{ width:85 }}>{Shorten(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark" sx={{mt:0.3}}>{studentId}학번</Typography>
                 </Box>
                 </Grid>

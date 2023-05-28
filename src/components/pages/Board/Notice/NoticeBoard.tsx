@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Grid, Stack, Box, Typography, Chip } from "@mui/material";
+import { Grid, Stack, Box, Typography, Link } from "@mui/material";
 import Time from "../../../layout/Time";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,7 +10,7 @@ import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views
 import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
-import { shortenContent } from "../QnA/QnABoard";
+import Shorten from "../../../layout/Shorten";
 
 export interface NoticeItems {
   id: number;
@@ -167,15 +167,13 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
         <Stack direction="row" spacing={"1rem"}>
           <Time date={props.createdDate} variant="h5" />
         </Stack>
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(props.content, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -196,13 +194,11 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
           <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(props.content, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>

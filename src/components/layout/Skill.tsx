@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Grid, FormControl, Select, SelectChangeEvent, Avatar, MenuItem, Box } from "@mui/material";
+import { Grid, FormControl, Select, SelectChangeEvent, Avatar, MenuItem, Stack, InputLabel, Typography } from "@mui/material";
 import { skillData } from "../data/SkillData";
 
 interface SkillProps {
@@ -22,16 +21,18 @@ const Skill: React.FC<SkillProps>= ({getSkill, value}) => {
   }
 
   return (
-    <Grid item>
-      <FormControl sx={{ width: 250 }}>
+    <Grid item xs={12} md={3}>
+      <FormControl fullWidth>
         <Select
-          placeholder='질문 기술을 선택해주세요'
+          displayEmpty
           value={skill} 
           onChange={onSelectSkill}
           renderValue={(selected) => (
-            <Box >
+            selected !== '' ?
+            <Stack alignItems={"center"} direction={"row"}>
               {selected}
-            </Box>
+            </Stack> : 
+            <Typography variant="h5" color="primary.dark">질문할 기술을 선택해주세요</Typography>
           )}
           >
             {skillData.map((value) => (

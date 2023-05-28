@@ -13,7 +13,7 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import File from "../../../layout/File";
 import Bookmark from "../../../layout/Bookmark";
-import { NoticeItems } from "./Notice";
+import { NoticeItems } from "./NoticeBoard";
 
 const testData: NoticeItems = {
   id: 1,
@@ -105,17 +105,17 @@ const NoticeDetails = () => {
           </Stack>
            <Bookmark boardType={"free"} id={id} />
         </Grid>
-        {fileList.length > 0 && 
-        <Grid item xs={12}>
-          <File fileList={fileList}/>
-        </Grid>
-        }
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
             <div className="ql-editor"
               dangerouslySetInnerHTML={{ __html: postItem.content }}/>
           </div>
         </Grid>
+        {fileList.length > 0 && 
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
+        }
         <Grid item direction={"column"}>
           <Reply board={BoardType.free} postingId={id} />
         </Grid>

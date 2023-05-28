@@ -25,9 +25,6 @@ const Navbar = () => {
   const [nickname, setNickname] = useState<string>("");
   const [profileImg, setProfileImg] = useState<string | null>(null);
 
-  // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
-  // 토큰여부에 따라 네비게이션 바 상단 로그인 - 로그아웃 버튼 조절
-  // 로그아웃 기능 추가 필요!!
   useEffect(() => {
     checkLogin()
       .then((res) => {

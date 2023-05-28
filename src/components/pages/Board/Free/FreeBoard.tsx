@@ -1,19 +1,18 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { shortenContent } from "../QnA/QnABoard";
 import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import Shorten from "../../../layout/Shorten";
 
-//자유게시판 페이지 인터페이스
 export interface FreeBoardItems {
   id: number;
   title: string;
@@ -28,6 +27,7 @@ export interface FreeBoardItems {
   views: number;
   image: {imageUrl: string}[];
 }
+
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -37,7 +37,7 @@ const FreeBoard = () => {
 
   const getBoardItems = (sort:string) => {
     const curPage = page - 1;
-    const params = { size: 4, sort: sort };
+    const params = { size: 5, sort: sort };
 
     setSearchParams({page: page.toString()})
     axios({
@@ -70,7 +70,6 @@ const FreeBoard = () => {
     axios({
       method: "get",
       url: `/api/free/list?search=${search}&page=0&size=4`,
-
     })
       .then((res) => {
         if (res.status === 200) {
@@ -155,17 +154,15 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
       }
     }} onClick={() => goToPost(props.id)}>
     {props.image.length === 0 ? (
-      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
+      <Grid item container direction={"column"} p={"0.5rem"} spacing={"1rem"}>
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
         <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -182,17 +179,15 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
             backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
-      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
+      <Grid item container direction="column" xs={8} md={8} p={"0.5rem"} spacing={"1.2rem"}>
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
           <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>

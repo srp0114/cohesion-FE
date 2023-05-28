@@ -13,6 +13,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  Link
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import {
@@ -30,7 +31,7 @@ import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
-import { shortenContent } from "../QnA/QnABoard";
+import Shorten from "../../../layout/Shorten";
 import { RecruitBoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 
 
@@ -134,9 +135,7 @@ const RecruitBoard: React.FC = () => {
       {loadingStatus ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
-            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
-              모집게시판
-            </Typography>
+            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>구인게시판</Typography>
             <SortBoard setBoardSort={getBoardItems} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
@@ -285,10 +284,10 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         <Box sx={{ height: "10rem", alignContent: "flex-start", justifyContent: "center" }}>
           {/* 필수, 우대 조건 */}
           <CardHeader subheader="필수 조건" titleTypographyProps="h6" sx={{ color: _theme.palette.primary.main }} />
-          <CardContent sx={{ fontSize: "1rem", color: _theme.palette.primary.main }}>{shortenContent(`${props.require}`, 30)}</CardContent>
+          <CardContent sx={{ fontSize: "1rem", color: _theme.palette.primary.main }}>{Shorten(`${props.require}`, 30)}</CardContent>
 
           {props.optional ? <><CardHeader subheader="우대 조건" titleTypographyProps="h5" />
-            <CardContent sx={{ fontSize: "1rem" }}>{shortenContent(`${props.optional}`, 30)}</CardContent></> : null}
+            <CardContent sx={{ fontSize: "1rem" }}>{Shorten(`${props.optional}`, 30)}</CardContent></> : null}
         </Box>
 
         {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
@@ -307,8 +306,6 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
               <Typography variant="overline">
                 {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
               </Typography>
-              {(typeof props.modifiedDate === 'object') ?
-                null : <Chip label="modified" size="small" variant="outlined" sx={{ marginLeft: "1rem" }} />}
             </Stack>
           } />
 

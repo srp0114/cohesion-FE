@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
+import { Typography, Box, Link, Grid, Stack } from "@mui/material";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -12,6 +12,7 @@ import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import Shorten from "../../../layout/Shorten";
 
 export interface BoardItems {
   id: number;
@@ -29,17 +30,6 @@ export interface BoardItems {
   stuId: number; //사용자 아이디, 학번
   image: { imageUrl: string }[];
 }
-
-export const shortenContent = (str: string, length = 200) => {
-  let content: string = "";
-  if (str.length > length) {
-    content = str.substring(0, length - 2);
-    content = content + "...";
-  } else {
-    content = str;
-  }
-  return content;
-};
 
 const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
@@ -72,7 +62,6 @@ const QnABoard = () => {
         }
       });
   }
-
   const loadingStatus: boolean = useSkeleton(800, boardItems);
 
   useEffect(() => {
@@ -167,59 +156,52 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
         pointer: "cursor"
       }
     }} onClick={() => goToPost(props.id)}>
-      {props.image.length === 0 ? (
-        <Grid item container direction={"column"} sx={{ p: "0.5rem" }} spacing={"1rem"}>
-          <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-              <Typography variant="h3">{props.title}</Typography>
-              {(typeof props.modifiedDate === 'object') ?
-                null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-            </Stack>
-            <Stack direction="row" spacing={"1rem"}>
-              <Time date={props.createdDate} variant="h5" />
-              {SkillIcon}
-            </Stack>
-          </Grid>
-          <Grid item className="boardContent">
-            <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }} />
-          </Grid>
-          <Grid item>
-            <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              {userInfo(props.writer, props.stuId, props.profileImg)}
-              {reply_bookmark_views(props)}
-            </Stack>
-          </Grid>
+    {props.image.length === 0 ? (
+      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+          <Typography variant="h3">{props.title}</Typography>
+        <Stack direction="row" spacing={"1rem"}>
+          <Time date={props.createdDate} variant="h5" />
+          {SkillIcon}
+        </Stack>
         </Grid>
-      ) : (
-        <Grid item container spacing={4} >
-          <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Box position="relative" width="22rem" height="11rem">
-              <span style={{
-                position: 'absolute', top: 0, right: 0, bottom: 0, left: 0,
-                backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})`
-              }} />
-            </Box>
-          </Grid>
-          <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
-            <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
-                <Typography variant="h3">{props.title}</Typography>
-                {(typeof props.modifiedDate === 'object') ?
-                  null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-              </Stack>
-              <Time date={props.createdDate} variant="h5" />
-              {SkillIcon}
-            </Grid>
-            <Grid item sx={{ width: "100%" }} className="boardContent">
-              <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }} />
-            </Grid>
-            <Grid item>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                {userInfo(props.writer, props.stuId, props.profileImg)}
-                {reply_bookmark_views(props)}
-              </Box>
-            </Grid>
-          </Grid>
+        <Grid item className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200)}}/>
+        </Grid>
+        <Grid item>
+          <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Stack>
+        </Grid>
+      </Grid>
+    ) : (
+    <Grid item container spacing={4} > 
+      <Grid item xs={4} md={4} sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box position="relative" width="22rem" height="11rem">
+          <span style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, 
+            backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
+        </Box>
+      </Grid>
+      <Grid item container direction="column" p={"0.5rem"} xs={8} md={8} spacing={"1.2rem"}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+            <Typography variant="h3">{props.title}</Typography>
+          <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+            <Time date={props.createdDate} variant="h5" />
+            {SkillIcon}
+          </Stack>
+        </Grid>
+        <Grid item sx={{width: "100%"}} className="boardContent">
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200) }}/>
+        </Grid>
+        <Grid item>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {reply_bookmark_views(props)}
+          </Box>
+        </Grid>
+      </Grid>
+
         </Grid>
       )}
     </Grid>

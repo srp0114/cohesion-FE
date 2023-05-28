@@ -98,7 +98,12 @@ const QnADetails = () => {
     skillData.map((value) => {
       if (postItem.language === value.name) {
         return (
-          <img src={value.logo} width="35" height="35" />
+          <>
+          <Stack direction="row" alignItems={"center"} spacing={"1rem"}>
+            <img src={value.logo} width="30" height="30"/>
+            <Typography variant="h5">{value.name}에 관한 질문입니다</Typography>
+          </Stack>
+          </>
         )
       }
     }) : null
@@ -146,19 +151,20 @@ const QnADetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
             {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
-          <Bookmark boardType={"questions"} id={id} />
+           <Bookmark boardType={"questions"} id={id} />
         </Grid>
-        {fileList.length > 0 &&
-          <Grid item xs={12}>
-            <File fileList={fileList} />
-          </Grid>
-        }
+
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
             <div className="ql-editor"
               dangerouslySetInnerHTML={{ __html: postItem.content }} />
           </div>
         </Grid>
+        {fileList.length > 0 && 
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
+        }
         <Grid item>
           <Reply board={BoardType.question} writerId={writerId} postingId={id} />
         </Grid>
