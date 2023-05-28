@@ -4,7 +4,7 @@ import axios from "axios";
 import { Box, Chip, Grid, Typography, Zoom, Stack } from "@mui/material";
 import { FileItem } from "../Free/FreeDetails";
 import Reply from "../../../layout/Reply/Reply";
-import { PostingSkeleton } from "../../../layout/Skeletons";
+import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
@@ -32,7 +32,6 @@ const testData: NoticeItems = {
 const NoticeDetails = () => {
   const [postItem, setPostItem] = useState<NoticeItems | undefined>(testData);
   const { id } = useParams() as { id: string };
-  const [loading, setLoading] = useState(false); 
   const [accessUserId, setAccessUserId] = useState<number>(0); 
   const [isFile, setIsFile] = useState<boolean>(false);
   const [fileList, setFileList] = useState<FileItem[]>([]);
@@ -68,6 +67,8 @@ const NoticeDetails = () => {
           console.log(err);
       });
   }, []);
+
+  const loadingStatus: boolean = useSkeleton(800, postItem);
 
   const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
     if (typeof postItem !== undefined) {

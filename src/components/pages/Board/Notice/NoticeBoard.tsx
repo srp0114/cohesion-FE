@@ -7,7 +7,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 import Shorten from "../../../layout/Shorten";
@@ -59,7 +59,6 @@ const testData : NoticeItems[] = [
 const Notice = () => {
   const [boardItems, setBoardItems] = useState<NoticeItems[]>(testData);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams(); 
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
@@ -103,6 +102,8 @@ const Notice = () => {
       })
   }
 
+  const loadingStatus:boolean = useSkeleton(800, boardItems);
+
   const displayPosting = boardItems.map((element, idx) => {
     return (
       <>
@@ -113,7 +114,7 @@ const Notice = () => {
 
   return (
     <>
-      {loading ? (
+      {loadingStatus ? (
       <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Link underline="none" href="/notice">

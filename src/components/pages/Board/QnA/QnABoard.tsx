@@ -9,7 +9,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 import Shorten from "../../../layout/Shorten";
@@ -25,62 +25,50 @@ export interface BoardItems {
   bookmark: number;
   reply: number;
   point: number;
-  views: number; 
-  profileImg: string | null; 
-  stuId: number;
-  image: {imageUrl: string}[];
+  views: number; //조회수
+  profileImg: string | null; //사용자 이미지 img
+  stuId: number; //사용자 아이디, 학번
+  image: { imageUrl: string }[];
 }
 
 const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
 
-  const getBoardItems = (sort:string) => {
+  const getBoardItems = (sort: string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
 
-    setSearchParams({page: page.toString()})
+    setSearchParams({ page: page.toString() })
     axios({
       method: "get",
       url: `/api/questions/list?page=${curPage}`,
       params: params
     })
-    .then((res) => {
-      if (res.status === 200) {
-        setBoardItems(res.data.data);
-        setTotal(res.data.count);
-      }
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
-        console.log("로그인 x");
-      } else if (err.response.status === 403) {
-        console.log("권한 x");
-      }
-    });
+      .then((res) => {
+        if (res.status === 200) {
+          setBoardItems(res.data.data);
+          setTotal(res.data.count);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          console.log("로그인 x");
+        } else if (err.response.status === 403) {
+          console.log("권한 x");
+        }
+      });
   }
-
-
-  /* 1.5초간 스켈레톤 표시 */
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [boardItems]);
+  const loadingStatus: boolean = useSkeleton(800, boardItems);
 
   useEffect(() => {
     getBoardItems("createdAt,desc");
   }, [page]);
 
-  const performSearch = (search : string) => {
+  const performSearch = (search: string) => {
     axios({
       method: "get",
       url: `/api/questions/list?search=${search}&page=0&size=5`,
@@ -106,15 +94,15 @@ const QnABoard = () => {
 
   return (
     <>
-      {loading ? (
-      <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      {loadingStatus ? (
+        <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Typography variant="h2" sx={{ fontWeight: 800 }}>Q&A게시판</Typography>
-            <SortBoard setBoardSort={getBoardItems}/>
+            <SortBoard setBoardSort={getBoardItems} />
           </Stack>
           {displayPosting}
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchBoardField setSearchAPI={performSearch}/>
+            <SearchBoardField setSearchAPI={performSearch} />
           </Box>
           <PaginationControl
             page={page}
@@ -124,12 +112,11 @@ const QnABoard = () => {
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
-          <WritingButton />
         </Stack>)
         : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <BoardSkeleton />
-          <WritingButton />
         </Box>)}
+      <WritingButton />
     </>
   );
 
@@ -214,9 +201,10 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
           </Box>
         </Grid>
       </Grid>
+
+        </Grid>
+      )}
     </Grid>
-  )}
-  </Grid>
   );
 }
 

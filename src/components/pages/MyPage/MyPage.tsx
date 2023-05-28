@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { MyProfile } from "./MyProfile";
 import { MyHistory } from "./MyHistory";
 import { MyIntroduction } from "./MyIntroduction";
-import { MyPageSkeleton } from "../../layout/Skeletons";
+import { MyPageSkeleton, useSkeleton } from "../../layout/Skeletons";
 
 export interface MyPageItems {
   studentId: string; //사용자 고유식별번호, 학번, 사용자의 아이디
@@ -20,7 +20,6 @@ export interface MyPageItems {
 }
 
 const MyPage = () => {
-  const [loading, setLoading] = useState(false);
   const [myInfo, setMyInfo] = useState<MyPageItems>({
     studentId: "",
     profileImg: "",
@@ -49,15 +48,7 @@ const MyPage = () => {
     getUserInfo();
   }, []);
 
-  useLayoutEffect(()=>{
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1000);
-  
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
+  const loadingStatus: boolean = useSkeleton(800);
 
   const onChangeUserInfo = (nickname: string, skills: string[], introduce: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -90,7 +81,7 @@ const MyPage = () => {
   console.log(myInfo.introduce)
 
   return (
-    <>{loading ? (
+    <>{loadingStatus ? (
       <Grid
         container
         direction="row"
@@ -112,9 +103,9 @@ const MyPage = () => {
         <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
           <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} />
         </Grid>
-      </Grid> ) : (
-        <MyPageSkeleton />
-      )}
+      </Grid>) : (
+      <MyPageSkeleton />
+    )}
     </>
   );
 };
