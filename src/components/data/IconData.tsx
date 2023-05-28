@@ -9,11 +9,10 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import MediaIcon from '@mui/icons-material/PermMediaOutlined';
 import ArrowDown from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowUp from '@mui/icons-material/KeyboardArrowUpOutlined';
-import ThumbUp from '@mui/icons-material/ThumbUp';
-import { FaCrown } from 'react-icons/fa';
+import ThumbUp from '@mui/icons-material/ThumbUpOffAlt';
+import { TbCrown } from 'react-icons/tb';
 import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import Search from '@mui/icons-material/Search';
-
 
 const icons = [
     { name: "reply", component: < ChatIcon /> }, //댓글,
@@ -46,9 +45,9 @@ const icons = [
     { name: "up", component: <ArrowUp/>},
     { name: "down", component: <ArrowDown/>},
     { name: "thumbUp", component: <ThumbUp/> },
-    { name: "crown", component: <FaCrown fontSize={"1.8rem"}/> },
+    { name: "crown", component: <TbCrown fontSize={"1.8rem"}/> },
     { name: "high", component: <PriorityHigh/>},
-    { name: "search", component: <Search/>}
+    { name: "search", component: <Search/>},
 ];
 
 const iconList = [
@@ -75,7 +74,7 @@ const iconList = [
     "down",
     "thumbUp",
     "crown",
-    "high"
+    "high",
 ]
 
 /**

@@ -8,19 +8,18 @@ import { logoutHandler } from "../logoutHandler";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import SearchField from "./SearchField";
 import pingpong from "../asset/logo/pingpong.png";
+import LoginModal from "./LoginModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget); //게시판 클릭이되면 이거
+    setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
-    //onClose가 true면 메뉴가 보이고, false면 메뉴가 숨겨진다.
     setAnchorEl(null);
   };
-
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
   const [profileImg, setProfileImg] = useState<string | null>(null);
@@ -56,6 +55,16 @@ const Navbar = () => {
       logoutHandler();
     }
   };
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const handleModalClose = () => setModalOpen(false);
+
+  const openModal = () => {
+    if (!isLogin)
+      setModalOpen(!open);
+  };
+
 
   const moveToHome = () => {
     navigate("/");
@@ -137,7 +146,10 @@ const Navbar = () => {
                 로그아웃
               </Button>
             </>) : (
-            <Button onClick={handleLogin} className="loginButton">로그인</Button>
+            <Button onClick={openModal} className="loginButton">
+            <LoginModal open={modalOpen} handleClose={handleModalClose} handleLogin={handleLogin} />
+              로그인
+            </Button>
           )}
         </Grid>
       </Grid>

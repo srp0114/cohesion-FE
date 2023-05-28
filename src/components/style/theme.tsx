@@ -258,17 +258,6 @@ export const theme = createTheme({
             disableTouchRipple: true,
             outline: 'none',
           },
-          '&. startButton': {
-            width: 600,
-            height: 80,
-            "&:hover, &.Mui-focusVisible": {
-              zIndex: 2,
-              backgroundColor: '#f7f7f7',
-              transform: 'translateY(-7%)',
-            },
-            borderRadius: 20,
-            border: '2px solid #777777'
-          },
           '&.bookmark': {
             padding: 0,
             backgroundColor: 'transparent',
