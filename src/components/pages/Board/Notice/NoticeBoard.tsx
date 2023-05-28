@@ -117,9 +117,7 @@ const Notice = () => {
       {loadingStatus ? (
       <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
-            <Link underline="none" href="/notice">
             <Typography variant="h2" sx={{ fontWeight: 800 }}>공지사항</Typography>
-            </Link>
             <SortBoard setBoardSort={getBoardItems}/>
           </Stack>
           {displayPosting}

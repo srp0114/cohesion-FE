@@ -135,9 +135,7 @@ const RecruitBoard: React.FC = () => {
       {loadingStatus ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
-            <Link underline="none" href="/recruit">
             <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>구인게시판</Typography>
-            </Link>
             <SortBoard setBoardSort={getBoardItems} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
