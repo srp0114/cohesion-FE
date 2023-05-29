@@ -167,33 +167,29 @@ const MySummary = () => {
         return (
           <>
           <Grid item p={1.5}>
-          <Paper className="mySummaryPaper" elevation={3}>
-            <Grid container direction="row" spacing={2} sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
-              <Grid item>
+            <Paper className="mySummaryPaper" elevation={3}>
+              <Grid container direction="row" spacing={2} sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+                <Grid item>
                   <Stack direction="row" spacing={"1rem"} alignItems={"center"}>
-                  {value.language === "" ? null 
-                    : <Chip avatar={<Avatar src={selectedSkill?.logo} />} label={value.language} variant="outlined" color={color}/>
-                  }
+                  {value.language === "" ? null : <Chip avatar={<Avatar src={selectedSkill?.logo} />} label={value.language} variant="outlined" color={color}/>}
                   <Typography variant="h5" color="primary.dark"><Time date={value.date} variant={"h5"}/></Typography>
                   {value.isFixed ? <PushPinIcon fontSize={"small"} sx={{ color:"primary.dark" }} /> : null}
-                </Stack>
+                  </Stack>
+                </Grid>
+                  {!isEditing ? 
+                  <MySummaryMenu summaryId={value.summaryId} isFixed={value.isFixed} onDeleteSummary={onDeleteSummary}
+                  onFixSummary={onFixSummary} onReleaseSummary={onReleaseSummary} setIsEditing={setIsEditing} setEditSummaryId={setEditSummaryId}/> : null
+                  }
               </Grid>
-                <MySummaryMenu summaryId={value.summaryId} isFixed={value.isFixed} onDeleteSummary={onDeleteSummary}
-                onFixSummary={onFixSummary} onReleaseSummary={onReleaseSummary} setIsEditing={setIsEditing} setEditSummaryId={setEditSummaryId}/>
-            </Grid>
-            {isEditing && editSummaryId === value.summaryId ?
-             <>
-            <MySummaryEditField summaryId={value.summaryId} content={value.content} editSummary={onEditSummary}/> 
-            </> : 
-            <>
-            <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center"}}>
-              <Grid item ml={"0.8rem"} mt={"0.8rem"} mb={"0.8rem"}>
+              {isEditing && editSummaryId === value.summaryId ? 
+                <MySummaryEditField summaryId={value.summaryId} content={value.content} editSummary={onEditSummary}/> : 
+                <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center"}}>
+              <Grid item m={"1rem"}>
                 <Typography>{value.content}</Typography> 
               </Grid>
             </Grid>
-            </>
-            }
-        </Paper>
+              }
+          </Paper>
         </Grid>
         </>
           )

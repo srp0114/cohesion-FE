@@ -26,6 +26,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import Search from '@mui/icons-material/Search';
+import Description from "@mui/icons-material/DescriptionOutlined";
+import BorderColor from '@mui/icons-material/BorderColorOutlined';
 
 const icons = [
     { name: "reply", component: <ChatIcon /> }, //댓글,
@@ -63,7 +65,8 @@ const icons = [
     { name: "crown", component: <TbCrown fontSize={"1.8rem"}/> },
     { name: "high", component: <PriorityHigh/>},
     { name: "search", component: <Search/>},
-
+    { name: "description", component: <Description/>},
+    { name: "borderColor", component: <BorderColor/>},
     { name: "collapseClose", component: <ExpandLess /> }, // V
     { name: "collapseOpen", comonent: <ExpandMore /> }, //^
 
@@ -97,6 +100,8 @@ const iconList = [
     "thumbUp",
     "crown",
     "high",
+    "description",
+    "borderColor"
     "settings",
 ]
 

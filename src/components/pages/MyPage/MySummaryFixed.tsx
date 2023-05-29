@@ -30,7 +30,7 @@ const MySummaryFixed = (props :MySummaryFixedProps) => {
               </Grid>
             </Grid>
             <Grid container direction="row" spacing={2} sx={{justifyContent:"space-between", alignItems:"center"}}>
-              <Grid item ml={"0.8rem"} mt={"0.8rem"}>
+              <Grid item m={"1rem"}>
                 <Typography>{value.content}</Typography> 
               </Grid>
             </Grid>  

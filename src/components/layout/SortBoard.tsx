@@ -2,15 +2,14 @@ import { useState } from "react";
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material" 
 
 interface SortProps {
-    setBoardSort : (sort:string) => void; 
+    setSort : (sort:string) => void; 
+    sort : string;
 }
 
-const SortBoard = ({setBoardSort} : SortProps) => {
-  const [sort, setSort] = useState("createdAt,desc");
+const SortBoard = ({sort, setSort} : SortProps) => {
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value);
-    setBoardSort(event.target.value);
   };
 
   return (

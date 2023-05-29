@@ -3,20 +3,20 @@ import { Stack, TextField, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 interface SearchProps {
-    setSearchAPI : (search:string) => void; 
+    setSearch : (search:string) => void; 
 }
 
-const SearchBoardField = ({setSearchAPI} : SearchProps) => {
+const SearchBoardField = ({setSearch} : SearchProps) => {
     const [searchInput, setSearchInput] = useState<string>("");
 
     const handleBoardSearch = () => {
         if (searchInput.trim() !== "") {
-            setSearchAPI(searchInput);
+            setSearch(searchInput);
         }
     }
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter' && searchInput.trim() !== "") {
-            setSearchAPI(searchInput);
+            setSearch(searchInput);
         }
     };
 
