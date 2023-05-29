@@ -13,7 +13,8 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import File from "../../../layout/File";
 import Bookmark from "../../../layout/Bookmark";
-import { NoticeItems } from "./NoticeBoard";
+import {checkLogin} from "../../../checkLogin";
+import {NoticeItems} from "./NoticeBoard";
 
 const testData: NoticeItems = {
   id: 1,
@@ -30,7 +31,8 @@ const testData: NoticeItems = {
 };
 
 const NoticeDetails = () => {
-  const [postItem, setPostItem] = useState<NoticeItems | undefined>(testData);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [postItem, setPostItem] = useState<NoticeItems | undefined>();
   const { id } = useParams() as { id: string };
   const [accessUserId, setAccessUserId] = useState<number>(0); 
   const [isFile, setIsFile] = useState<boolean>(false);
@@ -38,12 +40,21 @@ const NoticeDetails = () => {
   const postingId = Number(id);
 
   useEffect(() => {
+    checkLogin().then((res) => {
+      if (res) {
+        setIsLogin(true);
+        getCurrentUserInfo()
+          .then(userInfo => setAccessUserId(userInfo.studentId))
+          .catch(err => console.log(err));
+      }
+    });
+
     axios({
       method: "get",
       url: `/api/notice/detail/${id}`,
     })
       .then((res) => {
-        setPostItem(res.data.data);
+        setPostItem(res.data);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -52,9 +63,6 @@ const NoticeDetails = () => {
           console.log("권한 x");
         }
       });
-    getCurrentUserInfo()
-      .then(userInfo => setAccessUserId(userInfo.studentId))
-      .catch(err => console.log(err));
 
     axios({
           method: "get",
@@ -103,7 +111,7 @@ const NoticeDetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"free"} id={id} />
+          {isLogin ? <Bookmark boardType={"notice"} id={id}/> : null}
         </Grid>
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
@@ -117,17 +125,18 @@ const NoticeDetails = () => {
         </Grid>
         }
         <Grid item direction={"column"}>
-          <Reply board={BoardType.free} postingId={id} />
+          {isLogin ? <Reply board={BoardType.notice} postingId={id}/> : null}
         </Grid>
       </Grid>
-      <Zoom in={true}>
-        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-      </Zoom>
     </>
   ) : (
     <PostingSkeleton />
   );
-  return <Box sx={{ p: "2rem 10rem 4rem" }}>{PostDetails}</Box>
+  return <Box sx={{ p: "2rem 10rem 4rem" }}>
+    {
+      loadingStatus ? PostDetails : <PostingSkeleton />
+    }
+  </Box>;
 };
 
 export default NoticeDetails;

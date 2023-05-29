@@ -92,7 +92,7 @@ const Home = () => {
                 <HomeBoard board="recruit" loginState={isLogin} />
               </Grid>
               <Grid item xs={6}>
-                <HomeBoard board="free" loginState={isLogin} />
+                <HomeBoard board="notice" loginState={isLogin} />
               </Grid>
             </Grid>
           </Grid>

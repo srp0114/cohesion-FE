@@ -101,6 +101,10 @@ const Notice = () => {
 
   const loadingStatus:boolean = useSkeleton(800, boardItems);
 
+  useEffect(() => {
+    getBoardItems("createdAt,desc");
+  }, [page]);
+
   const displayPosting = boardItems.map((element, idx) => {
     return (
       <>
