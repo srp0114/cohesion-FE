@@ -157,6 +157,12 @@ export const theme = createTheme({
           wordWrap: "break-word",
           wordBreak: "break-word",
           whiteSpace: "pre-line",
+          '&.boardTitle' :{
+             fontWeight: 800 ,
+            '&:hover': {
+              color: '#008CFF',
+            }
+          }
         }
       }
     },
