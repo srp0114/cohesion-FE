@@ -85,7 +85,7 @@ const FreeBoard = () => {
   const displayPosting = freeData.map((element, idx) => {
     return (
       <>
-        <PreviewPosting {...element} key={idx} />
+         <PreviewPosting {...element} key={idx} />
       </>
     );
   }
@@ -100,7 +100,11 @@ const FreeBoard = () => {
               <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
               <SortBoard setBoardSort={getBoardItems}/>
             </Stack>
-            {displayPosting}
+            {freeData.length === 0 ? 
+              <Stack p={"0rem 2rem 0rem"}>
+                <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+              </Stack> : displayPosting
+            }
             <Box display={"flex"} justifyContent={"flex-end"}>
               <SearchBoardField setSearchAPI={performSearch}/>
             </Box>
@@ -115,9 +119,9 @@ const FreeBoard = () => {
             <WritingButton />
           </Stack>
         )
-        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        : (
           <BoardSkeleton />
-        </Box>)
+        )
       }
       <WritingButton />
   </>);

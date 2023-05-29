@@ -140,7 +140,11 @@ const RecruitBoard: React.FC = () => {
           </Box>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
-              {displayPosting}
+            {boardItems.length === 0 ? 
+              <Stack p={"0rem 2rem 0rem"}>
+                <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+              </Stack> : displayPosting
+            }
             </Grid>
           </Box>
           <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
