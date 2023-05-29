@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
+import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemIcon, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
 import axios from "axios";
 import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
 import { propTypes } from "react-bootstrap/esm/Image";
 import { FindIcon } from "../../../data/IconData";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -397,24 +399,37 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
                         <Box>
                             <List dense={dense} >
-                                <ListSubheader>
-                                    신청자 목록
-                                </ListSubheader>
+                                <ListItem secondaryAction={
+                                    <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
+                                        <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
+                                            <FindIcon name="close" iconProps={{ fontSize: "medium" }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                }>
+                                    <ListSubheader>신청자 목록</ListSubheader>
+                                </ListItem>
                                 {applications.map((app, idx) => (
                                     <><ListItem key={app.id} sx={{ p: 3 }} className="applicantsListItem">
+                                        {/* 신청자 기본 정보 */}
                                         <Grid container xs={12} columnSpacing={2} >
-
+                                            {/* 프로필 이미지 */}
                                             <Grid item xs={3}>
                                                 <ListItemAvatar>
                                                     <Profile nickname={app.nickname} imgUrl={app.profileImg} size={48} />
                                                 </ListItemAvatar>
                                             </Grid>
+
                                             <Grid item container xs={7} rowSpacing={1}>
-                                                <Grid item>
-                                                    <Typography variant="h4">{app.nickname}</Typography>
+                                                {/* 닉네임 학번 */}
+                                                <Grid item xs={12}>
+                                                    <Stack direction="row">
+                                                        <Typography variant="h4">{app.nickname}</Typography>
+                                                        <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
+                                                    </Stack>
                                                 </Grid>
-                                                <Grid item>
-                                                    <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
+                                                <Divider variant="middle" />
+                                                {/* 필수, 우대 조건 */}
+                                                <Grid item xs={12}>
                                                     <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" color="primary" />}
                                                         {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대사항 👌" color="secondary" /> : null}
@@ -453,17 +468,17 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                     </>}
                                             </Grid>
                                             <Grid item xs={12}>
-                                                <ListItemButton onClick={() => toggleCollapse(idx)}><FindIcon name={app.collapseOpen ? "collapseOpen" : "collapseClose"} /></ListItemButton>
+                                                <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
                                                 <Collapse in={app.collapseOpen} timeout="auto" unmountOnExit>
                                                     {/* 신청자 정보 */}
-                                                    <Stack direction="column" spacing={"0.5rem"}>
+                                                    <Stack direction="column" spacing={"0.5rem"} sx={{ marginLeft: 2 }}>
                                                         {/* 1트랙 */}
-                                                        <Typography variant="h5">1트랙: {app.track1} </Typography>
-                                                        <Divider variant="middle" />
+                                                        <Typography variant="h5" sx={{ margin: 0 }}>전공: {app.track1} </Typography>
                                                         {/* 선택한 기술 */}
                                                         <Box>
                                                             {(app.skills.length > 0) ? app.skills.map(skill => {
                                                                 const matchingSkill = skillData.find(data => data.name === skill); // 일치하는 기술 데이터를 찾음
+                                                                const color = matchingSkill?.type === "language" ? "default" : "success";
                                                                 if (matchingSkill) {
                                                                     return (
                                                                         <Chip
@@ -471,7 +486,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                                             label={skill}
                                                                             sx={{ margin: "0.25rem" }}
                                                                             variant="outlined"
-                                                                            color="info"
+                                                                            color={color}
                                                                         />
                                                                     );
                                                                 }
@@ -486,12 +501,6 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                     </>
                                 ))}
                             </List>
-                            <Divider variant="fullWidth" />
-                            <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
-                                <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
-                                    <FindIcon name="close" iconProps={{ fontSize: "large" }} />
-                                </IconButton>
-                            </Tooltip>
                         </Box>
                     </Drawer>
                 </React.Fragment >
