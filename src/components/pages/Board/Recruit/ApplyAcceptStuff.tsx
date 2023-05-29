@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import PersonAddDisabledOutlinedIcon from '@mui/icons-material/PersonAddDisabledOutlined';
-import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemIcon, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
 import axios from "axios";
 import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
 import { useTheme } from "@mui/material/styles";
 import { propTypes } from "react-bootstrap/esm/Image";
+import { FindIcon } from "../../../data/IconData";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -280,8 +275,6 @@ const doubleCheckModalstyle = { //Home.tsx의 loginModalstyle에서 가져옴
  *신청자 리스트 //신청을 완료 (더블체킹까지 완료한 신청자들의 목록)
  */
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
 export interface Application {
     // 유저 ID, 유저 닉네임, 필수/우대 사항 충족 여부, 프로필 사진, 학번, 1트랙, 관심 기술
     id: number,
@@ -302,11 +295,12 @@ interface ApplicantListProps {
     postingId: number,
     onNewApprovedApplicants: () => void, //승인된 인원 수에만 관계
     onApprovedApplicantsOut: () => void, //승인된 인원 수에만 관계
+    toggleDrawerStatus: boolean //신청자목록 drawer 
 }
 
 export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원수가 바뀌었는지 감지{()=>void}) => { //UI 확인용 임시.
     const [state, setState] = React.useState({
-        right: false,
+        right: props.toggleDrawerStatus,
     });
     const [dense, setDense] = React.useState(false);
     const [modalStates, setModalStates] = React.useState<{ [key: string]: boolean }>({});
@@ -386,7 +380,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
     };
 
     const toggleDrawer =
-        (anchor: Anchor, open: boolean) =>
+        (anchor: 'right', open: boolean) =>
             (event: React.KeyboardEvent | React.MouseEvent) => {
                 if (
                     event.type === 'keydown' &&
@@ -398,37 +392,44 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
 
                 setState({ ...state, [anchor]: open });
             };
-
     return (
         <div>
             {(["right"] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
-                    <Tooltip title="신청자 목록 확인하러 가기">
-                        <IconButton className="applicantListIconButton" onClick={toggleDrawer(anchor, true)} size="large">
-                            <FolderSharedOutlinedIcon color="primary" />
-                        </IconButton>
-                    </Tooltip>
                     <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} PaperProps={{ sx: { width: "30%" } }} >
                         <Box>
                             <List dense={dense} >
-                                <ListSubheader>
-                                    신청자 목록
-                                </ListSubheader>
+                                <ListItem secondaryAction={
+                                    <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
+                                        <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
+                                            <FindIcon name="close" iconProps={{ fontSize: "medium" }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                }>
+                                    <ListSubheader>신청자 목록</ListSubheader>
+                                </ListItem>
                                 {applications.map((app, idx) => (
                                     <><ListItem key={app.id} sx={{ p: 3 }} className="applicantsListItem">
+                                        {/* 신청자 기본 정보 */}
                                         <Grid container xs={12} columnSpacing={2} >
-
+                                            {/* 프로필 이미지 */}
                                             <Grid item xs={3}>
                                                 <ListItemAvatar>
                                                     <Profile nickname={app.nickname} imgUrl={app.profileImg} size={48} />
                                                 </ListItemAvatar>
                                             </Grid>
+
                                             <Grid item container xs={7} rowSpacing={1}>
-                                                <Grid item>
-                                                    <Typography variant="h4">{app.nickname}</Typography>
+                                                {/* 닉네임 학번 */}
+                                                <Grid item xs={12}>
+                                                    <Stack direction="row">
+                                                        <Typography variant="h4">{app.nickname}</Typography>
+                                                        <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
+                                                    </Stack>
                                                 </Grid>
-                                                <Grid item>
-                                                    <Typography variant="h5">{`(${app.studentId.toString().slice(0, 2)}학번)`}</Typography>
+                                                <Divider variant="middle" />
+                                                {/* 필수, 우대 조건 */}
+                                                <Grid item xs={12}>
                                                     <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" color="primary" />}
                                                         {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대사항 👌" color="secondary" /> : null}
@@ -441,7 +442,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 {(!app.isApproved) ? <>
                                                     <Tooltip title={`승인대기`}>
                                                         <IconButton edge="end" aria-label="approve" onClick={() => handleModalOpenChange(true, app.id.toString())} >
-                                                            <PersonAddOutlinedIcon />
+                                                            <FindIcon name="approveReject" />
                                                         </IconButton>
                                                     </Tooltip>
                                                     <DoubleCheckModal open={modalStates[app.id] || false}
@@ -454,7 +455,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                     />
                                                 </>
                                                     : <><Tooltip title={`승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
-                                                        <PersonAddDisabledOutlinedIcon />
+                                                        <FindIcon name="approveComplete" />
                                                     </IconButton></Tooltip>
                                                         <DoubleCheckModal open={modalStates[app.id] || false}
                                                             who={true}
@@ -470,14 +471,14 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 <ListItemButton onClick={() => toggleCollapse(idx)}>{app.collapseOpen ? <ExpandLess /> : <ExpandMore />}</ListItemButton>
                                                 <Collapse in={app.collapseOpen} timeout="auto" unmountOnExit>
                                                     {/* 신청자 정보 */}
-                                                    <Stack direction="column" spacing={"0.5rem"}>
+                                                    <Stack direction="column" spacing={"0.5rem"} sx={{ marginLeft: 2 }}>
                                                         {/* 1트랙 */}
-                                                        <Typography variant="h5">1트랙: {app.track1} </Typography>
-                                                        <Divider variant="middle" />
+                                                        <Typography variant="h5" sx={{ margin: 0 }}>전공: {app.track1} </Typography>
                                                         {/* 선택한 기술 */}
                                                         <Box>
                                                             {(app.skills.length > 0) ? app.skills.map(skill => {
                                                                 const matchingSkill = skillData.find(data => data.name === skill); // 일치하는 기술 데이터를 찾음
+                                                                const color = matchingSkill?.type === "language" ? "default" : "success";
                                                                 if (matchingSkill) {
                                                                     return (
                                                                         <Chip
@@ -485,7 +486,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                                             label={skill}
                                                                             sx={{ margin: "0.25rem" }}
                                                                             variant="outlined"
-                                                                            color="info"
+                                                                            color={color}
                                                                         />
                                                                     );
                                                                 }
@@ -500,12 +501,6 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                     </>
                                 ))}
                             </List>
-                            <Divider variant="fullWidth" />
-                            <Tooltip title="닫기" sx={{ display: 'flex', flexDirection: "row-reverse" }}>
-                                <IconButton onClick={toggleDrawer(anchor, false)} onKeyDown={toggleDrawer(anchor, false)} size="large">
-                                    < DisabledByDefaultOutlinedIcon />
-                                </IconButton>
-                            </Tooltip>
                         </Box>
                     </Drawer>
                 </React.Fragment >

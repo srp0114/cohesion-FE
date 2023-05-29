@@ -139,7 +139,7 @@ const QnADetails = () => {
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
             <Typography variant="h1" sx={{ fontWeight: "600" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+              null : <Chip label="수정됨" size="small" variant="outlined" />}
           </Stack>
         </Grid>
         <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>

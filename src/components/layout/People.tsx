@@ -5,9 +5,8 @@ import {
   InputLabel,
   Grid,
   Stack,
-  Select,
-  SelectChangeEvent,
-  MenuItem,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 
@@ -35,22 +34,27 @@ const People: React.FC<PeopleProps> = ({
     formState: { errors },
   } = useForm<PeopleInputs>();
 
+  const [partyAlignment, setPartyAlignment] = React.useState<number>(0);
+  const [gatheredAlignment, setGatheredAlignment] = React.useState<number>(0);
+
   useEffect(() => {
     getParty(partyValue);
     getGathered(gatheredValue);
   }, [partyValue, gatheredValue]);
 
-  const handlePartyChange = (event: SelectChangeEvent<number>) => {
-    getParty(event.target.value);
+  const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newAlignment: number) => {
+    setPartyAlignment(newAlignment);
+    getParty(partyAlignment);
   };
 
-  const handleGatheredChange = (event: SelectChangeEvent<number>) => {
-    getGathered(event.target.value);
+  const handleGatheredChange = (event: React.MouseEvent<HTMLElement>, newAlignment: number) => {
+    setGatheredAlignment(newAlignment);
+    getGathered(gatheredAlignment);
   };
 
   return (
-    <Grid item>
-      <Stack direction="row">
+    <Grid item xs={12}>
+      <Stack direction="row" sx={{display:"flex", justifyContent:"space-between"}}>
         <Controller
           name="party"
           control={control}
@@ -58,23 +62,23 @@ const People: React.FC<PeopleProps> = ({
           rules={{ required: true }}
           render={({ field }) => (
             <FormControl fullWidth>
-              <InputLabel>총 인원</InputLabel>
-              <Select
+              <ToggleButtonGroup
+                exclusive
                 {...field}
                 value={partyValue}
                 onChange={handlePartyChange}
-                error={!!errors.party}
-              >
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={7}>7</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={9}>9</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
+                >
+                <ToggleButton size="large" value={2}>2</ToggleButton>
+                <ToggleButton size="large" value={3}>3</ToggleButton>
+                <ToggleButton size="large" value={4}>4</ToggleButton>
+                <ToggleButton size="large" value={5}>5</ToggleButton>
+                <ToggleButton size="large" value={6}>6</ToggleButton>
+                <ToggleButton size="large" value={7}>7</ToggleButton>
+                <ToggleButton size="large" value={8}>8</ToggleButton>
+                <ToggleButton size="large" value={9}>9</ToggleButton>
+                <ToggleButton size="large" value={10}>10</ToggleButton>
+              </ToggleButtonGroup>
+
               <FormHelperText>
                 `{`예) 캡스톤 디자인은 4명팀이므로, 총 인원은 4명`}`
               </FormHelperText>
@@ -95,25 +99,23 @@ const People: React.FC<PeopleProps> = ({
           }}
           render={({ field }) => (
             <FormControl>
-              <InputLabel>현재까지 모인 인원</InputLabel>
-              <Select
+              <ToggleButtonGroup
                 {...field}
                 value={gatheredValue}
                 onChange={handleGatheredChange}
                 /* partyValue에 따라 disabled true false */
-                error={!!errors.gathered}
+                
               >
-                <MenuItem value={0}>0</MenuItem>
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={7}>7</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={9}>9</MenuItem>
-              </Select>
+                <ToggleButton size="large" value={1}>1</ToggleButton>
+                <ToggleButton size="large" value={2}>2</ToggleButton>
+                <ToggleButton size="large" value={3}>3</ToggleButton>
+                <ToggleButton size="large" value={4}>4</ToggleButton>
+                <ToggleButton size="large" value={5}>5</ToggleButton>
+                <ToggleButton size="large" value={6}>6</ToggleButton>
+                <ToggleButton size="large" value={7}>7</ToggleButton>
+                <ToggleButton size="large" value={8}>8</ToggleButton>
+                <ToggleButton size="large" value={9}>9</ToggleButton>
+              </ToggleButtonGroup>
               <FormHelperText>
                 `{`예) 4명팀에서 작성자 본인만 있다면, 현재까지 1명이 모임.`}`
               </FormHelperText>

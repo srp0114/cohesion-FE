@@ -1,12 +1,14 @@
-import { useRef, useState } from "react"; 
-import { Grid, Stack, Typography, Button, Paper } from "@mui/material";
+import { useRef, useState } from "react";
+import { Grid, Stack, Typography, Button, Paper, IconButton } from "@mui/material";
+import { FindIcon } from "../data/IconData";
+import Shorten from "../layout/Shorten";
 
 interface FileProps {
   handleFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  setSelectedFiles: (file:File[]) => void;
+  setSelectedFiles: (file: File[]) => void;
 }
 
-const AddFile = ({handleFile, setSelectedFiles} : FileProps) => {
+const AddFile = ({ handleFile, setSelectedFiles }: FileProps) => {
   const [file, setFile] = useState<File[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,17 +35,18 @@ const AddFile = ({handleFile, setSelectedFiles} : FileProps) => {
     <Grid item>
       <Stack direction={"row"} alignItems={"flex-start"}>
         <Button variant="outlined" size="large" component="label"> 파일 첨부하기
-          <input ref={inputRef} hidden type="file" multiple onChange={handleChange}/>
+          <input ref={inputRef} hidden type="file" multiple onChange={handleChange} />
         </Button>
-        <Stack direction={"column"} pt={"0.2rem"} pl={"2rem"} spacing={"0.5rem"}>
-          {file.map((file, index) => (
-            <Stack direction="row" spacing={"1rem"} alignItems={"center"}>
-              <Typography key={index}>{file.name}</Typography>
-              <Button onClick={() => handleDelete(index)}>삭제</Button>
-            </Stack>
-          ))}
-        </Stack>
+        {file.map((file, index) => (
+          <Stack direction="row" alignItems={"center"} pt={"0.2rem"} pl={"2rem"} spacing={"0.5rem"}>
+            <Typography key={index}>{Shorten(file.name, 10)}</Typography>
+            <IconButton onClick={() => handleDelete(index)}>
+              <FindIcon name="close" />
+            </IconButton>
+          </Stack>
+        ))}
       </Stack>
+
     </Grid>
   );
 };

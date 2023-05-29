@@ -8,20 +8,17 @@ import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
 import { replyCount } from "../../../layout/postingDetail/replyCount";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
+import { UpdateRecruitSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { ApplicantList, DoubleCheckModal, } from "./ApplyAcceptStuff";
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import { Application } from "./ApplyAcceptStuff";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
 import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
+import { FindIcon } from "../../../data/IconData";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -187,15 +184,13 @@ const RecruitDetails = () => {
 
   /**
  * 글 작성자에게 게시글 수정, 삭제 버튼을 보여줌.
- * @param studentId 
- * @param title 
- * @param content 
- * @returns 게시글 정보를 포함하고있는 speedDial
  */
-  const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
+  const displayUpdateRecruitSpeedDial = (studentId: number, title: string, content: string, handleNewApprovedApplicants: () => void, handleApprovedApplicantsOut: () => void) => {
     if (typeof postItem !== undefined) {
       if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
-        return (<UpdateSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content} />);
+        return (<UpdateRecruitSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content}
+          onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut}
+        />);
       }
       else
         return null;
@@ -215,14 +210,17 @@ const RecruitDetails = () => {
           <Grid item xs={8}>
             <Typography variant="h1" sx={{ textWrap: "balance" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
-              null : <Chip label="modified" size="small" variant="outlined" color="error" />}
+              null : <Chip label="수정됨" size="small" variant="outlined" />}
           </Grid>
 
-          <Grid item xs={4} sx={{ display: "flex", flexDirection: "row-reverse" }}>
-            <SportsKabaddiIcon fontSize="small" color="info" sx={{ ml: 1 }} />
-            <Typography variant="h3" color="info">
-              {postItem.gathered + approvedApplicants}/{postItem.party}
-            </Typography>
+          <Grid item xs={4} sx={{ display: "flex", flexDirection: "row-reverse", alignItems: "center" }}>
+            <FindIcon name="recruitPeople" iconProps={{ fontSize: "large", color: "primary" }} />
+            <Stack direction="row" sx={{ margin: 1 }} >
+              <Typography variant="h3" color="info">
+                {`${postItem.gathered + approvedApplicants}/${postItem.party}`}
+              </Typography>
+              <Typography variant="body1">{`(명)`}</Typography>
+            </Stack>
           </Grid>
 
         </Grid>
@@ -238,37 +236,13 @@ const RecruitDetails = () => {
           </Stack>
 
           <Grid item container xs={12} md={4} sx={{ display: "flex", flexDirection: "row-reverse", textAlign: "center", alignItems: "center" }}>
-            {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
-            {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
             <Bookmark boardType={"recruit"} id={id} />
-            {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
-              ? <>
-                <ApplicantList postingId={postingId} onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} />
-                <Chip label="모집완료" variant="outlined" icon={<AssignmentTurnedInIcon />} size="small" onClick={() => setModalOpen(true)} />
-                <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
-                  onModalOpenChange={handleModalOpenChange} />
-              </>
-              : <>
-                <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
-                  <Chip label={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}
-                    variant="outlined" icon={((typeof applicantStatus !== 'boolean') ? <HistoryEduOutlinedIcon /> : <CancelOutlinedIcon />)}
-                    size="medium"
-                    onClick={() => setModalOpen(true)}
-                    color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
-                  />
-                </Tooltip>
-                <DoubleCheckModal open={modalOpen} who={false} callNode={((typeof applicantStatus !== 'boolean') ? "applyBtn" : "applyCancelBtn")} id={accessUserId} postingId={postingId}
-                  requireContext={postItem.require} optionalContext={postItem.optional}
-                  onModalOpenChange={handleModalOpenChange} onApplicantOut={handleApplicantOut} onNewApplicant={handleNewApplicant} onApplicantStatus={handleApplicantStatus} />
-              </>
-            }
           </Grid>
 
         </Grid>
         {/*게시글 내용 */}
         <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
-          {/* 이미지에 대해서는 추후 논의 후 추가)*/}
         </Grid>
         <Divider sx={{ margin: "2rem 0" }} />
 
@@ -276,7 +250,7 @@ const RecruitDetails = () => {
 
           <Grid item container xs={12} md={6}>
             <Grid item xs={12}>
-              <Typography variant="h3" sx={{ marginBottom: "1rem", textWrap: "balance" }}>필수</Typography>
+              <Chip label="필수" variant="outlined" color="error" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
               <Typography variant="h4" sx={{ textWrap: "balance" }}>
                 <div dangerouslySetInnerHTML={{ __html: postItem.require }} />
               </Typography>
@@ -284,7 +258,7 @@ const RecruitDetails = () => {
             {
               postItem.optional ?
                 <Grid item xs={12} sx={{ marginTop: "2rem" }}>
-                  <Typography variant="h3" sx={{ marginBottom: "1rem", textWrap: "balance" }}>우대</Typography>
+                  <Chip label="우대" variant="outlined" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
                   <Typography variant="h4" sx={{ textWrap: "balance" }}>
                     <div dangerouslySetInnerHTML={{ __html: postItem.optional }} />
                   </Typography>
@@ -292,26 +266,53 @@ const RecruitDetails = () => {
             }
           </Grid>
 
-          <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "row-reverse", alignItems: "end", textAlign: "bottom" }}>
-            <Stack direction="row">
-              <Typography variant="h5">{`지금까지 `}</Typography>
-              <Typography variant="h4" color="secondary">{`${applicants}명`}</Typography>
-              <Typography variant="h5">{`이 신청했어요!`}</Typography>
-            </Stack>
+          <Grid item container xs={12} md={6} rowSpacing={2} sx={{ display: "flex", alignContent:"end", alignItems: "end", textAlign: "bottom" }}>
+            <Grid item xs={12} sx={{ display: "flex", flexDirection: "row-reverse" }}>
+              {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
+              {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
+              {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
+                ? <>
+                  <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} onClick={() => setModalOpen(true)} />
+                  <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
+                    onModalOpenChange={handleModalOpenChange} />
+                </>
+                : <>
+                  <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
+                    <Chip label={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}
+                      variant="outlined" icon={<FindIcon name={
+                        ((typeof applicantStatus !== 'boolean') ? `apply` : `applyCancel`)
+                      } />}
+                      onClick={() => setModalOpen(true)}
+                      color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
+                    />
+                  </Tooltip>
+                  <DoubleCheckModal open={modalOpen} who={false} callNode={((typeof applicantStatus !== 'boolean') ? "applyBtn" : "applyCancelBtn")} id={accessUserId} postingId={postingId}
+                    requireContext={postItem.require} optionalContext={postItem.optional}
+                    onModalOpenChange={handleModalOpenChange} onApplicantOut={handleApplicantOut} onNewApplicant={handleNewApplicant} onApplicantStatus={handleApplicantStatus} />
+                </>
+              }
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", flexDirection: "row-reverse" }}>
+              <Stack direction="row">
+                <Typography variant="h5" sx={{ marginRight: "0.5rem" }}>{`지금까지 `}</Typography>
+                <Typography variant="h3" color="primary" sx={{ marginRight: "0.25rem" }}>{`${applicants}명`}</Typography>
+                <Typography variant="h5">{`이 신청했어요!`}</Typography>
+              </Stack>
+            </Grid>
           </Grid>
 
         </Grid>
-        {fileList.length > 0 && 
-        <Grid item xs={12}>
-          <File fileList={fileList}/>
-        </Grid>
+        {fileList.length > 0 &&
+          <Grid item xs={12}>
+            <File fileList={fileList} />
+          </Grid>
         }
         <Grid item xs={12}>
           <Reply board={BoardType.recruit} postingId={id} />
         </Grid>
       </Grid>
       <Zoom in={true}>
-        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
+        <Box>{displayUpdateRecruitSpeedDial(postItem.stuId, postItem.title, postItem.content, handleNewApprovedApplicants, handleApprovedApplicantsOut)}</Box>
       </Zoom>
     </>
   ) : (
