@@ -10,7 +10,7 @@ import Shorten from "./Shorten";
 
 interface HomeBoardItems {
     id: number;
-    //studentId: number;
+    stuId: number;
     title: string;
     content: string;
     writer: string;
@@ -95,8 +95,7 @@ const HomeBoard = (props: HomeBoardProps) => {
                     }} 
                     onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
                         <Stack display={"flex"} justifyContent={"space-between"} direction={"row"} alignItems={"center"}>
-                            {userInfo (posting.writer, posting.id, posting.profileImg)
-                            /*userInfo (posting.writer, posting.studentId, posting.profileImg)*/}
+                            {userInfo (posting.writer, posting.stuId, posting.profileImg)}
                             <Time date={posting.createdDate}/> 
                         </Stack>
 
