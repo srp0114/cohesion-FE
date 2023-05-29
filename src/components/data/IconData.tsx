@@ -101,7 +101,7 @@ const iconList = [
     "crown",
     "high",
     "description",
-    "borderColor"
+    "borderColor",
     "settings",
 ]
 
