@@ -113,6 +113,7 @@ export const theme = createTheme({
             textOverflow: "ellipsis",
             alignItems: "stretch",
             height: "6rem",
+            width: "100%"
           }
         }
       }

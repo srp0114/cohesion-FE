@@ -113,7 +113,7 @@ const NoticeDetails = () => {
           </Stack>
           {isLogin ? <Bookmark boardType={"notice"} id={id}/> : null}
         </Grid>
-        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
+        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem",  width:"100%" }}>
           <div className="ql-snow">
             <div className="ql-editor"
               dangerouslySetInnerHTML={{ __html: postItem.content }}/>

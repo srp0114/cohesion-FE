@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, IconButton, Stack } from "@mui/material";
+import { Box, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, IconButton, Stack } from "@mui/material";
 import axios from "axios";
 import Skill from "../layout/Skill";
 import QuillEditor from "../layout/QuillEditor";
@@ -15,6 +15,7 @@ import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
 import { FindIcon } from "../data/IconData";
 import Shorten from "../layout/Shorten";
+import { useForm, Controller } from "react-hook-form";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -36,6 +37,11 @@ const EditForm = () => {
   const [open, setOpen] = React.useState(false);
   const [postedFile, setPostedFile] = useState<FileItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    
+  const { formState: { errors }, control, handleSubmit, setValue } = useForm({
+    mode: "onChange",
+    defaultValues: { title: "", content:"" }
+  });
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -61,7 +67,6 @@ const EditForm = () => {
     }).then(
       (res) => {
         if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
-          console.log(`게시글 수정을 위한 정보 가져오기 ${JSON.stringify(res.data)}`);
           setTitle(res.data.title);
           setContent(res.data.content);
           // //Q&A게시판
@@ -86,8 +91,13 @@ const EditForm = () => {
       .catch((err) => {
         console.log(err);
       });
-
   }, []);
+
+
+  useEffect(() => {
+    setValue("title", title);
+    setValue("content", content);
+  }, [setValue, title, content]);
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -129,8 +139,8 @@ const EditForm = () => {
       fileList.push(file);
     });
   };
-
-  const submitHandler = async (event: React.MouseEvent) => {
+  
+  const submitHandler = async () => {
     setIsLoading(true);
     const formData = new FormData();
 
@@ -297,17 +307,18 @@ const EditForm = () => {
     </Grid>
   ) : (null)
 
-  const SelectSkill =
-    boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
+  const SelectSkill = boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
+
 
   return (
     <>
       <Container>
-        <Grid container direction="column" spacing={2}>
+        <form onSubmit={handleSubmit(submitHandler)}>
+        <Grid container direction="column" spacing={2} mt={"2.5rem"} mb={"2.5rem"}>
           <>
             <Grid item>
-              <FormControl style={{ minWidth: "120px" }}>
-                <Select value={boardType} onChange={boardHandler} size="small" disabled>
+              <FormControl style={{ minWidth: "130px" }}>
+                <Select value={boardType} onChange={boardHandler} disabled>
                   <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
                   </MenuItem>
@@ -317,62 +328,102 @@ const EditForm = () => {
                 </Select>
               </FormControl>
             </Grid>
-            {SelectSkill}
-            {
-              (boardType === BoardType.recruit) ? (
-                <>
-                  <Grid item container columnSpacing={2}>
-                    <ConditionRequired value={required} getRequired={getRequired} />
-                    <ConditionOptional value={optional} getOptional={getOptional} />
-                  </Grid>
-                  <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
-                </>) : null
-            }
+            <Grid item container direction={"row"} spacing={"1.5rem"}>
+              {SelectSkill}
+              {
+                (boardType === BoardType.recruit) ? (
+                  <>
+                    <Grid item container columnSpacing={2}>
+                      <ConditionRequired value={required} getRequired={getRequired} />
+                      <ConditionOptional value={optional} getOptional={getOptional} />
+                    </Grid>
+                    <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
+                  </>) : null
+              }
 
-            <Grid item>
-              <TextField
-                className="board title"
-                id="board_title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxRows={1}
-                placeholder={"제목"}
-                fullWidth
-              ></TextField>
+            <Grid item xs>
+                <Grid item xs>
+                <Controller
+                  control={control}
+                  name="title"
+                  rules={{
+                    required: "제목을 입력해주세요!",
+                    maxLength: {
+                      value: 30,
+                      message: "최대 30자까지 입력이 가능합니다."
+                    },
+                    minLength: {
+                      value: 3,
+                      message: "최소 3자 이상 입력해주세요!"
+                    }
+                  }}
+                  render={({ field: { value }, fieldState: { error } }) => (
+                    <TextField
+                      fullWidth
+                      onChange={(e) => {
+                        setValue("title", e.target.value, { shouldValidate: true });
+                      }}
+                      value={value}
+                      error={error !== undefined}
+                      helperText={error ? error.message : ""}
+                    />
+                  )}
+                />
+              </Grid>
+
+              </Grid>
             </Grid>
-            <Grid item>
-              <div className="postQuill">
-                <QuillEditor content={content} onAddQuill={getContent} />
-              </div>
+
+            <Grid item xs sx={{ width: "100%" }}> 
+             <Controller
+                control={control}
+                name="content"
+                rules={{ required: true }}
+                render={({field: {value}}) => (
+                <div className="postQuill">
+                  <QuillEditor
+                    onAddQuill={(data) => {
+                      const modifiedData = data.trim() === '<p><br></p>' ? "" : data;
+                      setValue("content", modifiedData, { shouldValidate: true });
+                      getContent(modifiedData);
+                    }}
+                    content={value}
+                  />
+                  </div>
+                )}
+              />
+              <Box pl={"0.8rem"} pt={"0.2rem"}>
+                {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
+              </Box>
             </Grid>
 
             {PostedFile}
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
 
-            <Grid item container columnSpacing={2} sx={{ marginTop: 2 }}>
-              <Grid item>
-                <Button
-                  className="board button"
-                  variant="contained"
-                  disableElevation
-                  onClick={submitHandler}
-                >
-                  수정
-                </Button>
-              </Grid>
+            <Grid item container columnSpacing={2} sx={{ marginTop: 2 }} display={"flex"} justifyContent={"flex-end"}>
               <Grid item>
                 <Button
                   className="board button"
                   variant="outlined"
-                  disableElevation
                   onClick={() => nav(`/${boardType}/${postingId}`)}
                 >
                   취소
                 </Button>
               </Grid>
+              <Grid item>
+                <Button
+                  className="board button"
+                  variant="contained"
+                  type="submit"
+                >
+                  수정
+                </Button>
+              </Grid>
+              
             </Grid>
           </>
         </Grid>
+        </form>
       </Container>
     </>
   );

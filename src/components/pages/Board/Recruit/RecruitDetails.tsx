@@ -241,7 +241,7 @@ const RecruitDetails = () => {
 
         </Grid>
         {/*게시글 내용 */}
-        <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
+        <Grid item xs={12} sx={{ m: "1rem 2.5rem", width:"100%" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
         </Grid>
         <Divider sx={{ margin: "2rem 0" }} />

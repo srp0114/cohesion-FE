@@ -13,7 +13,6 @@ import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
 import Loading from "../layout/Loading";
 import { useForm, Controller } from "react-hook-form";
-import Shorten from "../layout/Shorten";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -293,9 +292,9 @@ const PostForm = () => {
     <>
       <Container>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container direction="column" spacing={2}>
+          <Grid container direction="column" spacing={2} mt={"2.5rem"} mb={"2.5rem"}>
             <Grid item>
-              <FormControl style={{ minWidth: "120px" }}>
+              <FormControl style={{ minWidth: "130px" }}>
                 <Select value={boardType} onChange={boardHandler}>
                   <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
@@ -320,27 +319,37 @@ const PostForm = () => {
               }
               <Grid item xs>
                 <Controller
-                  control={control}
-                  name="title"
-                  rules={{ required: true }}
-                  render={({ fieldState: { error } }) => (
+                control={control}
+                name="title"
+                rules={{ 
+                    required: "제목을 입력해주세요!",
+                    maxLength: {
+                    value: 30,
+                    message: "최대 30자까지 입력이 가능합니다."
+                    },
+                    minLength: {
+                    value: 3,
+                    message: "최소 3자 이상 입력해주세요!"
+                    },                     
+                }}
+                render={({ fieldState: { error } }) => (
                     <TextField
-                      fullWidth
-                      onChange={(e) => {
+                    fullWidth
+                    onChange={(e) => {
                         setTitle(e.target.value);
                         setValue("title", e.target.value, { shouldValidate: true });
-                      }}
-                      value={title}
-                      placeholder="제목을 입력해주세요"
-                      error={error !== undefined}
-                      helperText={error ? "제목을 입력해주세요!" : ""}
+                    }}
+                    value={title}
+                    placeholder="제목을 입력해주세요"
+                    error={error !== undefined}
+                    helperText={error ? error.message : ""}
                     />
-                  )}
+                )}
                 />
               </Grid>
             </Grid>
 
-            <Grid item>
+            <Grid item xs sx={{width: "100%"}}>
               <Controller
                 control={control}
                 name="content"
@@ -363,8 +372,8 @@ const PostForm = () => {
               </Box>
             </Grid>
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
-            <Grid item>
-              <Button variant="outlined" type="submit">작성하기</Button>
+            <Grid item justifyContent={"flex-end"} display={"flex"}>
+              <Button variant="contained" type="submit">작성하기</Button>
             </Grid>
           </Grid>
         </form>
