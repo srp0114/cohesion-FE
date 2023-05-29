@@ -8,9 +8,11 @@ import banner_3 from "../asset/banner/banner_3.png";
 import banner_4 from "../asset/banner/banner_4.png";
 import banner_5 from "../asset/banner/banner_5.png";
 
+const feUrl = process.env.REACT_APP_FRONT_URL;
+
 const banners = [
   { imgUrl: banner_1, }, //학교사진
-  { imgUrl: banner_2, }, //핑퐁 소개
+  { imgUrl: banner_2, url: `${feUrl}/notice/21` }, //핑퐁 소개
   { imgUrl: banner_3, url: `http://cse.hansung.ac.kr/` }, //컴공학부 관련
   { imgUrl: banner_4, }, //토막상식
   { imgUrl: banner_5, url: `https://www.ponggame.org/` }, //pong
