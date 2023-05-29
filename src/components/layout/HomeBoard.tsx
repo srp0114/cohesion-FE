@@ -100,7 +100,7 @@ const HomeBoard = (props: HomeBoardProps) => {
                         </Stack>
 
                         <Stack display={"flex"} justifyContent={"flex-start"} pl={"2.2rem"}>
-                            <Typography variant="h4">{Shorten(posting.title, 25)}</Typography>
+                            <Typography variant="h4">{Shorten(posting.title, 18)}</Typography>
                         </Stack>
 
                         <Stack display={"flex"} justifyContent={"flex-end"} spacing={"0.5rem"} direction={"row"} alignItems={"center"}>

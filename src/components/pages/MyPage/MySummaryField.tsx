@@ -44,7 +44,7 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
                 )}
                 renderInput={(params) => (
                     <TextField
-                        placeholder="언어를 선택해주세요!"
+                        placeholder="언어선택"
                         {...params}
                         inputProps={{
                         ...params.inputProps,
