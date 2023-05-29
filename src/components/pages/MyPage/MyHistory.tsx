@@ -35,14 +35,14 @@ export const MyHistory = (props: MyHistoryProps) => {
   return (
     <>
       <Stack direction="row" display={"flex"} justifyContent={"flex-start"} spacing={"2rem"}>
-        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6rem"}}>
+        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
           <Typography variant="h5" sx={{fontWeight:500}}>공부기록</Typography>
           <IconButton size="large" onClick={handleMySummary}>
               <FindIcon name="borderColor"/>
           </IconButton>
         </Stack>
 
-        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6rem"}}>
+        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
           <Typography variant="h5" sx={{fontWeight:500}}>작성한 댓글</Typography>
           <IconButton size="large" onClick={handleMyReply}>
             <Badge color="success" badgeContent={props.reply} max={99} showZero>
@@ -51,7 +51,7 @@ export const MyHistory = (props: MyHistoryProps) => {
           </IconButton>
         </Stack>
 
-        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6rem"}}>
+        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
           <Typography variant="h5" sx={{fontWeight:500}}>작성한 게시글</Typography>
           <IconButton size="large" onClick={handleMyPosting}>
             <Badge color="success" badgeContent={props.board} max={99} showZero>
@@ -60,7 +60,7 @@ export const MyHistory = (props: MyHistoryProps) => {
           </IconButton>
         </Stack>
         
-        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6rem"}}>
+        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
           <Typography variant="h5" sx={{fontWeight:500}}>북마크한 글</Typography>
           <IconButton size="large" onClick={handleMyBookmark}>
             <Badge color="success" badgeContent={props.bookmark} max={99} showZero>
