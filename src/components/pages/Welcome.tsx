@@ -166,8 +166,6 @@ const Welcome = () => {
   }
 
   const resetIsNickName = (check: boolean | null) => {
-    console.log(check);
-
     if (check) {
       setError("isOnlyNickName", {
         type: "manual",
