@@ -174,6 +174,7 @@ const Welcome = () => {
     } else {
       clearErrors("isOnlyNickName");
     }
+    console.log(check);
   };
 
   console.log(isOnlyNickName);
@@ -186,14 +187,6 @@ const Welcome = () => {
             <Stack alignItems={"center"} justifyContent={"center"} display={"flex"}>
             <Typography variant="h2" sx={{fontWeight:600}} >부가 정보를 입력해주세요</Typography>
             </Stack>
-        </Grid>
-        <Grid item>
-          <Stack alignItems={"flex-end"} justifyContent={"flex-end"} display={"flex"}>
-            <Stack direction={"row"} spacing={"0.5rem"} alignItems={"center"}>
-              <FindIcon name="done"/>
-              <Typography variant="h5"> 필수항목은 꼭 입력해주세요!</Typography>
-            </Stack>
-          </Stack>
         </Grid>
         <Grid item spacing={"1rem"} alignItems={"center"}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -292,7 +285,7 @@ const Welcome = () => {
               </Box>
               <Box>
                 <Grid container direction="row" spacing={"1rem"} alignItems={"center"}>
-                    <Grid item xs={6} md={6}>
+                    <Grid item xs={6} md={10.5}>
                       <Controller
                         control={control}
                         name="nickname"
@@ -314,7 +307,6 @@ const Welcome = () => {
                             placeholder="닉네임을 입력해주세요"
                             error={error !== undefined}
                             helperText={error ? error.message : ""}
-                            disabled={isOnlyNickName === false}
                           />
                         )}
                       />
@@ -331,7 +323,6 @@ const Welcome = () => {
                             variant="outlined"
                             color="info"
                             size="medium"
-                            disabled={isOnlyNickName === false}
                           >
                             중복검사
                           </Button>
@@ -358,7 +349,7 @@ const Welcome = () => {
               </Box>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
-                <Button type="submit" variant="contained">완료</Button>
+                <Button type="submit" variant="contained" disabled={isOnlyNickName === false}>완료</Button>
               </Box>
             </Stack>
           </form>

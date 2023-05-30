@@ -69,8 +69,8 @@ const icons = [
     { name: "description", component: <Description/>},
     { name: "borderColor", component: <BorderColor/>},
     { name: "collapseClose", component: <ExpandLess /> }, // V
-    { name: "collapseOpen", comonent: <ExpandMore /> }, //^
-    { name: "done", comment: <DoneAll/>},
+    { name: "collapseOpen", component: <ExpandMore /> }, //^
+    { name: "doneAll", component: <DoneAll/>},
 ];
 
 const iconList = [
@@ -105,6 +105,7 @@ const iconList = [
     "borderColor",
     "settings",
     "done",
+    "doneAll",
 ]
 
 /**
