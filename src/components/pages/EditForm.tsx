@@ -9,7 +9,6 @@ import { checkLogin } from "../checkLogin";
 import { useLocation, useNavigate } from "react-router";
 import "../style/Board.css";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
@@ -32,7 +31,6 @@ const EditForm = () => {
   const { state } = useLocation();
   const pathArray = window.location.href.split("/");
   const postingId = [...pathArray].pop();
-  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [postedFile, setPostedFile] = useState<FileItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -131,7 +129,6 @@ const EditForm = () => {
   };
 
   const submitHandler = async (event: React.MouseEvent) => {
-    setIsLoading(true);
     const formData = new FormData();
 
     selectedFiles.forEach((file) => {
@@ -208,7 +205,6 @@ const EditForm = () => {
     // setOpen(true);
     // return (
     //   <>
-    //     {isLoading && <Loading delayTime={1500} />}
     //   </>
     // );
     switch (boardType) {
@@ -318,17 +314,6 @@ const EditForm = () => {
               </FormControl>
             </Grid>
             {SelectSkill}
-            {
-              (boardType === BoardType.recruit) ? (
-                <>
-                  <Grid item container columnSpacing={2}>
-                    <ConditionRequired value={required} getRequired={getRequired} />
-                    <ConditionOptional value={optional} getOptional={getOptional} />
-                  </Grid>
-                  <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
-                </>) : null
-            }
-
             <Grid item>
               <TextField
                 className="board title"
@@ -340,11 +325,23 @@ const EditForm = () => {
                 fullWidth
               ></TextField>
             </Grid>
+            {
+              (boardType === BoardType.recruit) ? (<People getParty={getParty} getGathered={getGathered}  partyValue={party} gatheredValue={gathered} gatheredDisabled={true}/>) : null
+            }
             <Grid item>
               <div className="postQuill">
                 <QuillEditor content={content} onAddQuill={getContent} />
               </div>
             </Grid>
+
+            {(boardType === BoardType.recruit) ? (
+              <>
+                <Grid item container columnSpacing={2}>
+                  <ConditionRequired getRequired={getRequired} value={required} requiredDisabled={true}/>
+                  <ConditionOptional getOptional={getOptional} value={optional}/>
+                </Grid>
+              </>) : null
+            }
 
             {PostedFile}
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
