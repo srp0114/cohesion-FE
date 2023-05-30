@@ -46,7 +46,7 @@ const Welcome = () => {
   const [flag, setFlag] = useState<number>(-1);
   const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
 
-  const { formState: { errors }, register, control, handleSubmit, setError, clearErrors, watch } = useForm<UserAddItems>({ mode: "onChange" });
+  const { formState: { errors }, register, control, handleSubmit, setError, clearErrors, watch,  } = useForm<UserAddItems>({ mode: "onChange" });
 
   const navigate = useNavigate();
 
@@ -151,19 +151,34 @@ const Welcome = () => {
       .then((res) => {
         if (res.status === 200) {
           if (res.data) {
-            setError("nickname", {
+            setError("isOnlyNickName", {
               type: "manual",
-              message: "이미 누군가가 사용 중인 닉네임입니다.",
+              message: "사용 중인 닉네임입니다.",
             });
           } else {
-            clearErrors("nickname");
+            clearErrors("isOnlyNickName");
           }
           setIsOnlyNickName(res.data);
+          console.log(res.data);
         }
       })
       .catch((err) => { console.log(`postOnlyNickname에서 error catch ${err}`) });
-      
   }
+
+  const resetIsNickName = (check: boolean | null) => {
+    console.log(check);
+
+    if (check) {
+      setError("isOnlyNickName", {
+        type: "manual",
+        message: "사용 중인 닉네임입니다.",
+      });
+    } else {
+      clearErrors("isOnlyNickName");
+    }
+  };
+
+  console.log(isOnlyNickName);
 
   return (
     <>
@@ -297,10 +312,11 @@ const Welcome = () => {
                         render={({ field, fieldState: { error } }) => (
                           <TextField
                             {...field}
-                            label="닉네임"
+                            onClick={()=>{resetIsNickName(null)}}
                             placeholder="닉네임을 입력해주세요"
                             error={error !== undefined}
                             helperText={error ? error.message : ""}
+                            disabled={isOnlyNickName === false}
                           />
                         )}
                       />
@@ -310,13 +326,14 @@ const Welcome = () => {
                         control={control}
                         name="isOnlyNickName"
                         defaultValue={(isOnlyNickName ?? true)} // 상태값을 기본값으로 설정
-                        render={({ field }) => (
+                        render={() => (
                           <Button
                             type="button"
                             onClick={() => postOnlyNickname(watch("nickname"))}
                             variant="outlined"
                             color="info"
                             size="medium"
+                            disabled={isOnlyNickName === false}
                           >
                             중복검사
                           </Button>
@@ -324,16 +341,17 @@ const Welcome = () => {
                       />
                   </Grid>
                 </Grid>
+                <Grid item>
+                  <Stack p={"0.5rem"}>
+                  {errors.isOnlyNickName && 
+                    <Stack direction={"row"} alignItems={"center"}>
+                    <FindIcon name="close" iconProps={{color:"error"}}/>
+                    <Typography variant="h5" color="error">{errors.isOnlyNickName.message}</Typography>
+                    </Stack>
+                  }
+                </Stack>
+                </Grid>
               </Box>
-                  <Grid item xs={12} md={4} direction={"row"} alignItems={"center"}>
-                    <Chip
-                      label={!(isOnlyNickName ?? true) ? "중복검사를 통과했습니다" : "중복검사를 통과하지 못했습니다."}
-                      color={!(isOnlyNickName ?? true) ? "success" : "error"}
-                      icon={!(isOnlyNickName ?? true) ? <FindIcon name="done" /> : <FindIcon name="close" />}
-                      size="medium"
-                      variant="outlined"
-                    />
-                  </Grid>                  
               <Box>
                 <UserSkill skills={userInfo.skills} changeSkills={onChangeSkill} />
               </Box>
