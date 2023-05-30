@@ -9,7 +9,6 @@ import { checkLogin } from "../checkLogin";
 import { useLocation, useNavigate } from "react-router";
 import "../style/Board.css";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
@@ -33,7 +32,6 @@ const EditForm = () => {
   const { state } = useLocation();
   const pathArray = window.location.href.split("/");
   const postingId = [...pathArray].pop();
-  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [postedFile, setPostedFile] = useState<FileItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -141,7 +139,6 @@ const EditForm = () => {
   };
   
   const submitHandler = async () => {
-    setIsLoading(true);
     const formData = new FormData();
 
     selectedFiles.forEach((file) => {
@@ -195,32 +192,6 @@ const EditForm = () => {
 
     qna_formData.append("stringQna", JSON.stringify(request_qna));
 
-    /**
-     * 게시판 종류에 맞는 HTTP PUT 요청 설정 (Update) 수정 기능
-     */
-    // axios({
-    //   method: "put",
-    //   url: `/api/${boardType}/update/${postingId}`,
-    //   headers: { "Content-Type": "application/json" },
-    //   data: JSON.stringify(request_data),
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-    //         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-    //           수정되었습니다.
-    //         </Alert>
-    //       </Snackbar>
-    //       nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-    //     } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-    //   })
-    //   .catch((err) => console.log(err));
-    // setOpen(true);
-    // return (
-    //   <>
-    //     {isLoading && <Loading delayTime={1500} />}
-    //   </>
-    // );
     switch (boardType) {
       case BoardType.free:
         axios({
@@ -330,16 +301,7 @@ const EditForm = () => {
             </Grid>
             <Grid item container direction={"row"} spacing={"1.5rem"}>
               {SelectSkill}
-              {
-                (boardType === BoardType.recruit) ? (
-                  <>
-                    <Grid item container columnSpacing={2}>
-                      <ConditionRequired value={required} getRequired={getRequired} />
-                      <ConditionOptional value={optional} getOptional={getOptional} />
-                    </Grid>
-                    <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
-                  </>) : null
-              }
+             
 
             <Grid item xs>
                 <Grid item xs>
@@ -374,6 +336,9 @@ const EditForm = () => {
               </Grid>
             </Grid>
 
+            {
+               (boardType === BoardType.recruit) ? (<People getParty={getParty} getGathered={getGathered}  partyValue={party} gatheredValue={gathered} gatheredDisabled={true}/>) : null
+             }
             <Grid item xs sx={{ width: "100%" }}> 
              <Controller
                 control={control}
@@ -396,7 +361,14 @@ const EditForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
-
+             {(boardType === BoardType.recruit) ? (
+               <>
+                 <Grid item container columnSpacing={2}>
+                   <ConditionRequired getRequired={getRequired} value={required} requiredDisabled={true}/>
+                   <ConditionOptional getOptional={getOptional} value={optional}/>
+                 </Grid>
+               </>) : null
+             }
             {PostedFile}
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
 

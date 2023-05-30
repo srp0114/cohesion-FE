@@ -11,7 +11,6 @@ import { useNavigate } from "react-router";
 import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { useForm, Controller } from "react-hook-form";
 
 /*
@@ -26,7 +25,6 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -90,7 +88,6 @@ const PostForm = () => {
     });
   };
   const onSubmit = async () => {
-    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -276,11 +273,6 @@ const PostForm = () => {
       }
     }
     setOpen(true);
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
   };
 
   const { formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
@@ -307,16 +299,6 @@ const PostForm = () => {
 
             <Grid item container direction={"row"} spacing={"1.5rem"}>
               {SelectSkill}
-              {
-                (boardType === BoardType.recruit) ? (
-                  <>
-                    <Grid item container columnSpacing={2}>
-                      <ConditionRequired value={required} getRequired={getRequired} />
-                      <ConditionOptional value={optional} getOptional={getOptional} />
-                    </Grid>
-                    <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
-                  </>) : null
-              }
               <Grid item xs>
                 <Controller
                 control={control}
@@ -347,6 +329,9 @@ const PostForm = () => {
                 )}
                 />
               </Grid>
+              {
+                (boardType === BoardType.recruit) ? ( <People getParty={getParty} getGathered={getGathered} /> ) : null
+              }
             </Grid>
 
             <Grid item xs sx={{width: "100%"}}>
@@ -371,6 +356,15 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
+            {
+                (boardType === BoardType.recruit) ? (
+                  <>
+                    <Grid item container columnSpacing={2}>
+                      <ConditionRequired getRequired={getRequired} />
+                      <ConditionOptional getOptional={getOptional} />
+                    </Grid>
+                  </>) : null
+              }
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
             <Grid item justifyContent={"flex-end"} display={"flex"}>
               <Button variant="contained" type="submit">작성하기</Button>
