@@ -15,6 +15,8 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
 import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 // Q&A 상세보기 데이터
 interface DetailItems {
@@ -154,10 +156,9 @@ const QnADetails = () => {
            <Bookmark boardType={"questions"} id={id} />
         </Grid>
 
-        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
+        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem", width:"100%" }}>
           <div className="ql-snow">
-            <div className="ql-editor"
-              dangerouslySetInnerHTML={{ __html: postItem.content }} />
+            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: postItem.content }} />
           </div>
         </Grid>
         {fileList.length > 0 && 

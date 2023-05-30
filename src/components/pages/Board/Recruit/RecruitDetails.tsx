@@ -19,6 +19,8 @@ import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
 import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { FindIcon } from "../../../data/IconData";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -241,7 +243,7 @@ const RecruitDetails = () => {
 
         </Grid>
         {/*게시글 내용 */}
-        <Grid item xs={12} sx={{ m: "1rem 2.5rem" }}>
+        <Grid item xs={12} sx={{ m: "1rem 2.5rem", width:"100%" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
         </Grid>
         <Divider sx={{ margin: "2rem 0" }} />

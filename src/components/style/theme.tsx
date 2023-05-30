@@ -94,7 +94,7 @@ export const theme = createTheme({
         fontSize: "0.75rem" //12px
       },
       subtitle1: {
-        fontSize: "1.124rem"
+        fontSize: "0.9rem"
       },
       subtitle2: {
         fontSize: "1rem"
@@ -113,6 +113,7 @@ export const theme = createTheme({
             textOverflow: "ellipsis",
             alignItems: "stretch",
             height: "6rem",
+            width: "100%"
           }
         }
       }
@@ -156,6 +157,12 @@ export const theme = createTheme({
           wordWrap: "break-word",
           wordBreak: "break-word",
           whiteSpace: "pre-line",
+          '&.boardTitle' :{
+             fontWeight: 800 ,
+            '&:hover': {
+              color: '#008CFF',
+            }
+          }
         }
       }
     },

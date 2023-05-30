@@ -4,6 +4,7 @@ import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@m
 interface SortProps {
     setSort : (sort:string) => void; 
     sort : string;
+    arrange : (sort: string) => void;
 }
 
 const SortBoard = ({sort, setSort} : SortProps) => {

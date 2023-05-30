@@ -35,6 +35,24 @@ const PostNoticeForm = () => {
                 nav("/"); // 비로그인인 경우, 메인 페이지로 이동
             }
         });
+
+        axios({
+            method : "get",
+            url : `/api/admin/check`
+        }).then((res)=>{
+            if(res.status===200){
+                console.log("접속 성공");
+            }
+        }).catch((err)=>{
+            if(err.response && err.response.status===403){
+                alert("관리자 계정이 아닙니다!!!");
+                window.location.href="/";
+            }
+        })
+
+
+
+
     }, []);
 
 
