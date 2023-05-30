@@ -50,9 +50,10 @@ const RecruitDetails = () => {
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
   const [applicantStatus, setApplicantStatus] = useState<boolean | null>(null); //유저의 신청 및 승인 여부
 
-  const [approvedApplicants, setApprovedApplicants] = useState<number>(0); //승인된 인원수
+  const [approvedApplicants, setApprovedApplicants] = useState<0 | 1 | -1 | number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
-  const [isComplete, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
+  const [gathered, setGathered] = useState<number>(0); //모인인원
+  const [isCompleted, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
   const [fileList, setFileList] = useState<FileItem[]>([]);
 
   const _theme = useTheme();
@@ -81,11 +82,15 @@ const RecruitDetails = () => {
   }
 
   const handleNewApprovedApplicants = () => { //승인하기로 인한 승인 인원 증가
-    setApprovedApplicants(prevState => prevState + 1);
+    setApprovedApplicants(1);
   }
 
   const handleApprovedApplicantsOut = () => { //승인취소로 인한 승인 인원 감소
-    setApprovedApplicants(prevState => prevState - 1);
+    setApprovedApplicants(-1);
+  }
+
+  const handleIsCompletedChanged = () => {
+    setIsCompleted(true);
   }
 
   useEffect(() => {
@@ -97,6 +102,7 @@ const RecruitDetails = () => {
         if (res.status === 200) {
           setPostItem(res.data);
           setIsCompleted(res.data.isCompleted);
+          setGathered(res.data.gathered);
         }
       })
       .catch((err) => {
@@ -127,18 +133,12 @@ const RecruitDetails = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [gathered]);
 
   useEffect(() => {
     //승인된 인원수 + 기존에 작성자가 선택한 gathered = 모인인원.
-    axios({
-      method: "get",
-      url: `/api/recruit/${postingId}/approvers-number`, //승인된 인원수 구해오는 api
-    }).then((res) => {
-      if (res.status === 200) {
-        setApprovedApplicants((prevState) => res.data);
-      }
-    }).catch(err => console.log(`updateApproveapplicant: ${err}`));
+    setGathered(gathered + approvedApplicants);
+    setApprovedApplicants(0);
   }, [approvedApplicants]);
 
   useEffect(() => {
@@ -217,7 +217,7 @@ const RecruitDetails = () => {
             <FindIcon name="recruitPeople" iconProps={{ fontSize: "large", color: "primary" }} />
             <Stack direction="row" sx={{ margin: 1 }} >
               <Typography variant="h3" color="info">
-                {`${postItem.gathered + approvedApplicants}/${postItem.party}`}
+                {`${postItem.gathered}/${postItem.party}`}
               </Typography>
               <Typography variant="body1">{`(명)`}</Typography>
             </Stack>
@@ -266,15 +266,15 @@ const RecruitDetails = () => {
             }
           </Grid>
 
-          <Grid item container xs={12} md={6} rowSpacing={2} sx={{ display: "flex", alignContent:"end", alignItems: "end", textAlign: "bottom" }}>
+          <Grid item container xs={12} md={6} rowSpacing={2} sx={{ display: "flex", alignContent: "end", alignItems: "end", textAlign: "bottom" }}>
             <Grid item xs={12} sx={{ display: "flex", flexDirection: "row-reverse" }}>
               {/* 게시글 작성자: 모집완료 버튼과 신청자 목록, 일반 사용자: 신청하기 버튼 */}
               {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
               {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
                 ? <>
-                  <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} onClick={() => setModalOpen(true)} />
+                  <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} onClick={() => setModalOpen(true)} disabled={isCompleted} />
                   <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
-                    onModalOpenChange={handleModalOpenChange} />
+                    onModalOpenChange={handleModalOpenChange} onIsCompletedChanged={handleIsCompletedChanged} />
                 </>
                 : <>
                   <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
