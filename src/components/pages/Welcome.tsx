@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, Chip, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Container, Grid } from "@mui/material";
-import { skillData } from "../data/SkillData";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
@@ -163,7 +162,7 @@ const Welcome = () => {
         }
       })
       .catch((err) => { console.log(`postOnlyNickname에서 error catch ${err}`) });
-
+      
   }
 
   return (
@@ -177,7 +176,10 @@ const Welcome = () => {
         </Grid>
         <Grid item>
           <Stack alignItems={"flex-end"} justifyContent={"flex-end"} display={"flex"}>
-          <Typography variant="h5">* 필수항목은 꼭 입력해주세요!</Typography>
+            <Stack direction={"row"} spacing={"0.5rem"} alignItems={"center"}>
+              <FindIcon name="done"/>
+              <Typography variant="h5"> 필수항목은 꼭 입력해주세요!</Typography>
+            </Stack>
           </Stack>
         </Grid>
         <Grid item spacing={"1rem"} alignItems={"center"}>
@@ -188,10 +190,13 @@ const Welcome = () => {
                   control={control}
                   name="picture"
                   rules={{
-                    required: "프로필을 선택해주세요",
+                    required: "프로필을 선택해주세요!",
                   }}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <>
+                      <Stack p={"0.5rem 0.5rem 0.5rem 1rem"}>
+                        <Typography variant="subtitle1">프로필 선택</Typography>
+                      </Stack>
                       <Grid container direction="row" spacing={5} alignItems={"center"}>
                         <Grid item xs={12} md={6}>
                           <ImageButton
@@ -273,9 +278,8 @@ const Welcome = () => {
                 </Grid>
               </Box>
               <Box>
-                <Grid container direction="row" xs={12} sx={{ textAlign: "center", alignItems: "center" }}>
-                  <Grid item container xs={12} md={7} rowSpacing={1} sx={{ textAlign: "center", alignItems: "center" }}>
-                    <Grid item md={6}>
+                <Grid container direction="row" spacing={"1rem"} alignItems={"center"}>
+                    <Grid item xs={6} md={6}>
                       <Controller
                         control={control}
                         name="nickname"
@@ -285,11 +289,14 @@ const Welcome = () => {
                             value: 8,
                             message: "최대 8자까지 입력이 가능합니다",
                           },
+                          minLength: {
+                            value:2,
+                            message: "최소 2자 이상 입력해주세요!"
+                          }
                         }}
                         render={({ field, fieldState: { error } }) => (
                           <TextField
                             {...field}
-                            fullWidth
                             label="닉네임"
                             placeholder="닉네임을 입력해주세요"
                             error={error !== undefined}
@@ -298,7 +305,7 @@ const Welcome = () => {
                         )}
                       />
                     </Grid>
-                    <Grid item md={5}>
+                    <Grid item xs>
                       <Controller
                         control={control}
                         name="isOnlyNickName"
@@ -309,16 +316,16 @@ const Welcome = () => {
                             onClick={() => postOnlyNickname(watch("nickname"))}
                             variant="outlined"
                             color="info"
-                            size="small"
+                            size="medium"
                           >
                             중복검사
                           </Button>
                         )}
                       />
-                    </Grid>
                   </Grid>
-
-                  <Grid item xs={12} md={4}>
+                </Grid>
+              </Box>
+                  <Grid item xs={12} md={4} direction={"row"} alignItems={"center"}>
                     <Chip
                       label={!(isOnlyNickName ?? true) ? "중복검사를 통과했습니다" : "중복검사를 통과하지 못했습니다."}
                       color={!(isOnlyNickName ?? true) ? "success" : "error"}
@@ -326,10 +333,7 @@ const Welcome = () => {
                       size="medium"
                       variant="outlined"
                     />
-                  </Grid>
-
-                </Grid>
-              </Box>
+                  </Grid>                  
               <Box>
                 <UserSkill skills={userInfo.skills} changeSkills={onChangeSkill} />
               </Box>
@@ -338,7 +342,7 @@ const Welcome = () => {
               </Box>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
-                <Button type="submit" variant="contained" disabled={(isOnlyNickName ?? true)}>완료</Button>
+                <Button type="submit" variant="contained">완료</Button>
               </Box>
             </Stack>
           </form>

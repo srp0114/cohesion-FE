@@ -59,7 +59,7 @@ export interface RecruitBoardItems {
 }
 
 
-const RecruitBoard: React.FC = () => {
+const RecruitBoard = () => {
   /**
    *  각각의 게시글 미리보기를 목록화해서 뿌려준다.
    */
@@ -78,7 +78,7 @@ const RecruitBoard: React.FC = () => {
       .catch(err => console.log(err));
   }, [])
 
-   const getBoardItems = (search?: string) => {
+  const getBoardItems = (sort: string, search?: string) => {
     const curPage = page - 1;
     const params = { size: 9, sort: sort };
     let url = `/api/recruit/list?page=${curPage}`;
@@ -109,8 +109,14 @@ const RecruitBoard: React.FC = () => {
   }
 
   useEffect(() => {
-    getBoardItems(search);
+    getBoardItems(sort, search);
   }, [page, search, sort]);
+
+  const arrangeBoard = (changeSort:string, changeSearch?: string | undefined) => {
+    setSearch(changeSearch);
+    setSort(changeSort);
+    getBoardItems(sort, search);
+  };
 
   const loadingStatus: boolean = useSkeleton(800, boardItems);
 
@@ -125,10 +131,10 @@ const RecruitBoard: React.FC = () => {
     <>
       {loadingStatus ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
-          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
-            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>구인게시판</Typography>
-            <SortBoard sort={sort} setSort={setSort} />
-          </Box>
+          <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"3.5rem"} pl={3}>
+          <Typography variant="h2" className="boardTitle" onClick={() => {arrangeBoard("createdAt,desc", undefined)}}>구인게시판</Typography>
+          <SortBoard sort={sort} setSort={setSort} arrange={(sort) => arrangeBoard(sort, search)}/>
+          </Stack>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
             {boardItems.length === 0 && search !== undefined ? 
@@ -139,7 +145,7 @@ const RecruitBoard: React.FC = () => {
             </Grid>
           </Box>
           <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
-            <SearchBoardField setSearch={setSearch} />
+          <SearchBoardField search={search} setSearch={setSearch} arrange={(search) => arrangeBoard(sort, search)}/>
           </Box>
           <PaginationControl
             page={page}
@@ -193,7 +199,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           root: { //모집 완료된 게시글은 배경색이 palette.neutral(회색)
             backgroundColor: (!props.isCompleted) ? _theme.palette.background : "#dddddd",
             boxShadow: "none",
-            border: (!props.isCompleted) ? `1px solid black` : `1px solid ${_theme.palette.neutral.main}`,
+            border: (!props.isCompleted) ? `2.3px solid ${_theme.palette.primary.light}` : `1px solid ${_theme.palette.neutral.main}`,
             borderRadius: "35px",
             padding: "2rem",
             height: "100%",

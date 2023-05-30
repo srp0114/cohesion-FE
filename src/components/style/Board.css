@@ -16,6 +16,8 @@
 .replyModalQuill .ql-editor {
     height: 15rem;
     white-space: pre-wrap;
+    word-wrap: "break-word";
+    word-break: "break-word";
 }
 
 .replyQuill .ql-container {
@@ -34,6 +36,8 @@
 .replyQuill .ql-editor {
     min-height: 4rem;
     white-space: pre-wrap;
+    word-wrap: "break-word";
+    word-break: "break-word";
 }
 
 
@@ -41,6 +45,7 @@
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     background: #ffffff;
+    width: 100%;
 }
 
 .ql-snow.ql-toolbar {
@@ -51,6 +56,10 @@
 }
 
 .postQuill .ql-editor {
-    min-height: 20rem;
+    min-height: 30rem;
+    max-height: 30rem;
+    width: 100%;
     white-space: pre-wrap;
+    word-wrap: "break-word";
+    word-break: "break-word";
 }

@@ -21,7 +21,7 @@ const UserSkill = ({ skills, changeSkills }: UserSkillProps) => {
         name="skills"
         rules={{
           validate: (data) => {
-            if (data && data.length > 5) return false;
+            if (data && data.length > 7) return false;
           },
         }}
         render={({ field: { ref, onChange, ...field }, fieldState }) => (
