@@ -333,19 +333,7 @@ const Welcome = () => {
                       size="medium"
                       variant="outlined"
                     />
-                  </Grid>
-
-                  <Grid item xs={12} md={4} direction={"row"} alignItems={"center"}>
-                    {
-                    isOnlyNickName ?
-                    <Typography variant="h6" color="success">
-                       <FindIcon name="done" />중복검사를 통과했습니다
-                    </Typography> : <Typography variant="h6" color="error">
-                       <FindIcon name="close" />중복검사를 통과하지 못했습니다
-                    </Typography> 
-                    }
-                  </Grid>
-                  
+                  </Grid>                  
               <Box>
                 <UserSkill skills={userInfo.skills} changeSkills={onChangeSkill} />
               </Box>
