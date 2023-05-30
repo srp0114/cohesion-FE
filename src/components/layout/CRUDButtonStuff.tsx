@@ -172,6 +172,7 @@ export const UpdateRecruitSpeedDial = (props: UpdateRecruitSpeedDialProps) => {
 
   const handleClose = () => {
     setOpen(false);
+    setShowTheList(false);
   };
 
   const showApplicantList = () => {
