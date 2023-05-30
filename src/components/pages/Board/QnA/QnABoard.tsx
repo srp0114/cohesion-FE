@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { Typography, Box, Chip, Grid, Stack } from "@mui/material";
+import { Typography, Box, Link, Grid, Stack } from "@mui/material";
 import Time from "../../../layout/Time";
 import { skillData } from "../../../data/SkillData";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
@@ -9,9 +9,10 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import Shorten from "../../../layout/Shorten";
 
 export interface BoardItems {
   id: number;
@@ -27,36 +28,31 @@ export interface BoardItems {
   views: number; //조회수
   profileImg: string | null; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
-  image: {imageUrl: string}[];
+  image: { imageUrl: string }[];
 }
-
-export const shortenContent = (str: string, length = 200) => {
-  let content: string = "";
-  if (str.length > length) {
-    content = str.substring(0, length - 2);
-    content = content + "...";
-  } else {
-    content = str;
-  }
-  return content;
-};
 
 const QnABoard = () => {
   const [boardItems, setBoardItems] = useState<BoardItems[]>([]); // 인터페이스로 state 타입 지정
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string>("createdAt,desc");
 
-  const getBoardItems = (sort:string) => {
+ const getBoardItems = (search?: string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
+    let url = `/api/questions/list?page=${curPage}`;
 
+    if(search !== undefined) {
+      url += `&search=${search}`;
+    }
+    
     setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: `/api/questions/list?page=${curPage}`,
+      url: url,
       params: params
     })
     .then((res) => {
@@ -74,37 +70,11 @@ const QnABoard = () => {
     });
   }
 
-
-/* 1.5초간 스켈레톤 표시 */
-useLayoutEffect(() => {
-  const timer = setTimeout(() => {
-    setLoading(true);
-  }, 1500);
-
-  return () => {
-    clearTimeout(timer);
-  };
-}, [boardItems]);
-
   useEffect(() => {
-    getBoardItems("createdAt,desc");
-  }, [page]);
+    getBoardItems(search);
+  }, [page, search, sort]);
 
-  const performSearch = (search : string) => {
-    axios({
-      method: "get",
-      url: `/api/questions/list?search=${search}&page=0&size=5`,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setBoardItems(res.data.data);
-          setTotal(res.data.count);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  }
+  const loadingStatus: boolean = useSkeleton(800, boardItems);
 
   const displayPosting = boardItems.map((element, idx) => {
     return (
@@ -116,15 +86,19 @@ useLayoutEffect(() => {
 
   return (
     <>
-      {loading ? (
-      <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+      {loadingStatus ? (
+        <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Typography variant="h2" sx={{ fontWeight: 800 }}>Q&A게시판</Typography>
-            <SortBoard setBoardSort={getBoardItems}/>
+            <SortBoard sort={sort} setSort={setSort} />
           </Stack>
-          {displayPosting}
+          {boardItems.length === 0 && search !== undefined? 
+            <Stack p={"0rem 2rem 0rem"}>
+              <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+            </Stack> : displayPosting
+          }
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchBoardField setSearchAPI={performSearch}/>
+            <SearchBoardField setSearch={setSearch} />
           </Box>
           <PaginationControl
             page={page}
@@ -134,12 +108,11 @@ useLayoutEffect(() => {
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
-          <WritingButton />
         </Stack>)
-        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        : (
           <BoardSkeleton />
-          <WritingButton />
-        </Box>)}
+        )}
+      <WritingButton />
     </>
   );
 
@@ -181,19 +154,15 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
     }} onClick={() => goToPost(props.id)}>
     {props.image.length === 0 ? (
       <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
-        </Stack>
         <Stack direction="row" spacing={"1rem"}>
           <Time date={props.createdDate} variant="h5" />
           {SkillIcon}
         </Stack>
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -210,18 +179,16 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
             backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
-      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
-        <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
+      <Grid item container direction="column" p={"0.5rem"} xs={8} md={8} spacing={"1.2rem"}>
+        <Grid item display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
+          <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+            <Time date={props.createdDate} variant="h5" />
+            {SkillIcon}
           </Stack>
-          <Time date={props.createdDate} variant="h5" />
-          {SkillIcon}
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -230,9 +197,10 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
           </Box>
         </Grid>
       </Grid>
+
+        </Grid>
+      )}
     </Grid>
-  )}
-  </Grid>
   );
 }
 

@@ -9,11 +9,11 @@ import { checkLogin } from "../checkLogin";
 import { useLocation, useNavigate } from "react-router";
 import "../style/Board.css";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { FileItem } from "./Board/Free/FreeDetails";
 import AddFile from "../layout/AddFile";
 import { FindIcon } from "../data/IconData";
+import Shorten from "../layout/Shorten";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -31,11 +31,10 @@ const EditForm = () => {
   const { state } = useLocation();
   const pathArray = window.location.href.split("/");
   const postingId = [...pathArray].pop();
-  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [postedFile, setPostedFile] = useState<FileItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  
+
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -76,16 +75,16 @@ const EditForm = () => {
 
     // 첨부한 파일 리스트 출력을 위한 api 연동
     axios({
-        method: "get",
-        url: `/api/free/${postingId}/file-list`
+      method: "get",
+      url: `/api/free/${postingId}/file-list`
     })
-    .then((res) => {
+      .then((res) => {
         setPostedFile(res.data);
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
-    });
-      
+      });
+
   }, []);
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
@@ -129,8 +128,7 @@ const EditForm = () => {
     });
   };
 
-  const submitHandler = async (event:React.MouseEvent) => {
-    setIsLoading(true);
+  const submitHandler = async (event: React.MouseEvent) => {
     const formData = new FormData();
 
     selectedFiles.forEach((file) => {
@@ -143,18 +141,18 @@ const EditForm = () => {
       headers: { "Content-Type": "multipart/form-data" },
       data: formData,
     })
-    .then((res) => {
-      if (res.status === 200) {
-        console.log(res);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      if (err.response.status === 413) {
-        alert("파일 용량이 큽니다!!");
-      }
-    });
-  
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.status === 413) {
+          alert("파일 용량이 큽니다!!");
+        }
+      });
+
     const request_data = {
       title: title,
       content: content,
@@ -207,7 +205,6 @@ const EditForm = () => {
     // setOpen(true);
     // return (
     //   <>
-    //     {isLoading && <Loading delayTime={1500} />}
     //   </>
     // );
     switch (boardType) {
@@ -262,47 +259,19 @@ const EditForm = () => {
     }
   };
 
-  const deleteHandler = (event:React.MouseEvent) => {
-    event.preventDefault();
-    setIsLoading(true);
-    axios({
-      method: 'delete',
-      url: `/api/${boardType}/delete/${postingId}`
-    }).then(
-      (res) => {
-        if (res.status === 200) {
-          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-              삭제되었습니다.
-            </Alert>
-          </Snackbar>
-          nav(`/${boardType}`); //삭제 후 게시판 목록페이지로
-          setOpen(true);
-        }
-      }
-    ).catch((err) => console.log(err));
-
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
-
-  }
-
   // 파일 삭제 api 
   const deletePostedFile = (filename: string) => {
     axios({
-        method: "delete",
-        url: `/api/files/delete/${filename}`
+      method: "delete",
+      url: `/api/files/delete/${filename}`
     })
-    .then((res) => {
+      .then((res) => {
         setPostedFile(postedFile.filter((value) => value.originalName !== filename));
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
-    });
-  } 
+      });
+  }
 
   // 첨부파일 리스트 길이가 0 이상인 경우 해당 파일 이름과 버튼 
   const PostedFile = postedFile.length > 0 ? (
@@ -310,32 +279,23 @@ const EditForm = () => {
       {postedFile.map((value) => {
         return (
           <>
-          <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
-            <Typography variant="h4">{value.originalName}</Typography>
-            <IconButton onClick={()=>deletePostedFile(value.originalName)}>
-              <FindIcon name="close"/>
-            </IconButton>
-          </Stack>
+            <Stack direction="row" spacing={"1rem"} alignItems={"center"}>
+              <Typography variant="h4">{Shorten(value.originalName, 10)}</Typography>
+              <Typography>postedFile</Typography>
+              <IconButton onClick={() => deletePostedFile(value.originalName)}>
+                <FindIcon name="close" iconProps={{ fontSize: "small" }} />
+              </IconButton>
+            </Stack>
           </>
         )
       })
-    }
+      }
     </Grid>
   ) : (null)
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill value={skill} getSkill={getSkill} /> : null;
 
-  const DesignateConditionRequired =
-    boardType === BoardType.recruit ? (
-      <ConditionRequired value={required} getRequired={getRequired} />
-    ) : null;
-  const DesignateConditionOptional =
-    boardType === BoardType.recruit ? (
-      <ConditionOptional value={optional} getOptional={getOptional} />
-    ) : null;
-  const DesignatePeople = boardType === BoardType.recruit ? <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} /> : null;
-  
   return (
     <>
       <Container>
@@ -365,36 +325,48 @@ const EditForm = () => {
                 fullWidth
               ></TextField>
             </Grid>
+            {
+              (boardType === BoardType.recruit) ? (<People getParty={getParty} getGathered={getGathered}  partyValue={party} gatheredValue={gathered} gatheredDisabled={true}/>) : null
+            }
             <Grid item>
               <div className="postQuill">
                 <QuillEditor content={content} onAddQuill={getContent} />
               </div>
             </Grid>
-            
+
+            {(boardType === BoardType.recruit) ? (
+              <>
+                <Grid item container columnSpacing={2}>
+                  <ConditionRequired getRequired={getRequired} value={required} requiredDisabled={true}/>
+                  <ConditionOptional getOptional={getOptional} value={optional}/>
+                </Grid>
+              </>) : null
+            }
+
             {PostedFile}
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
 
-            {DesignateConditionRequired}
-            {DesignateConditionOptional}
-            {DesignatePeople}
-
-            <Grid item>
-              <Button
-                className="board button"
-                variant="outlined"
-                disableElevation
-                onClick={submitHandler}
-              >
-                수정
-              </Button>
-              <Button
-                className="board button"
-                variant="outlined"
-                disableElevation
-                onClick={deleteHandler}
-              >
-                삭제
-              </Button>
+            <Grid item container columnSpacing={2} sx={{ marginTop: 2 }}>
+              <Grid item>
+                <Button
+                  className="board button"
+                  variant="contained"
+                  disableElevation
+                  onClick={submitHandler}
+                >
+                  수정
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  className="board button"
+                  variant="outlined"
+                  disableElevation
+                  onClick={() => nav(`/${boardType}/${postingId}`)}
+                >
+                  취소
+                </Button>
+              </Grid>
             </Grid>
           </>
         </Grid>

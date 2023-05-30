@@ -4,7 +4,7 @@ import axios from "axios";
 import { Box, Chip, Grid, Typography, Zoom, Stack } from "@mui/material";
 import { FileItem } from "../Free/FreeDetails";
 import Reply from "../../../layout/Reply/Reply";
-import { PostingSkeleton } from "../../../layout/Skeletons";
+import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import { UpdateSpeedDial } from "../../../layout/CRUDButtonStuff";
 import { BoardType } from "../../../model/board";
@@ -13,7 +13,8 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import File from "../../../layout/File";
 import Bookmark from "../../../layout/Bookmark";
-import { NoticeItems } from "./Notice";
+import {checkLogin} from "../../../checkLogin";
+import {NoticeItems} from "./NoticeBoard";
 
 const testData: NoticeItems = {
   id: 1,
@@ -30,21 +31,30 @@ const testData: NoticeItems = {
 };
 
 const NoticeDetails = () => {
-  const [postItem, setPostItem] = useState<NoticeItems | undefined>(testData);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [postItem, setPostItem] = useState<NoticeItems | undefined>();
   const { id } = useParams() as { id: string };
-  const [loading, setLoading] = useState(false); 
   const [accessUserId, setAccessUserId] = useState<number>(0); 
   const [isFile, setIsFile] = useState<boolean>(false);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const postingId = Number(id);
 
   useEffect(() => {
+    checkLogin().then((res) => {
+      if (res) {
+        setIsLogin(true);
+        getCurrentUserInfo()
+          .then(userInfo => setAccessUserId(userInfo.studentId))
+          .catch(err => console.log(err));
+      }
+    });
+
     axios({
       method: "get",
       url: `/api/notice/detail/${id}`,
     })
       .then((res) => {
-        setPostItem(res.data.data);
+        setPostItem(res.data);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -53,9 +63,6 @@ const NoticeDetails = () => {
           console.log("권한 x");
         }
       });
-    getCurrentUserInfo()
-      .then(userInfo => setAccessUserId(userInfo.studentId))
-      .catch(err => console.log(err));
 
     axios({
           method: "get",
@@ -68,6 +75,8 @@ const NoticeDetails = () => {
           console.log(err);
       });
   }, []);
+
+  const loadingStatus: boolean = useSkeleton(800, postItem);
 
   const displayUpdateSpeedDial = (studentId: number, title: string, content: string) => {
     if (typeof postItem !== undefined) {
@@ -102,31 +111,32 @@ const NoticeDetails = () => {
             {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
-           <Bookmark boardType={"free"} id={id} />
+          {isLogin ? <Bookmark boardType={"notice"} id={id}/> : null}
         </Grid>
-        {fileList.length > 0 && 
-        <Grid item xs={12}>
-          <File fileList={fileList}/>
-        </Grid>
-        }
         <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
           <div className="ql-snow">
             <div className="ql-editor"
               dangerouslySetInnerHTML={{ __html: postItem.content }}/>
           </div>
         </Grid>
+        {fileList.length > 0 && 
+        <Grid item xs={12}>
+          <File fileList={fileList}/>
+        </Grid>
+        }
         <Grid item direction={"column"}>
-          <Reply board={BoardType.free} postingId={id} />
+          {isLogin ? <Reply board={BoardType.notice} postingId={id}/> : null}
         </Grid>
       </Grid>
-      <Zoom in={true}>
-        <Box>{displayUpdateSpeedDial(postItem.stuId, postItem.title, postItem.content)}</Box>
-      </Zoom>
     </>
   ) : (
     <PostingSkeleton />
   );
-  return <Box sx={{ p: "2rem 10rem 4rem" }}>{PostDetails}</Box>
+  return <Box sx={{ p: "2rem 10rem 4rem" }}>
+    {
+      loadingStatus ? PostDetails : <PostingSkeleton />
+    }
+  </Box>;
 };
 
 export default NoticeDetails;

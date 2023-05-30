@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Grid, Stack, Box, Typography, Chip } from "@mui/material";
+import { Grid, Stack, Box, Typography, Link } from "@mui/material";
 import Time from "../../../layout/Time";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
-import { shortenContent } from "../QnA/QnABoard";
+import Shorten from "../../../layout/Shorten";
 
 export interface NoticeItems {
   id: number;
@@ -59,21 +59,25 @@ const testData : NoticeItems[] = [
 const Notice = () => {
   const [boardItems, setBoardItems] = useState<NoticeItems[]>(testData);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams(); 
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string>("createdAt,desc");
 
-  const getBoardItems = (sort:string) => {
+  const getBoardItems = (search?: string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
+    let url = `/api/notice/list?page=${curPage}`;
 
+    if(search !== undefined) {
+      url += `&search=${search}`;
+    }
+    
     setSearchParams({page: page.toString()})
-    // 공지사항 게시글, 게시글 개수 연듕
-    // TODO:  url 수정 필요
     axios({
       method: "get",
-      url: `/api/notice/list?page=${curPage}`,
+      url: url,
       params: params
     })
     .then((res) => {
@@ -83,25 +87,19 @@ const Notice = () => {
       }
     })
     .catch((err) => {
-      console.log(err);
-    })
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
+        console.log("권한 x");
+      }
+    });
   }
 
-  const performSearch = (search : string) => {
-    axios({
-      method: "get",
-      url: `/api/notice/list?search=${search}&page=0&size=5`,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setBoardItems(res.data.data);
-          setTotal(res.data.count);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  }
+  useEffect(() => {
+    getBoardItems(search);
+  }, [page, search, sort]);
+
+  const loadingStatus:boolean = useSkeleton(800, boardItems);
 
   const displayPosting = boardItems.map((element, idx) => {
     return (
@@ -113,15 +111,19 @@ const Notice = () => {
 
   return (
     <>
-      {loading ? (
+      {loadingStatus ? (
       <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
             <Typography variant="h2" sx={{ fontWeight: 800 }}>공지사항</Typography>
-            <SortBoard setBoardSort={getBoardItems}/>
+            <SortBoard sort={sort} setSort={setSort}/>
           </Stack>
-          {displayPosting}
+          {boardItems.length === 0 && search !== undefined ? 
+            <Stack p={"0rem 2rem 0rem"}>
+              <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+            </Stack> : displayPosting
+          }
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <SearchBoardField setSearchAPI={performSearch}/>
+            <SearchBoardField setSearch={setSearch}/>
           </Box>
           <PaginationControl
             page={page}
@@ -132,9 +134,9 @@ const Notice = () => {
             ellipsis={1}
           />
         </Stack>)
-        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        : (
           <BoardSkeleton />
-        </Box>)}
+          )}
     </>
   );
 
@@ -166,15 +168,13 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
         <Stack direction="row" spacing={"1rem"}>
           <Time date={props.createdDate} variant="h5" />
         </Stack>
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(props.content, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -195,13 +195,11 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
           <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(props.content, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(props.content, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>

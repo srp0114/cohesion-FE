@@ -44,7 +44,7 @@ const MyActivity = (props: MyDataProps) => {
     }, [activityType])
     
     const activityTitle = activityType === "summary" ? "공부기록" :
-        activityType === "reply" ? "작성한 댓글" :
+        activityType === "application" ? "신청 목록" :
         activityType === "bookmark" ? "북마크한 글" :
         activityType === "post" ? "작성한 게시글" : null;
 
@@ -54,7 +54,7 @@ const MyActivity = (props: MyDataProps) => {
 
     return (
         <>
-        <Typography variant="h4" sx={{mt:"3rem"}}>{activityTitle}</Typography>
+        <Typography variant="h4" mt={"3rem"} ml={"1rem"}>{activityTitle}</Typography>
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
                 {activityType === "summary" ? <MySummary/> :
                 activity.length === 0 ? 

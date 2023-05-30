@@ -1,19 +1,18 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Time from "../../../layout/Time";
-import { Box, Chip, Typography, Grid, Stack } from "@mui/material";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import axios from "axios";
 import { PaginationControl } from "react-bootstrap-pagination-control";
 import { WritingButton } from "../../../layout/CRUDButtonStuff";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { reply_bookmark_views } from "../../../layout/Board/reply_bookmark_views";
 import { userInfo } from "../../../layout/postingDetail/userInfo";
-import { shortenContent } from "../QnA/QnABoard";
-import { BoardSkeleton } from "../../../layout/Skeletons";
+import { BoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
+import Shorten from "../../../layout/Shorten";
 
-//자유게시판 페이지 인터페이스
 export interface FreeBoardItems {
   id: number;
   title: string;
@@ -28,22 +27,29 @@ export interface FreeBoardItems {
   views: number;
   image: {imageUrl: string}[];
 }
+
 const FreeBoard = () => {
   const [freeData, setFreeData] = useState<FreeBoardItems[]>([]);
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string>("createdAt,desc");
 
-  const getBoardItems = (sort:string) => {
+  const getBoardItems = (search?: string) => {
     const curPage = page - 1;
-    const params = { size: 4, sort: sort };
+    const params = { size: 5, sort: sort };
+    let url = `/api/free/list?page=${curPage}`;
 
+    if(search !== undefined) {
+      url += `&search=${search}`;
+    }
+    
     setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: `/api/free/list?page=${curPage}`,
+      url: url,
       params: params
     })
     .then((res) => {
@@ -61,42 +67,16 @@ const FreeBoard = () => {
     });
   }
 
-  /* 1.5초간 스켈레톤 표시 */
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [freeData]);
-
   useEffect(() => {
-    getBoardItems("createdAt,desc");
-  }, [page]);
+    getBoardItems(search);
+  }, [page, search, sort]);
 
-  const performSearch = (search : string) => {
-    axios({
-      method: "get",
-      url: `/api/free/list?search=${search}&page=0&size=4`,
-
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setFreeData(res.data.data);
-          setTotal(res.data.count);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  }
+  const loadingStatus: boolean =  useSkeleton(800, freeData);
 
   const displayPosting = freeData.map((element, idx) => {
     return (
       <>
-        <PreviewPosting {...element} key={idx} />
+         <PreviewPosting {...element} key={idx} />
       </>
     );
   }
@@ -105,15 +85,19 @@ const FreeBoard = () => {
 
   return (<>
       {
-        loading ? (
+        loadingStatus ? (
           <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
             <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
               <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
-              <SortBoard setBoardSort={getBoardItems}/>
+              <SortBoard sort={sort} setSort={setSort}/>
             </Stack>
-            {displayPosting}
+            {freeData.length === 0 && search !== undefined? 
+              <Stack p={"0rem 2rem 0rem"}>
+                <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+              </Stack> : displayPosting
+            }
             <Box display={"flex"} justifyContent={"flex-end"}>
-              <SearchBoardField setSearchAPI={performSearch}/>
+              <SearchBoardField setSearch={setSearch}/>
             </Box>
             <PaginationControl
               page={page}
@@ -126,11 +110,11 @@ const FreeBoard = () => {
             <WritingButton />
           </Stack>
         )
-        : (<Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
+        : (
           <BoardSkeleton />
-          <WritingButton />
-        </Box>)
+        )
       }
+      <WritingButton />
   </>);
 
 }
@@ -165,17 +149,15 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
       }
     }} onClick={() => goToPost(props.id)}>
     {props.image.length === 0 ? (
-      <Grid item container direction={"column"} sx={{p:"0.5rem"}} spacing={"1rem"}>
+      <Grid item container direction={"column"} p={"0.5rem"} spacing={"1rem"}>
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
           <Typography variant="h3">{props.title}</Typography>
-          {(typeof props.modifiedDate === 'object') ?
-            null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
         </Stack>
         <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200)}}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200)}}/>
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -192,17 +174,15 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
             backgroundSize: 'cover', backgroundImage: `url(${props.image[0].imageUrl})` }} />
         </Box>
       </Grid>
-      <Grid item container direction="column" xs={8} md={8} spacing={"1.2rem"}>
+      <Grid item container direction="column" xs={8} md={8} p={"0.5rem"} spacing={"1.2rem"}>
         <Grid item sx={{ display: "flex", justifyContent: "space-between" }}>
           <Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
             <Typography variant="h3">{props.title}</Typography>
-            {(typeof props.modifiedDate === 'object') ?
-              null : <Chip label="수정됨" size="small" variant="outlined" color="error" />}
           </Stack>
           <Time date={props.createdDate} variant="h5" />
         </Grid>
         <Grid item sx={{width: "100%"}} className="boardContent">
-          <div dangerouslySetInnerHTML={{ __html: shortenContent(deleteTag, 200) }}/>
+          <div dangerouslySetInnerHTML={{ __html: Shorten(deleteTag, 200) }}/>
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>

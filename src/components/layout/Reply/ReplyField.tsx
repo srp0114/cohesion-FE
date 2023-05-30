@@ -13,7 +13,8 @@ const ReplyField = (props : ReplyProps) => {
   const [article, setArticle] = useState<string>("");
 
   const onQuillChange = (value: string) => {
-    setArticle(value);
+    const modifiedArticle = value.trim() === '<p><br></p>' ? "" : value;
+    setArticle(modifiedArticle);
   };
 
   const onSubmit = (e: React.MouseEvent<HTMLElement>) => {

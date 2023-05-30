@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Box, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
+import { Alert, Box, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
 import axios from "axios";
 import AddFile from "../layout/AddFile";
 import Skill from "../layout/Skill";
@@ -11,8 +11,8 @@ import { useNavigate } from "react-router";
 import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { useForm, Controller } from "react-hook-form";
+import Shorten from "../layout/Shorten";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -26,7 +26,6 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -90,7 +89,6 @@ const PostForm = () => {
     });
   };
   const onSubmit = async () => {
-    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -103,42 +101,42 @@ const PostForm = () => {
     };
 
     const request_recruit = {
-      title : title,
-      content : content,
-      required : required,
-      optional : optional,
-      party : party,
-      gathered : gathered,
+      title: title,
+      content: content,
+      required: required,
+      optional: optional,
+      party: party,
+      gathered: gathered,
     };
 
     const qna_formData = new FormData();
     const free_formData = new FormData();
     const recruit_formData = new FormData();
 
-    selectedFiles.forEach((file)=>{
-      free_formData.append("file",file);
+    selectedFiles.forEach((file) => {
+      free_formData.append("file", file);
     })
 
     selectedFiles.forEach((file) => {
       qna_formData.append("file", file);
     });
 
-    selectedFiles.forEach((file)=>{
-      recruit_formData.append("file",file);
+    selectedFiles.forEach((file) => {
+      recruit_formData.append("file", file);
     })
 
-    free_formData.append("stringFree",JSON.stringify(request_data));
+    free_formData.append("stringFree", JSON.stringify(request_data));
     qna_formData.append("stringQna", JSON.stringify(request_qna));
-    recruit_formData.append("stringRecruit",JSON.stringify(request_recruit));
+    recruit_formData.append("stringRecruit", JSON.stringify(request_recruit));
 
     if (boardType === BoardType.free) {
       // 자유 게시판인 경우
-      if(selectedFiles.length>0){
+      if (selectedFiles.length > 0) {
         axios({
-          method : "post",
-          url : `/api/free`,
-          headers : {"Content-Type" : "multipart/form-data"},
-          data : free_formData,
+          method: "post",
+          url: `/api/free`,
+          headers: { "Content-Type": "multipart/form-data" },
+          data: free_formData,
         }).then((res) => {
           if (res.status === 200) {
             <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
@@ -149,89 +147,42 @@ const PostForm = () => {
             nav(`/${boardType}/${res.data}`)
           } // 응답(401, 403 등) 핸들링 ...
         }).catch((err) => {
-              console.log(err);
-              if(err.response.status==413){
-                alert("파일 용량이 큽니다!!");
-              }
-            });
-      }else{
+          console.log(err);
+          if (err.response.status == 413) {
+            alert("파일 용량이 큽니다!!");
+          }
+        });
+      } else {
         axios({
           method: "post",
           url: `/api/${boardType}/no-file`,
           headers: { "Content-Type": "application/json" },
           data: JSON.stringify(request_data),
         })
-            .then((res) => {
-              if (res.status === 200) {
-                <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                    게시되었습니다.
-                  </Alert>
-                </Snackbar>
-                nav(`/${boardType}/${res.data}`)
-              } // 응답(401, 403 등) 핸들링 ...
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          .then((res) => {
+            if (res.status === 200) {
+              <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                  게시되었습니다.
+                </Alert>
+              </Snackbar>
+              nav(`/${boardType}/${res.data}`)
+            } // 응답(401, 403 등) 핸들링 ...
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
 
     } else if (boardType === BoardType.question) {
       // Q&A 게시판인 경우
-        if (selectedFiles.length > 0) {
-          axios({
-            method : "post",
-            url : "/api/questions",
-            headers:{"Content-Type" : "multipart/form-data"},
-            data : qna_formData
-          }).then((res)=>{
-                if (res.status === 200) {
-                  <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-                    <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                      게시되었습니다.
-                    </Alert>
-                  </Snackbar>
-                  nav(`/${boardType}/${res.data}`);
-                } // 응답(401, 403 등) 핸들링 ...
-          }).catch((err) => {
-            if (err.response.status === 401) {
-              console.log("로그인 x");
-            } else if (err.response.status === 403) {
-              console.log("권한 x");
-            }else if(err.response.status === 413){
-              alert("파일 용량이 큽니다!!");
-            }
-          });
-        } else {
-          axios({
-            method: "post",
-            url: "/api/questions/no-file",
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(request_qna),
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                // 성공 시 작업
-                nav(`/${boardType}/${res.data}`)
-              }
-            })
-            .catch((err) => {
-              if (err.response.status === 401) {
-                console.log("로그인 x");
-              } else if (err.response.status === 403) {
-                console.log("권한 x");
-              }
-            });
-        }
-      } else if (boardType === BoardType.recruit) {
-      // 구인 게시판인 경우
-      if(selectedFiles.length>0){
+      if (selectedFiles.length > 0) {
         axios({
-          method : "post",
-          url : `/api/recruit`,
-          headers : {"Content-Type" : "multipart/form-data"},
-          data : recruit_formData,
-        }).then((res)=>{
+          method: "post",
+          url: "/api/questions",
+          headers: { "Content-Type": "multipart/form-data" },
+          data: qna_formData
+        }).then((res) => {
           if (res.status === 200) {
             <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
               <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
@@ -245,18 +196,65 @@ const PostForm = () => {
             console.log("로그인 x");
           } else if (err.response.status === 403) {
             console.log("권한 x");
-          } else if(err.response.status===413){
+          } else if (err.response.status === 413) {
+            alert("파일 용량이 큽니다!!");
+          }
+        });
+      } else {
+        axios({
+          method: "post",
+          url: "/api/questions/no-file",
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_qna),
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              // 성공 시 작업
+              nav(`/${boardType}/${res.data}`)
+            }
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              console.log("로그인 x");
+            } else if (err.response.status === 403) {
+              console.log("권한 x");
+            }
+          });
+      }
+    } else if (boardType === BoardType.recruit) {
+      // 구인 게시판인 경우
+      if (selectedFiles.length > 0) {
+        axios({
+          method: "post",
+          url: `/api/recruit`,
+          headers: { "Content-Type": "multipart/form-data" },
+          data: recruit_formData,
+        }).then((res) => {
+          if (res.status === 200) {
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                게시되었습니다.
+              </Alert>
+            </Snackbar>
+            nav(`/${boardType}/${res.data}`);
+          } // 응답(401, 403 등) 핸들링 ...
+        }).catch((err) => {
+          if (err.response.status === 401) {
+            console.log("로그인 x");
+          } else if (err.response.status === 403) {
+            console.log("권한 x");
+          } else if (err.response.status === 413) {
             alert("파일 용량이 큽니다!!!");
           }
         });
-      }else{
+      } else {
         axios({
-          method : "post",
-          url : `/api/recruit/no-file`,
-          headers : {"Content-Type" : "application/json"},
-          data : JSON.stringify(request_recruit)
-        }).then((res)=>{
-          if(res.status===200){
+          method: "post",
+          url: `/api/recruit/no-file`,
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify(request_recruit)
+        }).then((res) => {
+          if (res.status === 200) {
             <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
               <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
                 게시되었습니다.
@@ -264,46 +262,32 @@ const PostForm = () => {
             </Snackbar>
             nav(`/${boardType}/${res.data}`);
           }
-        }).catch((err)=>{
+        }).catch((err) => {
           if (err.response.status === 401) {
             console.log("로그인 x");
           } else if (err.response.status === 403) {
             console.log("권한 x");
-          } else if(err.response.status===413){
+          } else if (err.response.status === 413) {
             alert("파일 용량이 큽니다!!!");
           }
         })
       }
     }
     setOpen(true);
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
   };
 
-  const {  formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
+  const { formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
 
   const SelectSkill =
     boardType === BoardType.question ? <Skill getSkill={getSkill} /> : null;
-    
-  const DesignateConditionRequired =
-    boardType === BoardType.recruit ? (
-      <ConditionRequired getRequired={getRequired} />
-    ) : null;
-  const DesignateConditionOptional =
-    boardType === BoardType.recruit ? (
-      <ConditionOptional getOptional={getOptional} />
-    ) : null;
-  const DesignatePeople = boardType === BoardType.recruit ? <People getParty={getParty} getGathered={getGathered} /> : null;
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container direction="column" spacing={2}>
+      <Container>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container direction="column" spacing={2}>
             <Grid item>
-              <FormControl style={{ minWidth: 150}}>
+              <FormControl style={{ minWidth: "120px" }}>
                 <Select value={boardType} onChange={boardHandler}>
                   <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
@@ -313,27 +297,34 @@ const PostForm = () => {
                 </Select>
               </FormControl>
             </Grid>
-            {SelectSkill}
-            <Grid item>
-             <Controller
-                control={control}
-                name="title"
-                rules={{ required: true }}
-                render={({ fieldState: { error } }) => (
-                  <TextField
-                    fullWidth
-                    onChange={(e) => {
-                      setTitle(e.target.value);
-                      setValue("title", e.target.value, { shouldValidate: true });
-                    }}
-                    value={title}
-                    placeholder="제목을 입력해주세요"
-                    error={error !== undefined}
-                    helperText={error ? "제목을 입력해주세요!" : ""}
-                  />
-                )}
-              /> 
+
+            <Grid item container direction={"row"} spacing={"1.5rem"}>
+              {SelectSkill}
+              <Grid item xs>
+                <Controller
+                  control={control}
+                  name="title"
+                  rules={{ required: true }}
+                  render={({ fieldState: { error } }) => (
+                    <TextField
+                      fullWidth
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        setValue("title", e.target.value, { shouldValidate: true });
+                      }}
+                      value={title}
+                      placeholder="제목을 입력해주세요"
+                      error={error !== undefined}
+                      helperText={error ? "제목을 입력해주세요!" : ""}
+                    />
+                  )}
+                />
+              </Grid>
+              {
+                (boardType === BoardType.recruit) ? ( <People getParty={getParty} getGathered={getGathered} /> ) : null
+              }
             </Grid>
+
             <Grid item>
               <Controller
                 control={control}
@@ -345,7 +336,6 @@ const PostForm = () => {
                       onAddQuill={(data) => {
                         const modifiedData = data.trim() === '<p><br></p>' ? "" : data;
                         setValue("content", modifiedData, { shouldValidate: true });
-                        console.log(modifiedData)
                         getContent(modifiedData);
                       }}
                       content={field.value}
@@ -357,15 +347,22 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
-            <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles}/>
-            {DesignateConditionRequired}
-            {DesignateConditionOptional}
-            {DesignatePeople}
+            {
+                (boardType === BoardType.recruit) ? (
+                  <>
+                    <Grid item container columnSpacing={2}>
+                      <ConditionRequired getRequired={getRequired} />
+                      <ConditionOptional getOptional={getOptional} />
+                    </Grid>
+                  </>) : null
+              }
+            <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
             <Grid item>
               <Button variant="outlined" type="submit">작성하기</Button>
             </Grid>
-        </Grid>
-      </form>
+          </Grid>
+        </form>
+      </Container>
     </>
   );
 };

@@ -153,7 +153,9 @@ export const theme = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: {
-          wordWrap: "break-word"
+          wordWrap: "break-word",
+          wordBreak: "break-word",
+          whiteSpace: "pre-line",
         }
       }
     },
@@ -225,10 +227,11 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '&.navButton': {
-            width: '6rem',
+            width: '6.3rem',
             padding: '0.2rem',
             color: 'black',
             fontSize: '0.9rem',
+            fontWeight: '700',
             outline: 'none',
             backgroundColor: 'transparent',
             '&:hover': {
@@ -254,17 +257,6 @@ export const theme = createTheme({
             disableRipple: true,
             disableTouchRipple: true,
             outline: 'none',
-          },
-          '&. startButton': {
-            width: 600,
-            height: 80,
-            "&:hover, &.Mui-focusVisible": {
-              zIndex: 2,
-              backgroundColor: '#f7f7f7',
-              transform: 'translateY(-7%)',
-            },
-            borderRadius: 20,
-            border: '2px solid #777777'
           },
           '&.bookmark': {
             padding: 0,

@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { MyProfile } from "./MyProfile";
 import { MyHistory } from "./MyHistory";
 import { MyIntroduction } from "./MyIntroduction";
-import { MyPageSkeleton } from "../../layout/Skeletons";
+import { MyPageSkeleton, useSkeleton } from "../../layout/Skeletons";
 
 export interface MyPageItems {
   studentId: string; //사용자 고유식별번호, 학번, 사용자의 아이디
@@ -12,26 +12,23 @@ export interface MyPageItems {
   nickname: string; //추가정보페이지의 닉네임
   track1: string; //1트랙 1학년인 경우 1,2트랙 모두 none으로 나옴.
   track2: string; //2트랙
-  reply: number; //자신이 작성한 댓글 수, 기본값 0
+  application: number; //자신이 작성한 댓글 수, 기본값 0
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
-  point: number; //사용자의 포인트
   skills: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
   introduce: string; //추가정보페이지에서 입력한 자기소개
 }
 
 const MyPage = () => {
-  const [loading, setLoading] = useState(false);
   const [myInfo, setMyInfo] = useState<MyPageItems>({
     studentId: "",
     profileImg: "",
     nickname: "",
     track1: "",
     track2: "",
-    reply: 0,
+    application: 0,
     board: 0,
     bookmark: 0,
-    point: 0,
     skills: [],
     introduce: ""
   });
@@ -51,15 +48,7 @@ const MyPage = () => {
     getUserInfo();
   }, []);
 
-  useLayoutEffect(()=>{
-    const timer = setTimeout(() => {
-      setLoading(true);
-    }, 1000);
-  
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
+  const loadingStatus: boolean = useSkeleton(800);
 
   const onChangeUserInfo = (nickname: string, skills: string[], introduce: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -87,12 +76,8 @@ const MyPage = () => {
     })
   }
 
-  console.log(myInfo.nickname)
-  console.log(myInfo.skills)
-  console.log(myInfo.introduce)
-
   return (
-    <>{loading ? (
+    <>{loadingStatus ? (
       <Grid
         container
         direction="row"
@@ -112,11 +97,11 @@ const MyPage = () => {
         </Grid>
 
         <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
-          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} point={myInfo.point} />
+          <MyHistory application={myInfo.application} board={myInfo.board} bookmark={myInfo.bookmark} />
         </Grid>
-      </Grid> ) : (
-        <MyPageSkeleton />
-      )}
+      </Grid>) : (
+      <MyPageSkeleton />
+    )}
     </>
   );
 };

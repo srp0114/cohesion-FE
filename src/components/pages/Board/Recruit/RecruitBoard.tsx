@@ -13,6 +13,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  Link
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import {
@@ -30,8 +31,8 @@ import { getCurrentUserInfo } from "../../../getCurrentUserInfo";
 import SearchBoardField from "../../../layout/SearchBoardField";
 import SortBoard from "../../../layout/SortBoard";
 import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
-import { shortenContent } from "../QnA/QnABoard";
-import { RecruitBoardSkeleton } from "../../../layout/Skeletons";
+import Shorten from "../../../layout/Shorten";
+import { RecruitBoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
 
 
 //모집게시판 페이지 인터페이스
@@ -68,7 +69,8 @@ const RecruitBoard: React.FC = () => {
   const currentPage = searchParams.get('page');
   const [page, setPage] = useState<number>(currentPage ? parseInt(currentPage) : 1);
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
-  const [loading, setLoading] = useState(false); //loading이 false면 skeleton, true면 게시물 목록 
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string>("createdAt,desc");
 
   useEffect(() => {
     getCurrentUserInfo() //유저가 작성자나 승인된 사용자인지 검증.
@@ -76,61 +78,41 @@ const RecruitBoard: React.FC = () => {
       .catch(err => console.log(err));
   }, [])
 
-  const getBoardItems = (sort: string) => {
+   const getBoardItems = (search?: string) => {
     const curPage = page - 1;
     const params = { size: 9, sort: sort };
+    let url = `/api/recruit/list?page=${curPage}`;
 
-    setSearchParams({ page: page.toString() })
+    if(search !== undefined) {
+      url += `&search=${search}`;
+    }
+    
+    setSearchParams({page: page.toString()})
     axios({
       method: "get",
-      url: `/api/recruit/list?page=${curPage}`,
+      url: url,
       params: params
     })
-      .then((res) => {
-        if (res.status === 200) {
-          setBoardItems(res.data.data);
-          setTotal(res.data.count)
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          console.log("로그인 x");
-        } else if (err.response.status === 403) {
-          console.log("권한 x");
-        }
-      });
+    .then((res) => {
+      if (res.status === 200) {
+        setBoardItems(res.data.data);
+        setTotal(res.data.count);
+      }
+    })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        console.log("로그인 x");
+      } else if (err.response.status === 403) {
+        console.log("권한 x");
+      }
+    });
   }
-
-/* 1.5초간 스켈레톤 표시 */
-useLayoutEffect(() => {
-  const timer = setTimeout(() => {
-    setLoading(true);
-  }, 1500);
-
-  return () => {
-    clearTimeout(timer);
-  };
-}, [boardItems]);  
 
   useEffect(() => {
-    getBoardItems("createdAt,desc");
-  }, [page])
+    getBoardItems(search);
+  }, [page, search, sort]);
 
-  const performSearch = (search: string) => {
-    axios({
-      method: "get",
-      url: `/api/recruit/list?search=${search}&page=0&size=4`,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setBoardItems(res.data.data);
-          setTotal(res.data.count);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  }
+  const loadingStatus: boolean = useSkeleton(800, boardItems);
 
   const displayPosting = boardItems.map((element, idx) => (
     <Grid xs={12} md={6} lg={4}>
@@ -141,21 +123,23 @@ useLayoutEffect(() => {
 
   return (
     <>
-      {loading ? (
+      {loadingStatus ? (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{ marginBottom: "2.25rem" }}>
-            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>
-              모집게시판
-            </Typography>
-            <SortBoard setBoardSort={getBoardItems} />
+            <Typography variant="h2" sx={{ mb: 5, pl: 3, fontWeight: 800 }}>구인게시판</Typography>
+            <SortBoard sort={sort} setSort={setSort} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
-              {displayPosting}
+            {boardItems.length === 0 && search !== undefined ? 
+              <Stack p={"0rem 2rem 0rem"}>
+                <Typography variant="h3" sx={{ color: "secondary.dark", fontWeight: 600 }}>일치하는 검색결과가 없습니다.</Typography>
+              </Stack> : displayPosting
+            }
             </Grid>
           </Box>
           <Box display={"flex"} justifyContent={"flex-end"} sx={{ marginTop: "2.25rem" }}>
-            <SearchBoardField setSearchAPI={performSearch} />
+            <SearchBoardField setSearch={setSearch} />
           </Box>
           <PaginationControl
             page={page}
@@ -165,17 +149,16 @@ useLayoutEffect(() => {
             changePage={(page: React.SetStateAction<number>) => setPage(page)}
             ellipsis={1}
           />
-          <WritingButton />
         </Box>
       ) : (
         <Box sx={{ padding: "2.25rem 10rem 4.5rem" }}>
           <RecruitBoardSkeleton />
-          <WritingButton />
         </Box>
       )}
+      <WritingButton />
     </>
   );
-  
+
 };
 
 const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
@@ -281,9 +264,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
         <CardHeader
           /*제목(20자까지)이랑 수정 표시*/
           title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>{props.title}</Typography>
-            {/* 몇 명 모집 중인지 */}
-
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>{Shorten(props.title, 20)}</Typography>
           </Stack>}
           /* 작성 시간 */
           subheader={
@@ -293,33 +274,33 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           }
         />
 
-        <Box sx={{ height: "10rem", alignContent: "flex-start", justifyContent: "center" }}>
+        <Box sx={{ height: "15rem", alignContent: "flex-start", justifyContent: "center", alignItems: "center" }}>
           {/* 필수, 우대 조건 */}
-          <CardHeader subheader="필수 조건" titleTypographyProps="h6" sx={{ color: _theme.palette.primary.main }} />
-          <CardContent sx={{ fontSize: "1rem", color: _theme.palette.primary.main }}>{shortenContent(`${props.require}`, 30)}</CardContent>
+          <Chip label="필수 조건" variant="outlined" color="error" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
+          <CardContent sx={{ fontSize: "1rem" }}>{Shorten(`${props.require}`, 30)}</CardContent>
 
-          {props.optional ? <><CardHeader subheader="우대 조건" titleTypographyProps="h5" />
-            <CardContent sx={{ fontSize: "1rem" }}>{shortenContent(`${props.optional}`, 30)}</CardContent></> : null}
+          {props.optional ? <> <Chip label="우대 조건" variant="outlined" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
+            <CardContent sx={{ fontSize: "1rem" }}>{Shorten(`${props.optional}`, 30)}</CardContent></> : null}
         </Box>
 
         {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           {(remain === 0 || props.isCompleted) ?
-            <Typography variant="h6" sx={{ color: _theme.palette.neutral.main }}>"모집 마감"</Typography>
-            : <Typography variant="h6" sx={{ color: _theme.palette.primary.main }}>{remain}명 모집 중</Typography>}
-          {reply_bookmark_views_recruit(props)}
+            <Typography variant="h5" sx={{ color: _theme.palette.neutral.main }}>"모집 마감"</Typography>
+            : <Typography variant="h5" sx={{ color: _theme.palette.primary.main }}>{remain}명 모집 중</Typography>}
         </Box>
 
         <CardHeader
           /* 작성자 프로필, 닉네임, 학번, 수정됌 표시 */
           subheader={
-            <Stack direction="row">
-              <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
-              <Typography variant="overline">
-                {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
-              </Typography>
-              {(typeof props.modifiedDate === 'object') ?
-                null : <Chip label="modified" size="small" variant="outlined" sx={{ marginLeft: "1rem" }} />}
+            <Stack direction="row" sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box>
+                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
+                <Typography variant="overline">
+                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
+                </Typography>
+              </Box>
+              {reply_bookmark_views_recruit(props)}
             </Stack>
           } />
 
