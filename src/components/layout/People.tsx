@@ -54,13 +54,17 @@ const People: React.FC<PeopleProps> = ({ getParty, getGathered, partyValue, gath
     getGathered(gatheredValue);
   }, [partyValue, gatheredValue]);
 
+  useEffect(()=>{
+    setGathered(1);
+  },[party]);
+
   const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newPartyValue: number | null) => {
     if (newPartyValue !== null) {
       setParty(newPartyValue);
       getParty(newPartyValue);
 
-      const disabledRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter((value) => value < newPartyValue);
-      const isDisabled = (value: number) => !disabledRange.includes(value);
+      const disabledRange = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const isDisabled = (value: number) => value >= newPartyValue;
 
       const updatedGatheredButtons = disabledRange.map((value) => ({
         value,
