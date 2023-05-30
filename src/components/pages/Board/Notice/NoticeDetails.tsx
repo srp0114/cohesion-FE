@@ -15,6 +15,8 @@ import File from "../../../layout/File";
 import Bookmark from "../../../layout/Bookmark";
 import {checkLogin} from "../../../checkLogin";
 import {NoticeItems} from "./NoticeBoard";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 const testData: NoticeItems = {
   id: 1,

@@ -15,6 +15,8 @@ import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import File from "../../../layout/File";
 import { FileItem } from "../Free/FreeDetails";
 import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 // Q&A 상세보기 데이터
 interface DetailItems {

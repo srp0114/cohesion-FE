@@ -12,6 +12,8 @@ import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import Reply from "../../../layout/Reply/Reply";
 import File from "../../../layout/File";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 interface FreeDetailItems {
   id: number;
