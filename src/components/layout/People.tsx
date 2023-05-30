@@ -17,31 +17,23 @@ interface PeopleProps {
   gatheredValue?: number;
 }
 
-interface PeopleInputs {
-  party: number;
-  gathered: number;
-}
-
-const People: React.FC<PeopleProps> = ({
-  getParty,
-  getGathered,
-  partyValue,
-  gatheredValue,
-}) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<PeopleInputs>();
+const People: React.FC<PeopleProps> = ({ getParty, getGathered, partyValue, gatheredValue, }) => {
+  const { formState: { errors }, control } = useForm();
 
   //여기의 party와 gathered가 사용자가 선택한 값
-  const [party, setParty] = React.useState<number | null>(4);
-  const [gathered, setGathered] = React.useState<number | null>(1);
+  const [party, setParty] = React.useState<number | null>(0);
+  const [gathered, setGathered] = React.useState<number | null>(0);
 
   const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
     { value: 1, disabled: false },
     { value: 2, disabled: false },
     { value: 3, disabled: false },
+    { value: 4, disabled: false },
+    { value: 5, disabled: false },
+    { value: 6, disabled: false },
+    { value: 7, disabled: false },
+    { value: 8, disabled: false },
+    { value: 9, disabled: false },
   ]);
 
   useEffect(() => {
@@ -52,6 +44,7 @@ const People: React.FC<PeopleProps> = ({
   const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newPartyValue: number | null) => {
     if (newPartyValue !== null) {
       setParty(newPartyValue);
+      getParty(newPartyValue);
 
       const disabledRange = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter((value) => value < newPartyValue);
       const isDisabled = (value: number) => !disabledRange.includes(value);
@@ -63,15 +56,14 @@ const People: React.FC<PeopleProps> = ({
 
       setGatheredButtons(updatedGatheredButtons);
       console.log(`사용자가 선택한 party 값: ${party}`);
-      //getParty();
     }
   };
 
   const handleGatheredChange = (event: React.MouseEvent<HTMLElement>, newGatheredValue: number | null) => {
     if (newGatheredValue !== null) {
       setGathered(newGatheredValue);
+      getGathered(newGatheredValue);
       console.log(`사용자가 선택한 gathered 값: ${gathered}`);
-      //getGathered();
     }
   };
 
@@ -81,13 +73,11 @@ const People: React.FC<PeopleProps> = ({
         <Controller
           name="party"
           control={control}
-          defaultValue={2}
-          rules={{ required: true }}
+          rules={{ required: "총 인원 수를 입력해주세요!" }}
           render={({ field }) => (
             <FormControl fullWidth>
               <ToggleButtonGroup
                 exclusive
-                {...field}
                 value={party}
                 onChange={handlePartyChange}
               >
@@ -102,12 +92,9 @@ const People: React.FC<PeopleProps> = ({
                 <ToggleButton size="large" value={10}>10</ToggleButton>
               </ToggleButtonGroup>
 
-              <FormHelperText>
-                `{`예) 캡스톤 디자인은 4명팀이므로, 총 인원은 4명`}`
+              <FormHelperText error={!!errors.party}>
+                {typeof errors.party?.message === "string" && errors.party.message}
               </FormHelperText>
-              {errors.party && (
-                <FormHelperText>총 인원 수는 필수로 선택되어야 합니다.</FormHelperText>
-              )}
             </FormControl>
           )}
         />
@@ -116,10 +103,9 @@ const People: React.FC<PeopleProps> = ({
         <Controller
           name="gathered"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: "모인 인원 수를 입력해주세요!" }}
           render={({ field }) => (
             <FormControl>
-
               <ToggleButtonGroup
                 exclusive
                 {...field}
@@ -138,18 +124,9 @@ const People: React.FC<PeopleProps> = ({
                 ))}
               </ToggleButtonGroup>
 
-              <FormHelperText>
-                `{`예) 4명팀에서 작성자 본인만 있다면, 현재까지 1명이 모임.`}`
+              <FormHelperText error={!!errors.gathered}>
+                {typeof errors.gathered?.message === "string" && errors.gathered.message}
               </FormHelperText>
-              {errors.gathered && (
-                <FormHelperText>
-                  {errors.gathered?.type === "min"
-                    ? "현재까지 모인 인원은 0명 이상이어야 합니다."
-                    : errors.gathered?.type === "max"
-                      ? "현재까지 모인 인원은 총 인원 수 - 1 이하여야 합니다."
-                      : "현재까지 모인 인원은 필수로 선택되어야 합니다."}
-                </FormHelperText>
-              )}
             </FormControl>
           )}
         /></Grid>

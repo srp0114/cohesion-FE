@@ -277,11 +277,6 @@ const PostForm = () => {
       }
     }
     setOpen(true);
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
   };
 
   const { formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
@@ -312,10 +307,10 @@ const PostForm = () => {
                 (boardType === BoardType.recruit) ? (
                   <>
                     <Grid item container columnSpacing={2}>
-                      <ConditionRequired value={required} getRequired={getRequired} />
-                      <ConditionOptional value={optional} getOptional={getOptional} />
+                      <ConditionRequired getRequired={getRequired} />
+                      <ConditionOptional getOptional={getOptional} />
                     </Grid>
-                    <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
+                    <People getParty={getParty} getGathered={getGathered} />
                   </>) : null
               }
               <Grid item xs>
