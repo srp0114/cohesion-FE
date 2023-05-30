@@ -12,6 +12,8 @@ import Bookmark from "../../../layout/Bookmark";
 import TimeAndViews from "../../../layout/postingDetail/TimeAndViews";
 import Reply from "../../../layout/Reply/Reply";
 import File from "../../../layout/File";
+import 'highlight.js/styles/stackoverflow-dark.css'
+import "highlight.js/styles/atom-one-dark.css";
 
 interface FreeDetailItems {
   id: number;
@@ -115,7 +117,7 @@ const loadingStatus: boolean = useSkeleton(800);
           </Stack>
           <Bookmark boardType={"free"} id={id} />
         </Grid>
-        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem" }}>
+        <Grid item xs={12} sx={{ m: "3rem 0rem 5rem",  width:"100%"  }}>
           <div className="ql-snow">
             <div className="ql-editor"
               dangerouslySetInnerHTML={{ __html: postItem.content }}/>
