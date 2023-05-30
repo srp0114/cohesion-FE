@@ -18,12 +18,6 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
         (setError(false), onAddSummary(content, summarySkill?.name ?? ""), setContent(""), setSummarySkill(null))
     );
 
-    const handleSummarySkill = (event: SyntheticEvent<Element, Event>, value: skillItems | null) => {
-        if (value) {
-            setSummarySkill(value);
-        }
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setError(false);
         setContent(e.target.value)
@@ -34,6 +28,10 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
         <Grid container item spacing={2} direction="row" sx={{ p:"0 1rem 1.5rem", mt:"0.3rem", display:"flex", justifyContent:"space-between"}} >
             <Grid item xs={2.6} md={2.6}>
                 <Autocomplete
+                value={summarySkill}
+                onChange={(event: any, newValue: skillItems | null) => {
+                    setSummarySkill(newValue);
+                }}
                 options={skillData}
                 getOptionLabel={(option) => option.name}
                 renderOption={(props, option) => (
@@ -46,13 +44,9 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
                     <TextField
                         placeholder="언어선택"
                         {...params}
-                        inputProps={{
-                        ...params.inputProps,
-                        }}
                     />
                 )}
-                 value={summarySkill}
-                 onChange={handleSummarySkill}
+                
                />
             </Grid>
             <Grid item xs>
