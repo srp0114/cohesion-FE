@@ -1,28 +1,41 @@
 import React, { useEffect } from "react";
 import {
+  Box,
   FormControl,
   FormHelperText,
-  InputLabel,
+  FormLabel,
   Grid,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
+  Typography
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
+import { FindIcon } from "../data/IconData";
 
 interface PeopleProps {
   getParty: any;
   getGathered: any;
   partyValue?: number;
   gatheredValue?: number;
+  gatheredDisabled?: boolean;
 }
 
-const People: React.FC<PeopleProps> = ({ getParty, getGathered, partyValue, gatheredValue, }) => {
+const People: React.FC<PeopleProps> = ({ getParty, getGathered, partyValue, gatheredValue, gatheredDisabled }) => {
   const { formState: { errors }, control } = useForm();
 
   //여기의 party와 gathered가 사용자가 선택한 값
-  const [party, setParty] = React.useState<number | null>(0);
-  const [gathered, setGathered] = React.useState<number | null>(0);
+  const [party, setParty] = React.useState<number | null>(partyValue ?? null);
+  const [gathered, setGathered] = React.useState<number | null>(gatheredValue ?? null);
+
+  useEffect(() => {
+    if (partyValue !== null && !!partyValue) {
+      setParty(partyValue);
+    }
+    if (gatheredValue !== null && !!gatheredValue) {
+      setGathered(gatheredValue);
+    }
+  }, [partyValue, gatheredValue]);
 
   const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
     { value: 1, disabled: false },
@@ -68,69 +81,86 @@ const People: React.FC<PeopleProps> = ({ getParty, getGathered, partyValue, gath
   };
 
   return (
-    <Grid item container xs={12}>
-      <Grid item xs={12} md={6}>
+    <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Grid item>
         <Controller
           name="party"
           control={control}
           rules={{ required: "총 인원 수를 입력해주세요!" }}
           render={({ field }) => (
-            <FormControl fullWidth>
-              <ToggleButtonGroup
-                exclusive
-                value={party}
-                onChange={handlePartyChange}
-              >
-                <ToggleButton size="large" value={2}>2</ToggleButton>
-                <ToggleButton size="large" value={3}>3</ToggleButton>
-                <ToggleButton size="large" value={4}>4</ToggleButton>
-                <ToggleButton size="large" value={5}>5</ToggleButton>
-                <ToggleButton size="large" value={6}>6</ToggleButton>
-                <ToggleButton size="large" value={7}>7</ToggleButton>
-                <ToggleButton size="large" value={8}>8</ToggleButton>
-                <ToggleButton size="large" value={9}>9</ToggleButton>
-                <ToggleButton size="large" value={10}>10</ToggleButton>
-              </ToggleButtonGroup>
+            <>
+              <FormLabel component="legend" sx={{ marginRight: 1 }} required>총 인원</FormLabel>
+              <FormControl fullWidth>
+                <ToggleButtonGroup
+                  exclusive
+                  value={party}
+                  onChange={handlePartyChange}
+                  sx={{ borderRadius: "20px" }}
+                >
+                  <ToggleButton value={2}>2</ToggleButton>
+                  <ToggleButton value={3}>3</ToggleButton>
+                  <ToggleButton value={4}>4</ToggleButton>
+                  <ToggleButton value={5}>5</ToggleButton>
+                  <ToggleButton value={6}>6</ToggleButton>
+                  <ToggleButton value={7}>7</ToggleButton>
+                  <ToggleButton value={8}>8</ToggleButton>
+                  <ToggleButton value={9}>9</ToggleButton>
+                  <ToggleButton value={10}>10</ToggleButton>
+                </ToggleButtonGroup>
 
+              </FormControl>
               <FormHelperText error={!!errors.party}>
                 {typeof errors.party?.message === "string" && errors.party.message}
               </FormHelperText>
-            </FormControl>
+              <Box pl={"0.8rem"} pt={"0.2rem"}>
+                {errors.content && <Typography variant="h6" color="error.main">input the value of party</Typography>}
+              </Box>
+            </>
           )}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item>
         <Controller
           name="gathered"
           control={control}
           rules={{ required: "모인 인원 수를 입력해주세요!" }}
           render={({ field }) => (
-            <FormControl>
-              <ToggleButtonGroup
-                exclusive
-                {...field}
-                value={gathered}
-                onChange={handleGatheredChange}
-              >
-                {gatheredButtons.map((button) => (
-                  <ToggleButton
-                    key={button.value}
-                    size="large"
-                    value={button.value}
-                    disabled={button.disabled}
-                  >
-                    {button.value}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
+            <>
+              <FormLabel component="legend" sx={{ marginRight: 1 }}>모인 인원</FormLabel>
+              <FormControl>
+                <ToggleButtonGroup
+                  exclusive
+                  {...field}
+                  value={gathered}
+                  onChange={handleGatheredChange}
+                  sx={{ borderRadius: "20px" }}
+                  disabled={gatheredDisabled}
+                >
+                  {gatheredButtons.map((button) => (
+                    <ToggleButton
+                      key={button.value}
+                      value={button.value}
+                      disabled={button.disabled}
+                    >
+                      {button.value}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
 
-              <FormHelperText error={!!errors.gathered}>
-                {typeof errors.gathered?.message === "string" && errors.gathered.message}
-              </FormHelperText>
-            </FormControl>
+                <FormHelperText error={!!errors.gathered}>
+                  {typeof errors.gathered?.message === "string" && errors.gathered.message}
+                </FormHelperText>
+                {errors.content && <Typography variant="h6" color="error.main">input the value of gathered</Typography>}
+              </FormControl>
+            </>
           )}
-        /></Grid>
-
+        />
+      </Grid>
+      <Grid item sx={{ display: "flex", flexDirection: "row-reverse", textAlign: "center" }}>
+        <Stack direction="row">
+          <Typography variant="h3">{`${Number(gathered)} / ${Number(party)}`}</Typography> <Typography variant="body1">{`(명)`}</Typography><FindIcon name="recruitPeople" />
+        </Stack>
+      </Grid>
     </Grid>
   );
 };

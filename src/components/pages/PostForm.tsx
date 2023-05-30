@@ -11,7 +11,6 @@ import { useNavigate } from "react-router";
 import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { useForm, Controller } from "react-hook-form";
 import Shorten from "../layout/Shorten";
 
@@ -27,7 +26,6 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -91,7 +89,6 @@ const PostForm = () => {
     });
   };
   const onSubmit = async () => {
-    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -303,16 +300,6 @@ const PostForm = () => {
 
             <Grid item container direction={"row"} spacing={"1.5rem"}>
               {SelectSkill}
-              {
-                (boardType === BoardType.recruit) ? (
-                  <>
-                    <Grid item container columnSpacing={2}>
-                      <ConditionRequired getRequired={getRequired} />
-                      <ConditionOptional getOptional={getOptional} />
-                    </Grid>
-                    <People getParty={getParty} getGathered={getGathered} />
-                  </>) : null
-              }
               <Grid item xs>
                 <Controller
                   control={control}
@@ -333,6 +320,9 @@ const PostForm = () => {
                   )}
                 />
               </Grid>
+              {
+                (boardType === BoardType.recruit) ? ( <People getParty={getParty} getGathered={getGathered} /> ) : null
+              }
             </Grid>
 
             <Grid item>
@@ -357,6 +347,15 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
+            {
+                (boardType === BoardType.recruit) ? (
+                  <>
+                    <Grid item container columnSpacing={2}>
+                      <ConditionRequired getRequired={getRequired} />
+                      <ConditionOptional getOptional={getOptional} />
+                    </Grid>
+                  </>) : null
+              }
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
             <Grid item>
               <Button variant="outlined" type="submit">작성하기</Button>
