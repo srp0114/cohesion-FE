@@ -210,7 +210,7 @@ const RecruitDetails = () => {
         <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
           <Grid item xs={8}>
-            <Typography variant="h1" sx={{ textWrap: "balance" }}>{postItem.title}</Typography>
+            <Typography variant="h1" sx={{ fontWeight: "600", textWrap: "balance" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
               null : <Chip label="수정됨" size="small" variant="outlined" />}
           </Grid>
@@ -219,9 +219,8 @@ const RecruitDetails = () => {
             <FindIcon name="recruitPeople" iconProps={{ fontSize: "large", color: "primary" }} />
             <Stack direction="row" sx={{ margin: 1 }} >
               <Typography variant="h3" color="info">
-                {`${postItem.gathered}/${postItem.party}`}
+                {`${postItem.gathered}/${postItem.party}명`}
               </Typography>
-              <Typography variant="body1">{`(명)`}</Typography>
             </Stack>
           </Grid>
 

@@ -166,9 +166,9 @@ const Welcome = () => {
   return (
     <>
       <Container maxWidth="md">
-      <Grid container direction="column" display={"flex"} justifyContent={"center"} spacing={"2rem"} mt={"5rem"} mb={"5rem"}>
+      <Grid container direction="column" display={"flex"} justifyContent={"center"} spacing={"2.5rem"} mt={"3rem"} mb={"5rem"}>
         <Grid item>
-            <Stack alignItems={"center"} justifyContent={"center"} display={"flex"}>
+            <Stack alignItems={"center"} justifyContent={"center"} display={"flex"} mb={"1rem"}>
             <Typography variant="h2" sx={{fontWeight:600}} >부가 정보를 입력해주세요</Typography>
             </Stack>
         </Grid>
@@ -185,7 +185,7 @@ const Welcome = () => {
                   render={({ field: { onChange }, fieldState: { error } }) => (
                     <>
                       <Stack p={"0.5rem 0.5rem 0.5rem 1rem"}>
-                        <Typography variant="subtitle1">프로필 선택</Typography>
+                        <Typography variant="h5" color="primary.dark">프로필 선택</Typography>
                       </Stack>
                       <Grid container direction="row" spacing={5} alignItems={"center"}>
                         <Grid item xs={12} md={6}>
@@ -377,13 +377,14 @@ const Welcome = () => {
                     control={control}
                     name="introduce"
                     rules={{
-                    maxLength: 100,
+                      maxLength: 100,
                     }}
                     render={({ field, fieldState: { error } }) => (
                     <TextField
                         {...field}
                         multiline
                         placeholder="자기소개를 해주세요."
+                        maxRows={2}                    
                         rows={2}
                         error={error !== undefined}
                         helperText={error ? "글자 수를 초과했습니다." : ""}

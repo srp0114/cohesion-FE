@@ -26,19 +26,15 @@ const NotFound = () => {
   }, [navigate, location, countdown]);
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
-      <Box>
-        <Typography variant="h1">404 NOT FOUND</Typography>
-        <Divider variant="fullWidth" />
-      </Box>
+    <Stack spacing={"1rem"} sx={{ display: "flex", justifyContent: "center", flexDirection: "column", p:"1.5rem"}}>
+        <Typography variant="h1" sx={{fontWeight: 400}}>404 NOT FOUND</Typography>
+        <Divider variant="fullWidth" sx={{bgcolor:"primary.dark", borderBottomWidth: "0.5rem" }}/>
 
-      <Stack>
         <Typography variant="h3">Oops! 잘못된 접근이에요!</Typography>
-        <Typography variant="h2">
+        <Typography variant="h2" sx={{fontWeight: 500}}>
           {`${countdown}초 후에 메인 페이지로 돌아갑니다.`}
         </Typography>
-      </Stack>
-    </Box>
+    </Stack>
   );
 };
 

@@ -41,6 +41,10 @@ const HomeBoard = (props: HomeBoardProps) => {
         navigate(`/${board}/${postId}`);
     };
 
+    const goToBoard = () => {
+        navigate(`/${board}`)
+    }
+    
     const openInfoModal = () => {
         if(addInfoError) { 
             setOpen(!open);
@@ -77,7 +81,12 @@ const HomeBoard = (props: HomeBoardProps) => {
     return (
         <>
             <Stack direction={"column"} sx={{m:3, mb:10}}>                 
-                <Typography variant="h3" sx={{fontWeight: 550}} mb={"1rem"}>{boardName}</Typography>
+                <Typography variant="h3" sx={{fontWeight: 550,
+                    "&:hover": {
+                        cursor: "pointer"
+                    },
+                    mb: "1rem"
+                }} onClick={()=>goToBoard()}>{boardName}</Typography>
                 {boardItems && boardItems.map((posting) => {
                     return (
                     <>
