@@ -420,6 +420,7 @@ const EditForm = () => {
                                                     fullWidth
                                                     onChange={(e) => {
                                                         setValue("title", e.target.value, { shouldValidate: true });
+                                                        getTitle(e.target.value);
                                                     }}
                                                     value={value}
                                                     error={error !== undefined}
