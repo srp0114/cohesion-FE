@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { Stack, Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
 import { FindIcon } from "../../data/IconData";
+import Shorten from "../../layout/Shorten";
 import MySummary from "./MySummary"
 
 interface MyDataProps {
@@ -53,20 +54,19 @@ const MyActivity = (props: MyDataProps) => {
 
     return (
         <>
-        <Typography variant="h4" mt={"3rem"} ml={"1rem"}>{activityTitle}</Typography>
+        <Typography variant="h4" mt={"3rem"} ml={"1rem"} sx={{fontWeight: "600"}}>{activityTitle}</Typography>
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
                 {activityType === "summary" ? <MySummary/> :
                 activity.length === 0 ? 
-                    <Typography variant="h2" textAlign="center" p={5} color="primary.dark">아직 {activityTitle}이 없습니다</Typography> : 
+                    <Typography variant="h2" textAlign="center" p={5} color="primary.dark" sx={{fontWeight:"400"}}>아직 {activityTitle}이 없습니다</Typography> : 
                     activity.map((value) => {
                         return (
-                            // TODO: 카드 높이 조정 필요
-                            <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px"}}>
+                            <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px", p:"1rem"}}>
                             <CardContent>
-                                <Typography variant="subtitle2" color="black" gutterBottom>{value.title}</Typography>
+                                <Typography variant="subtitle2" color="black" gutterBottom>{Shorten(value.title, 20)}</Typography>
 
 
-                                <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+                                <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mt={"1rem"}>
 
                                     <Typography variant="subtitle2" color="secondary.dark"> {value.writer}</Typography>
 
