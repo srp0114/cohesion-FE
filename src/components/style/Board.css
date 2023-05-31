@@ -35,6 +35,8 @@
 
 .replyQuill .ql-editor {
     min-height: 4rem;
+    max-height: 4rem;
+    width: 100%;
     white-space: pre-wrap;
     word-wrap: "break-word";
     word-break: "break-word";

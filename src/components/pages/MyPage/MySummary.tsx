@@ -173,7 +173,7 @@ const MySummary = () => {
                   <Stack direction="row" spacing={"1rem"} alignItems={"center"}>
                   {value.language === "" ? null : <Chip avatar={<Avatar src={selectedSkill?.logo} />} label={value.language} variant="outlined" color={color}/>}
                   <Typography variant="h5" color="primary.dark"><Time date={value.date} variant={"h5"}/></Typography>
-                  {value.isFixed ? <PushPinIcon fontSize={"small"} sx={{ color:"primary.dark" }} /> : null}
+                  {value.isFixed ? <PushPinIcon fontSize={"small"} sx={{ color:"secondary.dark" }} /> : null}
                   </Stack>
                 </Grid>
                   {!isEditing ? 
