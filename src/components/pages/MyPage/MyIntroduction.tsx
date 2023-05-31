@@ -114,7 +114,7 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
                 name="skills"
                 rules={{
                   validate: (data) => {
-                    if (data && data.length > 2) return false;
+                    if (data && data.length > 7) return false;
                   },
                 }}
                 render={({ field: { ref, onChange, ...field }, fieldState }) => (
