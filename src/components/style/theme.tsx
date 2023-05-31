@@ -39,14 +39,14 @@ export const theme = createTheme({
   },
   palette: {
     primary: {
-      main: "#008CFF", //파랑
-      light: "#a9a9a9", //머쉬룸 베이지(?)
-      dark: "#999999" //진한 머쉬룸 베이지(?)
+      main: "#2B6FDF",//"#008CFF"
+      light: "#6F9CE3",
+      dark: "#2056AB"
     },
     secondary: {
-      main: "#dfe6ba", //누르스름한...
-      light: "#eeeeee",
-      dark: "#777777"
+      main: "#B5CC6C",//"#dfe6ba"
+      light: "#C1D973",
+      dark: "#9FB35F",
     },
     background: {
       default: "#ffffff",
