@@ -1,5 +1,6 @@
 import { Modal, Stack, Typography, ButtonBase, styled } from "@mui/material";
 import hansung from "../asset/image/hansung.png";
+import pingpong from "../asset/logo/pingpong.png";
 
 interface LoginModalProps {
   open: boolean;
@@ -39,11 +40,15 @@ const LoginModal = ({ open, handleClose, handleLogin } : LoginModalProps) => {
       open={open}
       onClose={handleClose}>
       <Stack sx={infoLoginModal} direction={"column"}  alignItems={"center"}>
-        <Typography variant="h3" sx={{ mt: 2, fontWeight: 600}}>Cohesion에 오신 것을 환영합니다!</Typography>
-        <Typography variant="h3" sx={{ mt: 3, mb: 5, fontWeight: 600 }}>한성대학교 로그인 페이지로 이동합니다</Typography>
+        <Stack direction={"row"} alignItems={"center"} mt={2}>
+          <img src={`${pingpong}`}  style={{width: "8rem"}}/>
+          <Typography variant="h3" sx={{ fontWeight: 600}}>에 오신 것을 환영합니다!</Typography>
+        </Stack>
+
+        <Typography variant="h3" sx={{ mt: 3, mb: 5, fontWeight: 600 }}>한성대학교 통합 로그인 페이지로 이동합니다</Typography>
         <StartButton onClick={handleLogin}>
           <img src={hansung} width="30" style={{ marginRight: 10 }} />
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>한성대학교로 시작하기</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>한성대학교 통합 로그인</Typography>
         </StartButton>
       </Stack>
     </Modal>

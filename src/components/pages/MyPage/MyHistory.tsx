@@ -8,7 +8,7 @@ import MyActivity from "./MyActivity";
 import { FindIcon } from "../../data/IconData";
 
 interface MyHistoryProps {
-  reply: number;
+  application: number;
   board: number;
   bookmark: number;
 }
@@ -20,8 +20,8 @@ export const MyHistory = (props: MyHistoryProps) => {
     setMyPage(<MyActivity activityType="summary"/>);
   };
 
-  const handleMyReply = () => {
-    setMyPage(<MyActivity activityType="reply"/>);
+  const handleMyApplication = () => {
+    setMyPage(<MyActivity activityType="application"/>);
   };
 
   const handleMyPosting = () => {
@@ -43,15 +43,6 @@ export const MyHistory = (props: MyHistoryProps) => {
         </Stack>
 
         <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
-          <Typography variant="h5" sx={{fontWeight:500}}>작성한 댓글</Typography>
-          <IconButton size="large" onClick={handleMyReply}>
-            <Badge color="success" badgeContent={props.reply} max={99} showZero>
-              <FindIcon name="reply"/>
-            </Badge>
-          </IconButton>
-        </Stack>
-
-        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
           <Typography variant="h5" sx={{fontWeight:500}}>작성한 게시글</Typography>
           <IconButton size="large" onClick={handleMyPosting}>
             <Badge color="success" badgeContent={props.board} max={99} showZero>
@@ -65,6 +56,15 @@ export const MyHistory = (props: MyHistoryProps) => {
           <IconButton size="large" onClick={handleMyBookmark}>
             <Badge color="success" badgeContent={props.bookmark} max={99} showZero>
               <FindIcon name="bookmark" />
+            </Badge>
+          </IconButton>
+        </Stack>
+
+        <Stack direction={"column"} spacing={"0.5rem"} alignItems={"center"} sx={{width:"6.5rem"}}>
+          <Typography variant="h5" sx={{fontWeight:500}}>신청 목록</Typography>
+          <IconButton size="large" onClick={handleMyApplication}>
+            <Badge color="success" badgeContent={props.application} max={99} showZero>
+              <FindIcon name="apply"/>
             </Badge>
           </IconButton>
         </Stack>

@@ -29,7 +29,7 @@ interface DoubleCheckModalProps {
     onApplicantStatus?: () => void; //신청하기인지 신청취소인지
     onApprovalStatus?: (updatedApplication: Application) => void //승인 상태와 관련
     onDisapprovalStatus?: (updatedApplication: Application) => void //승인 상태와 관련
-    //onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
+    onIsCompletedChanged?: () => void; //모집완료가 되었는지 감지
 }
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
@@ -114,6 +114,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             .then((res) => {
                 if (res.status === 200) {
                     alert(`모집이 완료되었습니다.`);
+                    (props.onIsCompletedChanged) ? props.onIsCompletedChanged() : alert(`모집 완료하는 데 오류가 발생했습니다.`);
                 }
             })
             .catch((err) => console.log(err));

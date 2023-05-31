@@ -12,7 +12,7 @@ export interface MyPageItems {
   nickname: string; //추가정보페이지의 닉네임
   track1: string; //1트랙 1학년인 경우 1,2트랙 모두 none으로 나옴.
   track2: string; //2트랙
-  reply: number; //자신이 작성한 댓글 수, 기본값 0
+  application: number; //자신이 작성한 댓글 수, 기본값 0
   board: number; //자신이 작성한 게시글 수, 기본값 0
   bookmark: number; //북마크한 게시글 수, 기본값 0
   skills: Array<string>; //추가정보페이지에서 선택한 관심있는 기술, 라이브러리나 프레임워크 의미
@@ -26,7 +26,7 @@ const MyPage = () => {
     nickname: "",
     track1: "",
     track2: "",
-    reply: 0,
+    application: 0,
     board: 0,
     bookmark: 0,
     skills: [],
@@ -97,7 +97,7 @@ const MyPage = () => {
         </Grid>
 
         <Grid item xs={12} md={7} rowSpacing={{ xs: "1.5rem" }}>
-          <MyHistory reply={myInfo.reply} board={myInfo.board} bookmark={myInfo.bookmark} />
+          <MyHistory application={myInfo.application} board={myInfo.board} bookmark={myInfo.bookmark} />
         </Grid>
       </Grid>) : (
       <MyPageSkeleton />

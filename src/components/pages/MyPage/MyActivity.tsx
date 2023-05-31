@@ -44,7 +44,7 @@ const MyActivity = (props: MyDataProps) => {
     }, [activityType])
     
     const activityTitle = activityType === "summary" ? "공부기록" :
-        activityType === "reply" ? "작성한 댓글" :
+        activityType === "application" ? "신청 목록" :
         activityType === "bookmark" ? "북마크한 글" :
         activityType === "post" ? "작성한 게시글" : null;
 

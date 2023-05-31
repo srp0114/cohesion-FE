@@ -1,19 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Box, Container, TextField, Button, Grid, FormControl, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack } from "@mui/material";
+import {
+  Alert, Box, Container, TextField, Button, Grid, FormControl, FormHelperText,
+  FormLabel, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack, ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import axios from "axios";
 import AddFile from "../layout/AddFile";
 import Skill from "../layout/Skill";
 import QuillEditor from "../layout/QuillEditor";
-import People from "../layout/People";
-import { ConditionRequired, ConditionOptional } from "../layout/Condition";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
 import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
-import Loading from "../layout/Loading";
 import { useForm, Controller } from "react-hook-form";
-import Shorten from "../layout/Shorten";
+import { FindIcon } from "../data/IconData";
 
 /*
  * 기본 게시글 작성 UI폼
@@ -27,10 +28,12 @@ const PostForm = () => {
   const [optional, setOptional] = useState<string>("");
   const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const [prevParty, setPrevParty] = useState(party);
+  const [prevGathered, setPrevGathered] = useState(gathered);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -47,6 +50,78 @@ const PostForm = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (required) setRequired(required);
+  }, [required]);
+
+  useEffect(() => {
+    if (optional) setOptional(optional);
+  }, [optional]);
+
+  useEffect(() => {
+    if (party !== null && !!party) {
+      setParty(party);
+    }
+    if (gathered !== null && !!gathered) {
+      setGathered(gathered);
+    }
+  }, [party, gathered]);
+
+  const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
+    { value: 1, disabled: false },
+    { value: 2, disabled: false },
+    { value: 3, disabled: false },
+    { value: 4, disabled: false },
+    { value: 5, disabled: false },
+    { value: 6, disabled: false },
+    { value: 7, disabled: false },
+    { value: 8, disabled: false },
+    { value: 9, disabled: false },
+  ]);
+
+  useEffect(() => {
+    getParty(party);
+    getGathered(gathered);
+  }, [party, gathered]);
+
+  useEffect(() => {
+    if (prevGathered !== gathered && party !== prevParty) {
+      setGathered(1);
+    }
+
+    setPrevGathered(gathered);
+    setPrevParty(party);
+  }, [party, gathered, prevGathered, prevParty]);
+
+  const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newPartyValue: number | null) => {
+    if (newPartyValue !== null) {
+      setParty(newPartyValue);
+      getParty(newPartyValue);
+      setValue("party", party, { shouldValidate: true });
+
+      const disabledRange = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const isDisabled = (value: number) => value >= newPartyValue;
+
+      const updatedGatheredButtons = disabledRange.map((value) => ({
+        value,
+        disabled: isDisabled(value),
+      }));
+
+      setGatheredButtons(updatedGatheredButtons);
+      console.log(`사용자가 선택한 party 값: ${party}`);
+    }
+  };
+
+  const handleGatheredChange = (event: React.MouseEvent<HTMLElement>, newGatheredValue: number | null) => {
+    if (newGatheredValue !== null) {
+      setGathered(newGatheredValue);
+      getGathered(newGatheredValue);
+      setValue("gathered", gathered, { shouldValidate: true });
+
+      console.log(`사용자가 선택한 gathered 값: ${gathered}`);
+    }
+  };
 
   //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
   const getContent = (value: string) => {
@@ -91,7 +166,6 @@ const PostForm = () => {
     });
   };
   const onSubmit = async () => {
-    setIsLoading(true);
     const request_data = {
       title: title,
       content: content,
@@ -277,11 +351,6 @@ const PostForm = () => {
       }
     }
     setOpen(true);
-    return (
-      <>
-        {isLoading && <Loading delayTime={1500} />}
-      </>
-    );
   };
 
   const { formState: { errors }, control, handleSubmit, setValue } = useForm({ mode: "onChange" });
@@ -293,9 +362,9 @@ const PostForm = () => {
     <>
       <Container>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container direction="column" spacing={2}>
+          <Grid container direction="column" spacing={2} mt={"2.5rem"} mb={"2.5rem"}>
             <Grid item>
-              <FormControl style={{ minWidth: "120px" }}>
+              <FormControl style={{ minWidth: "130px" }}>
                 <Select value={boardType} onChange={boardHandler}>
                   <MenuItem value={BoardType.free} defaultChecked>
                     자유게시판
@@ -308,21 +377,21 @@ const PostForm = () => {
 
             <Grid item container direction={"row"} spacing={"1.5rem"}>
               {SelectSkill}
-              {
-                (boardType === BoardType.recruit) ? (
-                  <>
-                    <Grid item container columnSpacing={2}>
-                      <ConditionRequired value={required} getRequired={getRequired} />
-                      <ConditionOptional value={optional} getOptional={getOptional} />
-                    </Grid>
-                    <People partyValue={party} gatheredValue={gathered} getParty={getParty} getGathered={getGathered} />
-                  </>) : null
-              }
               <Grid item xs>
                 <Controller
                   control={control}
                   name="title"
-                  rules={{ required: true }}
+                  rules={{
+                    required: "제목을 입력해주세요!",
+                    maxLength: {
+                      value: 30,
+                      message: "최대 30자까지 입력이 가능합니다."
+                    },
+                    minLength: {
+                      value: 3,
+                      message: "최소 3자 이상 입력해주세요!"
+                    },
+                  }}
                   render={({ fieldState: { error } }) => (
                     <TextField
                       fullWidth
@@ -333,14 +402,105 @@ const PostForm = () => {
                       value={title}
                       placeholder="제목을 입력해주세요"
                       error={error !== undefined}
-                      helperText={error ? "제목을 입력해주세요!" : ""}
+                      helperText={error ? error.message : ""}
                     />
                   )}
                 />
               </Grid>
+              {
+                (boardType === BoardType.recruit) ? (
+                  <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Grid item>
+                      <Controller
+                        name="party"
+                        control={control}
+                        rules={{
+                           required: "총 인원 수를 입력해주세요!",
+                           min:{
+                            value: gathered,
+                            message: "총 인원은 현재까지 모인 인원수보다 작을 수 없습니다"
+                          } }}
+                        render={({ field }) => (
+                          <>
+                            <FormLabel component="legend" required>총 인원</FormLabel>
+                            <FormControl fullWidth>
+                              <ToggleButtonGroup
+                                exclusive
+                                value={party}
+                                onChange={handlePartyChange}
+                                sx={{ borderRadius: "20px" }}
+                              >
+                                <ToggleButton value={2}>2</ToggleButton>
+                                <ToggleButton value={3}>3</ToggleButton>
+                                <ToggleButton value={4}>4</ToggleButton>
+                                <ToggleButton value={5}>5</ToggleButton>
+                                <ToggleButton value={6}>6</ToggleButton>
+                                <ToggleButton value={7}>7</ToggleButton>
+                                <ToggleButton value={8}>8</ToggleButton>
+                                <ToggleButton value={9}>9</ToggleButton>
+                                <ToggleButton value={10}>10</ToggleButton>
+                              </ToggleButtonGroup>
+
+                            </FormControl>
+                            <FormHelperText error={!!errors.party}>
+                              {typeof errors.party?.message === "string" && errors.party.message}
+                            </FormHelperText>
+                          </>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Controller
+                        name="gathered"
+                        control={control}
+                        rules={{ 
+                          required: "모인 인원 수를 입력해주세요!",
+                          max : {
+                            value: party-1,
+                            message: "모인 인원수는 총 인원보다 작아야 합니다.!"
+                          }
+                        }}
+                        render={({ field }) => (
+                          <>
+                            <FormLabel component="legend" required>모인 인원</FormLabel>
+                            <FormControl>
+                              <ToggleButtonGroup
+                                exclusive
+                                {...field}
+                                value={gathered}
+                                onChange={handleGatheredChange}
+                                sx={{ borderRadius: "20px" }}
+                              >
+                                {gatheredButtons.map((button) => (
+                                  <ToggleButton
+                                    key={button.value}
+                                    value={button.value}
+                                    disabled={button.disabled}
+                                  >
+                                    {button.value}
+                                  </ToggleButton>
+                                ))}
+                              </ToggleButtonGroup>
+
+                              <FormHelperText error={!!errors.gathered}>
+                                {typeof errors.gathered?.message === "string" && errors.gathered.message}
+                              </FormHelperText>
+                            </FormControl>
+                          </>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item sx={{ display: "flex", flexDirection: "row-reverse", textAlign: "center" }}>
+                      <Stack direction="row">
+                        <Typography variant="h3">{`${Number(gathered)} / ${Number(party)}`}</Typography> <Typography variant="body1">{`(명)`}</Typography><FindIcon name="recruitPeople" />
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                ) : null
+              }
             </Grid>
 
-            <Grid item>
+            <Grid item xs sx={{ width: "100%" }}>
               <Controller
                 control={control}
                 name="content"
@@ -362,9 +522,56 @@ const PostForm = () => {
                 {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
               </Box>
             </Grid>
+            {
+              (boardType === BoardType.recruit) ? (
+                <>
+                  <Grid item container columnSpacing={2}>
+                    <Grid item xs={6}>
+                      <Controller
+                        control={control}
+                        name="required"
+                        rules={{ required: true }}
+                        render={({ fieldState: { error } }) => (
+                          <>
+                            <TextField
+                              label="필수 조건"
+                              placeholder="작성 예시) 이번 학기 000000 과목 A분반 수강생"
+                              value={required}
+                              onChange={(event) => {
+                                setRequired(event.target.value);
+                                getRequired(event.target.value);
+                                setValue("required", event.target.value, { shouldValidate: true });
+                              }}
+                              rows={3}
+                              multiline
+                              error={error !== undefined}
+                              helperText={error ? "필수 조건을 입력해주세요!" : ""}
+                            />
+                          </>
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <TextField
+                        label="우대 조건"
+                        placeholder="작성 예시) 깃허브 사용경험이 있으시면 좋습니다."
+                        value={optional}
+                        onChange={(event) => {
+                          setOptional(event.target.value);
+                          getOptional(event.target.value);
+                        }}
+                        rows={3}
+                        multiline
+                      />
+                    </Grid>
+
+                  </Grid>
+                </>) : null
+            }
             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
-            <Grid item>
-              <Button variant="outlined" type="submit">작성하기</Button>
+            <Grid item justifyContent={"flex-end"} display={"flex"}>
+              <Button variant="contained" type="submit">작성하기</Button>
             </Grid>
           </Grid>
         </form>

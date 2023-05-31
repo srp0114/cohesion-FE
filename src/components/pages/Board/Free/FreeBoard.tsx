@@ -37,7 +37,7 @@ const FreeBoard = () => {
   const [search, setSearch] = useState<string | undefined>(undefined);
   const [sort, setSort] = useState<string>("createdAt,desc");
 
-  const getBoardItems = (search?: string) => {
+  const getBoardItems = (sort: string, search?: string) => {
     const curPage = page - 1;
     const params = { size: 5, sort: sort };
     let url = `/api/free/list?page=${curPage}`;
@@ -45,7 +45,7 @@ const FreeBoard = () => {
     if(search !== undefined) {
       url += `&search=${search}`;
     }
-    
+        
     setSearchParams({page: page.toString()})
     axios({
       method: "get",
@@ -68,8 +68,14 @@ const FreeBoard = () => {
   }
 
   useEffect(() => {
-    getBoardItems(search);
+    getBoardItems(sort, search);
   }, [page, search, sort]);
+
+  const arrangeBoard = (changeSort:string, changeSearch?: string | undefined) => {
+    setSearch(changeSearch);
+    setSort(changeSort);
+    getBoardItems(sort, search);
+  };
 
   const loadingStatus: boolean =  useSkeleton(800, freeData);
 
@@ -80,7 +86,6 @@ const FreeBoard = () => {
       </>
     );
   }
-
   );
 
   return (<>
@@ -88,8 +93,8 @@ const FreeBoard = () => {
         loadingStatus ? (
           <Stack direction={"column"} spacing={"2.5rem"} sx={{ padding: "2.25rem 10rem 4.5rem" }}>
             <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mb={"1rem"} pl={3}>
-              <Typography variant="h2" sx={{ fontWeight: 800 }}>자유게시판</Typography>
-              <SortBoard sort={sort} setSort={setSort}/>
+            <Typography variant="h2" className="boardTitle" onClick={() => {arrangeBoard("createdAt,desc", undefined)}}>자유게시판</Typography>
+            <SortBoard sort={sort} setSort={setSort} arrange={(sort) => arrangeBoard(sort, search)}/>
             </Stack>
             {freeData.length === 0 && search !== undefined? 
               <Stack p={"0rem 2rem 0rem"}>
@@ -97,7 +102,7 @@ const FreeBoard = () => {
               </Stack> : displayPosting
             }
             <Box display={"flex"} justifyContent={"flex-end"}>
-              <SearchBoardField setSearch={setSearch}/>
+              <SearchBoardField search={search} setSearch={setSearch} arrange={(search) => arrangeBoard(sort, search)}/>
             </Box>
             <PaginationControl
               page={page}

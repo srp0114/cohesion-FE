@@ -28,6 +28,8 @@ import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import Search from '@mui/icons-material/Search';
 import Description from "@mui/icons-material/DescriptionOutlined";
 import BorderColor from '@mui/icons-material/BorderColorOutlined';
+import DoneAll from '@mui/icons-material/DoneAllRounded';
+import PushPin from '@mui/icons-material/PushPin';
 
 const icons = [
     { name: "reply", component: <ChatIcon /> }, //댓글,
@@ -68,8 +70,9 @@ const icons = [
     { name: "description", component: <Description/>},
     { name: "borderColor", component: <BorderColor/>},
     { name: "collapseClose", component: <ExpandLess /> }, // V
-    { name: "collapseOpen", comonent: <ExpandMore /> }, //^
-
+    { name: "collapseOpen", component: <ExpandMore /> }, //^
+    { name: "doneAll", component: <DoneAll/>},
+    { name: "pushPin", component: <PushPin/>},
 ];
 
 const iconList = [
@@ -103,6 +106,9 @@ const iconList = [
     "description",
     "borderColor",
     "settings",
+    "done",
+    "doneAll",
+    "pushPin"
 ]
 
 /**

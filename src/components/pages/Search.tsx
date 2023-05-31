@@ -72,20 +72,38 @@ const Search = () => {
             <Typography variant="h2" sx={{fontWeight: 500}}>{search}에 대한 검색결과입니다</Typography>
           </Stack>
             {postings.map((board) => (
-              <Grid item container direction={"column"} spacing={"1rem"} p={"4rem"}>
-                <Grid item><Typography variant="h4" sx={{fontWeight: 600}}onClick={()=>{goToBoard(board.boardType)}}>
-                {getBoardType(board.boardType)}</Typography>
+              <Grid item container direction={"column"} spacing={"0.5rem"} p={"4rem"}>
+                <Grid item>
+                  <Typography variant="h4" sx={{fontWeight: 600}}
+                    onClick={()=>{goToBoard(board.boardType)}}>
+                    {getBoardType(board.boardType)}
+                    </Typography>
                 </Grid>
                 <Grid item>
-                <Divider sx={{color:"secondary.dark", borderBottomWidth: "0.7rem" }}/>
+                  <Divider sx={{bgcolor:"primary.dark", borderBottomWidth: "0.7rem", mb:"1rem" }}/>
                 </Grid>
                 {board.data.length > 0 ? (
                   board.data.map((posting) => (
-                    <Grid item container direction="row" alignItems={"center"} onClick={() => goToPost(board.boardType, posting.id)} ml={"2rem"}>
-                      <Grid item xs><Typography variant="h4">{posting.title}</Typography></Grid>
-                      <Grid item xs={4} md={4}>{userInfo(posting.writer, posting.stuId, posting.profileImg)}</Grid>
-                      <Grid item xs={1} md={1}><Time date={posting.createdDate} variant="h5"/></Grid>
+                    <>
+                    <Grid item container direction="row" alignItems={"center"}
+                      onClick={() => goToPost(board.boardType, posting.id)}
+                        sx={{ '&:hover': {
+                            backgroundColor: '#f2f2f2',
+                            opacity: [1.0, 0.9, 0.9],
+                            transform: "scale(1.01)",
+                          }, 
+                          p:"1rem", 
+                          borderRadius: 6,
+                          ml: "2rem"
+                        }} >
+                        <Grid item xs><Typography variant="h4">{posting.title}</Typography></Grid>
+                        <Grid item xs={4} md={4}>{userInfo(posting.writer, posting.stuId, posting.profileImg)}</Grid>
+                        <Grid item xs={1} md={1}><Time date={posting.createdDate} variant="h5"/></Grid>
                     </Grid>
+                    <Grid item>
+                      <Divider sx={{borderBottomWidth: "0.2rem", mb:"1rem" }}/>
+                    </Grid>
+                    </>
                     ))
                   ) : (
                     <Grid item ml={"2rem"}>
