@@ -32,6 +32,7 @@ interface DetailItems {
   bookmark: number;
   views: number; //조회수
   reply: number;
+  introduce: string;
 }
 
 //Q&A 상세보기
@@ -150,7 +151,7 @@ const QnADetails = () => {
             spacing={1}
             sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
             {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
            <Bookmark boardType={"questions"} id={id} />

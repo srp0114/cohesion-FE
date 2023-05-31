@@ -35,6 +35,7 @@ export interface RecruitDetailItems {
   reply: number;
   views: number; //조회수
   stuId: number; //사용자 학번
+  introduce: string;
   imgUrl?: Array<string>; //이미지
   require: string; //필수조건: 분반명 등
   optional?: string; //기타, 우대조건: 학점, 기술스택 등
@@ -232,7 +233,7 @@ const RecruitDetails = () => {
             spacing={1}
             sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
             {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
 

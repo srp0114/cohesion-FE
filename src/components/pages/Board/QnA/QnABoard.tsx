@@ -29,6 +29,7 @@ export interface BoardItems {
   profileImg: string | null; //사용자 이미지 img
   stuId: number; //사용자 아이디, 학번
   image: { imageUrl: string }[];
+  introduce: string;
 }
 
 const QnABoard = () => {
@@ -172,7 +173,7 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Stack>
         </Grid>
@@ -198,7 +199,7 @@ const PreviewPosting: React.FunctionComponent<BoardItems> = (props: BoardItems) 
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Box>
         </Grid>

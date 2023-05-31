@@ -18,6 +18,7 @@ interface HomeBoardItems {
     createdDate: string;
     bookmark: number;
     reply: number;
+    introduce: string;
 }
 
 interface HomeBoardProps {
@@ -44,15 +45,6 @@ const HomeBoard = (props: HomeBoardProps) => {
     const goToBoard = () => {
         navigate(`/${board}`)
     }
-    
-    const openInfoModal = () => {
-        if(addInfoError) { 
-            setOpen(!open);
-            setTimeout(() => {
-                navigate('/redirect');
-            }, 1500)
-        }
-    };
 
     useEffect(() => {
         axios({
@@ -93,37 +85,37 @@ const HomeBoard = (props: HomeBoardProps) => {
                     <Stack direction={"column"} 
                         spacing={"1rem"}
                         sx={{ 
-                        p: '1rem',
-                        m: '0.5rem',
-                        height:'8.5rem',
-                        '&:hover': {
-                            backgroundColor: '#f2f2f2',
-                            opacity: [1.0, 0.9, 0.9],
-                        },
-                        borderRadius:4
-                    }} 
-                    onClick={() => props.loginState ? goToPost(posting.id) : openInfoModal()}>
-                        <Stack display={"flex"} justifyContent={"space-between"} direction={"row"} alignItems={"center"}>
-                            {userInfo (posting.writer, posting.stuId, posting.profileImg)}
-                            <Time date={posting.createdDate}/> 
-                        </Stack>
-
-                        <Stack display={"flex"} justifyContent={"flex-start"} pl={"2.2rem"}>
-                            <Typography variant="h4">{Shorten(posting.title, 18)}</Typography>
-                        </Stack>
-
-                        <Stack display={"flex"} justifyContent={"flex-end"} spacing={"0.5rem"} direction={"row"} alignItems={"center"}>
-                            <Stack direction={"row"} spacing={"0.2rem"}>
-                            <FindIcon name="reply"/>
-                            <Typography variant="h5">{posting.reply}</Typography>
+                            p: '0.8rem 1.2rem 1rem 0.6rem',
+                            m: '0.5rem',
+                            height:'8.5rem',
+                            '&:hover': {
+                                backgroundColor: '#f2f2f2',
+                                opacity: [1.0, 0.9, 0.9],
+                            },
+                            borderRadius:4
+                        }}
+                        onClick={() => props.loginState ? goToPost(posting.id) : null}>
+                        <Stack direction={"column"} spacing={"0.5rem"}>
+                            <Stack display={"flex"} justifyContent={"space-between"} direction={"row"} alignItems={"center"}>
+                                {userInfo (posting.writer, posting.stuId, posting.profileImg, posting.introduce)}
+                                <Time date={posting.createdDate}/> 
                             </Stack>
-                            <Stack direction={"row"} spacing={"0.2rem"}>
-                            <FindIcon name="bookmark"/>
-                            <Typography variant="h5">{posting.bookmark}</Typography>
+
+                            <Stack display={"flex"} justifyContent={"flex-start"} pl={"2.2rem"}>
+                                <Typography variant="h4">{Shorten(posting.title, 18)}</Typography>
+                            </Stack>
+
+                            <Stack display={"flex"} justifyContent={"flex-end"} spacing={"0.5rem"} direction={"row"} alignItems={"center"}>
+                                <Stack direction={"row"} spacing={"0.2rem"}>
+                                <FindIcon name="reply"/>
+                                <Typography variant="h5">{posting.reply}</Typography>
+                                </Stack>
+                                <Stack direction={"row"} spacing={"0.2rem"}>
+                                <FindIcon name="bookmark"/>
+                                <Typography variant="h5">{posting.bookmark}</Typography>
+                                </Stack>
                             </Stack>
                         </Stack>
-
-
                     </Stack>
 
                     <Divider sx={{ borderBottomWidth: 3, borderColor: 'primary.light' }} />

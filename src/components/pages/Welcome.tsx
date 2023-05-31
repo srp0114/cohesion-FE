@@ -187,7 +187,7 @@ const Welcome = () => {
                       <Stack p={"0.5rem 0.5rem 0.5rem 1rem"}>
                         <Typography variant="h5" color="primary.dark">프로필 선택</Typography>
                       </Stack>
-                      <Grid container direction="row" spacing={5} alignItems={"center"}>
+                      <Grid container direction="row" spacing={2} alignItems={"center"}>
                         <Grid item xs={12} md={6}>
                           <ImageButton
                             style={flag === 1 ? clickBorder : defaultBorder}
@@ -215,9 +215,9 @@ const Welcome = () => {
                           </ImageButton>
                         </Grid>
                       </Grid>
-                      <Box pl={"0.9rem"} pt={"0.2rem"}>
+                        <Box pl={"0.9rem"} pt={"0.2rem"}>
                         <Typography variant="h6" color="error.main">{error?.message}</Typography>
-                      </Box>
+                        </Box>
                     </>
                   )}
                 />
@@ -312,7 +312,6 @@ const Welcome = () => {
                               postOnlyNickname(watch("nickname"));
                             }}                           
                             variant="outlined"
-                            color="info"
                             size="medium"
                           >
                             중복검사
@@ -411,7 +410,7 @@ const Welcome = () => {
 
 //프로필 선택 버튼
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  width: 410,
+  width: "100%",
   height: 150,
   [theme.breakpoints.down("sm")]: {
     width: "100% !important", // Overrides inline-style
@@ -419,13 +418,13 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   },
   "&:hover, &.Mui-focusVisible": {
     zIndex: 1,
-    border: "2px solid #5b81bd",
+    border: "2px solid #008CFF",
   },
   "&:focus": {
-    border: "2.5px solid #5b81bd",
+    border: "2.5px solid #008CFF",
   },
   "&:active": {
-    border: "2.5px solid #5b81bd",
+    border: "2.5px solid #008CFF",
   },
   borderRadius: 20,
   border: 'var(--border)',
@@ -437,7 +436,7 @@ const defaultBorder = {
 } as React.CSSProperties;
 
 const clickBorder = {
-  '--border': "2.5px solid #5b81bd",
+  '--border': "2.5px solid #008CFF",
 } as React.CSSProperties;
 
 
