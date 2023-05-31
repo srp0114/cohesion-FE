@@ -55,6 +55,7 @@ const EditForm = () => {
         });
     }, []);
 
+
     useEffect(() => {
         if (required) setRequired(required);
     }, [required]);
@@ -140,7 +141,7 @@ const EditForm = () => {
         // 첨부한 파일 리스트 출력을 위한 api 연동
         axios({
             method: "get",
-            url: `/api/free/${postingId}/file-list`
+            url: `/api/${state}/${postingId}/file-list`
         })
             .then((res) => {
                 setPostedFile(res.data);
@@ -162,6 +163,7 @@ const EditForm = () => {
     const getTitle = (value: string) => {
         setTitle(value);
     }
+
     const getContent = (value: string) => {
         setContent(value);
     };
@@ -203,257 +205,156 @@ const EditForm = () => {
     };
 
     const submitHandler = async () => {
-        const formData = new FormData();
-        setOpen(false);
-    };
-
-    useEffect(() => {
-        checkLogin().then((res) => {
-            if (!res) {
-                nav("/"); // 비로그인인 경우
-            }
-        });
-    }, []);
-
-    useEffect(() => {
-        setBoardType(state);
-        axios({
-            method: "get",
-            url: `/api/${state}/update/${postingId}`
-        }).then(
-            (res) => {
-                if (res.status === 200) { //수정폼에 기존 내용 미리 넣어놓기
-                    setTitle(res.data.title);
-                    setContent(res.data.content);
-                    // //Q&A게시판
-                    setSkill(res.data.language); //질문한 언어, 기술
-                    // //구인(모집) 게시판
-                    setRequired(res.data.required); //수정 불가
-                    setOptional(res.data.optional);
-                    setParty(res.data.party);
-                    setGathered(res.data.gathered); //수정 불가
-                }
-            }
-        ).catch((err) => console.log(err));
-
-        // 첨부한 파일 리스트 출력을 위한 api 연동
-        axios({
-            method: "get",
-            url: `/api/${state}/${postingId}/file-list`
-        })
-            .then((res) => {
-                setPostedFile(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-
-    useEffect(() => {
-        setValue("title", title);
-        setValue("content", content);
-    }, [setValue, title, content]);
-
-    //내용, 포인트 , 언어 컴포넌트로부터 데이터 받아오기
-    const getContent = (value: string) => {
-        setContent(value);
-    };
-
-    const getSkill = (value: string) => {
-        setSkill(value);
-        console.log(value);
 
         const request_data = {
             title: title,
             content: content,
+
         };
 
-        const getRequired = (value: string) => {
-            setRequired(value);
+        const request_qna = {
+            title: title,
+            content: content,
+            language: skill,
         };
 
-        const getOptional = (value: string) => {
-            setOptional(value);
-        };
-
-        const getParty = (value: number) => {
-            setParty(value);
-        };
-
-        const getGathered = (value: number) => {
-            setGathered(value);
-        };
-
-        const boardHandler = (event: SelectChangeEvent<unknown>) => {
-            setBoardType(event.target.value as string as BoardType);
-        };
-
-        const fileList: File[] = [];
-
-        const onSaveFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const files: FileList | null = e.target.files;
-            const fileArray = Array.prototype.slice.call(files);
-            setSelectedFiles(fileArray);
-            fileArray.forEach((file) => {
-                fileList.push(file);
-            });
-        };
-
-        const submitHandler = async () => {
-
-            const request_data = {
-                title: title,
-                content: content,
-
-            };
-
-            const request_qna = {
-                title: title,
-                content: content,
-                language: skill,
-            };
-
-            const request_recruit = {
-                title,
-                content,
-                required,
-                optional,
-                party,
-                gathered
-            }
-            const free_formData = new FormData();
-            const qna_formData = new FormData();
-            const recruit_formData = new FormData();
-
-            selectedFiles.forEach((file) => {
-                free_formData.append("file", file);
-            });
-            selectedFiles.forEach((file) => {
-                qna_formData.append("file", file);
-            });
-            selectedFiles.forEach((file) => {
-                recruit_formData.append("file", file);
-            });
-
-
-            qna_formData.append("stringQna", JSON.stringify(request_qna));
-            free_formData.append("stringFree", JSON.stringify(request_data));
-            recruit_formData.append("stringRecruit", JSON.stringify(request_recruit));
-
-
-            switch (boardType) {
-                case BoardType.free:
-                    if (selectedFiles.length > 0) {
-                        axios({
-                            method: "put",
-                            url: `/api/free/update/${postingId}/file`,
-                            headers: { "Content-Type": "multipart/form-data" },
-                            data: free_formData,
-                        }).then((res) => {
-                            if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`);
-                                nav(`/${boardType}/${postingId}`);
-                            }
-                        }).catch((err) => console.log(err));
-                    } else {
-                        axios({
-                            method: "put",
-                            url: `/api/free/update/${postingId}`,
-                            headers: { "Content-Type": "application/json" },
-                            data: JSON.stringify(request_data),
-                        })
-                            .then((res) => {
-                                if (res.status === 200) {
-                                    console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-                                    nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-                                } // 필요시 응답(401, 403 등) 에러 핸들링 ...
-                            })
-                            .catch((err) => console.log(err));
-                    }
-                    break;
-                case BoardType.question:
-                    if (selectedFiles.length > 0) {
-                        axios({
-                            method: "put",
-                            url: `/api/questions/update/${postingId}/file`,
-                            headers: { "Content-Type": "multipart/form-data" },
-                            data: qna_formData,
-                        }).then((res) => {
-                            if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`);
-                                nav(`/${boardType}/${postingId}`);
-                            }
-                        }).catch((err) => console.log(err));
-                    } else {
-                        axios({
-                            method: "put",
-                            url: `/api/questions/update/${postingId}`,
-                            headers: { "Content-Type": "application/json" },
-                            data: JSON.stringify(request_qna),
-                        })
-                            .then((res) => {
-                                if (res.status === 200) {
-                                    console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-                                    nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-                                } // 응답(401, 403 등) 핸들링 ...
-                            })
-                            .catch((err) => console.log(err));
-                    }
-                    break;
-                case BoardType.recruit:
-                    if (selectedFiles.length > 0) {
-                        axios({
-                            method: "put",
-                            url: `/api/recruit/update/${postingId}/file`,
-                            headers: { "Content-Type": "multipart/form-data" },
-                            data: recruit_formData,
-                        }).then((res) => {
-                            if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`);
-                                nav(`/${boardType}/${postingId}`);
-                            }
-                        }).catch((err) => console.log(err));
-                    } else {
-                        axios({
-                            method: "put",
-                            url: `/api/recruit/update/${postingId}`,
-                            headers: { "Content-Type": "application/json" },
-                            data: JSON.stringify(request_recruit),
-                        })
-                            .then((res) => {
-                                if (res.status === 200) {
-                                    console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
-                                    nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
-                                } // 응답(401, 403 등) 핸들링 ...
-                            })
-                            .catch((err) => console.log(err));
-                    }
-                    break;
-                /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
-                default:
-                    break;
-            }
-        };
-
-        // 파일 삭제 api
-        const deletePostedFile = (filename: string) => {
-            axios({
-                method: "delete",
-                url: `/api/files/delete/${filename}`
-            })
-                .then((res) => {
-                    setPostedFile(postedFile.filter((value) => value.originalName !== filename));
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+        const request_recruit = {
+            title,
+            content,
+            required,
+            optional,
+            party,
+            gathered
         }
+        const free_formData = new FormData();
+        const qna_formData = new FormData();
+        const recruit_formData = new FormData();
+
+        selectedFiles.forEach((file) => {
+            free_formData.append("file", file);
+        });
+        selectedFiles.forEach((file) => {
+            qna_formData.append("file", file);
+        });
+        selectedFiles.forEach((file) => {
+            recruit_formData.append("file", file);
+        });
 
 
+        qna_formData.append("stringQna", JSON.stringify(request_qna));
+        free_formData.append("stringFree", JSON.stringify(request_data));
+        recruit_formData.append("stringRecruit", JSON.stringify(request_recruit));
+
+
+        switch (boardType) {
+            case BoardType.free:
+                if (selectedFiles.length > 0) {
+                    axios({
+                        method: "put",
+                        url: `/api/free/update/${postingId}/file`,
+                        headers: { "Content-Type": "multipart/form-data" },
+                        data: free_formData,
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            console.log(`수정에 성공했습니다!`);
+                            nav(`/${boardType}/${postingId}`);
+                        }
+                    }).catch((err) => console.log(err));
+                } else {
+                    axios({
+                        method: "put",
+                        url: `/api/free/update/${postingId}`,
+                        headers: { "Content-Type": "application/json" },
+                        data: JSON.stringify(request_data),
+                    })
+                        .then((res) => {
+                            if (res.status === 200) {
+                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+                                nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+                            } // 필요시 응답(401, 403 등) 에러 핸들링 ...
+                        })
+                        .catch((err) => console.log(err));
+                }
+                break;
+            case BoardType.question:
+                if (selectedFiles.length > 0) {
+                    axios({
+                        method: "put",
+                        url: `/api/questions/update/${postingId}/file`,
+                        headers: { "Content-Type": "multipart/form-data" },
+                        data: qna_formData,
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            console.log(`수정에 성공했습니다!`);
+                            nav(`/${boardType}/${postingId}`);
+                        }
+                    }).catch((err) => console.log(err));
+                } else {
+                    axios({
+                        method: "put",
+                        url: `/api/questions/update/${postingId}`,
+                        headers: { "Content-Type": "application/json" },
+                        data: JSON.stringify(request_qna),
+                    })
+                        .then((res) => {
+                            if (res.status === 200) {
+                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+                                nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+                            } // 응답(401, 403 등) 핸들링 ...
+                        })
+                        .catch((err) => console.log(err));
+                }
+                break;
+            case BoardType.recruit:
+                if (selectedFiles.length > 0) {
+                    axios({
+                        method: "put",
+                        url: `/api/recruit/update/${postingId}/file`,
+                        headers: { "Content-Type": "multipart/form-data" },
+                        data: recruit_formData,
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            console.log(`수정에 성공했습니다!`);
+                            nav(`/${boardType}/${postingId}`);
+                        }
+                    }).catch((err) => console.log(err));
+                } else {
+                    axios({
+                        method: "put",
+                        url: `/api/recruit/update/${postingId}`,
+                        headers: { "Content-Type": "application/json" },
+                        data: JSON.stringify(request_recruit),
+                    })
+                        .then((res) => {
+                            if (res.status === 200) {
+                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
+                                nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
+                            } // 응답(401, 403 등) 핸들링 ...
+                        })
+                        .catch((err) => console.log(err));
+                }
+                break;
+            /* notice, summary 공지사항 혹은 마이페이지>공부기록 추가될 경우 이곳에 작성*/
+            default:
+                break;
+        }
     };
 
-    // 첨부파일 리스트 길이가 0 이상인 경우 해당 파일 이름과 버튼 
+    // 파일 삭제 api
+    const deletePostedFile = (filename: string) => {
+        axios({
+            method: "delete",
+            url: `/api/files/delete/${filename}`
+        })
+            .then((res) => {
+                setPostedFile(postedFile.filter((value) => value.originalName !== filename));
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    // 첨부파일 리스트 길이가 0 이상인 경우 해당 파일 이름과 버튼
     const PostedFile = postedFile.length > 0 ? (
         <Grid item>
             {postedFile.map((value) => {
@@ -496,6 +397,8 @@ const EditForm = () => {
                             </Grid>
                             <Grid item container direction={"row"} spacing={"1.5rem"}>
                                 {SelectSkill}
+
+
                                 <Grid item xs>
                                     <Grid item xs>
                                         <Controller
@@ -517,7 +420,6 @@ const EditForm = () => {
                                                     fullWidth
                                                     onChange={(e) => {
                                                         setValue("title", e.target.value, { shouldValidate: true });
-                                                        getTitle(e.target.value);
                                                     }}
                                                     value={value}
                                                     error={error !== undefined}
@@ -613,7 +515,7 @@ const EditForm = () => {
                                     </Grid>
                                 </Grid>
                             ) : null
-                            }
+                        }
                             <Grid item xs sx={{ width: "100%" }}>
                                 <Controller
                                     control={control}
@@ -633,7 +535,8 @@ const EditForm = () => {
                                     )}
                                 />
                                 <Box pl={"0.8rem"} pt={"0.2rem"}>
-                                    {errors.content && <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
+                                    {errors.content &&
+                                        <Typography variant="h6" color="error.main">내용을 입력해주세요!</Typography>}
                                 </Box>
                             </Grid>
                             {(boardType === BoardType.recruit) ? (
@@ -681,7 +584,8 @@ const EditForm = () => {
                             {PostedFile}
                             <AddFile handleFile={onSaveFiles} setSelectedFiles={setSelectedFiles} />
 
-                            <Grid item container columnSpacing={2} sx={{ marginTop: 2 }} display={"flex"} justifyContent={"flex-end"}>
+                            <Grid item container columnSpacing={2} sx={{ marginTop: 2 }} display={"flex"}
+                                justifyContent={"flex-end"}>
                                 <Grid item>
                                     <Button
                                         className="board button"
