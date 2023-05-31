@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import { Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
+import { Stack, Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
+import { FindIcon } from "../../data/IconData";
 import MySummary from "./MySummary"
 
 interface MyDataProps {
@@ -65,17 +64,29 @@ const MyActivity = (props: MyDataProps) => {
                             <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px"}}>
                             <CardContent>
                                 <Typography variant="subtitle2" color="black" gutterBottom>{value.title}</Typography>
-                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                    <Box>
+
+
+                                <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+
                                     <Typography variant="subtitle2" color="secondary.dark"> {value.writer}</Typography>
-                                    </Box>
-                                    <Box sx={{display:"flex"}}>
-                                    <BookmarkIcon />
-                                    <Typography>{value.bookmark}</Typography>
-                                    <ChatIcon sx={{ marginLeft: 1, marginRight: 0.5 }} />
-                                    <Typography>{value.reply}</Typography>
-                                    </Box>
-                                </Box>
+
+                                    <Stack
+                                        direction="row"
+                                        spacing={"0.5rem"}
+                                        display={"flex"}
+                                        alignItems={"center"}
+                                    >
+                                        <Stack direction={"row"} spacing={"0.2rem"}>
+                                        <FindIcon name="reply"/>
+                                        <Typography variant="h5">{value.reply}</Typography>
+                                        </Stack>
+                                        <Stack direction={"row"} spacing={"0.2rem"}>
+                                        <FindIcon name="bookmark"/>
+                                        <Typography variant="h5">{value.bookmark}</Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Stack>
+
                             </CardContent>
                             <CardActions>
                                 <Button size="small" onClick={()=>goToDetails(value.id, value.boardType)}>자세히 보기</Button>
