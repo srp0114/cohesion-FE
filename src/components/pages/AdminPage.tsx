@@ -57,6 +57,8 @@ const AdminPage = () => {
 
    useEffect(()=>{
 
+
+
        axios({
            method : "get",
            url : `/api/admin/check`
@@ -67,7 +69,7 @@ const AdminPage = () => {
        }).catch((err)=>{
            if(err.response && err.response.status===403){
                alert("관리자 계정이 아닙니다!!!");
-                window.location.href="/";
+               window.history.back();
            }
        })
 
