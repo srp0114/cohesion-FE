@@ -1,17 +1,15 @@
 import React, {useEffect, useState} from "react";
-import { Button, Box, Chip, Grid, IconButton, TextField, Typography, Stack, Paper, Avatar, Modal } from "@mui/material";
-import { skillData } from "../../data/SkillData";
-import UserSkill from "../../layout/UserSkill";
-import UserIntroduce from "../../layout/UserIntroduce";
+import { Button, Box, Chip, Grid, IconButton, TextField, Typography, Stack, Paper, Avatar, Modal, Autocomplete } from "@mui/material";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import { skillData } from "../../data/SkillData";
 
 interface MyIntroductionProps {
   nickname: string;
-  skills: Array<string>;
+  skills: string[];
   introduce: string;
   editUserInfo: (changeNickname: string, changeSkills: string[], changeIntroduce: string) => Promise<void>;
 }
@@ -20,9 +18,11 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [userNickname, setUserNickname] = useState<string>(props.nickname);
   const [userSkill, setUserSkill] = useState<string[]>(props.skills);
+  const selectedSkills = skillData.filter((skill) => userSkill?.includes(skill.name));
+  const [skill, setSkill] = useState(selectedSkills);
   const [userIntroduce, setUserIntroduce] = useState<string>(props.introduce);
-  const [error, setError] = useState<string>("");
-
+  const { control, setError, clearErrors, watch, handleSubmit } = useForm({ mode: "onChange",});
+  
   // props.nickname, ... 변동 시 setUserNickname(...), ... 재호출
   useEffect(() => {
     setUserNickname(props.nickname);
@@ -46,9 +46,12 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
     props.editUserInfo(userNickname, userSkill, userIntroduce)
       .then(() => {
         setOpen(false); // 수정 성공, 정보 요청 성공 시 모달 닫기
-        setError(""); // 에러 메시지 초기화
       })
-      .catch((err) => setError(err.response.data.message)); // 수정 실패 시, 에러 메시지 출력
+      .catch((err) => {
+          setError("nickname", { message: err.response.data.message});
+          console.log(err)
+        }
+      );
   }
 
   return (
@@ -68,29 +71,117 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
         </IconButton>
 
         <Modal open={open}>
+          <form onSubmit={handleSubmit(editMyIntroduce)}>
+
           <Stack sx={editUserinfoModal} direction={"column"} spacing={5}>
             <Typography variant="h1" align="center" sx={{fontWeight:"600"}}>내 정보 수정</Typography>
-            <Box>
-              {/*닉네임 수정*/}
+            <Stack direction={"column"} spacing={"3rem"}>
+            <Stack direction={"column"} spacing={"1rem"}>
               <Typography variant="h5" pb={"0.6rem"}>닉네임</Typography>
-              <UserNickname nickname={props.nickname} changeNickname={onChangeNickname} err={error} />
-            </Box>
-            <Box>
+              <Controller
+                  control={control}
+                  name="nickname"
+                  rules={{
+                    required : "닉네임을 입력해주세요!",
+                    maxLength: {
+                      value: 8,
+                      message: "최대 8자까지 입력이 가능합니다",
+                    },
+                    minLength: {
+                      value: 2,
+                      message: "최소 2자부터 등록이 가능합니다",
+                    },
+                  }}
+                  defaultValue={userNickname}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      placeholder="새로운 닉네임을 알려주세요!"
+                      error={error !== undefined}
+                      helperText={error ? error.message : ""}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        onChangeNickname(e.target.value);
+                      }}
+                    />
+                  )}
+                />
+            </Stack>
+            <Stack direction={"column"} spacing={"1rem"}>
               <Typography variant="h5" pb={"0.6rem"}>관심기술을 선택해주세요!</Typography>
-              <UserSkill skills={props.skills} changeSkills={onChangeSkills} />
-            </Box>
-            <Box pt={"1rem"}>
+              <Controller
+                control={control}
+                name="skills"
+                rules={{
+                  validate: (data) => {
+                    if (data && data.length > 7) return false;
+                  },
+                }}
+                render={({ field: { ref, onChange, ...field }, fieldState }) => (
+                  <Autocomplete
+                    multiple
+                    value={skill}
+                    options={skillData}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(_, data) => {
+                      onChange(data);
+                      setSkill(data);
+                      onChangeSkills(data.map((s) => s.name));
+                    }}
+                    renderOption={(props, option) => (
+                      <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>
+                        <img src={option.logo} width={20} height={20} />
+                        {option.name}
+                      </Box>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...field}
+                        {...params}
+                        fullWidth
+                        placeholder="관심기술을 선택해주세요!"
+                        inputRef={ref}
+                        variant="outlined"
+                        error={fieldState.error !== undefined}
+                        helperText={fieldState.error ? "관심기술은 5개까지 선택할 수 있습니다." : ""}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Stack>
+            <Stack direction={"column"} spacing={"1rem"}>
               <Typography variant="h5" pb={"0.6rem"}>자기소개</Typography>
-              <UserIntroduce introduce={props.introduce} changeIntroduce={onChangeIntroduce} />
-            </Box>
+              <Controller
+                control={control}
+                name="introduce"
+                rules={{
+                maxLength: 100,
+                }}
+                defaultValue={userIntroduce || ""}
+                render={({ field, fieldState: { error } }) => (
+                <TextField
+                    {...field}
+                    multiline
+                    placeholder="자기소개를 해주세요."
+                    rows={2}
+                    error={error !== undefined}
+                    helperText={error ? "글자 수를 초과했습니다." : ""}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onChangeIntroduce(e.target.value);
+                    }}
+                />
+                )}
+            />
+            </Stack>
+            </Stack>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-              <Button onClick={() => {
-                setOpen(false);
-                setError("");
-              }}>취소</Button>
-              <Button onClick={editMyIntroduce}>수정</Button>
+              <Button onClick={() => setOpen(false)}>취소</Button>
+              <Button type="submit">수정</Button>
             </Stack>
           </Stack>
+          </form>
         </Modal>
       </Stack>
       </Grid>
@@ -127,53 +218,4 @@ const editUserinfoModal = {
   boxShadow: 20,
   p: "4rem",
   borderRadius: 6,
-};
-
-
-interface UserNicknameProps {
-  changeNickname: (nickname: string) => void;
-  nickname?: string;
-  err?: string;
-}
-
-const UserNickname = ({ changeNickname, nickname, err }: UserNicknameProps) => {
-  const { control, setError, clearErrors, watch } = useForm({
-    mode: "onChange",
-    defaultValues: { nickname: nickname },
-  });
-
-  return (
-    <>
-      <Controller
-        control={control}
-        name="nickname"
-        rules={{
-          maxLength: {
-            value: 8,
-            message: "최대 8자까지 입력이 가능합니다",
-          },
-          minLength: {
-            value: 2,
-            message: "최소 2자부터 등록이 가능합니다",
-          },
-        }}
-        defaultValue={nickname || ""}
-        render={({ field, fieldState: { error } }) => (
-          <TextField
-            {...field}
-            multiline
-            placeholder="새로운 닉네임을 알려주세요!"
-            rows={1}
-            error={error !== undefined}
-            helperText={error ? error.message : ""}
-            onChange={(e) => {
-              field.onChange(e);
-              changeNickname(e.target.value);
-            }}
-          />
-        )}
-      />
-      {err && <p>{err}</p>} {/* 에러 발생 시 출력 TODO 적절하게 커스터마이징 필요 */}
-    </>
-  );
 };
