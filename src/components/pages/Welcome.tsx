@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Chip, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Container, Grid } from "@mui/material";
+import { Box, Autocomplete, Typography, TextField, Button, Stack, ButtonBase, ListItemAvatar, Avatar, Container, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import IdTokenVerifier from "idtoken-verifier";
 import axios from "axios";
@@ -7,10 +7,10 @@ import { useNavigate } from "react-router";
 import { logoutHandler } from "../logoutHandler";
 import Profile from "../layout/Profile";
 import { useForm, Controller } from "react-hook-form";
-import UserSkill from "../layout/UserSkill";
-import UserIntroduce from "../layout/UserIntroduce";
 import { useTheme } from "@mui/material/styles"
 import { FindIcon } from "../data/IconData";
+import { skillData } from "../data/SkillData";
+import { UseFormSetError, UseFormClearErrors } from "react-hook-form";
 
 interface UserInfoItems {
   sub: number;
@@ -46,13 +46,9 @@ const Welcome = () => {
   const [flag, setFlag] = useState<number>(-1);
   const asUrl = process.env.REACT_APP_AUTHORIZATION_SERVER_URL;
 
-  const { formState: { errors }, register, control, handleSubmit, setError, clearErrors, watch,  } = useForm<UserAddItems>({ mode: "onChange" });
+  const { formState: { errors }, setValue, control, handleSubmit, setError, clearErrors, watch,  } = useForm<UserAddItems>({ mode: "onChange" });
 
   const navigate = useNavigate();
-
-  const [isOnlyNickName, setIsOnlyNickName] = useState<boolean | null>(null);
-
-  const _theme = useTheme();
 
   const back = () => {
     logoutHandler();
@@ -136,7 +132,8 @@ const Welcome = () => {
     setUserInfo({ ...userInfo, picture: flag === 1 ? profileImg : null });
   }
 
-  //닉네임 중복 검사 함수
+  const [isOnlyNickName, setIsOnlyNickName] = useState<boolean | null>(null);
+
   const postOnlyNickname = (nickname: string) => {
     const request_nickname = {
       nickname: nickname
@@ -155,30 +152,17 @@ const Welcome = () => {
               type: "manual",
               message: "사용 중인 닉네임입니다.",
             });
+            setValue("isOnlyNickName", false);
           } else {
             clearErrors("isOnlyNickName");
+            setValue("isOnlyNickName", true);
+            setError("isOnlyNickName", { message: "중복검사를 통과했습니다"});
           }
           setIsOnlyNickName(res.data);
-          console.log(res.data);
         }
       })
       .catch((err) => { console.log(`postOnlyNickname에서 error catch ${err}`) });
   }
-
-  const resetIsNickName = (check: boolean | null) => {
-    if (check) {
-      setError("isOnlyNickName", {
-        type: "manual",
-        message: "사용 중인 닉네임입니다.",
-      });
-    } else {
-      clearErrors("isOnlyNickName");
-    }
-    console.log(check);
-  };
-
-  console.log(isOnlyNickName);
-
   return (
     <>
       <Container maxWidth="md">
@@ -198,7 +182,7 @@ const Welcome = () => {
                   rules={{
                     required: "프로필을 선택해주세요!",
                   }}
-                  render={({ field: { value, onChange }, fieldState: { error } }) => (
+                  render={({ field: { onChange }, fieldState: { error } }) => (
                     <>
                       <Stack p={"0.5rem 0.5rem 0.5rem 1rem"}>
                         <Typography variant="subtitle1">프로필 선택</Typography>
@@ -284,7 +268,7 @@ const Welcome = () => {
                 </Grid>
               </Box>
               <Box>
-                <Grid container direction="row" spacing={"1rem"} alignItems={"center"}>
+                <Grid container direction="row" spacing={"1rem"}>
                     <Grid item xs={6} md={10.5}>
                       <Controller
                         control={control}
@@ -303,7 +287,10 @@ const Welcome = () => {
                         render={({ field, fieldState: { error } }) => (
                           <TextField
                             {...field}
-                            onClick={()=>{resetIsNickName(null)}}
+                            onClick={()=>{
+                              clearErrors("isOnlyNickName");
+                              setValue("isOnlyNickName", false)
+                            }}
                             placeholder="닉네임을 입력해주세요"
                             error={error !== undefined}
                             helperText={error ? error.message : ""}
@@ -311,15 +298,19 @@ const Welcome = () => {
                         )}
                       />
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs mt={"0.6rem"}>
                       <Controller
                         control={control}
                         name="isOnlyNickName"
-                        defaultValue={(isOnlyNickName ?? true)} // 상태값을 기본값으로 설정
-                        render={() => (
+                        rules={{
+                          required: "중복검사가 필요합니다!"
+                        }}
+                        render={({ field }) => (
                           <Button
                             type="button"
-                            onClick={() => postOnlyNickname(watch("nickname"))}
+                            onClick={async () => {
+                              postOnlyNickname(watch("nickname"));
+                            }}                           
                             variant="outlined"
                             color="info"
                             size="medium"
@@ -328,28 +319,85 @@ const Welcome = () => {
                           </Button>
                         )}
                       />
+                     
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <Stack p={"0.5rem"}>
-                  {errors.isOnlyNickName && 
-                    <Stack direction={"row"} alignItems={"center"}>
-                    <FindIcon name="close" iconProps={{color:"error"}}/>
-                    <Typography variant="h5" color="error">{errors.isOnlyNickName.message}</Typography>
-                    </Stack>
-                  }
-                </Stack>
-                </Grid>
+                 <Grid item>
+                    <Stack p={"0.5rem 0.5rem 0.5rem 0.85rem"}>
+                    {errors.isOnlyNickName && 
+                      <Stack direction={"row"} alignItems={"center"}>
+                      <Typography variant="h6" color="error">{errors.isOnlyNickName.message}</Typography>
+                      </Stack>
+                    }
+                  </Stack>
+                  </Grid>
               </Box>
               <Box>
-                <UserSkill skills={userInfo.skills} changeSkills={onChangeSkill} />
+                <Controller
+                  control={control}
+                  name="skills"
+                  rules={{
+                    validate: (data) => {
+                      if (data && data.length > 2) return false;
+                    },
+                  }}
+                  render={({ field: { ref, onChange, ...field }, fieldState }) => (
+                    <Autocomplete
+                      multiple
+                      options={skillData}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(_, data) => {
+                        onChange(data);
+                        onChangeSkill(data.map((s) => s.name));
+                      }}
+                      renderOption={(props, option) => (
+                        <Box component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...props}>
+                          <img src={option.logo} width={20} height={20} />
+                          {option.name}
+                        </Box>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...field}
+                          {...params}
+                          fullWidth
+                          placeholder="관심기술을 선택해주세요!"
+                          inputRef={ref}
+                          variant="outlined"
+                          error={fieldState.error !== undefined}
+                          helperText={fieldState.error ? "관심기술은 7개까지 선택할 수 있습니다." : ""}
+                        />
+                      )}
+                    />
+                  )}
+                />
               </Box>
               <Box>
-                <UserIntroduce introduce={userInfo.introduce} changeIntroduce={onChangeIntroduce} />
+                <Controller
+                    control={control}
+                    name="introduce"
+                    rules={{
+                    maxLength: 100,
+                    }}
+                    render={({ field, fieldState: { error } }) => (
+                    <TextField
+                        {...field}
+                        multiline
+                        placeholder="자기소개를 해주세요."
+                        rows={2}
+                        error={error !== undefined}
+                        helperText={error ? "글자 수를 초과했습니다." : ""}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          onChangeIntroduce(e.target.value);
+                        }}
+                    />
+                    )}
+                />
               </Box>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button sx={{ mr: "1rem" }} onClick={back}>뒤로</Button>
-                <Button type="submit" variant="contained" disabled={isOnlyNickName === false}>완료</Button>
+                <Button type="submit" variant="contained" >완료</Button>
               </Box>
             </Stack>
           </form>
