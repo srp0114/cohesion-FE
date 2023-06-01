@@ -25,7 +25,7 @@ const SideBar = (props: UserInfoItems) => {
                 justifyContent: "flex-start",
             }}>
                 <Profile nickname={nickname} imgUrl={profileImg} size={45}/>
-                <Stack direction={"row"} spacing={1} mt={"1rem"} ml={"1rem"}>
+                <Stack direction={"row"} spacing={1} mt={"0.1rem"} ml={"1rem"} alignItems={"center"}>
                     <Typography variant="h4" sx={{fontWeight:"500"}}>{nickname}</Typography>
                     <Typography variant="h5" color="primary.dark">님</Typography>
                 </Stack>
