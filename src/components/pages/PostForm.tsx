@@ -26,14 +26,11 @@ const PostForm = () => {
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
-  const [party, setParty] = useState<number>(0);
+  const [party, setParty] = useState<number>(11);
   const [gathered, setGathered] = useState<number>(0);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const [prevParty, setPrevParty] = useState(party);
-  const [prevGathered, setPrevGathered] = useState(gathered);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -50,6 +47,14 @@ const PostForm = () => {
       }
     });
   }, []);
+
+  const changeParty = (party: React.SetStateAction<number>) => {
+    setParty(party);
+  }
+
+  const changeGathered = (gathered: React.SetStateAction<number>) => {
+    setGathered(gathered);
+  }
 
   useEffect(() => {
     if (required) setRequired(required);
@@ -68,6 +73,14 @@ const PostForm = () => {
     }
   }, [party, gathered]);
 
+  useEffect(()=>{
+    console.log(`${JSON.stringify(party)}`);
+  },[party]);
+
+    useEffect(()=>{
+    console.log(`${JSON.stringify(gathered)}`);
+  },[gathered]);
+
   const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
     { value: 1, disabled: false },
     { value: 2, disabled: false },
@@ -85,18 +98,12 @@ const PostForm = () => {
     getGathered(gathered);
   }, [party, gathered]);
 
-  useEffect(() => {
-    if (prevGathered !== gathered && party !== prevParty) {
-      setGathered(1);
-    }
-
-    setPrevGathered(gathered);
-    setPrevParty(party);
-  }, [party, gathered, prevGathered, prevParty]);
+  useEffect(() => { setGathered(1); }
+    , [party]);
 
   const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newPartyValue: number | null) => {
     if (newPartyValue !== null) {
-      setParty(newPartyValue);
+      changeParty(newPartyValue);
       getParty(newPartyValue);
       setValue("party", party, { shouldValidate: true });
 
@@ -115,7 +122,7 @@ const PostForm = () => {
 
   const handleGatheredChange = (event: React.MouseEvent<HTMLElement>, newGatheredValue: number | null) => {
     if (newGatheredValue !== null) {
-      setGathered(newGatheredValue);
+      changeGathered(newGatheredValue);
       getGathered(newGatheredValue);
       setValue("gathered", gathered, { shouldValidate: true });
 
@@ -415,11 +422,12 @@ const PostForm = () => {
                         name="party"
                         control={control}
                         rules={{
-                           required: "총 인원 수를 입력해주세요!",
-                           min:{
+                          required: "총 인원 수를 입력해주세요!",
+                          min: {
                             value: gathered,
                             message: "총 인원은 현재까지 모인 인원수보다 작을 수 없습니다"
-                          } }}
+                          }
+                        }}
                         render={({ field }) => (
                           <>
                             <FormLabel component="legend" required>총 인원</FormLabel>
@@ -453,10 +461,10 @@ const PostForm = () => {
                       <Controller
                         name="gathered"
                         control={control}
-                        rules={{ 
+                        rules={{
                           required: "모인 인원 수를 입력해주세요!",
-                          max : {
-                            value: party-1,
+                          max: {
+                            value: party - 1,
                             message: "모인 인원수는 총 인원보다 작아야 합니다.!"
                           }
                         }}
