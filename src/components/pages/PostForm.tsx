@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Alert, Box, Container, TextField, Button, Grid, FormControl, FormHelperText,
   FormLabel, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack, ToggleButton,
@@ -11,6 +11,7 @@ import QuillEditor from "../layout/QuillEditor";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
+import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
 import { useForm, Controller } from "react-hook-form";
 import { FindIcon } from "../data/IconData";
@@ -25,7 +26,7 @@ const PostForm = () => {
   const [skill, setSkill] = useState<string>("");
   const [required, setRequired] = useState<string>("");
   const [optional, setOptional] = useState<string>("");
-  const [party, setParty] = useState<number>(11);
+  const [party, setParty] = useState<number>(0);
   const [gathered, setGathered] = useState<number>(0);
   const nav = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -47,14 +48,6 @@ const PostForm = () => {
     });
   }, []);
 
-  const changeParty = (party: React.SetStateAction<number>) => {
-    setParty(party);
-  }
-
-  const changeGathered = (gathered: React.SetStateAction<number>) => {
-    setGathered(gathered);
-  }
-
   useEffect(() => {
     if (required) setRequired(required);
   }, [required]);
@@ -70,8 +63,9 @@ const PostForm = () => {
     if (gathered !== null && !!gathered) {
       setGathered(gathered);
     }
+    getParty(party);
+    getGathered(gathered)
   }, [party, gathered]);
-
 
   const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
     { value: 1, disabled: false },
@@ -85,17 +79,11 @@ const PostForm = () => {
     { value: 9, disabled: false },
   ]);
 
-  useEffect(() => {
-    getParty(party);
-    getGathered(gathered);
-  }, [party, gathered]);
-
-  useEffect(() => { setGathered(1); }
-    , [party]);
 
   const handlePartyChange = (event: React.MouseEvent<HTMLElement>, newPartyValue: number | null) => {
     if (newPartyValue !== null) {
-      changeParty(newPartyValue);
+      setGathered(1);
+      setParty(newPartyValue);
       getParty(newPartyValue);
       setValue("party", party, { shouldValidate: true });
 
@@ -108,14 +96,17 @@ const PostForm = () => {
       }));
 
       setGatheredButtons(updatedGatheredButtons);
+      console.log(`사용자가 선택한 party 값: ${party}`);
     }
   };
 
   const handleGatheredChange = (event: React.MouseEvent<HTMLElement>, newGatheredValue: number | null) => {
     if (newGatheredValue !== null) {
-      changeGathered(newGatheredValue);
+      setGathered(newGatheredValue);
       getGathered(newGatheredValue);
       setValue("gathered", gathered, { shouldValidate: true });
+
+      console.log(`사용자가 선택한 gathered 값: ${gathered}`);
     }
   };
 
@@ -126,6 +117,7 @@ const PostForm = () => {
 
   const getSkill = (value: string) => {
     setSkill(value);
+    console.log(value);
   };
 
   const getRequired = (value: string) => {
@@ -410,12 +402,12 @@ const PostForm = () => {
                         name="party"
                         control={control}
                         rules={{
-                          required: "총 인원 수를 입력해주세요!",
-                          min: {
+                           required: "총 인원 수를 입력해주세요!",
+                           min:{
                             value: gathered,
                             message: "총 인원은 현재까지 모인 인원수보다 작을 수 없습니다"
-                          }
-                        }}
+                          } }}
+                          defaultValue={4}
                         render={({ field }) => (
                           <>
                             <FormLabel component="legend" required>총 인원</FormLabel>
@@ -449,13 +441,14 @@ const PostForm = () => {
                       <Controller
                         name="gathered"
                         control={control}
-                        rules={{
+                        rules={{ 
                           required: "모인 인원 수를 입력해주세요!",
-                          max: {
-                            value: party - 1,
+                          max : {
+                            value: (party-1),
                             message: "모인 인원수는 총 인원보다 작아야 합니다.!"
                           }
                         }}
+                        defaultValue={1}
                         render={({ field }) => (
                           <>
                             <FormLabel component="legend" required>모인 인원</FormLabel>

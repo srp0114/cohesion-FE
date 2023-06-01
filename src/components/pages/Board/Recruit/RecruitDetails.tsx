@@ -21,6 +21,7 @@ import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { FindIcon } from "../../../data/IconData";
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
+import { resolveModuleName } from "typescript";
 
 export interface State extends SnackbarOrigin {
   open: boolean;
@@ -60,7 +61,9 @@ const RecruitDetails = () => {
   const [approvedApplicants, setApprovedApplicants] = useState<0 | 1 | -1 | number>(0); //승인된 인원수
   const [applicants, setApplicants] = useState<number>(0); //신청인원수
   const [gathered, setGathered] = useState<number>(0); //모인인원
-  const [isCompleted, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
+  const [party, setParty] = useState<number>(0); //총 인원수
+  const [isCompleted, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나? (버튼을 눌러)
+  const [remain, setRemain] = useState<number>(-1); //모집 완료가 되었나? (인원이 차 자동 모집완료)
   const [fileList, setFileList] = useState<FileItem[]>([]);
 
   const _theme = useTheme();
@@ -101,6 +104,13 @@ const RecruitDetails = () => {
   }
 
   useEffect(() => {
+    if (remain === 0) {
+      //모집인원이 0이 되어 모집이 마감되었을 때,
+      alert(`필요한 인원이 모두 모여 모집이 완료되었습니다!`);
+    }
+  }, [remain]);
+
+  useEffect(() => {
     axios({
       method: "get",
       url: "/api/recruit/detail/" + id,
@@ -110,6 +120,8 @@ const RecruitDetails = () => {
           setPostItem(res.data);
           setIsCompleted(res.data.isCompleted);
           setGathered(res.data.gathered);
+          setParty(res.data.party);
+          setRemain(res.data.party - res.data.gathered);
         }
       })
       .catch((err) => {
@@ -214,13 +226,13 @@ const RecruitDetails = () => {
         {/*게시글 제목, 수정 표시, 파티원 (1 / 9999) */}
         <Grid item container xs={12} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
-          <Grid item xs={8}>
+          <Grid item sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Typography variant="h1" sx={{ fontWeight: "600", textWrap: "balance" }}>{postItem.title}</Typography>
             {(typeof postItem.modifiedDate === 'object') ?
               null : <Chip label="수정됨" size="small" variant="outlined" />}
           </Grid>
 
-          <Grid item xs={4} sx={{ display: "flex", flexDirection: "row-reverse", alignItems: "center" }}>
+          <Grid item sx={{ display: "flex", flexDirection: "row-reverse", alignItems: "center" }}>
             <FindIcon name="recruitPeople" iconProps={{ fontSize: "large", color: "primary" }} />
             <Stack direction="row" sx={{ margin: 1 }} >
               <Typography variant="h3" color="info">
@@ -231,23 +243,23 @@ const RecruitDetails = () => {
 
         </Grid>
         {/*작성자 정보 , 작성 시각 */}
-        <Grid item xs={12} md={8} sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
-          >
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
-            {TimeAndViews(postItem.createdDate, postItem.views)}
-          </Stack>
-
-          <Grid item container xs={12} md={4} sx={{ display: "flex", flexDirection: "row-reverse", textAlign: "center", alignItems: "center" }}>
+        <Grid item container xs={12} md={8} sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
+            >
+              {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
+              {TimeAndViews(postItem.createdDate, postItem.views)}
+            </Stack>
+          </Grid>
+          <Grid item>
             <Bookmark boardType={"recruit"} id={id} />
           </Grid>
-
         </Grid>
         {/*게시글 내용 */}
-        <Grid item xs={12} sx={{ m: "1rem 2.5rem", width:"100%" }}>
+        <Grid item xs={12} sx={{ m: "1rem 2.5rem", width: "100%" }}>
           <div dangerouslySetInnerHTML={{ __html: postItem.content }} />
         </Grid>
         <Divider sx={{ margin: "2rem 0" }} />
@@ -278,16 +290,14 @@ const RecruitDetails = () => {
               {/* 모집완료 버튼과 신청하기 버튼을 클릭하면, 더블체킹을하는 모달. */}
               {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
                 ? <>
-                  <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} onClick={() => setModalOpen(true)} disabled={isCompleted} />
-                  <DoubleCheckModal modalOpen={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
+                  <Chip label="모집완료" variant="outlined" onClick={() => setModalOpen(true)} disabled={isCompleted} />
+                  <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                     onModalOpenChange={handleModalOpenChange} onIsCompletedChanged={handleIsCompletedChanged} />
                 </>
                 : <>
                   <Tooltip title={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}>
                     <Chip label={((typeof applicantStatus !== 'boolean') ? "신청하기" : "신청취소")}
-                      variant="outlined" icon={<FindIcon name={
-                        ((typeof applicantStatus !== 'boolean') ? `apply` : `applyCancel`)
-                      } />}
+                      variant="outlined"
                       onClick={() => setModalOpen(true)}
                       color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
                     />
