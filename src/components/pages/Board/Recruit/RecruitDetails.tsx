@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material/styles"
 import Time from "../../../layout/Time";
-import { Box, Button, Chip, Divider, Grid, Stack, Typography, IconButton, Zoom, Tooltip } from "@mui/material";
+import { Box, Button, Chip, Divider, Grid, Stack, Typography, IconButton, Zoom, Tooltip, SnackbarOrigin } from "@mui/material";
 import axios from "axios";
 import Reply from "../../../layout/Reply/Reply";
 import { PostingCrumbs } from "../../../layout/postingDetail/postingCrumbs";
@@ -21,6 +21,10 @@ import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { FindIcon } from "../../../data/IconData";
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
+
+export interface State extends SnackbarOrigin {
+  open: boolean;
+}
 
 //모집 상세보기 인터페이스
 export interface RecruitDetailItems {
@@ -170,10 +174,10 @@ const RecruitDetails = () => {
           case "":
             break;
           case "true":
-            alert(`신청서가 승인 되었습니다.`);
+            alert(`신청이 승인되었습니다!`);
             break;
           case "false":
-            alert(`아직 신청 승인 대기 중입니다.`);
+            alert(`승인 대기 중입니다!`);
             break;
           default:
             alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 오류 발생`);
@@ -275,7 +279,7 @@ const RecruitDetails = () => {
               {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
                 ? <>
                   <Chip label="모집완료" variant="outlined" icon={<FindIcon name="recruitComplete" />} onClick={() => setModalOpen(true)} disabled={isCompleted} />
-                  <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
+                  <DoubleCheckModal modalOpen={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                     onModalOpenChange={handleModalOpenChange} onIsCompletedChanged={handleIsCompletedChanged} />
                 </>
                 : <>
@@ -288,7 +292,7 @@ const RecruitDetails = () => {
                       color={((typeof applicantStatus !== 'boolean') ? "primary" : "secondary")}
                     />
                   </Tooltip>
-                  <DoubleCheckModal open={modalOpen} who={false} callNode={((typeof applicantStatus !== 'boolean') ? "applyBtn" : "applyCancelBtn")} id={accessUserId} postingId={postingId}
+                  <DoubleCheckModal modalOpen={modalOpen} who={false} callNode={((typeof applicantStatus !== 'boolean') ? "applyBtn" : "applyCancelBtn")} id={accessUserId} postingId={postingId}
                     requireContext={postItem.require} optionalContext={postItem.optional}
                     onModalOpenChange={handleModalOpenChange} onApplicantOut={handleApplicantOut} onNewApplicant={handleNewApplicant} onApplicantStatus={handleApplicantStatus} />
                 </>
