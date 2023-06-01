@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert, Box, Container, TextField, Button, Grid, FormControl, FormHelperText,
   FormLabel, SelectChangeEvent, Select, Snackbar, MenuItem, Typography, Stack, ToggleButton,
@@ -11,7 +11,6 @@ import QuillEditor from "../layout/QuillEditor";
 import { checkLogin } from "../checkLogin";
 import { useNavigate } from "react-router";
 import "../style/Board.css";
-import { getCurrentUserInfo } from "../getCurrentUserInfo";
 import { BoardType } from "../model/board";
 import { useForm, Controller } from "react-hook-form";
 import { FindIcon } from "../data/IconData";
@@ -73,13 +72,6 @@ const PostForm = () => {
     }
   }, [party, gathered]);
 
-  useEffect(()=>{
-    console.log(`${JSON.stringify(party)}`);
-  },[party]);
-
-    useEffect(()=>{
-    console.log(`${JSON.stringify(gathered)}`);
-  },[gathered]);
 
   const [gatheredButtons, setGatheredButtons] = React.useState<Array<{ value: number; disabled: boolean }>>([
     { value: 1, disabled: false },
@@ -116,7 +108,6 @@ const PostForm = () => {
       }));
 
       setGatheredButtons(updatedGatheredButtons);
-      console.log(`사용자가 선택한 party 값: ${party}`);
     }
   };
 
@@ -125,8 +116,6 @@ const PostForm = () => {
       changeGathered(newGatheredValue);
       getGathered(newGatheredValue);
       setValue("gathered", gathered, { shouldValidate: true });
-
-      console.log(`사용자가 선택한 gathered 값: ${gathered}`);
     }
   };
 
@@ -137,7 +126,6 @@ const PostForm = () => {
 
   const getSkill = (value: string) => {
     setSkill(value);
-    console.log(value);
   };
 
   const getRequired = (value: string) => {
