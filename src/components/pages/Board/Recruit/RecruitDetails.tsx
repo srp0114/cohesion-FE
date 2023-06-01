@@ -291,7 +291,7 @@ const RecruitDetails = () => {
               {(Number(postItem.stuId) === Number(accessUserId)) //게시글 작성자의 학번 === 접속한유저의학번
                 ? <>
                   <Chip label="모집완료" variant="outlined" onClick={() => setModalOpen(true)} disabled={isCompleted} />
-                  <DoubleCheckModal open={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
+                  <DoubleCheckModal modalOpen={modalOpen} who={true} callNode="completeBtn" id={accessUserId} postingId={postingId}
                     onModalOpenChange={handleModalOpenChange} onIsCompletedChanged={handleIsCompletedChanged} />
                 </>
                 : <>
