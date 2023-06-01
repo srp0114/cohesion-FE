@@ -11,10 +11,10 @@ import banner_5 from "../asset/banner/banner_5.png";
 const feUrl = process.env.REACT_APP_FRONT_URL;
 
 const banners = [
-  { imgUrl: banner_1, }, //학교사진
+  { imgUrl: banner_1, url: `https://www.hansung.ac.kr/sites/hansung/index.do`}, //학교사진
   { imgUrl: banner_2, url: `${feUrl}/notice/21` }, //핑퐁 소개
   { imgUrl: banner_3, url: `http://cse.hansung.ac.kr/` }, //컴공학부 관련
-  { imgUrl: banner_4, }, //토막상식
+  { imgUrl: banner_4, url: `https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ping`}, //토막상식
   { imgUrl: banner_5, url: `https://www.ponggame.org/` }, //pong
 ];
 
