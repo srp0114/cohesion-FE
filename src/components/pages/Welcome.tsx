@@ -71,6 +71,7 @@ const Welcome = () => {
       verifier.verify(id_token, (error, payload: any) => {
         if (error) {
           alert("토큰이 만료되었습니다.");
+          logoutHandler();
           return;
         }
         setUserInfo((prev) => ({ ...prev, ...payload, nickname: payload.name }));
