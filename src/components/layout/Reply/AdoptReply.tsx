@@ -52,11 +52,12 @@ const AdoptReply = ({ userId, writerUserId, onReplyAdopt, check, checkId, replyI
             <Typography variant="h3" p={"0.5rem"}>{check? "댓글 채택 취소" : "댓글 채택"}</Typography>
             <Typography variant="h4" align="center">{check? "댓글 채택을 취소하시겠습니까?" : "해당 댓글을 채택 하시겠습니까?"}</Typography>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-                <Button onClick={()=>{ 
+                <Button
+                onClick={()=>{ 
                     setAdoptModalOpen(false); 
                     handleClose();
                 }}>취소</Button>
-                <Button onClick={handleCheckReply}>확인</Button>
+                <Button onClick={handleCheckReply} variant="contained">확인</Button>
             </Stack>
         </Stack>
         </Paper>

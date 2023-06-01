@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemIcon, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip } from "@mui/material"
+import { Avatar, Box, Button, Chip, Checkbox, Collapse, Drawer, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Stack, Typography, IconButton, List, ListItem, ListItemIcon, ListItemButton, ListItemText, ListItemAvatar, ListSubheader, Modal, Tooltip, SnackbarOrigin } from "@mui/material"
 import axios from "axios";
 import Profile from "../../../layout/Profile";
 import { skillData } from "../../../data/SkillData";
@@ -13,13 +13,17 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
  */
 
+export interface State extends SnackbarOrigin {
+    open: boolean;
+  }  
+
 interface DoubleCheckModalProps {
     postingId: number;
     id?: number; //접속한 유저의 아이디
     who: boolean; //접속한 유저가 작성자인지 신청자인지
     callNode: string; //모달을 부른 곳이 어디인지
     isComplete?: boolean;
-    open: boolean;
+    modalOpen: boolean;
     requireContext?: string;
     optionalContext?: string;
     targetApplication?: Application; //승인할 신청서
@@ -34,7 +38,7 @@ interface DoubleCheckModalProps {
 export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const _theme = useTheme(); //시스템에 설정된 theme 불러옴(style/theme.tsx파일)
 
-    const [open, setOpen] = React.useState<boolean>(false);
+    const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
     const [isMeetOptional, setIsMeetOptional] = useState<boolean | null>(false);
 
@@ -85,12 +89,10 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             if (res.status === 200) {
                 (props.onNewApplicant) ? props.onNewApplicant() : alert(`신청하는데 오류가 발생했습니다.`);
                 (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청버튼 동작 여부 설정에 오류가 발생했습니다.`);
-                alert(`신청이 완료되었습니다.`);
             }
         }).catch((err) => {
             console.log(err);
         });
-
     }
 
     const deleteApplicationCancel = () => {
@@ -99,7 +101,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
             url: `/api/recruit/${props.postingId}/application-cancel`,
         }).then((res) => {
             if (res.status === 200) {
-                alert(`신청취소되었습니다.`);
                 (props.onApplicantOut) ? props.onApplicantOut() : alert(`신청하는데 오류가 발생했습니다.`);
                 (props.onApplicantStatus) ? props.onApplicantStatus() : alert(`신청취소버튼 설정에 오류가 발생했습니다.`);
             }
@@ -113,7 +114,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         })
             .then((res) => {
                 if (res.status === 200) {
-                    alert(`모집이 완료되었습니다.`);
                     (props.onIsCompletedChanged) ? props.onIsCompletedChanged() : alert(`모집 완료하는 데 오류가 발생했습니다.`);
                 }
             })
@@ -167,13 +167,13 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수조건" labelPlacement="start" />
                             <Typography variant="subtitle1">
                                 {props.optionalContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대조건" labelPlacement="start" />
                         </FormGroup>
-                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                        <FormHelperText>필수조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
                 </>
             );
@@ -185,9 +185,9 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수조건" labelPlacement="start" />
                         </FormGroup>
-                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                        <FormHelperText>필수조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
                 </>
             );
@@ -198,50 +198,54 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         switch (operator) {
             case 0:
                 postApplicantInfo(); //신청정보서버로
+                alert(`신청을 완료했습니다!`);
                 break;
             case 1:
                 deleteApplicationCancel(); //신청취소정보서버로
+                alert(`신청을 취소했습니다!`);
                 break;
             case 2:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
+                alert(`모집을 완료했습니다`);
                 break;
             case 3:
                 if (props.targetApplication !== undefined && props.targetApplication !== null) {
                     console.log(`targetApplication:  ${JSON.stringify(props.targetApplication)}`);
                     putApprove(props.targetApplication);
+                    alert(`[ ${props.targetApplication.nickname} ] 승인했습니다.`);
                 }
                 break;
             case 4:
                 if (props.targetApplication !== undefined && props.targetApplication !== null) {
                     console.log(`targetApplication: ${JSON.stringify(props.targetApplication)} `);
                     putReject(props.targetApplication); // 승인 취소 정보 서버로
+                    alert(`[ ${props.targetApplication.nickname} ] 승인 취소했습니다.`);
                 }
                 break;
             default:
                 alert("에러 발생");
-                setOpen(false);
+                setModalOpen(false);
         }
         if (props.targetApplication !== undefined && props.targetApplication !== null) {
-            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setOpen(false);
+            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setModalOpen(false);
         }
-        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
+        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setModalOpen(false);
     }
 
     const cancelClickHandler = () => {
         if (props.targetApplication !== undefined && props.targetApplication !== null) {
-            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setOpen(false);
+            (props.onModalOpenChange) ? props.onModalOpenChange(false, props.targetApplication.id.toString()) : setModalOpen(false);
         }
-        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setOpen(false);
+        else (props.onModalOpenChange) ? props.onModalOpenChange(false) : setModalOpen(false);
     };
 
     return (
         <>
             <Modal
-                open={props.open}
+                open={props.modalOpen}
                 onClose={cancelClickHandler}
                 sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', justifyItems: 'center', alignItems: 'center' }}
             >
-
                 <Grid container xs={4} sx={doubleCheckModalstyle} spacing={'1.5rem'}>
                     <Grid item xs={12}>
                         <Typography align="center" variant="h4" sx={{ my: 2 }} fontWeight="800">
@@ -253,8 +257,8 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                     <Divider variant="fullWidth" />
                     <Grid item xs={12}>
                         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                            <Button className="modalCancelButton" onClick={cancelClickHandler} variant="outlined" color="info" >취소</Button>
-                            <Button className="modalConfirmButton" onClick={confirmClickHandler} variant="contained" color="info" >확인</Button>
+                            <Button onClick={cancelClickHandler} >취소</Button>
+                            <Button onClick={confirmClickHandler} variant="contained" >확인</Button>
                         </Stack>
                     </Grid>
                 </Grid>
@@ -390,7 +394,6 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                 ) {
                     return;
                 }
-
                 setState({ ...state, [anchor]: open });
             };
     return (
@@ -436,9 +439,9 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 {/* 필수, 우대 조건 */}
                                                 <Grid item xs={12}>
                                                     <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" color="primary" />}
-                                                        {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대사항 👌" color="secondary" /> : null}
-                                                        {typeof app.isMeetOptional === 'boolean' && !(app.isMeetOptional) ? <Chip size="small" variant="outlined" label="우대사항 ❌" color="secondary" /> : null}
+                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수조건 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수조건 ❌" color="primary" />}
+                                                        {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대조건 👌" color="secondary" /> : null}
+                                                        {typeof app.isMeetOptional === 'boolean' && !(app.isMeetOptional) ? <Chip size="small" variant="outlined" label="우대조건 ❌" color="secondary" /> : null}
                                                     </Stack>
                                                 </Grid>
                                             </Grid>
@@ -450,25 +453,27 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                             <FindIcon name="approveReject" />
                                                         </IconButton>
                                                     </Tooltip>
-                                                    <DoubleCheckModal open={modalStates[app.id] || false}
+                                                    <DoubleCheckModal modalOpen={modalStates[app.id] || false}
                                                         who={true}
                                                         callNode={"approveConfirmBtn"}
                                                         postingId={props.postingId}
                                                         onModalOpenChange={handleModalOpenChange}
                                                         targetApplication={app}
                                                         onApprovalStatus={handleApprovalStatus}
+                                                       
                                                     />
                                                 </>
                                                     : <><Tooltip title={`승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                         <FindIcon name="approveComplete" />
                                                     </IconButton></Tooltip>
-                                                        <DoubleCheckModal open={modalStates[app.id] || false}
+                                                        <DoubleCheckModal modalOpen={modalStates[app.id] || false}
                                                             who={true}
                                                             callNode={"approveCancelBtn"}
                                                             postingId={props.postingId}
                                                             onModalOpenChange={handleModalOpenChange}
                                                             targetApplication={app}
                                                             onDisapprovalStatus={handleDisapprovalStatus}
+                                                            
                                                         />
                                                     </>}
                                             </Grid>

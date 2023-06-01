@@ -77,11 +77,11 @@ const MySummaryMenu = (props: MySummaryMenuProps) => {
                     <Typography variant="h3" p={"0.5rem"}>공부기록 삭제</Typography>
                     <Typography variant="h4" align="center">공부기록을 삭제하시겠습니까?</Typography>
                     <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-                        <Button onClick={()=>{ 
+                        <Button  onClick={()=>{ 
                             setDeleteOpen(false); 
                             handleClose();
                         }}>취소</Button>
-                        <Button onClick={()=>deleteHandler(props.summaryId)}>삭제</Button>
+                        <Button variant="contained" onClick={()=>deleteHandler(props.summaryId)}>삭제</Button>
                     </Stack>
                 </Stack>
                 </Paper>

@@ -34,10 +34,12 @@ const Skill: React.FC<SkillProps>= ({getSkill, value}) => {
             </Stack> : 
             <Typography variant="h5" color="primary.dark">질문할 기술을 선택해주세요</Typography>
           )}
+          MenuProps={MenuProps}
           >
             {skillData.map((value) => (
             <MenuItem value={value.name}>
-              <Avatar sx={{ width: 30, height: 30, ml:2, mr:3 }} src={value.logo}/> {value.name}
+              <img src={value.logo} width={30} height={30} style={{marginLeft: "1rem", marginRight:"2.5rem"}}/>
+              {value.name}
             </MenuItem>
           ))}
             
@@ -46,5 +48,13 @@ const Skill: React.FC<SkillProps>= ({getSkill, value}) => {
     </Grid>
   );
 }
+
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 225
+      },
+    },
+  };
 
 export default Skill;

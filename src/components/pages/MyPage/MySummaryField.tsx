@@ -46,7 +46,7 @@ const MySummaryField = ({onAddSummary} : MySummary) => {
                         {...params}
                     />
                 )}
-                
+                   ListboxProps={{ style: { maxHeight: '15rem' } }}
                />
             </Grid>
             <Grid item xs>

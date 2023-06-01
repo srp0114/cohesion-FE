@@ -52,7 +52,7 @@ const EditQuillReply = (props: EditReplyProps) => {
             </div>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
                 <Button onClick={handleCancel}>취소</Button>
-                <Button onClick={handleSubmit} disabled={isDisabled()}>수정</Button>
+                <Button variant="contained" onClick={handleSubmit} disabled={isDisabled()}>수정</Button>
             </Stack>
         </Stack>
         </Paper>

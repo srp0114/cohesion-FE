@@ -179,7 +179,7 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
             </Stack>
             <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
               <Button onClick={() => setOpen(false)}>취소</Button>
-              <Button type="submit">수정</Button>
+              <Button type="submit" variant="contained" >수정</Button>
             </Stack>
           </Stack>
           </form>

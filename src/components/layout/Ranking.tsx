@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Divider, Stack } from "@mui/material";
+import { Typography, Divider, Stack, Tooltip, IconButton } from "@mui/material";
 import Profile from "../layout/Profile";
 import axios from "axios";
 import { useNavigate } from "react-router";
@@ -16,7 +16,8 @@ interface UserRakingItem {
     adoptSize: number,
     nickname: string,
     studentId: string,
-    profileImg: string | null
+    profileImg: string | null,
+    introduce: string
 }
 
 // 인기게시글 컴포넌트
@@ -120,8 +121,20 @@ export const UserRanking = () => {
             return (
                 <>
                 <Stack m={"1.5rem 1rem 0.5rem 1.5rem"} direction={"row"} p={"0.5rem"} alignItems={"center"} spacing={"2rem"}>
-                    <Typography variant="h4" sx={{fontWeight: 500}} mr={"2rem"}>{index+1}위</Typography>
-                    <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33}/>
+                    <Typography variant="h4" sx={{fontWeight: 500}} mr={"1rem"}>{index+1}위</Typography>
+                    {value.introduce === "" ? (
+                        <IconButton>
+                    <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33} />
+                    </IconButton>
+                    ) : (
+                        <Tooltip title={value.introduce}>
+                            <IconButton>
+                    <Profile nickname={value.nickname} imgUrl={value.profileImg} size={33} />
+                    </IconButton>
+                        </Tooltip>
+                    )
+                    }
+
                     <Typography variant="h5">{Shorten(value.nickname, 8)}</Typography>
                     <Typography variant="h6" color="secondary.dark">{studentId}학번</Typography>
                 </Stack>
