@@ -286,7 +286,7 @@ export interface Application {
     studentId: number,
     track1: string,
     skills: string[],
-
+    introduce: string,
     isApproved: boolean,
     collapseOpen?: boolean,
     modalStates?: boolean,
@@ -416,7 +416,11 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                             {/* 프로필 이미지 */}
                                             <Grid item xs={3}>
                                                 <ListItemAvatar>
+                                                    <Tooltip title={app.introduce}>
+                                                    <IconButton>
                                                     <Profile nickname={app.nickname} imgUrl={app.profileImg} size={48} />
+                                                    </IconButton>
+                                                    </Tooltip>
                                                 </ListItemAvatar>
                                             </Grid>
 

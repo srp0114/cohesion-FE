@@ -166,9 +166,9 @@ const Welcome = () => {
   return (
     <>
       <Container maxWidth="md">
-      <Grid container direction="column" display={"flex"} justifyContent={"center"} spacing={"2rem"} mt={"5rem"} mb={"5rem"}>
+      <Grid container direction="column" display={"flex"} justifyContent={"center"} spacing={"2.5rem"} mt={"3rem"} mb={"5rem"}>
         <Grid item>
-            <Stack alignItems={"center"} justifyContent={"center"} display={"flex"}>
+            <Stack alignItems={"center"} justifyContent={"center"} display={"flex"} mb={"1rem"}>
             <Typography variant="h2" sx={{fontWeight:600}} >부가 정보를 입력해주세요</Typography>
             </Stack>
         </Grid>
@@ -185,9 +185,9 @@ const Welcome = () => {
                   render={({ field: { onChange }, fieldState: { error } }) => (
                     <>
                       <Stack p={"0.5rem 0.5rem 0.5rem 1rem"}>
-                        <Typography variant="subtitle1">프로필 선택</Typography>
+                        <Typography variant="h5" color="primary.dark">프로필 선택</Typography>
                       </Stack>
-                      <Grid container direction="row" spacing={5} alignItems={"center"}>
+                      <Grid container direction="row" spacing={2} alignItems={"center"}>
                         <Grid item xs={12} md={6}>
                           <ImageButton
                             style={flag === 1 ? clickBorder : defaultBorder}
@@ -215,9 +215,9 @@ const Welcome = () => {
                           </ImageButton>
                         </Grid>
                       </Grid>
-                      <Box pl={"0.9rem"} pt={"0.2rem"}>
+                        <Box pl={"0.9rem"} pt={"0.2rem"}>
                         <Typography variant="h6" color="error.main">{error?.message}</Typography>
-                      </Box>
+                        </Box>
                     </>
                   )}
                 />
@@ -312,7 +312,6 @@ const Welcome = () => {
                               postOnlyNickname(watch("nickname"));
                             }}                           
                             variant="outlined"
-                            color="info"
                             size="medium"
                           >
                             중복검사
@@ -377,13 +376,14 @@ const Welcome = () => {
                     control={control}
                     name="introduce"
                     rules={{
-                    maxLength: 100,
+                      maxLength: 100,
                     }}
                     render={({ field, fieldState: { error } }) => (
                     <TextField
                         {...field}
                         multiline
                         placeholder="자기소개를 해주세요."
+                        maxRows={2}                    
                         rows={2}
                         error={error !== undefined}
                         helperText={error ? "글자 수를 초과했습니다." : ""}
@@ -410,7 +410,7 @@ const Welcome = () => {
 
 //프로필 선택 버튼
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  width: 410,
+  width: "100%",
   height: 150,
   [theme.breakpoints.down("sm")]: {
     width: "100% !important", // Overrides inline-style
@@ -418,13 +418,13 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   },
   "&:hover, &.Mui-focusVisible": {
     zIndex: 1,
-    border: "2px solid #5b81bd",
+    border: "2px solid #008CFF",
   },
   "&:focus": {
-    border: "2.5px solid #5b81bd",
+    border: "2.5px solid #008CFF",
   },
   "&:active": {
-    border: "2.5px solid #5b81bd",
+    border: "2.5px solid #008CFF",
   },
   borderRadius: 20,
   border: 'var(--border)',
@@ -436,7 +436,7 @@ const defaultBorder = {
 } as React.CSSProperties;
 
 const clickBorder = {
-  '--border': "2.5px solid #5b81bd",
+  '--border': "2.5px solid #008CFF",
 } as React.CSSProperties;
 
 

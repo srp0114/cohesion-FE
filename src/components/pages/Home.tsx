@@ -24,7 +24,7 @@ export interface UserInfoItems {
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [user, setUser] = useState<UserInfoItems>({
     nickname: "",
     studentId: 0,
@@ -33,6 +33,10 @@ const Home = () => {
   });
 
   const handleClose = () => setOpen(false);
+  const openModal = () => {
+    if (!isLogin)
+      setOpen(!open);
+  };
 
   // sessionStorage로부터 저장된 토큰 있는지 처음 렌더링할때만 확인
   // 토큰있으면 - 게시판 보이도록
@@ -63,11 +67,6 @@ const Home = () => {
     sessionStorage.setItem("codeChallenge", codeChallenge);
 
     navigate(`/redirect`);
-  };
-
-  const openModal = () => {
-    if (!isLogin)
-      setOpen(!open);
   };
 
   return (

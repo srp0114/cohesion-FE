@@ -26,7 +26,8 @@ interface FreeDetailItems {
   modifiedDate?: string;
   bookmark: number;
   reply: number;
-  views: number; //조회수
+  views: number; 
+  introduce: string;
 }
 
 export interface FileItem {
@@ -37,7 +38,6 @@ const FreeDetails = () => {
   const [postItem, setPostItem] = useState<FreeDetailItems | undefined>();
   const { id } = useParams() as { id: string };
   const [accessUserId, setAccessUserId] = useState<number>(0); //접속한 유저의 id
-  const [isFile, setIsFile] = useState<boolean>(false);
   const [fileList, setFileList] = useState<FileItem[]>([]);
 
   const postingId = Number(id);
@@ -112,7 +112,7 @@ const loadingStatus: boolean = useSkeleton(800);
             spacing={1}
             sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}
           >
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
             {TimeAndViews(postItem.createdDate, postItem.views)}
           </Stack>
           <Bookmark boardType={"free"} id={id} />

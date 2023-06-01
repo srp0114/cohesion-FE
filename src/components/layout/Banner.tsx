@@ -53,7 +53,10 @@ const BannerSlider = () => {
   };
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" 
+        sx={{"&:hover": {
+          cursor: "pointer"
+        }}}>
       <IconButton disableRipple onClick={previous} ><FindIcon name="previous" iconProps={{ fontSize: "large", color: "#777" }} /></IconButton>
       <div
         style={{

@@ -19,6 +19,7 @@ export interface FreeBoardItems {
   content: string;
   writer: string;
   stuId: number;
+  introduce: string;
   profileImg: string | null;
   createdDate: string;
   modifiedDate?: string;
@@ -166,7 +167,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Stack>
         </Grid>
@@ -191,7 +192,7 @@ const PreviewPosting: React.FunctionComponent<FreeBoardItems> = (
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Box>
         </Grid>
