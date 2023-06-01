@@ -215,7 +215,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           },
           title: {
             fontSize: "1.25rem",
-            fontWeight: 500,
+            fontWeight: 600,
             color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
           },
           subheader: {
@@ -228,7 +228,6 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           root: {
             fontSize: "1rem",
             color: (!props.isCompleted) ? "#000000" : _theme.palette.neutral.dark,
-            paddingTop: 0,
           },
         },
       },
@@ -270,9 +269,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
 
         <CardHeader
           /*제목(20자까지)이랑 수정 표시*/
-          title={<Stack direction="row" spacing={1} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>{Shorten(props.title, 20)}</Typography>
-          </Stack>}
+          title={<Typography variant="h5" sx={{ fontWeight: 600 }}>{Shorten(props.title, 20)}</Typography>}
           /* 작성 시간 */
           subheader={
             <div style={{ display: "flex", justifyContent: "flex-end" }}>

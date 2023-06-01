@@ -367,6 +367,7 @@ const Welcome = () => {
                           helperText={fieldState.error ? "관심기술은 7개까지 선택할 수 있습니다." : ""}
                         />
                       )}
+                       ListboxProps={{ style: { maxHeight: '10rem' } }}
                     />
                   )}
                 />
