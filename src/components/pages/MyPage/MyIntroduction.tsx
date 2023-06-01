@@ -164,6 +164,7 @@ export const MyIntroduction = (props: MyIntroductionProps) => {
                     {...field}
                     multiline
                     placeholder="자기소개를 해주세요."
+                    maxRows={2}
                     rows={2}
                     error={error !== undefined}
                     helperText={error ? "글자 수를 초과했습니다." : ""}

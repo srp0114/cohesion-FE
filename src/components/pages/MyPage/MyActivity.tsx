@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import { Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
-import BookmarkIcon from "@mui/icons-material/BookmarkBorder";
-import ChatIcon from "@mui/icons-material/ChatBubbleOutline";
+import { Stack, Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
+import { FindIcon } from "../../data/IconData";
+import Shorten from "../../layout/Shorten";
 import MySummary from "./MySummary"
 
 interface MyDataProps {
@@ -54,28 +54,39 @@ const MyActivity = (props: MyDataProps) => {
 
     return (
         <>
-        <Typography variant="h4" mt={"3rem"} ml={"1rem"}>{activityTitle}</Typography>
+        <Typography variant="h4" mt={"3rem"} ml={"1rem"} sx={{fontWeight: "600"}}>{activityTitle}</Typography>
             <Box sx={{display:"flex", flexWrap:"wrap", justifyContent: "space-between"}}>
                 {activityType === "summary" ? <MySummary/> :
                 activity.length === 0 ? 
-                    <Typography variant="h2" textAlign="center" p={5} color="primary.dark">아직 {activityTitle}이 없습니다</Typography> : 
+                    <Typography variant="h2" textAlign="center" p={5} color="primary.dark" sx={{fontWeight:"400"}}>아직 {activityTitle}이 없습니다</Typography> : 
                     activity.map((value) => {
                         return (
-                            // TODO: 카드 높이 조정 필요
-                            <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px"}}>
+                            <Card sx={{ width: "48%", mt:"1.5rem", borderRadius:"15px", p:"1rem"}}>
                             <CardContent>
-                                <Typography variant="subtitle2" color="black" gutterBottom>{value.title}</Typography>
-                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                    <Box>
+                                <Typography variant="subtitle2" color="black" gutterBottom>{Shorten(value.title, 20)}</Typography>
+
+
+                                <Stack direction={"row"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} mt={"1rem"}>
+
                                     <Typography variant="subtitle2" color="secondary.dark"> {value.writer}</Typography>
-                                    </Box>
-                                    <Box sx={{display:"flex"}}>
-                                    <BookmarkIcon />
-                                    <Typography>{value.bookmark}</Typography>
-                                    <ChatIcon sx={{ marginLeft: 1, marginRight: 0.5 }} />
-                                    <Typography>{value.reply}</Typography>
-                                    </Box>
-                                </Box>
+
+                                    <Stack
+                                        direction="row"
+                                        spacing={"0.5rem"}
+                                        display={"flex"}
+                                        alignItems={"center"}
+                                    >
+                                        <Stack direction={"row"} spacing={"0.2rem"}>
+                                        <FindIcon name="reply"/>
+                                        <Typography variant="h5">{value.reply}</Typography>
+                                        </Stack>
+                                        <Stack direction={"row"} spacing={"0.2rem"}>
+                                        <FindIcon name="bookmark"/>
+                                        <Typography variant="h5">{value.bookmark}</Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Stack>
+
                             </CardContent>
                             <CardActions>
                                 <Button size="small" onClick={()=>goToDetails(value.id, value.boardType)}>자세히 보기</Button>
