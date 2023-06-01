@@ -20,5 +20,5 @@ export interface Posting {
   report: number;
   condition?: String; //구인게시판 조건
   language?: string;
-  //todo(은서): 게시판 성격따라서 다른 옵션 추가되어 질 수 있음
+  introduce: string;
 }
