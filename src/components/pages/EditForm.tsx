@@ -104,7 +104,6 @@ const EditForm = () => {
             }));
 
             setGatheredButtons(updatedGatheredButtons);
-            console.log(`사용자가 선택한 party 값: ${party}`);
         }
     };
 
@@ -112,8 +111,6 @@ const EditForm = () => {
         if (newGatheredValue !== null) {
             setGathered(newGatheredValue);
             getGathered(newGatheredValue);
-
-            console.log(`사용자가 선택한 gathered 값: ${gathered}`);
         }
     };
 
@@ -170,7 +167,6 @@ const EditForm = () => {
 
     const getSkill = (value: string) => {
         setSkill(value);
-        console.log(value);
     };
 
     const getRequired = (value: string) => {
@@ -256,7 +252,6 @@ const EditForm = () => {
                         data: free_formData,
                     }).then((res) => {
                         if (res.status === 200) {
-                            console.log(`수정에 성공했습니다!`);
                             nav(`/${boardType}/${postingId}`);
                         }
                     }).catch((err) => console.log(err));
@@ -269,7 +264,6 @@ const EditForm = () => {
                     })
                         .then((res) => {
                             if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
                                 nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
                             } // 필요시 응답(401, 403 등) 에러 핸들링 ...
                         })
@@ -285,7 +279,6 @@ const EditForm = () => {
                         data: qna_formData,
                     }).then((res) => {
                         if (res.status === 200) {
-                            console.log(`수정에 성공했습니다!`);
                             nav(`/${boardType}/${postingId}`);
                         }
                     }).catch((err) => console.log(err));
@@ -298,7 +291,6 @@ const EditForm = () => {
                     })
                         .then((res) => {
                             if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
                                 nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
                             } // 응답(401, 403 등) 핸들링 ...
                         })
@@ -314,7 +306,6 @@ const EditForm = () => {
                         data: recruit_formData,
                     }).then((res) => {
                         if (res.status === 200) {
-                            console.log(`수정에 성공했습니다!`);
                             nav(`/${boardType}/${postingId}`);
                         }
                     }).catch((err) => console.log(err));
@@ -327,7 +318,6 @@ const EditForm = () => {
                     })
                         .then((res) => {
                             if (res.status === 200) {
-                                console.log(`수정에 성공했습니다!`); //추후 Snackbar로 변경. 북마크 등록/취소와 통일성 위해
                                 nav(`/${boardType}/${postingId}`); //수정된 게시글 확인위해 해당 상세보기로
                             } // 응답(401, 403 등) 핸들링 ...
                         })

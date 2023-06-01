@@ -33,7 +33,7 @@ import SortBoard from "../../../layout/SortBoard";
 import { reply_bookmark_views_recruit } from "../../../layout/Board/reply_bookmark_views";
 import Shorten from "../../../layout/Shorten";
 import { RecruitBoardSkeleton, useSkeleton } from "../../../layout/Skeletons";
-
+import { userInfo } from "../../../layout/postingDetail/userInfo";
 
 //모집게시판 페이지 인터페이스
 export interface RecruitBoardItems {
@@ -48,11 +48,12 @@ export interface RecruitBoardItems {
   views: number; //조회수
   stuId: number; //사용자 학번
   imgUrl?: Array<string>; //이미지
+  introduce: string;
   require: string;
   optional?: string;
   party: number;
   gathered: number; //모집된 인원 수. User 완성되는대로 Array<User>로 변경
-
+  
   isCompleted: boolean;
   accessUserId: number; //접속한 유저의 아이디(학번)
   authorizedUserIds: number[]; //권한있는 사용자들의 아이디(학번), 작성자와 승인된 사용자들
@@ -301,10 +302,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
           subheader={
             <Stack direction="row" sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box>
-                <Profile nickname={props.writer} imgUrl={props.profileImg} size={30} />
-                <Typography variant="overline">
-                  {`${props.writer} (${props.stuId.toString().slice(0, 2)}학번)`}
-                </Typography>
+                {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
               </Box>
               {reply_bookmark_views_recruit(props)}
             </Stack>

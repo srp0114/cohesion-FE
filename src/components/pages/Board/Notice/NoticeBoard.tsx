@@ -25,39 +25,11 @@ export interface NoticeItems {
   profileImg: string | null; 
   stuId: number;
   image: {imageUrl: string}[];
+  introduce: string;
 }
 
-const testData : NoticeItems[] = [
-  {
-    id: 1,
-    title: "title",
-    content: "content",
-    writer: "admin",
-    createdDate: "now",
-    bookmark: 2,
-    reply: 0,
-    views: 1,
-    profileImg: null,
-    stuId: 120,
-    image: []
-  }, 
-  {
-    id: 2,
-    title: "tiddtle",
-    content: "contddddddent",
-    writer: "admiddddn",
-    createdDate: "now",
-    bookmark: 2,
-    reply: 0,
-    views: 1,
-    profileImg: null,
-    stuId: 13120,
-    image: []
-  }
-]
-
 const Notice = () => {
-  const [boardItems, setBoardItems] = useState<NoticeItems[]>(testData);
+  const [boardItems, setBoardItems] = useState<NoticeItems[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams(); 
   const currentPage = searchParams.get('page');
@@ -184,7 +156,7 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         </Grid>
         <Grid item>
           <Stack direction={"row"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Stack>
         </Grid>
@@ -209,7 +181,7 @@ const PreviewPosting: React.FunctionComponent<NoticeItems> = (props: NoticeItems
         </Grid>
         <Grid item>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            {userInfo(props.writer, props.stuId, props.profileImg)}
+            {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
             {reply_bookmark_views(props)}
           </Box>
         </Grid>

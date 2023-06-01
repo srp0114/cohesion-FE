@@ -18,26 +18,11 @@ import {NoticeItems} from "./NoticeBoard";
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
 
-const testData: NoticeItems = {
-  id: 1,
-  title: "title",
-  content: "content",
-  writer: "admin",
-  createdDate: "now",
-  bookmark: 2,
-  reply: 0,
-  views: 1,
-  profileImg: null,
-  stuId: 120,
-  image: [],
-};
-
 const NoticeDetails = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [postItem, setPostItem] = useState<NoticeItems | undefined>();
   const { id } = useParams() as { id: string };
   const [accessUserId, setAccessUserId] = useState<number>(0); 
-  const [isFile, setIsFile] = useState<boolean>(false);
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const postingId = Number(id);
 
@@ -110,7 +95,7 @@ const NoticeDetails = () => {
             spacing={1}
             sx={{ display: "flex", justifyContent: "start", alignItems:"center" }}
           >
-            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg)}
+            {userInfo(postItem.writer, postItem.stuId, postItem.profileImg, postItem.introduce)}
             {TimeAndViews (postItem.createdDate, postItem.views)}
           </Stack>
           {isLogin ? <Bookmark boardType={"notice"} id={id}/> : null}

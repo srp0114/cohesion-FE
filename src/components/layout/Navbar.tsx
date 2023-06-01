@@ -56,15 +56,14 @@ const Navbar = () => {
     }
   };
 
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleModalClose = () => setModalOpen(false);
 
   const openModal = () => {
     if (!isLogin)
-      setModalOpen(!open);
+      setModalOpen(!modalOpen);
   };
-
 
   const moveToHome = () => {
     navigate("/");

@@ -18,9 +18,9 @@ const Search = () => {
   useEffect(() => {
     axios
       .all([
-        axios.get(`/api/free/list?search=${search}&page=0&size=4`),
-        axios.get(`/api/questions/list?search=${search}&page=0&size=4`),
-        axios.get(`/api/recruit/list?search=${search}&page=0&size=4`),
+        axios.get(`/api/free/list?search=${search}`),
+        axios.get(`/api/questions/list?search=${search}`),
+        axios.get(`/api/recruit/list?search=${search}`),
       ])
       .then(
         axios.spread((free, qna, recruit) => {         
@@ -97,7 +97,7 @@ const Search = () => {
                           ml: "2rem"
                         }} >
                         <Grid item xs><Typography variant="h4">{posting.title}</Typography></Grid>
-                        <Grid item xs={4} md={4}>{userInfo(posting.writer, posting.stuId, posting.profileImg)}</Grid>
+                        <Grid item xs={4} md={4}>{userInfo(posting.writer, posting.stuId, posting.profileImg, posting.introduce)}</Grid>
                         <Grid item xs={1} md={1}><Time date={posting.createdDate} variant="h5"/></Grid>
                     </Grid>
                     <Grid item>

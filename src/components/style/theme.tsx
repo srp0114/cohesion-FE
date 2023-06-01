@@ -159,8 +159,8 @@ export const theme = createTheme({
           whiteSpace: "pre-line",
           '&.boardTitle' :{
              fontWeight: 800 ,
-            '&:hover': {
-              color: '#008CFF',
+            "&:hover": {
+              cursor: "pointer",
             }
           }
         }
