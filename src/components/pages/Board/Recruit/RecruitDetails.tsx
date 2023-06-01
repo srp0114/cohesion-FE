@@ -21,7 +21,6 @@ import { PostingSkeleton, useSkeleton } from "../../../layout/Skeletons";
 import { FindIcon } from "../../../data/IconData";
 import 'highlight.js/styles/stackoverflow-dark.css'
 import "highlight.js/styles/atom-one-dark.css";
-import AlertSnackbar from "../../../layout/Snackbar";
 
 export interface State extends SnackbarOrigin {
   open: boolean;
@@ -63,17 +62,6 @@ const RecruitDetails = () => {
   const [gathered, setGathered] = useState<number>(0); //모인인원
   const [isCompleted, setIsCompleted] = useState<boolean>(false); //모집완료가 되었나?
   const [fileList, setFileList] = useState<FileItem[]>([]);
-
-  const [approvedSnackbarState, setApprovedSnackbarState] = useState<State>({
-    open: false,
-    vertical: "top",
-    horizontal: "right",
-  });
-  const [waitingSnackbarState, setWaitingSnackbarState] = useState<State>({
-    open: false,
-    vertical: "top",
-    horizontal: "right",
-  });
 
   const _theme = useTheme();
   const postingId = Number(id);
@@ -186,12 +174,10 @@ const RecruitDetails = () => {
           case "":
             break;
           case "true":
-            setApprovedSnackbarState((prevState) => ({...prevState,open: true,}));
-            return <AlertSnackbar callNode="승인완료" snackbarState={approvedSnackbarState} /> 
+            alert(`신청이 승인되었습니다!`);
             break;
           case "false":
-            setWaitingSnackbarState((prevState) => ({...prevState,open: true,}));
-            return <AlertSnackbar callNode="승인대기중" snackbarState={waitingSnackbarState} /> 
+            alert(`승인 대기 중입니다!`);
             break;
           default:
             alert(`res.data: ${JSON.stringify(res.data)} ${JSON.stringify(applicantStatus)} 오류 발생`);

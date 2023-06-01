@@ -8,8 +8,6 @@ import { propTypes } from "react-bootstrap/esm/Image";
 import { FindIcon } from "../../../data/IconData";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import AlertSnackbar from "../../../layout/Snackbar";
-import { debounce } from "lodash";
 
 /**
  * 확인 or 취소겠죠 버튼 누른 사람의 학번,
@@ -43,31 +41,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const [isMeetRequired, setIsMeetRequired] = useState<boolean>(false);
     const [isMeetOptional, setIsMeetOptional] = useState<boolean | null>(false);
-    const [applySnackbarState, setApplySnackbarState] = useState<State>({
-        open: false,
-        vertical: "top",
-        horizontal: "right",
-      });
-      const [cancelSnackbarState, setCancelSnackbarState] = useState<State>({
-        open: false,
-        vertical: "top",
-        horizontal: "right",
-      });
-      const [completeSnackbarState, setCompleteSnackbarState] = useState<State>({
-        open: false,
-        vertical: "top",
-        horizontal: "right",
-      });
-      const [approvalSnackbarState, setApprovalSnackbarState] = useState<State>({
-        open: false,
-        vertical: "top",
-        horizontal: "right",
-      });
-      const [disapprovalSnackbarState, setDisapprovalSnackbarState] = useState<State>({
-        open: false,
-        vertical: "top",
-        horizontal: "right",
-      });
 
     const operators = [
         { who: false, callNode: "applyBtn" },
@@ -225,28 +198,28 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
         switch (operator) {
             case 0:
                 postApplicantInfo(); //신청정보서버로
-                setApplySnackbarState((prevState) => ({...prevState,open: true,}));
+                alert(`신청을 완료했습니다!`);
                 break;
             case 1:
                 deleteApplicationCancel(); //신청취소정보서버로
-                setCancelSnackbarState((prevState) => ({...prevState,open: true,}));
+                alert(`신청을 취소했습니다!`);
                 break;
             case 2:
                 putRecruitComplete(props.postingId); //모집완료정보서버로
-                setCompleteSnackbarState((prevState) => ({...prevState,open: true,}));
+                alert(`모집을 완료했습니다`);
                 break;
             case 3:
                 if (props.targetApplication !== undefined && props.targetApplication !== null) {
                     console.log(`targetApplication:  ${JSON.stringify(props.targetApplication)}`);
                     putApprove(props.targetApplication);
-                    setApprovalSnackbarState((prevState) => ({...prevState,open: true,}));
+                    alert(`[ ${props.targetApplication.nickname} ] 승인했습니다.`);
                 }
                 break;
             case 4:
                 if (props.targetApplication !== undefined && props.targetApplication !== null) {
                     console.log(`targetApplication: ${JSON.stringify(props.targetApplication)} `);
                     putReject(props.targetApplication); // 승인 취소 정보 서버로
-                    setDisapprovalSnackbarState((prevState) => ({...prevState,open: true,}));
+                    alert(`[ ${props.targetApplication.nickname} ] 승인 취소했습니다.`);
                 }
                 break;
             default:
@@ -273,7 +246,6 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                 onClose={cancelClickHandler}
                 sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', justifyItems: 'center', alignItems: 'center' }}
             >
-
                 <Grid container xs={4} sx={doubleCheckModalstyle} spacing={'1.5rem'}>
                     <Grid item xs={12}>
                         <Typography align="center" variant="h4" sx={{ my: 2 }} fontWeight="800">
@@ -286,12 +258,7 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                     <Grid item xs={12}>
                         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                             <Button className="modalCancelButton" onClick={cancelClickHandler} variant="outlined" color="info" >취소</Button>
-                            <Button className="modalConfirmButton" onClick={confirmClickHandler} variant="contained" color="info" >확인</Button>
-                            <AlertSnackbar callNode="신청하기" snackbarState={applySnackbarState} />                     
-                            <AlertSnackbar callNode="신청취소" snackbarState={cancelSnackbarState} />
-                            <AlertSnackbar callNode="모집완료" snackbarState={completeSnackbarState} />
-                            <AlertSnackbar callNode="승인허가" snackbarState={approvalSnackbarState} />
-                            <AlertSnackbar callNode="승인취소" snackbarState={disapprovalSnackbarState} />                            
+                            <Button className="modalConfirmButton" onClick={confirmClickHandler} variant="contained" color="info" >확인</Button>                  
                         </Stack>
                     </Grid>
                 </Grid>
@@ -427,7 +394,6 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                 ) {
                     return;
                 }
-
                 setState({ ...state, [anchor]: open });
             };
     return (
