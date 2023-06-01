@@ -50,7 +50,6 @@ const Reply = (props: ReplyProps) => {
   });
   const [editReplyId, setReplyId] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [adoptId, setAdoptId] = useState<number | undefined>(undefined);
 
   const id = props.postingId;
   const board = props.board;
@@ -76,17 +75,15 @@ const Reply = (props: ReplyProps) => {
         .then((res) => {
           if (res.status === 200) {
             setIsChosen(res.data);
-            if(res.data.check === true) {
-              setAdoptId(res.data.id);
-              console.log(res.data.id)
-            }
+            console.log(res.data)
+
           }
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }, [board, id]);
+  }, [board, id, isChosen]);
 
   useEffect(() => {
     axios({
@@ -275,7 +272,7 @@ const Reply = (props: ReplyProps) => {
             <Typography variant="h5" color="primary.dark" sx={{ ml: 1 }}>
               <Time date={reply.createdAt} />
             </Typography>
-            {adoptId === reply.id ? 
+            {isChosen.check && isChosen.id === reply.id ? 
               <>
               <Stack direction={"row"} alignItems={"center"} spacing={"0.2rem"} ml={"2rem"}>
               <DoneAll fontSize="small" sx={{ color:"primary.main"}}/> 

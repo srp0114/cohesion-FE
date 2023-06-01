@@ -202,7 +202,7 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
             boxShadow: "none",
             border: (!props.isCompleted) ? `2.3px solid ${_theme.palette.primary.light}` : `1px solid ${_theme.palette.neutral.main}`,
             borderRadius: "35px",
-            padding: "2rem",
+            padding: "2rem 2rem 1.3rem",
             height: "100%",
           },
         },
@@ -269,42 +269,46 @@ const RecruitCard: React.FunctionComponent<RecruitBoardItems> = (
 
         <CardHeader
           /*제목(20자까지)이랑 수정 표시*/
-          title={<Typography variant="h5" sx={{ fontWeight: 600 }}>{Shorten(props.title, 20)}</Typography>}
+          title={<Typography variant="h4" sx={{ fontWeight: 600 }}>{Shorten(props.title, 20)}</Typography>}
           /* 작성 시간 */
           subheader={
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop:"0.3rem" }}>
               <Time date={props.createdDate} variant="h6" />
             </div>
           }
         />
-
-        <Box sx={{ height: "15rem", alignContent: "flex-start", justifyContent: "center", alignItems: "center" }}>
-          {/* 필수, 우대 조건 */}
-          <Chip label="필수 조건" variant="outlined" color="error" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
-          <CardContent sx={{ fontSize: "1rem" }}>{Shorten(`${props.require}`, 30)}</CardContent>
-
-          {props.optional ? <> <Chip label="우대 조건" variant="outlined" sx={{ marginBottom: "1rem", textWrap: "balance" }} />
-            <CardContent sx={{ fontSize: "1rem" }}>{Shorten(`${props.optional}`, 30)}</CardContent></> : null}
-        </Box>
-
-        {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {(remain === 0 || props.isCompleted) ?
-            <Typography variant="h5" sx={{ color: _theme.palette.neutral.main }}>"모집 마감"</Typography>
-            : <Typography variant="h5" sx={{ color: _theme.palette.primary.main }}>{remain}명 모집 중</Typography>}
-        </Box>
-
-        <CardHeader
+          <Box sx={{ height: "10rem", alignContent: "flex-start", justifyContent: "center", alignItems: "center" }}>
+            <Chip label="필수조건" variant="outlined" color="error"/>
+            
+            <Stack spacing={"0.5rem"} mb={"0.5rem"}>
+            <Typography variant="h5" sx={{p:"0.5rem"}}>{Shorten(`${props.require}`, 21)}</Typography>
+            </Stack>
+            
+            {props.optional ? <> 
+            <Chip label="우대조건" variant="outlined" sx={{ marginBottom: "0.1rem", textWrap: "balance" }} />
+            <Stack spacing={"0.5rem"}  mb={"0.5rem"}>
+            <Typography variant="h5" sx={{p:"0.5rem"}}>{Shorten(`${props.optional}`, 21)}</Typography> 
+            </Stack></>:  null}
+          </Box>
+          
+          {/*댓글수 북마크수 조회수, 모집 인원 수 표시 */}
+          <Stack direction={"row"} alignItems={"center"} display={"flex"} justifyContent={"space-between"} p={"0.2rem"}>
+            {(remain === 0 || props.isCompleted) ?
+              <Typography variant="h5" sx={{ fontWeight:"600", color: _theme.palette.neutral.main }}>"모집마감"</Typography>
+              : <Typography variant="h5" sx={{ fontWeight:"600", color: _theme.palette.primary.main }}>{remain}명 모집중</Typography>}
+            {reply_bookmark_views_recruit(props)}
+          </Stack>
+          
+          <CardHeader
           /* 작성자 프로필, 닉네임, 학번, 수정됌 표시 */
           subheader={
-            <Stack direction="row" sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Stack direction="row" sx={{ display: "flex", justifyContent: "space-between" }} mt={"0.3rem"}>
               <Box>
                 {userInfo(props.writer, props.stuId, props.profileImg, props.introduce)}
               </Box>
-              {reply_bookmark_views_recruit(props)}
             </Stack>
-          } />
-
+          } 
+          />
       </Card>
     </ThemeProvider >
   );

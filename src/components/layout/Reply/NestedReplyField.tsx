@@ -52,7 +52,7 @@ const NestedReplyField = (props: NestedReplyProps) => {
                 </div>
                 <Stack direction="row" spacing={2} justifyContent="flex-end">
                   <Button onClick={() => setOpenModal(false)}>취소</Button>
-                  <Button onClick={onReplySubmit}>답글</Button>
+                  <Button variant="contained" onClick={onReplySubmit}>답글</Button>
                 </Stack>
               </Stack>
             </Paper>

@@ -167,13 +167,13 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetRequired(!isMeetRequired)} size="small" checked={isMeetRequired} />} label="필수조건" labelPlacement="start" />
                             <Typography variant="subtitle1">
                                 {props.optionalContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => setIsMeetOptional(!isMeetOptional)} size="small" />} label="우대조건" labelPlacement="start" />
                         </FormGroup>
-                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                        <FormHelperText>필수조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
                 </>
             );
@@ -185,9 +185,9 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                             <Typography variant="subtitle1">
                                 {props.requireContext}
                             </Typography>
-                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수사항" labelPlacement="start" />
+                            <FormControlLabel sx={{ display: "flex", flexDirection: "row-reverse" }} control={<Checkbox onChange={() => { setIsMeetRequired(!isMeetRequired); setIsMeetOptional(null); }} checked={isMeetRequired} size="small" />} label="필수조건" labelPlacement="start" />
                         </FormGroup>
-                        <FormHelperText>필수 조건을 꼭 확인해주세요.</FormHelperText>
+                        <FormHelperText>필수조건을 꼭 확인해주세요.</FormHelperText>
                     </FormControl >
                 </>
             );
@@ -253,8 +253,8 @@ export const DoubleCheckModal = (props: DoubleCheckModalProps) => {
                     <Divider variant="fullWidth" />
                     <Grid item xs={12}>
                         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                            <Button className="modalCancelButton" onClick={cancelClickHandler} variant="outlined" color="info" >취소</Button>
-                            <Button className="modalConfirmButton" onClick={confirmClickHandler} variant="contained" color="info" >확인</Button>
+                            <Button onClick={cancelClickHandler} >취소</Button>
+                            <Button onClick={confirmClickHandler} variant="contained" >확인</Button>
                         </Stack>
                     </Grid>
                 </Grid>
@@ -436,9 +436,9 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                 {/* 필수, 우대 조건 */}
                                                 <Grid item xs={12}>
                                                     <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수사항 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수사항 ❌" color="primary" />}
-                                                        {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대사항 👌" color="secondary" /> : null}
-                                                        {typeof app.isMeetOptional === 'boolean' && !(app.isMeetOptional) ? <Chip size="small" variant="outlined" label="우대사항 ❌" color="secondary" /> : null}
+                                                        {app.isMeetRequired ? <Chip size="small" variant="outlined" label="필수조건 👌" color="primary" /> : <Chip size="small" variant="outlined" label="필수조건 ❌" color="primary" />}
+                                                        {typeof app.isMeetOptional === 'boolean' && app.isMeetOptional ? <Chip size="small" variant="outlined" label="우대조건 👌" color="secondary" /> : null}
+                                                        {typeof app.isMeetOptional === 'boolean' && !(app.isMeetOptional) ? <Chip size="small" variant="outlined" label="우대조건 ❌" color="secondary" /> : null}
                                                     </Stack>
                                                 </Grid>
                                             </Grid>
