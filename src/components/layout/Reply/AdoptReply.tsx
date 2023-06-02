@@ -83,7 +83,7 @@ const editUserinfoModal = {
   top: '40%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 300,
+  width: 350,
   bgcolor: 'background.paper',
   p: "1.5rem",
   borderRadius: 6,

@@ -66,7 +66,7 @@ const Reply = (props: ReplyProps) => {
     }
   }
   
-  const getAdoptReply = useCallback(() => {
+  const getAdoptReply = () => {
     if (board === "questions") {
       axios({
         method: "get",
@@ -83,7 +83,7 @@ const Reply = (props: ReplyProps) => {
           console.log(err);
         });
     }
-  }, [board, id, isChosen]);
+  };
 
   useEffect(() => {
     axios({
@@ -99,7 +99,7 @@ const Reply = (props: ReplyProps) => {
 
     getReply();
     getAdoptReply();
-  }, [board, id, getAdoptReply]);
+  }, [board, id]);
 
   const handleAdoptReply = async (replyId: number) => {
     try {
