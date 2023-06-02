@@ -125,6 +125,7 @@ interface UpdateRecruitSpeedDialProps {
   postingContent?: string;
   onNewApprovedApplicants: () => void;
   onApprovedApplicantsOut: () => void;
+  recruitIsCompleted?: boolean;
 }
 
 export const UpdateRecruitSpeedDial = (props: UpdateRecruitSpeedDialProps) => {
@@ -133,6 +134,7 @@ export const UpdateRecruitSpeedDial = (props: UpdateRecruitSpeedDialProps) => {
   const navigate = useNavigate();
 
   const goToEditing = () => {
+    props.recruitIsCompleted ? alert("모집이 완료된 게시글은 수정이 불가능합니다.") :
     navigate(`/edit/${props.boardType}/${props.postingId}`, { state: getBoardType(props.boardType) });
   };
 

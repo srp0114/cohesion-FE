@@ -107,7 +107,7 @@ const Search = () => {
                     ))
                   ) : (
                     <Grid item ml={"2rem"}>
-                    <Typography variant="h3" sx={{fontWeight: 500}}>{search}에 대한 내용이
+                    <Typography variant="h3" sx={{fontWeight: 500}}>{search}에 대한 내용이&nbsp;
                     {getBoardType(board.boardType)}에 없습니다.</Typography>
                     </Grid>
                   )

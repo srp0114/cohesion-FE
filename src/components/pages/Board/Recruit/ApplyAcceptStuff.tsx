@@ -448,7 +448,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
 
                                             <Grid item xs={2}>
                                                 {(!app.isApproved) ? <>
-                                                    <Tooltip title={`승인대기`}>
+                                                    <Tooltip title={`승인`}>
                                                         <IconButton edge="end" aria-label="approve" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                             <FindIcon name="approveReject" />
                                                         </IconButton>
@@ -463,7 +463,7 @@ export const ApplicantList = (props: ApplicantListProps) => {//승인된 인원�
                                                        
                                                     />
                                                 </>
-                                                    : <><Tooltip title={`승인완료`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
+                                                    : <><Tooltip title={`승인취소`}><IconButton edge="end" aria-label="reject" onClick={() => handleModalOpenChange(true, app.id.toString())} >
                                                         <FindIcon name="approveComplete" />
                                                     </IconButton></Tooltip>
                                                         <DoubleCheckModal modalOpen={modalStates[app.id] || false}

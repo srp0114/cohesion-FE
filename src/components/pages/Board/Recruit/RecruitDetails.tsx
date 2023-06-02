@@ -208,7 +208,7 @@ const RecruitDetails = () => {
     if (typeof postItem !== undefined) {
       if (Number(studentId) === Number(accessUserId)) { //accessUserId는 현재 접속한 유저의 학번, stuId
         return (<UpdateRecruitSpeedDial boardType={BoardType.recruit} postingId={postingId} postingTitle={title} postingContent={content}
-          onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut}
+          onNewApprovedApplicants={handleNewApprovedApplicants} onApprovedApplicantsOut={handleApprovedApplicantsOut} recruitIsCompleted={isCompleted}
         />);
       }
       else
