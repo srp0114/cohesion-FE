@@ -179,16 +179,18 @@ const RecruitDetails = () => {
       url: `/api/recruit/${postingId}/application-check`
     }).then((res) => {
       if (res.status === 200) {
-        setApplicantStatus(res.data);
+        if (res.data === "NOT_APPLIED") setApplicantStatus(null)
+        else if (res.data === "APPLIED_NOT_APPROVED") setApplicantStatus(false)
+        else setApplicantStatus(true);
         console.log(`서버에서 받은 신청자 신청여부 ${res.data} ${JSON.stringify(res.data)}`);
         const status: string = (res.data).toString();
         switch (status) {
-          case "":
+          case "NOT_APPLIED":
             break;
-          case "true":
+          case "APPLIED_AND_APPROVED":
             alert(`신청이 승인되었습니다!`);
             break;
-          case "false":
+          case "APPLIED_NOT_APPROVED":
             alert(`승인 대기 중입니다!`);
             break;
           default:
