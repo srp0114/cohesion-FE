@@ -42,7 +42,7 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
 <br/>
 
-![Q&A게시글 상세화면](https://github.com/user-attachments/assets/1ac09bb8-b4f7-4c59-afe0-9718b0c17f16)
+![Q&A게시글 상세화면](https://github.com/user-attachments/assets/07657d4b-454b-47fa-af58-305274cf90b3)
 
 <br/>
 
@@ -58,7 +58,7 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
 <br/>
 
-![구인게시글 상세화면](https://github.com/user-attachments/assets/b890ad2a-bc70-43c9-872f-e424e30b8e85)
+![구인게시글 상세화면](https://github.com/user-attachments/assets/53634ec7-623f-4111-b71e-43f7b8739816)
 
 <br/>
 
@@ -76,8 +76,9 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
   - 사용자가 작성/북마크/신청한 게시글을 확인할 수 있습니다.
 
-![마이페이지-공부기록](https://github.com/user-attachments/assets/70df8c55-6846-4903-a126-30bf7c09c329)
-![마이페이지-북마크한 글](https://github.com/user-attachments/assets/d02816a9-0a52-41ca-aab0-336c365e10ad)
+![마이페이지-공부기록 화면](https://github.com/user-attachments/assets/3c9b5ea5-a45f-4dc2-ae74-d006cd35b8ab)
+
+![마이페이지-북마크한 글 화면](https://github.com/user-attachments/assets/cc644024-17c7-4300-a0fa-469994cba56b)
 
 <br/>
 
@@ -85,13 +86,13 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
 ### 부가 정보 입력 화면
 
-![welcome화면](https://github.com/user-attachments/assets/b4d67e22-af86-48f4-b69f-ef48519f1996)
+![부가정보입력 화면](https://github.com/user-attachments/assets/746790a6-1495-48f5-904c-c8853fc95d01)
 
 <br/>
 
 ### 홈화면
 
-![홈화면](https://github.com/user-attachments/assets/8e972181-35c4-46a5-a3ae-c84fd1ec08e0)
+![홈화면](https://github.com/user-attachments/assets/b1f99127-2a3e-4eeb-a00f-11b587f73f52)
 
 <br/>
 
@@ -101,34 +102,35 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
   - Q&A게시글은 질문하는 언어를 추가로 선택할 수 있습니다.
 
-  ![Q&A게시글-작성화면](https://github.com/user-attachments/assets/229b95e3-05d8-4f21-b43d-7766a20a547c)
+  ![Q&A게시글 작성 화면](https://github.com/user-attachments/assets/14216a72-16ef-4576-8467-21916547755f)
 
 - 구인 게시글 작성화면
 
   - 구인 게시글은 총 인원과 모집 인원을 선택할 수 있습니다.
 
-  ![구인게시글 작성화면](https://github.com/user-attachments/assets/a0c21685-a4c4-4d83-b570-0ce4551186a5)
+  ![구인게시글 작성 화면](https://github.com/user-attachments/assets/7fa90cd9-fc9e-4a7f-8a9d-fb2b007c3b91)
 
 <br/>
 
 ### 게시판 목록 화면
 
-![게시판 목록 화면](https://github.com/user-attachments/assets/8cc5961e-8de5-4b6a-81d0-45a65914abc2)
+![게시판 목록 화면](https://github.com/user-attachments/assets/34d903fd-423a-4cfe-9933-87a9b495d2b6)
 
 <br/>
 
 ### 검색 화면
 
-![검색화면](https://github.com/user-attachments/assets/6563b072-81a5-46bd-af5e-eb7f06750263)
+![검색화면](https://github.com/user-attachments/assets/e88c341a-2bf0-42bd-b340-2b892780a2e4)
 
 <br/>
 
 ### 답글달기 화면
 
-![답글달기 화면](https://github.com/user-attachments/assets/0bc9f751-b588-4f67-a7f1-402b8abe31d4)
+![답글달기 화면](https://github.com/user-attachments/assets/3d08129f-da6a-42a8-a79f-36d442f503a7)
 
 <br/>
 
 ### Skeleton
 
-![skeleton](https://github.com/user-attachments/assets/b3cd2623-eaf1-4525-a436-6e3c08b59975)
+![skeleton](https://github.com/user-attachments/assets/65c13ffb-92c9-4e05-837a-089f518b0070)
+
