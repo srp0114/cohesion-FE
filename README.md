@@ -77,7 +77,7 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
   - 사용자가 작성/북마크/신청한 게시글을 확인할 수 있습니다.
 
 ![마이페이지-공부기록](https://github.com/user-attachments/assets/70df8c55-6846-4903-a126-30bf7c09c329)
-![마이페이지-내북마크](https://github.com/user-attachments/assets/0f0ea28d-7209-4e06-9c42-abf57e53ec9b)
+![마이페이지-북마크한 글](https://github.com/user-attachments/assets/d02816a9-0a52-41ca-aab0-336c365e10ad)
 
 <br/>
 
@@ -91,7 +91,7 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
 ### 홈화면
 
-![홈화면](https://github.com/user-attachments/assets/2631c01b-91e4-433a-8bbd-6a843bd261ef)
+![홈화면](https://github.com/user-attachments/assets/8e972181-35c4-46a5-a3ae-c84fd1ec08e0)
 
 <br/>
 
@@ -132,5 +132,3 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 ### Skeleton
 
 ![skeleton](https://github.com/user-attachments/assets/b3cd2623-eaf1-4525-a436-6e3c08b59975)
-
-<br/>
