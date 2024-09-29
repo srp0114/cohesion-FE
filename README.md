@@ -36,13 +36,14 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
   - 게시글 및 댓글 작성 시 사용자가 코드를 작성하는 경우 작성된 코드의 언어에 따라 하이라이팅이 적용되여 가독성 있는 코드를 공유할 수 있습니다.
 
-- 댓글 채택
+- 댓글 채택 기능
 
   - 작성자가 댓글 중 도움이 된 댓글을 채택할 수 있습니다.
 
 <br/>
 
 ![Q&A게시글 상세화면](https://github.com/user-attachments/assets/1b2f2d4f-5f43-4e2d-9cee-d13f05cbcefe)
+
 
 <br/>
 
@@ -76,6 +77,8 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 
   - 사용자가 작성/북마크/신청한 게시글을 확인할 수 있습니다.
 
+<br/>
+
 ![마이페이지-공부기록 화면](https://github.com/user-attachments/assets/3637cbaa-458e-4450-bff7-1e1a7634f9aa)
 
 ![마이페이지-북마크한 글 화면](https://github.com/user-attachments/assets/3a7f58b2-95d3-435e-b32e-f544b023bb51)
@@ -101,7 +104,10 @@ Ping Pong은 한성대학교 컴퓨터공학부 학생들을 위한 전용 커�
 - Q&A게시글 작성화면
 
   - Q&A게시글은 질문하는 언어를 추가로 선택할 수 있습니다.
+    
   ![Q&A게시글 작성 화면](https://github.com/user-attachments/assets/46e4fed1-59ed-44d8-bea6-28797691b72a)
+
+<br/>
 
 - 구인 게시글 작성화면
 
